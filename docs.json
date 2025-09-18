@@ -2,10 +2,16 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Render Network",
+  "hideMintlifyBranding": true,
+  "forceDarkMode": true,
   "colors": {
     "primary": "#0b8cb7",
     "light": "#66cbfa",
-    "dark": "#0a7aa3"
+    "dark": "#0a7aa3",
+    "background": {
+      "dark": "#000000",
+      "light": "#0a0a0a"
+    }
   },
   "favicon": "/favicon.svg",
   "navigation": {
