@@ -3,6 +3,213 @@ title: "Render Network Documentation"
 description: "Complete guide to building sustainable streaming with blockchain-powered tools and monetization"
 ---
 
+<style>
+@keyframes beamMove {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(180deg); }
+  100% { transform: translateX(-100%) translateY(-100%) rotate(360deg); }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) translateX(0px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px);
+    opacity: 0;
+  }
+}
+
+.render-bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  pointer-events: none;
+}
+
+.render-beam {
+  position: absolute;
+  width: 3px;
+  height: 200px;
+  background: linear-gradient(180deg, transparent 0%, #0b8cb7 50%, transparent 100%);
+  border-radius: 2px;
+  animation: beamMove 8s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+.render-beam:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.render-beam:nth-child(2) { top: 20%; left: 30%; animation-delay: 1s; }
+.render-beam:nth-child(3) { top: 30%; left: 50%; animation-delay: 2s; }
+.render-beam:nth-child(4) { top: 40%; left: 70%; animation-delay: 3s; }
+.render-beam:nth-child(5) { top: 50%; left: 20%; animation-delay: 4s; }
+.render-beam:nth-child(6) { top: 60%; left: 40%; animation-delay: 5s; }
+.render-beam:nth-child(7) { top: 70%; left: 60%; animation-delay: 6s; }
+.render-beam:nth-child(8) { top: 80%; left: 80%; animation-delay: 7s; }
+
+.render-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #66cbfa;
+  border-radius: 50%;
+  animation: particleFloat 15s linear infinite;
+}
+
+.render-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.render-particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+.render-particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+.render-particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+.render-particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+.render-particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+.render-particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+.render-particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+
+.render-bg-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+/* Hide theme toggle and Mintlify branding */
+[data-testid="theme-toggle"],
+[data-testid="mint-footer"],
+[data-testid="mint-powered-by"],
+button[aria-label*="theme"],
+button[aria-label*="Theme"],
+button[aria-label*="dark"],
+button[aria-label*="light"],
+.theme-toggle,
+.dark-mode-toggle,
+.theme-switch,
+.color-mode-toggle,
+.mint-theme-toggle,
+.theme-icon,
+.mode-toggle,
+.mint-footer,
+.mint-powered-by,
+[class*="mint-footer"],
+[class*="powered-by"],
+button svg[class*="moon"],
+button svg[class*="sun"],
+/* Hide "Powered by Mintlify" */
+*[class*="powered"],
+*[class*="mintlify"],
+*[id*="powered"],
+*[id*="mintlify"],
+a[href*="mintlify"],
+div[title*="Mintlify"],
+div[alt*="Mintlify"],
+img[alt*="Mintlify"],
+svg[title*="Mintlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* Force dark theme */
+:root {
+  --bg-color: #000000 !important;
+  --text-color: #ffffff !important;
+}
+
+/* Ensure content is readable */
+body {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+</style>
+
+<div class="render-bg-container">
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-beam"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+  <div class="render-particle"></div>
+</div>
+
+<script>
+  // Hide Mintlify branding after page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hide any elements containing Mintlify branding
+    const elements = document.querySelectorAll('*');
+    elements.forEach(element => {
+      if (element.textContent && element.textContent.includes('Powered by Mintlify')) {
+        element.style.display = 'none';
+        element.style.visibility = 'hidden';
+        element.style.opacity = '0';
+        element.style.pointerEvents = 'none';
+        element.style.width = '0';
+        element.style.height = '0';
+        element.style.overflow = 'hidden';
+      }
+      if (element.innerHTML && element.innerHTML.includes('mintlify')) {
+        element.style.display = 'none';
+      }
+    });
+
+    // Hide theme toggle buttons
+    const themeButtons = document.querySelectorAll('button[aria-label*="theme"], button[aria-label*="Theme"]');
+    themeButtons.forEach(button => {
+      button.style.display = 'none';
+    });
+
+    // Continuous check for new elements
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) { // Element node
+            const element = node as HTMLElement;
+            if (element.textContent && element.textContent.includes('Powered by Mintlify')) {
+              element.style.display = 'none';
+            }
+            if (element.innerHTML && element.innerHTML.includes('mintlify')) {
+              element.style.display = 'none';
+            }
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
+</script>
+
 ## Welcome to Render Network
 
 Empowering streamers through sustainable blockchain-powered tools and monetization.
