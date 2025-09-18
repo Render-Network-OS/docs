@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Render Network",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0b8cb7",
+    "light": "#66cbfa",
+    "dark": "#0a7aa3"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -14,55 +14,54 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "integration"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Products",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "products/555-gamification",
+              "products/streaming-kit-marketplace",
+              "products/stream-pack-generator",
+              "products/animated-assets",
+              "products/monetization-module"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Guides",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "guides/wallet-setup",
+              "guides/obs-integration",
+              "guides/stream-configuration",
+              "guides/revenue-tracking",
+              "guides/troubleshooting"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Community",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "community/discord-server",
+              "community/twitter",
+              "community/support-center",
+              "community/developer-resources"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Tokenomics",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Token Economics",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "tokenomics/overview",
+              "tokenomics/rndr-token",
+              "tokenomics/fee-distribution",
+              "tokenomics/airdrops"
             ]
           }
         ]
@@ -71,14 +70,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Launch App",
+          "href": "https://rendernet.work",
+          "icon": "rocket"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Tokenomics",
+          "href": "https://rendernet.work/tokenomics",
+          "icon": "coins"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://x.com/RNDRNTWRK",
+          "icon": "users"
         }
       ]
     }
@@ -90,14 +94,18 @@
   "navbar": {
     "links": [
       {
+        "label": "Launch App",
+        "href": "https://rendernet.work"
+      },
+      {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@rendernet.work"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Connect Wallet",
+      "href": "https://rendernet.work/connect"
     }
   },
   "contextual": {
@@ -114,9 +122,9 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/RNDRNTWRK",
+      "github": "https://github.com/render-network",
+      "discord": "https://discord.gg/render-network"
     }
   }
 }
