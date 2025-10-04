@@ -5,9 +5,9 @@ sidebarTitle: "Integration"
 ---
 
 <Info>
-  **Prerequisites**: - Crypto wallet (Phantom, MetaMask, or Solflare) - OBS
-  Studio or Streamlabs for streaming integration - Basic understanding of
-  blockchain concepts
+  **Prerequisites**: - Solana wallet (Phantom recommended) or Solflare - OBS
+  Studio or Streamlabs (if using browser source fallback) - Basic understanding
+  of blockchain concepts
 </Info>
 
 Integrate Render Network's powerful tools into your streaming and development workflow.
@@ -31,8 +31,6 @@ await connect();
 
 - Phantom (Recommended)
 - Solflare
-- MetaMask
-- Trust Wallet
 
 </Step>
 
@@ -56,6 +54,20 @@ Add the 555 gamification overlay using OBS browser source:
 - Interactive mini-games
 - Automated prize distribution
 - Seamless stream integration
+
+</Step>
+<Step title="Configure CTRL Control Panel">
+
+Use the CTRL dashboard to configure themes, overlays, alerts, badges, and token-gated actions.
+
+```bash
+# CTRL quick start (conceptual)
+# 1) Connect wallet in CTRL
+# 2) Choose stream → load theme → configure $555-gated controls
+# 3) Publish overlays → verify in OBS/browser source (if applicable)
+```
+
+<Tip>See: [CTRL Control Panel](/products/ctrl-control-panel)</Tip>
 
 </Step>
 </Steps>
@@ -94,9 +106,10 @@ Customize your 555 gamification experience with advanced settings:
 
 Connect your applications with Render Network APIs:
 
-**Authentication:**
+**Authentication (via server proxy):**
 
 ```javascript
+// Call your own server route (SSR/edge) to avoid exposing backend endpoints in the frontend
 const response = await fetch("/api/rndr/balance", {
   headers: {
     Authorization: `Bearer ${wallet.signature}`,
@@ -105,10 +118,10 @@ const response = await fetch("/api/rndr/balance", {
 });
 ```
 
-**Real-time Updates:**
+**Real-time Updates (proxied):**
 
 ```javascript
-// WebSocket connection for live game updates
+// WebSocket connection for live game updates (proxy via your server if required)
 const ws = new WebSocket("wss://api.rendernet.work/games");
 
 ws.onmessage = (event) => {
@@ -145,10 +158,11 @@ console.log(`Total Earned: ${data.totalRNDR} RNDR`);
 Install Render Network SDK for advanced integrations:
 
 ```bash
-npm install @render-network/sdk
-
-# Or with yarn
+bun add @render-network/sdk
+# or
 yarn add @render-network/sdk
+# or
+npm install @render-network/sdk
 ```
 
 **Basic Usage:**
@@ -180,7 +194,7 @@ const market = await rn.createPredictionMarket({
     3. Verify network settings (mainnet-beta)
     4. Clear browser cache and reconnect
 
-    **Need Help?** Join our [Discord](https://discord.gg/render-network)
+    **Need Help?** Join our [Discord](https://discord.gg/35UNPtu8M5)
 
   </Accordion>
 

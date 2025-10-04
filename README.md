@@ -286,7 +286,7 @@ mint dev --port 3001
 
 - 📖 [Mintlify Documentation](https://mintlify.com/docs)
 - 🐛 [GitHub Issues](https://github.com/rndrntwrk/docs/issues)
-- 💬 [Discord Community](https://discord.gg/render-network)
+- 💬 [Discord Community](https://discord.gg/35UNPtu8M5)
 - 📧 [Support Email](mailto:support@rendernet.work)
 
 ## 📊 Analytics & Monitoring
@@ -359,4 +359,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ by the Render Network Team**
 
-🌐 [rendernet.work](https://rendernet.work) • 📧 [support@rendernet.work](mailto:support@rendernet.work) • 💬 [Discord](https://discord.gg/render-network)
+🌐 [rendernet.work](https://rendernet.work) • 📧 [support@rendernet.work](mailto:support@rendernet.work) • 💬 [Discord](https://discord.gg/35UNPtu8M5)
