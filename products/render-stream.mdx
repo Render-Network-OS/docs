@@ -1,0 +1,88 @@
+---
+title: "Render Stream"
+description: "Solana-native streaming with low-latency servers and Pump.fun integration"
+---
+
+## Overview
+
+Render Stream is a Solana-native streaming stack designed to replace traditional desktop encoders with a web-first, creator-focused workflow. It offers extended session stability (48+ hours), low-latency custom servers, and crypto-native controls that integrate directly with your wallet and Pump.fun.
+
+<Info>
+  Key benefits: extended session uptime, low-latency routing, wallet-configured
+  controls, and direct integration with the Render Network toolchain.
+</Info>
+
+## Key Capabilities
+
+<CardGroup cols={3}>
+  <Card title="48+ Hour Sessions" icon="clock">
+    Go live for extended periods with resilient session recovery and health
+    checks.
+  </Card>
+  <Card title="Low-Latency Servers" icon="zap">
+    Choose regional servers to minimize end-to-end delay for interactive
+    streams.
+  </Card>
+  <Card title="Crypto-Native Controls" icon="wallet">
+    Configure stream permissions and actions via wallet; integrate with
+    Pump.fun.
+  </Card>
+</CardGroup>
+
+## Setup
+
+### Option A: Native Render Stream
+
+Use the web control surface and wallet auth to start a stream without desktop encoders.
+
+<Steps>
+  <Step title="Select Region & Server">
+    Choose the closest low-latency region for your audience. Regional selection
+    reduces round-trip time for interactive features.
+  </Step>
+  <Step title="Connect Wallet & Configure Access">
+    Connect your Solana wallet to set stream ownership and define controller
+    permissions (e.g., moderator wallets). If integrating Pump.fun, ensure the
+    project wallet has the required scopes.
+  </Step>
+  <Step title="Start Stream & Monitor Health">
+    Start the session from the control surface. Monitor ingest health, bitrate,
+    dropped frames, and auto-recovery status.
+  </Step>
+</Steps>
+
+### Option B: OBS Browser Source (Fallback)
+
+If you are transitioning from OBS or need a hybrid setup, add the Render overlay as a browser source while you migrate scenes.
+
+```bash
+# OBS Browser Source (example)
+# 1) Sources → Add → Browser Source
+# 2) Name: "Render Overlay"
+# 3) URL: https://555.rendernet.work/overlay
+# 4) Width: 1920, Height: 1080
+# 5) Enable "Shutdown source when not visible"
+```
+
+<Tip>
+  Prefer the native Render Stream path for lowest latency and simpler
+  operations. Use the OBS Browser Source during migration only.
+</Tip>
+
+## Pump.fun Integration
+
+- **Wallet-Based Permissions:** Associate the appropriate wallet(s) to control stream actions and token-gated features.
+- **Token-Gated Controls:** Gate certain actions (chat modes, overlay triggers) behind token ownership thresholds.
+- **Compliance:** Follow the platform’s terms and any regional restrictions for interactive features.
+
+## Operations & Reliability
+
+- **Session Recovery:** Automatic reconnection and state recovery for transient network events.
+- **Health Metrics:** Ingest health, frame drops, CPU/network load recommendations, bitrate guidance.
+- **Limits:** Published bitrate and resolution limits per region (subject to change as capacity grows).
+
+## Cross-Links
+
+- Migration Guide: [OBS Replacement Migration](/guides/obs-migration)
+- Developer SDK: [Render Stream SDK](/guides/render-stream-sdk)
+- Dashboard: [CTRL Control Panel](/products/ctrl-control-panel)

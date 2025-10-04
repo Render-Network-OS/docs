@@ -19,7 +19,6 @@
             "group": "Getting Started",
             "pages": [
               "index",
-              "quickstart",
               "integration"
             ]
           },
@@ -27,10 +26,13 @@
             "group": "Products",
             "pages": [
               "products/555-gamification",
+              "products/prediction-market",
+              "products/monetization-module",
+              "products/render-stream",
+              "products/ctrl-control-panel",
               "products/streaming-kit-marketplace",
               "products/stream-pack-generator",
-              "products/animated-assets",
-              "products/monetization-module"
+              "products/animated-assets"
             ]
           },
           {
@@ -40,7 +42,17 @@
               "guides/obs-integration",
               "guides/stream-configuration",
               "guides/revenue-tracking",
-              "guides/troubleshooting"
+              "guides/troubleshooting",
+              "guides/ctrl-panel",
+              "guides/obs-migration",
+              "guides/render-stream-sdk",
+              "guides/endless-raffle",
+              "guides/chat-moderation-bot",
+              "guides/multi-chat-architecture",
+              "guides/custom-solana-programs",
+              "guides/security-and-fairness",
+              "guides/api-usage-and-proxying",
+              "guides/data-model-and-security"
             ]
           },
           {
@@ -63,7 +75,10 @@
               "tokenomics/overview",
               "tokenomics/rndr-token",
               "tokenomics/fee-distribution",
-              "tokenomics/airdrops"
+              "tokenomics/airdrops",
+              "tokenomics/555-token",
+              "tokenomics/locking-and-buybacks",
+              "tokenomics/ecosystem-growth-fund"
             ]
           }
         ]
@@ -78,7 +93,7 @@
         },
         {
           "anchor": "Tokenomics",
-          "href": "https://rendernet.work/tokenomics",
+          "href": "https://docs.rendernet.work/tokenomics/overview",
           "icon": "coins"
         },
         {
@@ -103,12 +118,7 @@
         "label": "Support",
         "href": "mailto:support@rendernet.work"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Connect Wallet",
-      "href": "https://rendernet.work/connect"
-    }
+    ]
   },
   "contextual": {
     "options": [
@@ -126,7 +136,7 @@
     "socials": {
       "x": "https://x.com/RNDRNTWRK",
       "github": "https://github.com/render-network",
-      "discord": "https://discord.gg/render-network"
+      "discord": "https://discord.gg/35UNPtu8M5"
     }
   }
 }

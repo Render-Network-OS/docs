@@ -1,0 +1,38 @@
+---
+title: "API Usage & Proxying"
+description: "SSR/edge proxy patterns to keep backend endpoints off the frontend"
+---
+
+## Principles
+
+- Do not expose backend endpoints in frontend code
+- Use SSR/edge routes to forward authenticated calls
+- Keep secrets in server-only env vars
+
+## Next.js Example
+
+```ts
+// pages/api/rndr/balance.ts
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const auth = req.headers.authorization;
+  const r = await fetch(process.env.RNDR_BACKEND + "/balance", {
+    headers: { authorization: auth || "" }
+  });
+  res.status(r.status).send(await r.text());
+}
+```
+
+## WebSocket Proxy Notes
+
+- Terminate WS at the server and relay authorized events to clients
+- Avoid direct browser → backend WS when auth/secrets are involved
+
+## Cross-Links
+
+- Integration: [Integration Guide](/integration)
+- SDK: [Render Stream SDK](/guides/render-stream-sdk)
