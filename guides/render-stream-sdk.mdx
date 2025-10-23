@@ -3,6 +3,10 @@ title: "Render Stream SDK"
 description: "APIs for overlays, themes, and gamification with secure proxy patterns"
 ---
 
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
 ## Installation
 
 ```bash
@@ -18,7 +22,7 @@ npm install @render-network/sdk
 Use a server route (SSR/edge) to call backend APIs. Do not expose backend endpoints in frontend code.
 
 ```ts
-// pages/api/rndr/balance.ts (Next.js example)
+// pages/api/tokens/balance.ts (Next.js example)
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -74,3 +78,14 @@ rn.events.on("prediction:update", (evt) => {
 
 - Migration: [OBS Replacement](/guides/obs-migration)
 - CTRL: [CTRL Panel Guide](/guides/ctrl-panel)
+
+
+
+
+
+
+
+
+
+
+

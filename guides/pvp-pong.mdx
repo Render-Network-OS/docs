@@ -1,0 +1,52 @@
+---
+title: PvP Pong Overlay
+description: Enable player-vs-player Pong with wallet join, password, countdown, and chat betting
+---
+
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
+## Overview
+
+PvP Pong lets two players join via the overlay and battle live while viewers place virtual bets in chat.
+
+## Quick Start
+
+1. Start the chat gateway and session as usual.
+2. Open the overlay URL in OBS/browser: `/overlay/<streamerId>?player=true` for player clients, and `/overlay/<streamerId>` for viewers.
+3. Players connect their wallet and join with password `55555`. First two joiners are assigned to sides A (left) and B (right).
+4. Once two players are in, a 5-minute countdown begins. The match starts on first input after the countdown.
+
+## Player Controls
+
+- Keyboard: Up/Down arrows (or W/S, I/K) send paddle inputs.
+- Inputs are sent to the chat-gateway endpoint `/pong/input` and relayed to the overlay.
+
+## Chat Betting (Virtual)
+
+- Viewers bet during waiting/countdown using chat commands:
+  - `!bet a` (alias: `!bet left`)
+  - `!bet b` (alias: `!bet right`)
+- One bet per user name. No payouts are tracked in MVP.
+- Live bet counts are shown on the overlay while betting is open.
+
+## Gateway Endpoints
+
+- `POST /pong/start { streamerId, password }` (requires gateway key unless local dev)
+- `POST /pong/stop { streamerId }` (requires gateway key unless local dev)
+- `POST /pong/join { streamerId, name, wallet?, password }` (no key required)
+- `POST /pong/input { streamerId, side: 'left'|'right', direction: 'Up'|'Down'|null }` (no key required)
+
+Environment variables (optional):
+
+- `NEXT_PUBLIC_CHAT_GATEWAY_URL` (WebSocket, e.g. `ws://localhost:7070`)
+- `NEXT_PUBLIC_CHAT_GATEWAY_HTTP` (HTTP base, e.g. `http://localhost:7070`)
+
+## Notes
+
+- Password is static `55555` in MVP.
+- Wallet verification is not required for joining in MVP.
+- Overlay dispatches `PONG_INPUT` and `PONG_MATCH_STATE` events to the Arcade Pong renderer to disable AI and apply inputs.
+
+

@@ -1,146 +1,51 @@
 ---
 title: "Fee Distribution"
-description: "Complete breakdown of platform fees and RNDR token allocation mechanics"
+description: "Canonical 10/20/70 split, revenue ingestion, and on-chain automation"
 ---
 
-## Platform Fee Structure
+## The Canonical Split
 
-Transparent and sustainable fee distribution system designed to benefit all stakeholders in the Render Network ecosystem through automated, on-chain mechanisms.
+All revenue entering the system flows through the Monetization Contract and is split algorithmically:
 
-<Info>
-  **Primary Model:** Platform Distribution **40% Allocation:** Ecosystem Growth
-  (treasury, tools, integrations, sustainability) **20% Allocation:** Buybacks &
-  Burns (deflationary pressure) **Transparency:** Full on-chain verification
-  **Distribution:** Smart contract automated **Frequency:** Real-time processing
-</Info>
-
-## Core Economic Model
-
-### 80/20 Revenue Distribution Framework
-
-The Render Network implements a balanced economic model that rewards all ecosystem participants while maintaining long-term sustainability.
-
-<CardGroup cols={2}>
-  <Card title="Ecosystem Growth (40%)" icon="trending-up">
-    **Community & Growth Allocation:**
-    - **Creators/Streamers:** Direct rewards and incentives
-    - **Treasury & Events:** Community programs and initiatives
-    - **Development:** Platform and tooling investments
-    - **Security & Insurance:** Resilience and safeguards
+<CardGroup cols={3}>
+  <Card title="10% Gamification Fund" icon="gamepad">
+    Prize pools and rewards for the 555 Engine; provably fair distributions.
   </Card>
-
-  <Card title="Buybacks & Burns (20%)" icon="coins">
-    **Deflationary Mechanism:**
-    - **Market Purchases:** Automated buybacks from collected fees
-    - **Scheduled Burns:** Supply reduction events
-    - **Liquidity Support:** Optional incentives when needed
-    - **Execution:** Smart contract-driven with on-chain reports
+  <Card title="20%+ Buybacks" icon="trending-up">
+    Automated buybacks reinforce creator economies; creators may raise this above 20%.
+  </Card>
+  <Card title="70% Profit Pool" icon="coins">
+    Payouts to Creator and Stakeholders, governed via stake-weighted voting.
   </Card>
 </CardGroup>
 
+<Info>
+  Platform profit sharing policy: <strong>70:30 in favor of Render Network</strong> to support ecosystem growth and sustainability. This applies at the platform profit layer and coexists with the 10/20/70 revenue routing and creator/stakeholder Profit Pool.
+</Info>
+
 ## Revenue Streams
 
-### Primary Fee Sources
-
 <AccordionGroup>
-  <Accordion title="555 Gamification Platform" icon="gamepad">
-    **Interactive Gaming Revenue:**
-
-    **Fee Structure Breakdown:**
-    - **House Edge:** 2% on all prediction markets
-    - **Platform Fee:** 0.5% processing fee
-    - **Total Platform Take:** 2.5% per transaction
-
-    **Distribution Allocation:**
-    - **70%:** Streamer/Content Creator (immediate payout)
-    - **20%:** RNDR Buyback Program (deflationary pressure)
-    - **8%:** Community Treasury (events and rewards)
-    - **2%:** Platform Operations (maintenance and development)
-
-    **Volume Metrics:**
-    - **Daily Transactions:** 10K+ prediction markets
-    - **Monthly Volume:** $50K+ in gaming revenue
-    - **Creator Payouts:** Sub-second processing
-
+  <Accordion title="555 Engine" icon="gamepad">
+    House edge and fees from prediction markets, mini-games, lotteries, and emote battles.
   </Accordion>
-
-  <Accordion title="Streaming Kit Marketplace" icon="shopping-bag">
-    **Digital Asset Commerce:**
-
-    **Transaction Fee Structure:**
-    - **Base Fee:** 5% on all marketplace transactions
-    - **Premium Listings:** 7% for featured placements
-    - **Bulk Sales:** 3% for enterprise purchases
-
-    **Revenue Allocation:**
-    - **70%:** Original Content Creator (immediate distribution)
-    - **15%:** Platform Development Fund
-    - **10%:** RNDR Buyback Program
-    - **3%:** Community Incentives
-    - **2%:** Quality Assurance Fund
-
-    **Marketplace Statistics:**
-    - **Assets Available:** 1000+ custom overlays and kits
-    - **Monthly Sales:** $25K+ in digital goods
-    - **Creator Earnings:** 70% of sale price
-
+  <Accordion title="Ads & Sponsorship" icon="megaphone">
+    On-chain campaigns with verifiable engagement; funds pushed through the Monetization Contract.
   </Accordion>
-
-  <Accordion title="Premium Subscription Tiers" icon="crown">
-    **Advanced Feature Access:**
-
-    **Subscription Model:**
-    - **Basic:** $9.99/month (standard features)
-    - **Pro:** $24.99/month (advanced analytics)
-    - **Enterprise:** Custom pricing (white-label solutions)
-
-    **Revenue Distribution:**
-    - **60%:** Platform Development & Operations
-    - **20%:** Community Rewards Program
-    - **15%:** RNDR Buyback Program
-    - **5%:** Insurance & Security Fund
-
-    **Subscription Benefits:**
-    - **Advanced Analytics:** Real-time performance metrics
-    - **Priority Support:** 24/7 technical assistance
-    - **Custom Integrations:** API access and webhooks
-    - **White-label Options:** Branded solutions
-
+  <Accordion title="Creator Token Economy" icon="coins">
+    Trading fees and buybacks that reinforce per-creator token value.
   </Accordion>
-
-  <Accordion title="API Usage & Integration" icon="code">
-    **Developer & Enterprise Services:**
-
-    **Pricing Structure:**
-    - **Free Tier:** 1K requests/month (rate limited)
-    - **Developer:** $49/month (10K requests)
-    - **Business:** $199/month (100K requests)
-    - **Enterprise:** Custom pricing (unlimited)
-
-    **Fee Allocation:**
-    - **50%:** Platform Infrastructure & Scaling
-    - **25%:** Developer Community Incentives
-    - **20%:** RNDR Buyback Program
-    - **5%:** Research & Development
-
-    **API Features:**
-    - **Real-time Data:** Live streaming analytics
-    - **Custom Webhooks:** Event-driven integrations
-    - **Bulk Operations:** High-volume processing
-    - **Advanced Filtering:** Custom data queries
-
+  <Accordion title="Marketplace & Subscriptions" icon="shopping-bag">
+    Digital asset sales and premium modules for creators and communities.
   </Accordion>
 </AccordionGroup>
 
 ## Distribution Mechanics
 
-### Automated Fee Processing
+### Automated Processing
 
 <Info>
-  **Processing Frequency:** Real-time (sub-second) **Smart Contract Control:**
-  Fully automated **On-chain Transparency:** All transactions verifiable
-  **Multi-signature Security:** 3-of-5 authority **Emergency Controls:** Circuit
-  breaker functionality
+  <strong>Frequency:</strong> Real-time · <strong>Control:</strong> Smart contracts · <strong>Transparency:</strong> On-chain proofs · <strong>Safety:</strong> Circuit breakers
 </Info>
 
 ### Creator & Streamer Rewards
@@ -152,8 +57,8 @@ The Render Network implements a balanced economic model that rewards all ecosyst
     **Payout Mechanics:**
     - **Processing Time:** &lt; 5 seconds after transaction
     - **Fee Structure:** 0% platform fee on payouts
-    - **Supported Currencies:** RNDR, SOL, USDC
-    - **Minimum Payout:** 1 RNDR (anti-dust protection)
+    - **Supported Currencies:** SOL, USDC, $555
+    - **Minimum Payout:** Asset-specific threshold (anti-dust protection)
 
     **Payout Methods:**
     - **Wallet Direct:** Instant transfer to connected wallet
@@ -198,41 +103,17 @@ The Render Network implements a balanced economic model that rewards all ecosyst
   </Accordion>
 </AccordionGroup>
 
-## Buyback & Burn Mechanism
-
-### Automated Token Economics
-
-<Info>
-  **Buyback Execution:** Daily smart contract automation **Burn Schedule:**
-  Monthly public burn events **Liquidity Addition:** 5% of buybacks added to
-  pools **Transparency:** All transactions on-chain verifiable
-</Info>
-
-### Buyback Process Flow
+## Buybacks
 
 <CardGroup cols={3}>
-  <Card title="Revenue Collection" icon="wallet">
-    **Fee Accumulation:**
-    - All platform fees collected in treasury
-    - Automatic separation of 20% buyback allocation
-    - Multi-signature approval for large amounts
-    - Real-time balance monitoring
+  <Card title="Allocation" icon="percentage">
+    ≥20% of every revenue unit funds automated buybacks for creator economies.
   </Card>
-
-{" "}
-
-<Card title="Market Execution" icon="trending-up">
-  **Automated Purchasing:** - DEX integration for optimal pricing - Slippage
-  protection algorithms - Multi-exchange execution for best rates - Gas
-  optimization for Solana transactions
-</Card>
-
-  <Card title="Burn Protocol" icon="fire">
-    **Deflationary Burns:**
-    - Monthly public burn ceremonies
-    - Community voting on burn amounts
-    - Live streaming of burn transactions
-    - Permanent supply reduction
+  <Card title="Execution" icon="trending-up">
+    Smart order routing across venues with slippage safeguards and programmatic schedules.
+  </Card>
+  <Card title="Reporting" icon="bar-chart-2">
+    Public dashboards show inflows, executed buybacks, prices, and balances.
   </Card>
 </CardGroup>
 
@@ -268,7 +149,7 @@ The Render Network implements a balanced economic model that rewards all ecosyst
     - **New Revenue Streams:** Approval of additional fee sources
 
     **Voting Mechanics:**
-    - **Proposal Creation:** Any RNDR holder can propose changes
+    - **Proposal Creation:** Any stakeholder can propose changes
     - **Quorum Requirements:** 10% of circulating supply
     - **Voting Period:** 7 days for fee-related proposals
     - **Execution Delay:** 24 hours after approval

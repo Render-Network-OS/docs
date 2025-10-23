@@ -1,0 +1,51 @@
+---
+title: "Monetization Contract"
+description: "Revenue ingestion, algorithmic split (10/20/70), events, and payouts"
+---
+
+## Purpose
+
+Trustlessly ingest campaign budgets and platform fees, then algorithmically distribute proceeds across the Gamification Fund (10%), Buybacks (≥20%), and Profit Pool (70%).
+
+## Accounts & Entities
+
+- Inflow Vault: receives SOL/USDC and other supported tokens
+- Gamification PDA: prize pool escrow and reward schedules
+- Buyback Executor: programmatic DEX execution with guardrails
+- Profit Pool PDA: holds funds prior to creator/stakeholder distribution
+- Receipt & Events: program logs for attribution and analytics
+
+## Flow
+
+<Steps>
+  <Step title="Ingest">
+    Campaigns and fees are deposited into the Inflow Vault with metadata for attribution and targeting.
+  </Step>
+  <Step title="Split (10/20/70)">
+    The contract applies the canonical split and updates balances for the Gamification PDA, Buyback Executor, and Profit Pool.
+  </Step>
+  <Step title="Execute Buybacks">
+    ≥20% is routed to automated buybacks for the creator economy. Creators can configure a higher percentage within governance bounds.
+  </Step>
+  <Step title="Distribute Profit Pool">
+    Funds are shared between Creator and Stakeholders per the active split. Stake-weighted votes can adjust the split within a bounded range (e.g., 20/80 to 80/20).
+  </Step>
+</Steps>
+
+## Events & Telemetry
+
+- InflowReceived(amount, campaignId, asset)
+- SplitApplied(gamification, buybacks, profitPool)
+- BuybackExecuted(token, amountIn, amountOut, venue)
+- ProfitDistributed(creator, stakeholders, ratios)
+
+## Safety & Controls
+
+- Circuit breakers and rate limits for volatile conditions
+- Allow-lists for DEX venues and oracles
+- Time-boxed windows for large batch operations
+
+<Note>
+  See also: [Fee Distribution](/tokenomics/fee-distribution) · [Streamer Collectives](/products/streamer-collectives)
+</Note>
+
