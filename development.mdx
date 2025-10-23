@@ -14,7 +14,7 @@ Integrate Render Network's powerful tools into your streaming and development wo
 <Steps>
 <Step title="Set up Your Wallet">
 
-Connect your crypto wallet to start earning RNDR tokens:
+Connect your crypto wallet to start participating with $555 and creator economies:
 
 ```javascript
 // Wallet connection example
@@ -71,8 +71,8 @@ Customize your 555 gamification experience with advanced settings:
   "question": "Will I win this match?",
   "options": ["Yes", "No"],
   "duration": 300,
-  "minBet": "1 RNDR",
-  "maxBet": "100 RNDR",
+  "minBet": "1",
+  "maxBet": "100",
   "houseEdge": 0.02
 }
 ```
@@ -84,7 +84,7 @@ Customize your 555 gamification experience with advanced settings:
   "gameType": "trivia",
   "questions": 10,
   "timeLimit": 30,
-  "prizePool": "50 RNDR",
+  "prizePool": "50",
   "difficulty": "medium"
 }
 ```
@@ -96,7 +96,7 @@ Connect your applications with Render Network APIs:
 **Authentication:**
 
 ```javascript
-const response = await fetch("/api/rndr/balance", {
+const response = await fetch("/api/tokens/balance", {
   headers: {
     Authorization: `Bearer ${wallet.signature}`,
     "Content-Type": "application/json"
@@ -129,13 +129,13 @@ const earnings = await fetch("/api/earnings/summary", {
 });
 
 const data = await earnings.json();
-console.log(`Total Earned: ${data.totalRNDR} RNDR`);
+console.log(`Total Earned: ${data.totalEarnings}`);
 ```
 
 **Real-time Updates:**
 
 - Live viewer engagement metrics
-- RNDR token earnings tracking
+- Earnings tracking across sources
 - Game performance analytics
 - Community growth statistics
 
@@ -196,7 +196,7 @@ const market = await rn.createPredictionMarket({
 
   </Accordion>
 
-  <Accordion title="RNDR Token Issues">
+  <Accordion title="$555 Token Issues">
 
     **Token Problems:**
     1. Verify wallet supports SPL tokens

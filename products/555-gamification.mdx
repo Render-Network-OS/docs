@@ -1,41 +1,64 @@
----
-title: "555 Gamification"
-description: "Interactive streaming games with blockchain rewards"
----
+
 
 ## Overview
 
-555 is the gamification engine that transforms passive viewers into engaged participants using blockchain rewards. It's not just donations - it's an entire gaming ecosystem built around your stream.
+555 is the gamification engine that turns passive viewing into active participation — all verifiable on‑chain. It powers a continuous loop of games, quests, and rewards that keep your community active even when you’re offline.
 
 <Info>
-  555 is currently LIVE in stealth mode. This is the first product shipping from
-  Render Network.
+  What is the $555 token?
+  <br />
+  $555 is the render network token on Solana that powers access, staking, and on‑chain rewards. It gates CTRL Panel tiers, funds the Gamification
+  Fund (prize pools), and reinforces creator economies via buybacks.
+ 
+  It is also an effective demo of the flywheel mechanism.
+
+  Contract: <code>CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2</code>
 </Info>
 
 ## Core Features
 
-### Interactive Games
-
 <AccordionGroup>
-  <Accordion title="Prediction Markets" icon="trending-up">
-    Let viewers bet on stream outcomes using RNDR tokens:
+  <Accordion title="Prediction Markets" icon="coins">
+    Let viewers participate in on‑stream markets using creator economies. These are bonding‑curve markets with AMM pricing that can be created by the streamer or any viewer. Streamers can also enable open markets from across the Render Network for their audience.
+    - Real‑world events and predictions
     - Game results and match outcomes
     - Stream milestones and achievements
     - Challenge completions and personal bests
-    - Real-world events and predictions
-
-    **Revenue Split**: Distribution aligns with platform policy including creator rewards, buybacks (20%), and ecosystem growth (40%)
 
   </Accordion>
 
-  <Accordion title="Mini-Games" icon="gamepad">
+  <Accordion title="Mini‑Games" icon="gamepad">
     Integrated games viewers can play during streams:
     - Chat-based RPG elements and quests
-    - Trivia challenges with RNDR rewards
+    - Trivia challenges with token-backed rewards
     - Reaction time and speed challenges
     - Memory and pattern matching games
+    - Arcade games and casual challenges
+    - PvP duels and team modes
+    - Streamer League for mini‑games (seasonal ladders and playoffs)
+    - IRL game competitions (e.g., Fortnite) with overlay scoring and rewards
 
-    **Prize Distribution**: 50% to streamer, 30% to winners, 20% to network
+    **Prize Distribution**: Backed by the Gamification Fund; awards are provably fair and settled on-chain.
+
+  </Accordion>
+
+  <Accordion title="Raids, Quests & Challenges" icon="flag">
+    Rally the community around purposeful activity:
+    - Daily/weekly questlines tied to creator goals
+    - Raid timers that concentrate chat activity and participation
+    - Creator‑defined challenges (speedruns, milestone races)
+    - Auto Pilot suggestions for timing and rewards
+
+    **Outcome**: Sustained engagement that fuels inventory and discovery.
+
+  </Accordion>
+
+  <Accordion title="Clips" icon="scissors">
+    Capture moments and turn highlights into engagement:
+    - Get paid to clip for your favourite streamer
+    - Clip hunts and reaction showcases
+    - Creator‑picked clips surfaced in overlays
+    - Points ladders that convert to rewards via the Profit Pool
 
   </Accordion>
 
@@ -44,14 +67,51 @@ description: "Interactive streaming games with blockchain rewards"
     - Loyalty points and 555 Points accumulation
     - Badge collections and rarity tiers
     - Leaderboards and seasonal competitions
-    - Exclusive NFT rewards for top performers
+    - Exclusive rewards for top performers
 
-    **Rewards**: Custom stream overlays, priority features, token-based bonuses
+  </Accordion>
 
+  <Accordion title="555 Lottery (VRF)" icon="gift">
+    A provably fair draw that runs every hour using Switchboard VRF.
+    - Stream‑level 555 Lottery: creators can turn it on so their viewers and holders can participate without meeting the global $555 threshold
+    - On-chain randomness with proofs
+    - Payouts via PDA escrow and Merkle claims
+    - Public results dashboard
   </Accordion>
 </AccordionGroup>
  
-## Lottery Prerequisites
+## Always‑On Mode
 
-- Minimum holding: **5,555 $555** in the connected Solana wallet
+- Games can continue when the creator is offline (scheduled raids, hourly lottery, evergreen mini‑games)
+- Keeps the community active, compounding growth and retention
+- Stream clips from past streams — including clips posted across social channels (YouTube Shorts, X/Twitter, TikTok, Instagram) — can surface in overlays to keep the channel lively
+- Creators can plan a curated offline schedule (clips, mini‑games, lotteries) or let Auto Pilot automate programming
+- Auto Pilot can schedule events and rotate experiences automatically
+
+## Funding & Distribution
+
+- 10% of all revenue across the network flows to the Gamification Fund (prize pools and rewards)
+- ≥20% funds buybacks for creator economies, reinforcing token value
+- 70% goes to the Profit Pool, shared between Creator and Stakeholders (governed)
+
+## Access Prerequisites
+
+- Minimum holding: **55,555 $555**
 - See: [$555 Token](/tokenomics/555-token) and [Fee Distribution](/tokenomics/fee-distribution)
+
+## Fairness & Payouts
+
+- Randomness via Switchboard VRF with on-chain proofs
+- Commit-reveal and timestamped event logs for game resolution
+- Escrow PDAs and Merkle distribution for transparent payouts
+
+## Creator Controls (CTRL Panel)
+
+- Enable modules: prediction, mini‑games, raids/quests, clips/challenges, lottery
+- Configure schedules, prize tiers, and eligibility
+- Copy your overlay URL and add to OBS (Browser Source 1920×1080)
+- Optionally enable Auto Pilot for recommendations and automation
+
+<Note>
+  Learn more: [Security & Fairness](/guides/security-and-fairness) · [Monetization Contract](/products/monetization-contract) · [CTRL Panel](/products/ctrl-control-panel)
+</Note>

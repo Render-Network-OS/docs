@@ -1,31 +1,52 @@
----
-title: "Security & Fairness"
-description: "VRF, audits, safeguards, and incident response"
----
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
 
-## Randomness & Verifiability
-
-- Switchboard VRF for draws and randomized outcomes
-- On-chain proofs and public explorer links
-
+## Overview
+ 
+Ensure integrity across games, payouts, and campaign execution using cryptographic proofs and on-chain transparency.
+ 
+## Randomness & Game Resolution
+ 
+- Switchboard VRF for lottery and draw-based events
+- Commit-reveal where appropriate (pre-committed hashes, later reveals)
+- Timestamped event logs and deterministic resolution rules
+ 
+## Payouts & Escrow
+ 
+- PDA escrow accounts hold funds during resolution
+- Merkle root distributions enable efficient claims and verification
+- Public receipts with winner lists and amounts
+ 
+## Safeguards & Controls
+ 
+- Anti-manipulation: bet caps, rate limits, reputation scoring
+- Circuit breakers for abnormal conditions and upgrades
+- Multi-signature controls for sensitive operations
+ 
 ## Audits & Monitoring
-
-- Independent security reviews (where applicable)
+ 
+- Independent security reviews
 - Continuous monitoring and anomaly detection
 - Public reporting and transparency dashboards
-
-## Safeguards
-
-- Anti-manipulation: bet caps, rate limits, reputation scoring
-- Circuit breakers for abnormal conditions
-- Multi-signature controls for sensitive operations
-
+ 
 ## Incident Response
-
-- Triage, public disclosure, and remediation timelines
+ 
+- Triage, disclosure, remediation timelines
 - Community updates and postmortems
-
+ 
 ## Cross-Links
-
+ 
 - Raffles: [Endless Raffle](/guides/endless-raffle)
 - Programs: [Custom Solana Programs](/guides/custom-solana-programs)
+- Tokenomics: [Fee Distribution](/tokenomics/fee-distribution)
+
+
+
+
+
+
+
+
+
+

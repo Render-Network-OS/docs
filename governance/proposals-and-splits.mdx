@@ -1,0 +1,43 @@
+---
+title: "Proposals & Profit Splits"
+description: "Stake-weighted voting to configure creator/stakeholder ratios and policy bounds"
+---
+
+## Overview
+
+Stakeholders vote to configure the Profit Pool split between Creator and Stakeholders within a bounded range (e.g., 20/80 ↔ 80/20). Proposals manage policy parameters like minimum buyback %, unbonding windows, and campaign guardrails.
+
+## Governance Objects
+
+- SplitConfig: min/max bounds and current active split
+- BuybackPolicy: minimum buyback percentage (≥20%), optional ceiling
+- UnbondingPolicy: cooldown windows for staking exits
+- VenuePolicy: allow-lists for DEX venues and oracle sources
+
+## Lifecycle
+
+<Steps>
+  <Step title="Proposal Creation">
+    Any stakeholder can propose a change; proposals specify target object, change set, and justification.
+  </Step>
+  <Step title="Voting Window">
+    Stake-weighted voting with quorum and majority thresholds. Abstain/No/Yes tallied with on-chain records.
+  </Step>
+  <Step title="Execution Delay">
+    Short timelock before changes are enacted; circuit breakers apply to risky changes.
+  </Step>
+  <Step title="Activation">
+    Contract state updated; public receipts and dashboards reflect new parameters.
+  </Step>
+</Steps>
+
+## Parameters (Defaults)
+
+- Split bounds: 20/80 ↔ 80/20 (creator/stakeholders)
+- Minimum buyback: ≥20%
+- Unbonding: creator-defined within published limits
+
+<Note>
+  Related: [Fee Distribution](/tokenomics/fee-distribution) · [Creator Tokens](/tokenomics/creator-tokens)
+</Note>
+

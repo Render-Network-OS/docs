@@ -1,225 +1,69 @@
 ---
 title: "Integration"
-description: "Integrate Render Network tools with your streaming workflow"
+description: "Quick start: from site to overlay in OBS"
 sidebarTitle: "Integration"
 ---
 
 <Info>
-  **Prerequisites**: - Solana wallet (Phantom recommended) or Solflare - OBS
-  Studio or Streamlabs (if using browser source fallback) - Basic understanding
-  of blockchain concepts
+  Keep it simple. Follow these steps to get live fast — screenshots coming soon.
+
+  Set up in the following steps
 </Info>
 
-Integrate Render Network's powerful tools into your streaming and development workflow.
-
 <Steps>
-<Step title="Set up Your Wallet">
+  <Step title="Navigate to CTRL">
+    Go directly to CTRL Panel: https://rendernet.work/ctrl-panel
+    
+    Access requires 5,000,000 $555. If you don’t meet the threshold, request whitelist access via Discord.
+    
+    ![CTRL Panel (no wallet connected)](https://res.cloudinary.com/davqktkik/image/upload/v1761227703/ctrl-no-wallet_hnwsy2.png)
+    
+    ![CTRL Panel (not enough tokens)](https://res.cloudinary.com/davqktkik/image/upload/v1761227701/ctrl-not-enough-tokens_l5hlch.png)
+  </Step>
 
-Connect your crypto wallet to start earning RNDR tokens:
+  <Step title="Connect your wallet">
+    In CTRL, click Connect and authenticate with your Solana wallet (e.g., Phantom or Solflare).
+    
+    ![Connect Wallet](https://res.cloudinary.com/davqktkik/image/upload/v1761227702/connect-wallet_vrvhku.png)
+  </Step>
 
-```javascript
-// Wallet connection example
-import { useWallet } from "@solana/wallet-adapter-react";
+  <Step title="Copy your overlay link">
+    In CTRL, copy your overlay URL for your current profile/theme.
+    
+    ![Copy Overlay Link](https://res.cloudinary.com/davqktkik/image/upload/v1761227702/ctrl-panel-copy-link_rijqom.png)
+  </Step>
 
-const { connect, publicKey } = useWallet();
+  <Step title="Add games, alerts, and reactions">
+    In CTRL, enable the modules you want (games, alerts, reactions) before adding the overlay to OBS.
+    
+    ![Enable Modules (games, alerts, reactions)](https://res.cloudinary.com/davqktkik/image/upload/v1761227700/ctrl-modules_kq6dzg.png)
+  </Step>
 
-// Connect to start earning
-await connect();
-```
+  <Step title="Open OBS Studio">
+    Launch OBS.
+    
+    ![OBS: Add Source](https://res.cloudinary.com/davqktkik/image/upload/v1761227702/obs-add-source_muv0nu.png)
+  </Step>
 
-**Supported Wallets:**
+  <Step title="Add a Browser Source">
+    In the Sources panel, click the + icon → Browser Source.
+    
+    ![OBS: Select Browser Source](https://res.cloudinary.com/davqktkik/image/upload/v1761227700/obs-select-browser-source_awu02n.png)
+  </Step>
 
-- Phantom (Recommended)
-- Solflare
+  <Step title="Paste your overlay URL">
+    Paste the URL you copied from CTRL and set the resolution to 1920 × 1080. Click OK.
+    
+    ![OBS: Name Source](https://res.cloudinary.com/davqktkik/image/upload/v1761227701/obs-source-name_klsc7o.png)
+    
+    ![OBS: URL + Width/Height](https://res.cloudinary.com/davqktkik/image/upload/v1761227700/obs-url-width-height-set_bm7xqe.png)
+  </Step>
 
-</Step>
-
-<Step title="Set up 555 Browser Source">
-
-Add the 555 gamification overlay using OBS browser source:
-
-```bash
-# Add Browser Source in OBS:
-# 1. Right-click Sources → Add → Browser Source
-# 2. Name: "555 Overlay"
-# 3. URL: https://555.rendernet.work/overlay
-# 4. Width: 1920, Height: 1080
-# 5. Enable "Shutdown source when not visible"
-# 6. Click OK and connect wallet
-```
-
-**Browser Source Features:**
-
-- Real-time prediction markets
-- Interactive mini-games
-- Automated prize distribution
-- Seamless stream integration
-
-</Step>
-<Step title="Configure CTRL Control Panel">
-
-Use the CTRL dashboard to configure themes, overlays, alerts, badges, and token-gated actions.
-
-```bash
-# CTRL quick start (conceptual)
-# 1) Connect wallet in CTRL
-# 2) Choose stream → load theme → configure $555-gated controls
-# 3) Publish overlays → verify in OBS/browser source (if applicable)
-```
-
-<Tip>See: [CTRL Control Panel](/products/ctrl-control-panel)</Tip>
-
-</Step>
+  <Step title="Complete">
+    You’re done. Go live and verify events render over your scene.
+    
+    ![OBS: Complete](https://res.cloudinary.com/davqktkik/image/upload/v1761227700/obs-complete_j1t4k6.png)
+  </Step>
 </Steps>
 
-## Game Configuration
-
-Customize your 555 gamification experience with advanced settings:
-
-**Prediction Markets:**
-
-```json
-{
-  "marketType": "prediction",
-  "question": "Will I win this match?",
-  "options": ["Yes", "No"],
-  "duration": 300,
-  "minBet": "1 RNDR",
-  "maxBet": "100 RNDR",
-  "houseEdge": 0.02
-}
-```
-
-**Mini-Games:**
-
-```json
-{
-  "gameType": "trivia",
-  "questions": 10,
-  "timeLimit": 30,
-  "prizePool": "50 RNDR",
-  "difficulty": "medium"
-}
-```
-
-## API Integration
-
-Connect your applications with Render Network APIs:
-
-**Authentication (via server proxy):**
-
-```javascript
-// Call your own server route (SSR/edge) to avoid exposing backend endpoints in the frontend
-const response = await fetch("/api/rndr/balance", {
-  headers: {
-    Authorization: `Bearer ${wallet.signature}`,
-    "Content-Type": "application/json"
-  }
-});
-```
-
-**Real-time Updates (proxied):**
-
-```javascript
-// WebSocket connection for live game updates (proxy via your server if required)
-const ws = new WebSocket("wss://api.rendernet.work/games");
-
-ws.onmessage = (event) => {
-  const gameUpdate = JSON.parse(event.data);
-  updateGameState(gameUpdate);
-};
-```
-
-## Revenue Tracking
-
-Monitor your earnings in real-time with comprehensive analytics:
-
-**Dashboard Access:**
-
-```javascript
-// Get earnings summary
-const earnings = await fetch("/api/earnings/summary", {
-  headers: { Authorization: `Bearer ${wallet.signature}` }
-});
-
-const data = await earnings.json();
-console.log(`Total Earned: ${data.totalRNDR} RNDR`);
-```
-
-**Real-time Updates:**
-
-- Live viewer engagement metrics
-- RNDR token earnings tracking
-- Game performance analytics
-- Community growth statistics
-
-## SDK Installation
-
-Install Render Network SDK for advanced integrations:
-
-```bash
-bun add @render-network/sdk
-# or
-yarn add @render-network/sdk
-# or
-npm install @render-network/sdk
-```
-
-**Basic Usage:**
-
-```javascript
-import { RenderNetwork } from "@render-network/sdk";
-
-const rn = new RenderNetwork({
-  wallet: yourWallet,
-  network: "mainnet-beta"
-});
-
-// Create a prediction market
-const market = await rn.createPredictionMarket({
-  question: "Will I win?",
-  options: ["Yes", "No"],
-  duration: 300
-});
-```
-
-## Troubleshooting
-
-<AccordionGroup>
-  <Accordion title='Wallet Connection Failed'>
-
-    **Common Solutions:**
-    1. Ensure your wallet is unlocked and connected to Solana
-    2. Check if you have sufficient SOL for transaction fees
-    3. Verify network settings (mainnet-beta)
-    4. Clear browser cache and reconnect
-
-    **Need Help?** Join our [Discord](https://discord.gg/35UNPtu8M5)
-
-  </Accordion>
-
-  <Accordion title="Games Not Loading">
-
-    **Debugging Steps:**
-    1. Check 555 extension is properly installed
-    2. Verify OBS/browser permissions
-    3. Clear extension cache
-    4. Restart streaming software
-    5. Check network connectivity
-
-    **Support:** Visit [rendernet.work/support](https://rendernet.work/support)
-
-  </Accordion>
-
-  <Accordion title="RNDR Token Issues">
-
-    **Token Problems:**
-    1. Verify wallet supports SPL tokens
-    2. Check token balance on Solana explorer
-    3. Ensure correct token contract address
-    4. Wait for transaction confirmation
-
-  </Accordion>
-</AccordionGroup>
-
-Ready to build the future of streaming? Check out our [developer documentation](https://docs.rendernet.work/developers) for advanced integrations.
+ 

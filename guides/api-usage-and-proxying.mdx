@@ -3,6 +3,10 @@ title: "API Usage & Proxying"
 description: "SSR/edge proxy patterns to keep backend endpoints off the frontend"
 ---
 
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
 ## Principles
 
 - Do not expose backend endpoints in frontend code
@@ -12,7 +16,7 @@ description: "SSR/edge proxy patterns to keep backend endpoints off the frontend
 ## Next.js Example
 
 ```ts
-// pages/api/rndr/balance.ts
+// pages/api/tokens/balance.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -20,7 +24,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const auth = req.headers.authorization;
-  const r = await fetch(process.env.RNDR_BACKEND + "/balance", {
+  const r = await fetch(process.env.RENDER_BACKEND + "/balance", {
     headers: { authorization: auth || "" }
   });
   res.status(r.status).send(await r.text());
@@ -36,3 +40,14 @@ export default async function handler(
 
 - Integration: [Integration Guide](/integration)
 - SDK: [Render Stream SDK](/guides/render-stream-sdk)
+
+
+
+
+
+
+
+
+
+
+

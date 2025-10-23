@@ -1,44 +1,48 @@
----
-title: "Render Stream"
-description: "Solana-native streaming with low-latency servers and Pump.fun integration"
----
+
 
 ## Overview
 
-Render Stream is a Solana-native streaming stack designed to replace traditional desktop encoders with a web-first, creator-focused workflow. It offers extended session stability (48+ hours), low-latency custom servers, and crypto-native controls that integrate directly with your wallet and Pump.fun.
+Render Stream is a Solana‑native studio designed to replace traditional desktop encoders with a web‑first, creator‑focused workflow. It powers Always‑On channels, low‑latency ingest, and wallet‑controlled automation that ties directly into the 555 OS (CTRL, Gamification, Monetization, Expand).
 
 <Info>
-  Key benefits: extended session uptime, low-latency routing, wallet-configured
-  controls, and direct integration with the Render Network toolchain.
+  Key benefits: Always‑On programming, extended session uptime, low‑latency routing, wallet‑configured controls, and direct integration with CTRL, 555 Engine, and the Monetization pipeline.
 </Info>
 
 ## Key Capabilities
 
 <CardGroup cols={3}>
-  <Card title="48+ Hour Sessions" icon="clock">
-    Go live for extended periods with resilient session recovery and health
-    checks.
+  <Card title="Resilient Uptime" icon="clock">
+    Continuous, failover‑ready ingest with auto‑recovery and health checks.
   </Card>
   <Card title="Low-Latency Servers" icon="zap">
     Choose regional servers to minimize end-to-end delay for interactive
     streams.
   </Card>
   <Card title="Crypto-Native Controls" icon="wallet">
-    Configure stream permissions and actions via wallet; integrate with
-    Pump.fun.
+    Configure permissions and actions from your wallet; wire in gamification and on‑chain triggers.
+  </Card>
+  <Card title="Always‑On Programming" icon="play-circle">
+    Keep your channel active when you’re offline with scheduled clips, mini‑games, raids/quests, and the 555 Lottery.
+  </Card>
+  <Card title="Auto Pilot Scheduling" icon="sparkles">
+    Let the Render Agent recommend and rotate programming, ad breaks, and quests to maximize engagement and revenue.
+  </Card>
+  <Card title="Stream‑Level 555 Lottery" icon="gift">
+    Enable a lottery for your own channel so your viewers and holders can participate without the global threshold.
   </Card>
 </CardGroup>
 
 ## Setup
 
-### Option A: Native Render Stream
+### Option A: Native Render Stream (Studio Beta)
 
 Use the web control surface and wallet auth to start a stream without desktop encoders.
 
 <Steps>
-  <Step title="Select Region & Server">
-    Choose the closest low-latency region for your audience. Regional selection
-    reduces round-trip time for interactive features.
+  <Step title="Auto‑Optimized Routing">
+    We automatically route your stream to the best region and server based on
+    audience distribution and live health metrics. Manual override is available
+    in advanced settings if needed.
   </Step>
   <Step title="Connect Wallet & Configure Access">
     Connect your Solana wallet to set stream ownership and define controller
@@ -48,6 +52,9 @@ Use the web control surface and wallet auth to start a stream without desktop en
   <Step title="Start Stream & Monitor Health">
     Start the session from the control surface. Monitor ingest health, bitrate,
     dropped frames, and auto-recovery status.
+  </Step>
+  <Step title="Schedule Always‑On (Optional)">
+    Add a basic offline schedule: clips (from past streams and social channels), mini‑games, raids/quests, and 555 Lottery windows. You can also hand this off to Auto Pilot.
   </Step>
 </Steps>
 
@@ -69,20 +76,40 @@ If you are transitioning from OBS or need a hybrid setup, add the Render overlay
   operations. Use the OBS Browser Source during migration only.
 </Tip>
 
-## Pump.fun Integration
+## Creator Token Integration
 
-- **Wallet-Based Permissions:** Associate the appropriate wallet(s) to control stream actions and token-gated features.
-- **Token-Gated Controls:** Gate certain actions (chat modes, overlay triggers) behind token ownership thresholds.
-- **Compliance:** Follow the platform’s terms and any regional restrictions for interactive features.
+If you already have a Creator Token, connect it to add token trading fees into your revenue stream. If you don’t, you can mint a Creator Token with
+[Render Expand](/products/render-expand) — it wires your token into the flywheel automatically.
+
+- Staker eligibility: all stakers are eligible for revenue sharing based on their staked amount
+- Staking choice: creators may configure staking to their own token or to $555
+- Buybacks: a minimum of 20% of all creator revenue is used to buy back the staked token (creators can raise this above 20%)
+- Controls: gate actions (chat modes, overlay triggers) behind $555 or Creator Token thresholds; associate moderator wallets for management
+
+See also: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution (10/20/70)](/tokenomics/fee-distribution)
 
 ## Operations & Reliability
 
 - **Session Recovery:** Automatic reconnection and state recovery for transient network events.
 - **Health Metrics:** Ingest health, frame drops, CPU/network load recommendations, bitrate guidance.
-- **Limits:** Published bitrate and resolution limits per region (subject to change as capacity grows).
+- **Failover & Regions:** Region selection with hot fallback; published bitrate and resolution limits per region (subject to change as capacity grows).
+
+## Roadmap: Decentralized Stream
+
+- Peer‑assisted distribution and resilient ingest
+- Community‑operated nodes with performance and reputation metrics
+- Censorship‑resistant architecture governed by a future DAO
 
 ## Cross-Links
 
 - Migration Guide: [OBS Replacement Migration](/guides/obs-migration)
 - Developer SDK: [Render Stream SDK](/guides/render-stream-sdk)
-- Dashboard: [CTRL Control Panel](/products/ctrl-control-panel)
+- Dashboard: [CTRL Panel](/products/ctrl-control-panel)
+- Gamification: [555 Engine](/products/555-gamification)
+- Monetization: [Monetization Module](/products/monetization-module)
+
+
+
+
+
+

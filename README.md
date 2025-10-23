@@ -14,7 +14,7 @@ Render Network is revolutionizing the streaming industry by combining gamificati
 - **📚 Getting Started**: Quick setup guides for new users
 - **🎮 Products**: Detailed documentation for all Render Network products
 - **🔧 Guides**: Step-by-step tutorials and integration guides
-- **💰 Tokenomics**: RNDR token information and economic model
+- **💰 Tokenomics**: $555 token, creator staking, and the 10/20/70 model
 - **👥 Community**: Resources for community engagement and support
 - **🛠️ Development**: API documentation and developer tools
 
@@ -94,7 +94,8 @@ docs/
 │   └── monetization-module.mdx
 ├── tokenomics/           # Token economics
 │   ├── overview.mdx
-│   ├── rndr-token.mdx
+│   ├── 555-token.mdx
+│   ├── creator-tokens.mdx
 │   ├── fee-distribution.mdx
 │   └── airdrops.mdx
 └── community/            # Community resources
