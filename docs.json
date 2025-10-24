@@ -88,6 +88,17 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "555x402",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "555x402/overview"
+            ]
+          }
+        ]
       }
     ],
     
@@ -102,6 +113,11 @@
           "anchor": "Tokenomics",
           "href": "https://docs.rendernet.work/tokenomics/overview",
           "icon": "coins"
+        },
+        {
+          "anchor": "555x402",
+          "href": "https://docs.rendernet.work/555x402/overview",
+          "icon": "zap"
         },
         {
           "anchor": "Community",
