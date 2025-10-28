@@ -1,0 +1,113 @@
+services:
+  - type: web
+    name: five55-backend
+    env: docker
+    plan: starter
+    autoDeploy: true
+    dockerfilePath: backend/build/Dockerfile
+    healthCheckPath: /auto/status
+    envVars:
+      - key: BIND_ADDR
+        value: 0.0.0.0:9000
+      - key: RPC_URL
+      - key: AUTHORITY_KEY_PATH
+      - key: RANDOMNESS_ACCOUNT
+        sync: false
+      - key: LOTTERY_PROGRAM_ID
+        value: EpLJqd6taMCC4Dk23Uc5YHhhXwge66pSVcNPw8ejgY5L
+      - key: VRF_ORCHESTRATOR_URL
+      - key: ORCH_API_TOKEN
+      - key: REWARDS_WALLET
+      - key: ROUND_START_THRESHOLD_SOL
+        value: "0"
+      - key: ROUND_DURATION_MINUTES
+        value: "5"
+      - key: COOLDOWN_DURATION_MINUTES
+        value: "1"
+      - key: PUMP_TOKEN_ADDRESS
+      - key: TOKEN_555_MINT
+
+  - type: web
+    name: five55-frontend
+    env: static
+    plan: starter
+    autoDeploy: true
+    buildCommand: |
+      cd frontend && bun install --no-progress && bun run build && cp -r out ../frontend-static
+    staticPublishPath: frontend-static
+    headers:
+      - path: /_next/*
+        name: Cache-Control
+        value: public,max-age=31536000,immutable
+      - path: /static/*
+        name: Cache-Control
+        value: public,max-age=31536000,immutable
+    routes:
+      - type: rewrite
+        source: /api/(.*)
+        destination: https://five55-backend.onrender.com/$1
+      - type: proxy
+        source: /events
+        destination: https://five55-backend.onrender.com/events
+    envVars:
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://five55-frontend.onrender.com
+      - key: NEXT_PUBLIC_ENABLE_CHAT
+        value: "true"
+      - key: NEXT_PUBLIC_ENABLE_AUTO_SCHEDULING
+        value: "true"
+
+  - type: web_service
+    name: five55-orchestrator
+    env: node
+    plan: starter
+    autoDeploy: true
+    buildCommand: |
+      curl -fsSL https://bun.sh/install | bash
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      cd 555-lottery
+      bun install --production
+    startCommand: |
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      mkdir -p /opt/render/project/src/.secrets
+      # Write wallet file from secret env
+      if [ -n "$ANCHOR_WALLET_JSON" ]; then echo "$ANCHOR_WALLET_JSON" > /opt/render/project/src/.secrets/wallet.json; fi
+      export ANCHOR_WALLET=/opt/render/project/src/.secrets/wallet.json
+      export ANCHOR_PROVIDER_URL=$RPC_URL
+      cd 555-lottery
+      bun run scripts/lottery/vrf-server.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: RPC_URL
+        value: https://devnet.helius-rpc.com/?api-key=b2dc9caa-c311-4c68-ba08-b44badb654cf
+      - key: LOTTERY_PROGRAM_ID
+        value: EpLJqd6taMCC4Dk23Uc5YHhhXwge66pSVcNPw8ejgY5L
+      - key: RANDOMNESS_ACCOUNT
+        sync: false
+      - key: ANCHOR_WALLET_JSON
+        sync: false
+      - key: ORCH_API_TOKEN
+        generateValue: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Lucky 7 Slot Machine",
+  "description": "A visually appealing slot machine simulation built with React and Tailwind CSS. Spin the reels and try your luck to get three matching numbers!",
+  "requestFramePermissions": []
+}
