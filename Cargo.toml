@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "programs/rewards-record",
+    "programs/referrals",
+]
+
+[profile.release]
+overflow-checks = true
+
+
+

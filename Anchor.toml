@@ -1,0 +1,21 @@
+[programs.localnet]
+rewards_record = "7Y2qvXkXyfNnpMkkLkZ9kfRvVewt4WgpRKXG8VcKByKF"
+referrals = "HtmQBeYHP58bzC2qq7tHTQyYEmE25zhW8VWbC7n3QuFE"
+
+[programs.devnet]
+referrals = "HtmQBeYHP58bzC2qq7tHTQyYEmE25zhW8VWbC7n3QuFE"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "devnet"
+wallet = "./wallets/555V6EhaHLiCMq75Pg4reT7Q4YDMCH4Q7Spvrddfjg9r.json"
+
+[scripts]
+test = "anchor test"
+
+[toolchain]
+anchor_version = "0.31.1"
+
+
