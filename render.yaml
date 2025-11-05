@@ -5,10 +5,11 @@ services:
     plan: starter
     autoDeploy: true
     dockerfilePath: backend/build/Dockerfile
+    numInstances: 1
     healthCheckPath: /auto/status
     envVars:
       - key: BIND_ADDR
-        value: 0.0.0.0:9000
+        value: "0.0.0.0:9000"
       - key: RPC_URL
       - key: AUTHORITY_KEY_PATH
       - key: RANDOMNESS_ACCOUNT
@@ -57,7 +58,7 @@ services:
       - key: NEXT_PUBLIC_ENABLE_AUTO_SCHEDULING
         value: "true"
 
-  - type: web_service
+  - type: web
     name: five55-orchestrator
     env: node
     plan: starter
