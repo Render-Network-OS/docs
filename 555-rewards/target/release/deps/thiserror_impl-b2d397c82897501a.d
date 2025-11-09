@@ -1,0 +1,17 @@
+/Users/mac/Desktop/Work/555/555-rewards/target/release/deps/libthiserror_impl-b2d397c82897501a.dylib: /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/lib.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/ast.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/attr.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/expand.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fallback.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fmt.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/generics.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/prop.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/scan_expr.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/unraw.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/valid.rs
+
+/Users/mac/Desktop/Work/555/555-rewards/target/release/deps/thiserror_impl-b2d397c82897501a.d: /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/lib.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/ast.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/attr.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/expand.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fallback.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fmt.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/generics.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/prop.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/scan_expr.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/unraw.rs /Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/valid.rs
+
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/lib.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/ast.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/attr.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/expand.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fallback.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/fmt.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/generics.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/prop.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/scan_expr.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/unraw.rs:
+/Users/mac/.cargo/registry/src/index.crates.io-6f17d22bba15001f/thiserror-impl-2.0.17/src/valid.rs:
+
+# env-dep:CARGO_PKG_VERSION_PATCH=17

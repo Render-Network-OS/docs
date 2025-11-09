@@ -1,0 +1,19 @@
+[toolchain]
+anchor_version = "0.31.1"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+rewards_record = "ficrNNa5WqdR21xPwAagh44Vo4f81z7E1pN8y9Q6vSq"
+
+[programs.testnet]
+rewards_record = "ficrNNa5WqdR21xPwAagh44Vo4f81z7E1pN8y9Q6vSq"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "/Users/mac/Desktop/Work/555/wallets/555dwh5bTVPaKFetr3uGWjtpX6sUb7B6udKM7Xim692Z.json"
