@@ -1,0 +1,47 @@
+---
+title: "System Overview"
+description: "High-level architecture of the Streaming OS"
+---
+
+# System Architecture Overview
+
+Alice operates within the 555-mono ecosystem, a decentralized arcade platform.
+
+## Components
+
+### 1. Frontend (`555-mono/apps/web`)
+- **Framework**: Next.js (React).
+- **Role**: User interface, game launcher (`GamePlayer.tsx`), wallet connection.
+- **Game Integration**: Games are loaded in iframes. `alice-sdk.js` bridges the gap between the frontend and the game's internal state.
+
+### 2. Backend (`backend`)
+- **Language**: Go.
+- **Role**: API server, database (PostgreSQL/SQLite), state management.
+- **Key Models**:
+    - `Cabinet`: Represents a game instance. Stores `PossessionMetadata` and `PossessionSchema`.
+    - `ArcadeState`: Global settings (theme, music).
+- **API**: REST endpoints for agents and frontend.
+
+### 3. Economics (`555x402`)
+- **Blockchain**: Solana.
+- **Role**: Token management, rewards, payments.
+- **Integration**: Alice can trigger economic events (airdrops, bounties) via backend integrations (planned).
+
+### 4. Agent (Alice)
+- **Framework**: ElizaOS.
+- **Role**: Autonomous operator, "Ghost in the Machine".
+- **Capabilities**:
+    - **Possession**: Control game states via `POSSESS_CABINET`.
+    - **Memory**: Learn from interactions via `LOG_MEMORY`.
+    - **Communication**: Chat with users, tweet updates.
+
+## Data Flow
+1.  **User** plays a game (Frontend).
+2.  **Game** reports score/state to **Backend**.
+3.  **Alice** (Agent) polls **Backend** for active cabinets.
+4.  **Alice** decides to intervene (Possession).
+5.  **Alice** sends `POSSESS_CABINET` command to **Backend**.
+6.  **Backend** updates `Cabinet` state.
+7.  **Frontend** (via SSE or polling) receives update and forwards to **Game** via `alice-sdk.js`.
+8.  **Game** applies effect (e.g., God Mode).
+9.  **Alice** observes result and calls `LOG_MEMORY`.

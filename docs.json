@@ -55,6 +55,12 @@
             ]
           },
           {
+            "group": "Reference",
+            "pages": [
+              "api-reference"
+            ]
+          },
+          {
             "group": "Community",
             "pages": [
               "community/discord-server",
@@ -95,13 +101,53 @@
           {
             "group": "Overview",
             "pages": [
-              "555x402/overview"
+              "555x402/overview",
+              "555x402/vap",
+              "555x402/agg",
+              "555x402/hyperlink",
+              "555x402/inventory"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Alice",
+        "groups": [
+          {
+            "group": "The Operator",
+            "pages": [
+              "alice/persona",
+              "alice/intelligence",
+              "alice/possession"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Arcade",
+        "groups": [
+          {
+            "group": "The Arcade",
+            "pages": [
+              "arcade/overview",
+              "arcade/games"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Architecture",
+        "groups": [
+          {
+            "group": "System",
+            "pages": [
+              "architecture/overview",
+              "architecture/system-map"
             ]
           }
         ]
       }
     ],
-    
     "global": {
       "anchors": [
         {
@@ -145,15 +191,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
