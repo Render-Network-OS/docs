@@ -1,0 +1,54 @@
+---
+title: "Arcade Overview"
+description: "The High-Voltage Playground"
+---
+
+# The 555 Arcade
+
+The **555 Arcade** is the user-facing layer of the ecosystem. It is where the "Invisible Engine" becomes visible. It is built as a **Next.js Monorepo** utilizing the **555x402 SDKs**.
+
+## Integration Architecture
+
+The Arcade is not just a website; it is a **VAP Client**. Every game hosted in the arcade is wrapped in a "Harness" that communicates with the protocol.
+
+### The Game Harness
+The Harness is a React component that manages the VAP session lifecycle.
+
+```tsx
+<GameHarness appId="sector-13" onSessionStart={handleStart}>
+  <PhaserGame />
+</GameHarness>
+```
+
+### The Event Loop
+1.  **Initialization**: The Harness connects to `wss://vap.rendernet.work`.
+2.  **Gameplay**: The user plays the game. The game engine emits events (`SCORE_UPDATE`, `ENEMY_KILL`).
+3.  **Hashing**: The Harness aggregates these events into a Merkle Root every 5 seconds.
+4.  **Signing**: The user's wallet (via session key) signs the root.
+5.  **Transmission**: The signed payload is sent to the VAP Verifier.
+
+## The Economy
+
+The Arcade is the primary sink and source for the ecosystem's tokens.
+
+### $555 Token (The Points)
+*   **Type**: SPL Token (Fungible).
+*   **Utility**: Used for micro-transactions (Continue? Insert Coin).
+*   **Velocity**: Designed for high velocity. Earned fast, spent fast.
+
+### USDC (The Capital)
+*   **Type**: SPL Token (Fungible).
+*   **Utility**: The underlying gas of the "Streaming OS".
+*   **Rewards**: High-value quests and "Boss Battles" pay out in real USDC.
+
+### Audience Yield
+The Arcade turns players into stakeholders.
+*   **Play-to-Earn (Evolution)**: Unlike gen-1 P2E, rewards are sustainable because they are funded by **Advertiser Demand**, not inflation.
+*   **Attention Mining**: Simply being present and verified in the Arcade mines value from the "Attention Liquidity Pool".
+
+## Leaderboards
+
+Leaderboards are not just database rows; they are **Aggregated Proofs**.
+*   **Source of Truth**: The Redis ledger maintained by the VAP Verifier.
+*   **Sync**: Synced to Postgres for easy querying by the Frontend.
+*   **Verification**: Any score on the leaderboard can be traced back to a signed VAP packet.

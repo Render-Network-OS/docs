@@ -1,0 +1,79 @@
+---
+title: "System Map"
+description: "How the pieces fit together"
+---
+
+# Architecture Overview
+
+The 555 Ecosystem is a complex interplay of an-chain and off-chain components.
+![System Blueprint](/images/system-map.jpeg)
+
+## The Full Stack
+
+```mermaid
+graph TD
+    subgraph Client [Client Layer]
+        Browser[Next.js App]
+        Game[Phaser Engine]
+        Wallet[Phantom/Backpack]
+    end
+
+    subgraph Edge [Edge Layer]
+        VAP_WSS[VAP WebSocket]
+        API_GW[API Gateway]
+        CDN[Cloudflare]
+    end
+
+    subgraph Backend [Service Layer]
+        VAP_Svc[VAP Verifier]
+        AGG_Svc[AGG Router]
+        Alice[Pippins Agent]
+        DB[(Postgres)]
+        Redis[(Redis)]
+    end
+
+    subgraph Blockchain [Solana Layer]
+        Prog_Escrow[VAP Escrow Program]
+        Prog_Router[AGG Router Program]
+        Prog_Bubblegum[Metaplex Bubblegum]
+    end
+
+    %% Connections
+    Browser -->|HTTPS| CDN
+    CDN -->|HTTPS| API_GW
+    Game -->|WSS| VAP_WSS
+    
+    VAP_WSS -->|Events| VAP_Svc
+    VAP_Svc -->|State| Redis
+    VAP_Svc -->|Persist| DB
+    
+    API_GW -->|Route| AGG_Svc
+    AGG_Svc -->|Query| DB
+    
+    Alice -->|Read| DB
+    Alice -->|Read| Redis
+    Alice -->|Post| API_GW
+    
+    VAP_Svc -->|Settle| Prog_Escrow
+    VAP_Svc -->|Mint| Prog_Bubblegum
+    AGG_Svc -->|Swap/Transfer| Prog_Router
+```
+
+## Data Flow: The "Kill Enemy" Event
+
+Trace a single user action through the system:
+
+1.  **Client**: User kills an enemy in Sector 13.
+2.  **Game Engine**: Emits `{ type: "ENEMY_KILL", id: "mob_01", score: 100 }`.
+3.  **VAP SDK**: Hashes this event into the current `InputBlock`.
+4.  **VAP SDK**: Signs the block with the Session Key.
+5.  **WebSocket**: Sends `PULSE` packet to VAP Verifier.
+6.  **Verifier**:
+    *   Verifies Signature.
+    *   Checks Nonce sequence.
+    *   Updates `SessionState` in Redis (`score += 100`).
+7.  **Persistence**: Every 60 seconds, Redis state is flushed to Postgres.
+8.  **Settlement**: When the session ends, Verifier submits `settle_session` to Solana.
+9.  **Blockchain**:
+    *   `vap_escrow` transfers 100 $555 to User.
+    *   `bubblegum` mints "Session Log" cNFT to Creator.

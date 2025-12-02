@@ -1,0 +1,71 @@
+---
+title: "API Reference"
+description: "555x402 Public API"
+---
+
+# Public API
+
+The 555x402 API allows developers to integrate the Streaming OS into their own applications.
+
+**Base URL**: `https://api.rendernet.work`
+
+## Authentication
+
+All requests to `/pub/v1` require an API Key.
+`X-API-Key: <your_api_key>`
+
+## Endpoints
+
+### PayLinks
+
+#### Create PayLink
+`POST /pub/v1/links`
+Creates a new Hyperlink for payments or engagement.
+
+```json
+{
+  "creatorId": "creator_123",
+  "chainType": "solana",
+  "model": "engagement",
+  "splits": { "creator": 8500, "platform": 1500 }
+}
+```
+
+#### Get PayLink
+`GET /pub/v1/links/{code}`
+Retrieves metadata for a specific link.
+
+### Payments (AGG)
+
+#### Verify Payment
+`POST /pub/v1/payments/verify`
+Verifies a 402 payment header and returns a settlement proof.
+
+#### Payment Status
+`GET /pub/v1/payments/{id}`
+Checks the status of a transaction.
+
+### Attention (VAP)
+
+#### Request Token
+`POST /pub/v1/attention/token`
+Requests a session token for tracking engagement.
+
+### Cross-Chain Settlement
+
+> **Note**: These endpoints handle the bridging of assets between Solana and EVM chains (Base, Polygon).
+
+#### Get Transfer Status
+`GET /pub/v1/bridge/status/{id}`
+Checks the status of a cross-chain settlement.
+
+#### Estimate Fees
+`GET /pub/v1/fees/estimate`
+Estimates the gas and platform fees for a cross-chain transfer.
+
+```json
+{
+  "totalFee": "1.50 USDC",
+  "estimatedTime": "15 seconds"
+}
+```
