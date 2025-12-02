@@ -1,0 +1,35 @@
+---
+title: "Proof of Engagement"
+description: "Cryptographic verification of user activity"
+---
+
+# Proof of Engagement
+
+**Proof of Engagement (PoE)** is the consensus mechanism for the Attention Economy. It ensures that rewards are only distributed for genuine, human activity.
+
+## The Heartbeat Mechanism
+
+The core of PoE is the **Heartbeat**.
+
+1.  **Session Start**: When a user enters the Arcade, a secure session is initialized.
+2.  **Pulse**: The client sends a cryptographic "pulse" every few seconds.
+3.  **Payload**: The pulse contains:
+    *   **Session ID**: Unique identifier.
+    *   **Action Data**: Inputs (mouse moves, key presses) to prove liveness.
+    *   **State Hash**: A hash of the current game state to prevent replay attacks.
+4.  **Verification**: The **VAP** service verifies the signature and state transition.
+
+## State Channels
+
+To handle the high frequency of heartbeats without clogging the blockchain, we use **State Channels**.
+
+*   **Off-Chain**: Heartbeats are verified and aggregated off-chain by the VAP nodes.
+*   **On-Chain**: Only the *result* (e.g., "User X earned 500 points") is settled on Solana.
+*   **Dispute Window**: A period where fraudulent claims can be challenged.
+
+## Anti-Sybil Measures
+
+Alice (the Agent) actively monitors for bot behavior.
+*   **Heuristics**: Analyzing input patterns (too perfect, too random).
+*   **Challenges**: Injecting "Turing Tests" (e.g., "Click the Glitch") during gameplay.
+*   **Reputation**: Long-term history of a wallet affects its "Trust Score".
