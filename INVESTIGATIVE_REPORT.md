@@ -805,6 +805,40 @@ Write/Control:
 7) Onboard new players by minting Hyperlinks and verifying wallet linkage.
 8) Trigger short-term arcade events (double XP, free play) with correct admin auth.
 
+#### Expert Checklist (Actionable, Ordered)
+Auth & Identity:
+- [ ] Single Alice wallet identity used end-to-end (`ALICE_WALLET`) with wallet proof on `/arcade/score`.
+- [ ] Admin auth header unified (`Authorization: Bearer <ADMIN_API_TOKEN>`) for theme/events/quests/cabinets.
+
+State & Awareness:
+- [ ] Bot reads `global_theme` + `active_event` from `/arcade/state` (no drift vs UI).
+- [ ] Bot reads global leaderboard arrays + stats correctly (no “No scores yet” false negatives).
+- [ ] Bot can read per-game leaderboards and quest/burn leaderboards for references in posts.
+
+Gameplay & Score Provenance:
+- [ ] All 18 catalog games playable by bot with non-zero score progression.
+- [ ] Bot submissions use server-side normalization (ignore client `norm_score`).
+- [ ] Beta games submit with `is_beta_mode` and are gated identically to humans.
+- [ ] Bot submissions broadcast SSE `game_record` + `leaderboard_update`.
+
+Quests & Challenges:
+- [ ] Quest creation uses `/quests` schema (type + rules + rewards) and is enforced server-side.
+- [ ] Livestream quest flow is documented and testable end-to-end.
+- [ ] Battles use real Alice run scores (non-simulated) and update battle status reliably.
+
+Possession & Live Control:
+- [ ] `POSSESS_CABINET` action implemented and wired to `/admin/cabinet/possess`.
+- [ ] `alice:possess` message path works with the current `alice-sdk.js` (no class/init mismatch).
+- [ ] At least Sector-13 and Ninja can be controlled live (lives/weapon/difficulty/message).
+
+Onboarding & Payments:
+- [ ] Hyperlink creation uses actual gateway endpoints (no `/users` mismatch).
+- [ ] Wallet resolution flow succeeds without manual intervention.
+
+Verification:
+- [ ] Automated bot run validates all games and records scores.
+- [ ] At least one live leaderboard shows Alice with real wallet, non-zero scores.
+
 ### Game Link Audit (UI vs Bot)
 
 Notes:
@@ -1052,6 +1086,9 @@ Security / Auth:
 - `floor13` SDK now computes a score on game over (floors cleared normalized to 0–10000).
 - `pixel-copter` SDK adapter now reads `game.counter` (distance) to avoid 0-score submissions.
 - `vedas-run` bot decisions now issue `MOVE_FORWARD` when stationary to ensure score progression; SDK adapter includes `gs.tz` fallback.
+- Bot admin calls now use `Authorization: Bearer` and correct endpoints for theme/event updates.
+- Bot quest creation now targets `/quests` with server-aligned fields (type/rules/reward), and quest reads use `/quests`.
+- Bot state providers now read `global_theme` and leaderboard arrays to reduce awareness drift.
 - Automated beta-game validation failed to launch Playwright Chromium due to Crashpad permission errors (environmental).
 - WebKit fallback also failed in this environment (`Abort trap: 6`), so automated browser validation is currently blocked.
 - Remaining parity gaps: wallet-proofing for `/arcade/score`.
