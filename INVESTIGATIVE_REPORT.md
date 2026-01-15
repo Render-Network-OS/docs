@@ -767,8 +767,8 @@ Read/Observation:
 
 | Area | Bot entry point | Backend endpoint | Status | Notes |
 |---|---|---|---|---|
-| Arcade state (theme/event) | `arcadeStateProvider` | `GET /arcade/state` | **Partial** | Provider reads `data.theme`, but backend stores `global_theme` (`backend/internal/api/arcade.go`); UI uses `global_theme` so bot context can drift. |
-| Global leaderboard | `leaderboardProvider` | `GET /leaderboard/global` | **Partial** | Provider expects `items`, but API returns array (`backend/internal/api/game.go`); often renders "No scores yet". |
+| Arcade state (theme/event) | `arcadeStateProvider` | `GET /arcade/state` | **OK** | Reads `global_theme` and `active_event` fields used by the UI. |
+| Global leaderboard | `leaderboardProvider` | `GET /leaderboard/global` | **OK** | Handles array responses and score/points field variants. |
 | Global leaderboard stats | `leaderboardProvider` | `GET /leaderboard/global/stats` | **OK** | Stats endpoint exists; used sparingly (20% chance). |
 | Active battles | `arcadeStateProvider` | `GET /battle/active` | **OK** | Used in Alice context; also used by `BackendClient.getActiveBattles()`. |
 | Economy (rewards/burn) | `economicsProvider` | `GET /api/rewards/pool/today`, `GET /events/burn/active` | **OK** | Read-only economic context. |
@@ -779,21 +779,20 @@ Write/Control:
 
 | Area | Bot entry point | Backend endpoint | Status | Notes |
 |---|---|---|---|---|
-| Theme change | `updateThemeAction` | `POST /admin/theme` | **Partial** | Works only with `ADMIN_API_TOKEN` (Bearer). Scheduler uses `/theme/set` (missing). |
-| Trigger event (double XP, etc) | `triggerEventAction` | `POST /admin/event` | **Broken** | Bot sends `X-API-Key`, but admin auth requires `Authorization: Bearer` (`backend/internal/api/server.go`). |
+| Theme change | `updateThemeAction` | `POST /admin/theme` | **OK** | Requires `ADMIN_API_TOKEN` (Bearer). |
+| Trigger event (double XP, etc) | `triggerEventAction` | `POST /admin/event` | **OK** | Uses Bearer token for admin auth. |
 | Autoplay + score submit | `possessGameAction` | `POST /arcade/score` | **OK** | Real runs, but score parity + wallet proof issues documented in parity audit. |
 | Simulated play | `playGameAction` | `POST /arcade/score` | **OK (non-real)** | Simulated scores; only allowed if `ALLOW_SIMULATED_SCORES=true`. |
 | Create challenge/battle | `challengeUserAction` | `POST /battle/create` | **OK** | Uses `ALICE` sentinel; DirectorService feeds simulated score. |
-| Create quest | `PostScheduler.executeQuest` | `POST /quest/create` | **Broken** | Backend expects `POST /quests` with admin token. |
-| Check quest status | `PostScheduler.checkActiveQuests` | `GET /quest/active` | **Broken** | Backend exposes `GET /quests` and `/me/quests`. |
+| Create quest | `PostScheduler.executeQuest` | `POST /quests` | **Partial** | Creation works with admin token; non-social quest enforcement is not implemented server-side. |
+| Check quest status | `PostScheduler.checkActiveQuests` | `GET /quests` | **OK** | Uses backend quest list; admin token required for `/quests/{id}` status lookups. |
 | Hyperlink onboarding | `createHyperlinkAction` | `POST /users`, `POST /links` | **Partial** | `/users` endpoint not present in link service/gateway; `/links` exists. |
-| Cabinet possession | (none) | `POST /admin/cabinet/possess` | **Missing** | Docs mention `POSSESS_CABINET`, but no action exists. |
-| In-game live modifiers | `alice-sdk.js` | `window.postMessage` (`alice:possess`) | **Missing** | Games expect AliceSDK class/init; actual SDK is a message listener; no bot path sends `alice:possess`. |
+| Cabinet possession | `possessCabinetAction` | `POST /admin/cabinet/possess` | **Partial** | Action exists; no downstream dispatch to game clients yet. |
+| In-game live modifiers | `alice-sdk.js` | `window.postMessage` (`alice:possess`) | **Partial** | SDK now supports class/init callbacks; no bot path sends `alice:possess`. |
 
 #### AliceSDK Possession Gaps (Games)
-- `alice-sdk.js` is a simple `postMessage` listener (`555-mono/apps/web/public/alice-sdk.js`).
-- `ninja`, `knighthood`, `flock` expect `new AliceSDK()` and `alice.init({callbacks})` which do not exist in the current SDK.
-- No bot code sends `window.postMessage({type:"alice:possess"})`, so even Sector 13's handlers are unreachable from the bot.
+- `alice-sdk.js` now supports both singleton and `new AliceSDK()` usage with `init({callbacks})`.
+- No bot code sends `window.postMessage({type:"alice:possess"})`, so possession still requires a dispatch path from backend/bot to the live game page.
 
 #### Target Capability Checklist (What Alice Should Be Able To Do)
 1) Control arcade theme and events via admin endpoints (and see those updates reflected in both UI and her own context).
@@ -1089,6 +1088,8 @@ Security / Auth:
 - Bot admin calls now use `Authorization: Bearer` and correct endpoints for theme/event updates.
 - Bot quest creation now targets `/quests` with server-aligned fields (type/rules/reward), and quest reads use `/quests`.
 - Bot state providers now read `global_theme` and leaderboard arrays to reduce awareness drift.
+- `POSSESS_CABINET` and `RELEASE_CABINET` actions added for cabinet control (admin endpoints).
+- `alice-sdk.js` now supports class-style `new AliceSDK()` and `init({callbacks})` usage.
 - Automated beta-game validation failed to launch Playwright Chromium due to Crashpad permission errors (environmental).
 - WebKit fallback also failed in this environment (`Abort trap: 6`), so automated browser validation is currently blocked.
 - Remaining parity gaps: wallet-proofing for `/arcade/score`.
