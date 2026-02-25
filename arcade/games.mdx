@@ -1,0 +1,92 @@
+---
+title: "Games Library"
+description: "18 Games Integrated with Proof of Engagement"
+---
+
+# The Games
+
+The 555 Arcade hosts 18 games — a mix of production-ready titles and beta games — each integrated with the **Proof of Engagement** protocol. Every play session is verified by VAP and earns points.
+
+## Reward System
+*   **Points**: Earned per verified session. 10,000 points = 1 USDC.
+*   **Daily Bonus**: +100 points per game per wallet per CST day.
+*   **Score Normalization**: Per-game normalization ensures fair cross-game leaderboard rankings.
+*   **Beta Penalty**: Beta games apply 10% score scaling with escalating penalty (1/50 → 1/500 → 1/5000 → 0) for repeat plays.
+
+---
+
+## Production Games
+
+### Sector 13
+
+> **Genre**: Sci-Fi Shooter | **Difficulty**: Hard
+
+A fast-paced, top-down shooter set in a dystopian future. Survive waves of enemies while collecting Data Shards.
+*   **Integration**: Every enemy kill is a verified action on the state channel.
+*   **Alice's Favorite**: She frequently challenges players to beat her high score.
+
+### Clawstrike
+
+> **Genre**: Precision Platformer | **Difficulty**: Expert
+
+A vertical platformer where precision is key. One slip means death.
+*   **Mechanic**: The "Claw" allows for grappling and swinging.
+*   **Economy**: Points earned based on distance and collectibles per run.
+
+### Knighthood
+
+> **Genre**: Action RPG | **Difficulty**: Medium
+
+A classic side-scrolling beat-em-up.
+*   **Features**: Combo system, upgradable weapons, and boss battles.
+
+### Drive
+
+> **Genre**: Retro Racing | **Difficulty**: Easy
+
+A chill, synthwave-inspired driving game.
+*   **Objective**: Drive as far as possible without crashing.
+*   **Vibe**: Perfect for casual engagement.
+
+### 555 Lottery
+
+> **Genre**: Chance | **Difficulty**: Easy
+
+On-chain lottery integrated with the $555 token economy.
+
+### Ninja vs EvilCorp
+
+> **Genre**: Action Platformer | **Difficulty**: Medium
+
+Side-scrolling action game pitting a lone ninja against corporate drones.
+
+---
+
+## Beta Games
+
+The following titles are in beta. They are playable and earn points (with beta scaling applied), but are still being refined.
+
+| Game | Genre | Status |
+| :--- | :--- | :--- |
+| Jungle Run | Endless Runner | Beta |
+| Space Drift | Space Shooter | Beta |
+| Tower Stack | Puzzle | Beta |
+| Hex Match | Match-3 | Beta |
+| Pixel Knight | Dungeon Crawler | Beta |
+| Cyber Dash | Cyberpunk Runner | Beta |
+| Block Breaker | Arcade Classic | Beta |
+| Sky Glider | Flight Sim | Beta |
+| Gem Rush | Puzzle | Beta |
+| Shadow Blade | Stealth Action | Beta |
+| Drift King | Racing | Beta |
+| Neon Pong | Arcade Classic | Beta |
+
+---
+
+## Leaderboards
+
+Leaderboards are not just database rows — they are **Aggregated Proofs**.
+*   **Periods**: Day, Week, Month, Year, All-Time.
+*   **Cross-Game**: Normalized scores enable a unified leaderboard across all 18 games.
+*   **Verification**: Any score can be traced back to a signed VAP packet.
+*   **Source of Truth**: Redis ledger maintained by the VAP Verifier, synced to Postgres.

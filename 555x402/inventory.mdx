@@ -1,0 +1,76 @@
+---
+title: "Audience Inventory"
+description: "The Asset Class of Attention"
+---
+
+# The Asset
+
+**Audience Inventory** is the end product of the 555x402 flywheel. It turns ephemeral "attention" into a durable, tradable asset.
+
+## Current System: Points & Credits (Live)
+
+Today, attention is tracked and rewarded through the **Points & Credits** system:
+
+*   **Points**: Earned through gameplay, engagement, and participation. 10,000 points = 1 USDC. Non-transferable.
+*   **Credits**: Settlement-ready unit tracked on the ledger. When points convert to credits, they become claimable.
+*   **Settlement**: Weekly engine snapshots balances and distributes USDC payouts. Users can also self-withdraw.
+*   **Daily Bonus**: +100 points per game per wallet per CST day.
+
+This is the live monetization layer. Play, earn points, settle for USDC.
+
+---
+
+## Planned: cNFT Inventory (Phase 1 — In Development)
+
+<Warning>
+The cNFT inventory system described below is the target architecture. It is in development (Phase 1, P1-A on the roadmap) and not yet live.
+</Warning>
+
+### Technical Standard: cNFTs
+We will utilize **Compressed NFTs (cNFTs)** on Solana via the **Metaplex Bubblegum** program. This allows minting millions of inventory items for fractions of a penny, making high-volume attention tracking economically viable.
+
+### Merkle Tree Structure
+Inventory will be stored in a concurrent Merkle Tree on-chain.
+*   **Max Depth**: 24 (16M items).
+*   **Canopy Depth**: 14 (Fast verification).
+
+### Metadata Schema
+Every unit of Audience Inventory will adhere to a strict JSON schema for interoperability with advertisers:
+
+```json
+{
+  "name": "Sector 13 - Session #8821",
+  "symbol": "555-INV",
+  "description": "Verified gameplay session of Sector 13.",
+  "image": "https://arweave.net/...",
+  "attributes": [
+    { "trait_type": "Game", "value": "Sector 13" },
+    { "trait_type": "Duration", "value": "600" },
+    { "trait_type": "Score", "value": "15420" },
+    { "trait_type": "User Reputation", "value": "85" },
+    { "trait_type": "Bot Probability", "value": "0.01" },
+    { "trait_type": "Verified By", "value": "VAP Node 01" },
+    { "trait_type": "Streamer", "value": "@Ninja" },
+    { "trait_type": "Platform", "value": "Twitch" },
+    { "trait_type": "Viewer Count", "value": "15400" }
+  ],
+  "properties": {
+    "files": [
+      { "uri": "https://arweave.net/replay_data", "type": "application/json" }
+    ]
+  }
+}
+```
+
+### Bespoke Targeting (Vision)
+Advertisers will be able to use rich metadata to buy **Verified Airtime** that matches their exact niche:
+
+1.  **The Stream**: Creator streams content, generating verified inventory (cNFTs).
+2.  **The Plug**: Advertisers set criteria (e.g., "Sector 13, >1000 viewers").
+3.  **The Yield**: When criteria match, the protocol automatically routes the ad to the stream.
+4.  **The Payout**: Creator earns yield (USDC/$555) for verified airtime.
+
+### Market Dynamics (Planned)
+*   **Floor Price**: Determined by the Cost of Attention (e.g., $0.01 per minute).
+*   **Rarity**: High-reputation users or high-score sessions command a premium.
+*   **Liquidity**: Inventory can be bundled and sold in bulk (e.g., "1000 hours of FPS gameplay").

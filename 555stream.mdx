@@ -1,0 +1,80 @@
+---
+title: "555stream"
+description: "Browser-Based Live Streaming Studio"
+---
+
+# 555stream
+
+**555stream** is a browser-based live streaming studio that lets creators broadcast to 7 platforms simultaneously without downloading anything. Cloud encoding via Cloudflare means your machine never touches the heavy lifting.
+
+## Features
+
+### 7-Platform Simulcast
+Broadcast to all of these at the same time:
+*   Twitch
+*   YouTube
+*   Kick
+*   X (Twitter)
+*   TikTok
+*   Zora
+*   pump.fun
+
+One stream, seven audiences. No extra hardware, no split setups.
+
+### Cloud Encoding
+Video encoding is offloaded to Cloudflare's edge network. Your browser captures and sends; the cloud does the rest. This means:
+*   No GPU load on your machine.
+*   Consistent quality regardless of local hardware.
+*   Lower latency through edge-node proximity.
+
+### Scene Control
+Full scene composition in the browser:
+*   Templates: Solo, 2-grid, 4-grid, PIP (Picture-in-Picture).
+*   Runtime controls: Lower thirds, tickers, alerts.
+*   Overlay management for branding and sponsor assets.
+
+### Guest Management
+WebRTC-based guest system:
+*   Invite guests to join your stream live.
+*   Control guest audio/video independently.
+*   Grid layouts adjust automatically.
+
+## L-Bar Ads
+
+The **L-Bar** is a non-interruptive ad format inspired by broadcast TV (think ESPN during live sports). Instead of cutting to an ad break, the stream content squeezes into an L-shaped region while the ad occupies the remaining space.
+
+### How It Works
+*   **No Interruption**: Content keeps playing. The viewer never loses the stream.
+*   **AI-Triggered Placement**: Alice polls engagement signals every 5 seconds across 4 metrics. When the composite score crosses the 0.70 threshold, she triggers an ad placement at the optimal moment.
+*   **Two-Sided Marketplace**: Advertisers create campaigns with budgets and targeting. Streamers browse and accept campaigns. The protocol handles matching and payment.
+
+### Ad Revenue Flow
+Ad revenue follows the standard economic cascade:
+1.  10% ARP to audience.
+2.  Post-ARP: 50% creator, 50% platform.
+3.  Platform share: 70% treasury, 20% burns, 5% $555 reserve, 5% SOL/USDC reserve.
+
+## Alice as Operator
+
+Alice (the autonomous AI agent) can operate 555stream without human intervention:
+*   **Start/Stop Broadcasts**: Alice can initiate and end streams on schedule.
+*   **Trigger Ads**: Monitors engagement and places L-Bar ads at optimal moments.
+*   **Manage Guests**: Invites and controls guest appearances.
+*   **Control Overlays**: Switches scenes, updates tickers, manages alerts.
+
+This enables 24/7 streaming capabilities where Alice runs the broadcast and the creator joins for structured segments.
+
+## Architecture
+
+555stream runs on a multi-layer stack:
+
+| Layer | Technology |
+| :--- | :--- |
+| **Browser Client** | Next.js 15, React 19, WebRTC |
+| **Edge Encoding** | Cloudflare Workers, R2, Durable Objects |
+| **Control Plane** | Node.js service managing scenes, sources, routing |
+| **SFU Service** | Selective Forwarding Unit for multi-party WebRTC |
+| **Media Engine** | Composition and transcoding pipeline |
+| **Capture Service** | Browser-based capture for recording |
+
+Deployed on Hetzner K3s alongside the rest of the 555 infrastructure.
