@@ -1,0 +1,251 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Render Network",
+  "hideMintlifyBranding": true,
+  "forceDarkMode": true,
+  "colors": {
+    "primary": "#0D9488",
+    "light": "#2DD4BF",
+    "dark": "#115E59"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Launch App",
+        "href": "https://555.rndrntwrk.com"
+      },
+      {
+        "label": "Support",
+        "href": "mailto:support@rndrntwrk.com"
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/RNDRNTWRK",
+      "github": "https://github.com/render-network-os",
+      "discord": "https://discord.gg/35UNPtu8M5"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "integration",
+              "essentials/ultimate-flywheel",
+              "essentials/glossary"
+            ]
+          },
+          {
+            "group": "Products",
+            "pages": [
+              "products/555-gamification",
+              "products/render-stream",
+              "555stream",
+              "sw4p",
+              "products/monetization-module",
+              "products/subscriptions-staking",
+              "products/ctrl-control-panel",
+              "products/monetization-contract",
+              "products/render-expand",
+              "products/animated-assets",
+              "products/prediction-market",
+              "products/stream-pack-generator",
+              "products/streamer-collectives",
+              "products/streaming-kit-marketplace"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/countdown-announcements"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/revenue-tracking",
+              "guides/troubleshooting",
+              "guides/ctrl-panel",
+              "guides/obs-migration",
+              "guides/render-stream-sdk",
+              "guides/chat-moderation-bot",
+              "guides/multi-chat-architecture",
+              "guides/security-and-fairness",
+              "guides/api-usage-and-proxying",
+              "guides/compliance-and-risk",
+              "guides/pvp-pong",
+              "guides/future-multichannel",
+              "guides/future-prediction-market"
+            ]
+          },
+          {
+            "group": "AI Tools",
+            "pages": [
+              "ai-tools/claude-code",
+              "ai-tools/cursor",
+              "ai-tools/windsurf"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "api-reference"
+            ]
+          },
+          {
+            "group": "Community",
+            "pages": [
+              "community/discord-server",
+              "community/twitter",
+              "community/support-center",
+              "community/developer-resources",
+              "community/partnerships",
+              "community/ecosystem-philosophy",
+              "community/docs-changelog"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance/proposals-and-splits"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tokenomics",
+        "groups": [
+          {
+            "group": "Token Economics",
+            "pages": [
+              "tokenomics/overview",
+              "tokenomics/555-token",
+              "tokenomics/creator-tokens",
+              "tokenomics/fee-distribution",
+              "tokenomics/airdrops",
+              "tokenomics/555-creator-token-crosswalk",
+              "tokenomics/locking-and-buybacks",
+              "tokenomics/ecosystem-growth-fund"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Protocol",
+        "groups": [
+          {
+            "group": "Protocol",
+            "pages": [
+              "protocol/overview",
+              "economics",
+              "protocol/audience-inventory",
+              "protocol/proof-of-engagement",
+              "protocol/vap-v2",
+              "protocol/roadmap"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "555x402",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "555x402/overview",
+              "555x402/vap",
+              "555x402/agg",
+              "555x402/hyperlink",
+              "555x402/inventory"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Alice",
+        "groups": [
+          {
+            "group": "The Operator",
+            "pages": [
+              "alice/persona",
+              "alice/intelligence",
+              "alice/possession"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Arcade",
+        "groups": [
+          {
+            "group": "The Arcade",
+            "pages": [
+              "arcade/overview",
+              "arcade/games"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Architecture",
+        "groups": [
+          {
+            "group": "System",
+            "pages": [
+              "architecture/overview",
+              "architecture/system-map"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Launch App",
+          "href": "https://555.rndrntwrk.com",
+          "icon": "rocket"
+        },
+        {
+          "anchor": "Tokenomics",
+          "href": "/tokenomics/overview",
+          "icon": "coins"
+        },
+        {
+          "anchor": "555x402",
+          "href": "/555x402/overview",
+          "icon": "bolt"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://discord.gg/35UNPtu8M5",
+          "icon": "users"
+        }
+      ]
+    }
+  }
+}

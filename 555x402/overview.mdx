@@ -1,0 +1,104 @@
+---
+title: "555x402: Bridging Web2 To The Flywheel"
+icon: "bolt"
+description: "Unifying $555 with x402 to capture Web2 revenue, convert to on‑chain flywheel impacts, and pay viewers off‑chain — without crypto UX."
+---
+
+## Overview
+
+555x402 unifies the Render Network utility token `$555` with the x402 pattern to make Web2 payments feel native while driving on‑chain outcomes. Viewers and advertisers pay in fiat or stablecoins; the 555x402 layer converts to `$555` and/or Creator Token equivalents (per creator configuration) for buybacks, prize pools, and contract‑defined splits, and then routes off‑chain payouts (e.g., PayPal/bank) to clippers and viewers — no wallet required.
+
+The flow is simple: a request hits a 402‑protected endpoint, the client receives a signed Offer, completes payment via a facilitator, and retries with an `X‑PAYMENT` proof. The backend verifies, settles into the Monetization Contract on Solana, and disburses off‑chain. To the user, it looks like normal web payments; to the network, every interaction feeds the flywheel.
+
+<Note>
+  WIP: 555x402 specifications are under active development. Interfaces, receipt formats, and facilitator options may evolve as we progress through pilots and partner integrations.
+</Note>
+<Note>
+  Related: [Fee Distribution (10/20/70)](/tokenomics/fee-distribution) · [Monetization Contract](/products/monetization-contract) · [CTRL Control Panel](/products/ctrl-control-panel)
+</Note>
+
+![555x402 Diagram](/images/555x402-diagram.jpeg)
+
+## How It Works
+
+<Steps>
+  <Step title="402 Offer">
+    Client calls a protected endpoint (e.g., `POST /api/game/entry`). Service returns HTTP 402 with a JSON Offer: amount, currency, TTL, purpose, and signature.
+  </Step>
+  <Step title="Approval">
+    Client pays via fiat rails or USDC through a facilitator. Receives a proof/receipt that is verifiable on‑chain.
+  </Step>
+  <Step title="Retry with Proof">
+    Client retries original request including `X‑PAYMENT: Bearer <proof>`. Service verifies and grants access.
+  </Step>
+  <Step title="Settlement & Payouts">
+    Facilitator converts to `$555` notional and posts to the Monetization Contract (buybacks, gamification fund, creator shares). Viewers/clippers get off‑chain payouts.
+  </Step>
+</Steps>
+
+## Components
+
+- **Monetization Contract** — Encodes splits (creator, gamification fund, buybacks, platform), budgets, and events.
+- **555x402 SDK** — Middleware for issuing 402 Offers, pricing, proof formats, retries, receipts, and webhooks.
+- **Facilitator Layer** — Custody/compliance (KYC/AML/PCI) and fiat rails; supports sub‑cent approvals.
+- **Off‑Chain Payouts** — Clipper/viewer/affiliate payouts via standard methods; reconciled back to contract state.
+
+## Integrations
+
+- **Studio & Control Panel** — Sync overlays across Twitch/Kick/YouTube. Unpaid interactions return 402; approvals instantly update overlays and budgets.
+- **555 Gamification Engine** — Gate boosts and entries with tiny fiat fees that pool into `$555` prize funds; reward viewers off‑chain.
+- **Monetization & Marketplace** — Capture subs/tips and ad buys; instant bids tie into assets and contract distributions.
+- **Render Expand** — Premium multi‑streaming and fan‑to‑stake funnels; route a set percent to buybacks/gamification automatically.
+- **Hybrid Access** — Paid content on YouTube/Kick via 402; orchestrator nodes anchor access and settlements.
+
+## Benefits
+
+**Viewers**
+- Frictionless boosts/entries (e.g., $0.05 fiat → `$555` pooled) with real‑time feedback.
+- Gated highlights/reactions that feel like normal web payments; off‑chain rewards.
+- Optional staking funded by Web2 earnings.
+
+**Creators**
+- Near‑net settlement (vs. 30–50% on legacy platforms) and faster cash flow.
+- Crypto UX abstracted; link accounts, configure once, and go.
+- On‑chain transparency (contract events) with off‑chain payout portability.
+
+**Advertisers**
+- Programmatic, verifiable placements; sponsored interactions welcomed by staked audiences.
+- Micro‑campaigns at low fees with measurable ROI and instant approvals.
+
+## Security & Compliance
+
+- **Facilitator Governance** — KYC/AML/PCI where required; geo‑rolled enablement.
+- **Proofs & Replay Protection** — Signed JWT receipts, HMAC `X‑PAYMENT`, TTL and nonce checks.
+ - **Proofs & Replay Protection** — Receipt/proof formats are verifiable on‑chain (e.g., hash commitments) alongside HMAC `X‑PAYMENT`, TTL, and nonce checks.
+- **Contract Controls** — Versioned split templates, audit trails, emergency shutoffs.
+
+## Developer Guide
+
+1) **Protect Endpoint**: Return 402 with JSON Offer and `WWW‑Authenticate: X402 realm="render"`.
+
+2) **Approve & Retry**: Client processes fiat/USDC with facilitator; retries original call with `X‑PAYMENT` proof.
+
+3) **Verify & Settle**: Verify proof, map to `$555` notional, emit events, and post to contract; enqueue off‑chain payouts.
+
+**Events**: `402OfferCreated`, `402PaymentApproved`, `402SettlementQueued`, `402SettlementPosted`, `402PayoutComplete`.
+
+## KPIs
+
+- Creator net uplift (vs. baseline splits)
+- Viewer participation and repeat purchases
+- `$555` buybacks funded and gamification pool growth
+- Time‑to‑cash (creator), payout success rates (viewers/clippers)
+
+## Rollout
+
+- **Phase 1** — Twitch/Kick overlays + games (tips/subs, boosts), facilitator (US), sub‑cent approvals.
+- **Phase 2** — YouTube highlights marketplace, multi‑currency, global payouts.
+- **Phase 3** — Programmatic ads, AI agents, partner bundles; open SDK GA.
+
+## FAQs
+
+- Do viewers need wallets? No — pay with fiat or USDC; SDK abstracts crypto.
+- How are micro‑amounts viable? Aggregation and favorable facilitator pricing enable sub‑cent approvals.
+- Can I change splits? Within governance bounds; contract templates are versioned and creator‑scoped.

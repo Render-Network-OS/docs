@@ -1,0 +1,60 @@
+---
+title: "Chat Moderation Bot"
+icon: "shield-halved"
+description: "Anti-spam, custom rules, and high-traffic moderation with Solana/Pump.fun context"
+---
+
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
+## Overview
+
+The Chat Moderation Bot improves chat quality during high-traffic streams with anti-spam, customizable rules, and Solana/Pump.fun-aware logic.
+
+## Features
+
+- Advanced spam detection and rate limiting
+- Custom rule cases per project/stream
+- Community-driven rule proposals
+- Wallet and token-awareness for Solana/Pump.fun integrations
+
+## Setup
+
+Use the provided Docker stack in the repository `discord/`.
+
+```bash
+# From repo root
+cd discord
+cp .env.example .env   # create your env file
+docker compose up -d   # or: docker-compose up -d
+```
+
+### Required Config
+
+- Bot token and guild permissions
+- Channel scopes and role IDs
+- Optional: RPC endpoints for Solana lookups
+
+## High-Traffic Tuning
+
+- Increase rate-limit thresholds gradually
+- Enable cooldowns for repeated offenses
+- Whitelist trusted roles and wallets
+
+## Cross-Links
+
+- Raffles: [Endless Raffle](/guides/endless-raffle)
+- Architecture: [Multi-Chat Architecture](/guides/multi-chat-architecture)
+
+
+
+
+
+
+
+
+
+
+
+
