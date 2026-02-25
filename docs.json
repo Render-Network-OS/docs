@@ -17,8 +17,12 @@
   "navbar": {
     "links": [
       {
-        "label": "Launch App",
+        "label": "Launch Games",
         "href": "https://555.rndrntwrk.com"
+      },
+      {
+        "label": "Launch Stream",
+        "href": "https://stream.rndrntwrk.com"
       },
       {
         "label": "Support",
@@ -71,11 +75,7 @@
               "products/ctrl-control-panel",
               "products/monetization-contract",
               "products/render-expand",
-              "products/animated-assets",
-              "products/prediction-market",
-              "products/stream-pack-generator",
-              "products/streamer-collectives",
-              "products/streaming-kit-marketplace"
+              "products/animated-assets"
             ]
           },
           {
@@ -91,15 +91,11 @@
               "guides/troubleshooting",
               "guides/ctrl-panel",
               "guides/obs-migration",
-              "guides/render-stream-sdk",
               "guides/chat-moderation-bot",
               "guides/multi-chat-architecture",
               "guides/security-and-fairness",
               "guides/api-usage-and-proxying",
-              "guides/compliance-and-risk",
-              "guides/pvp-pong",
-              "guides/future-multichannel",
-              "guides/future-prediction-market"
+              "guides/compliance-and-risk"
             ]
           },
           {
@@ -218,19 +214,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Launch App",
+          "anchor": "Launch Games",
           "href": "https://555.rndrntwrk.com",
-          "icon": "rocket"
+          "icon": "gamepad"
+        },
+        {
+          "anchor": "Launch Stream",
+          "href": "https://stream.rndrntwrk.com",
+          "icon": "tower-broadcast"
         },
         {
           "anchor": "Tokenomics",
           "href": "/tokenomics/overview",
           "icon": "coins"
-        },
-        {
-          "anchor": "555x402",
-          "href": "/555x402/overview",
-          "icon": "bolt"
         },
         {
           "anchor": "Community",

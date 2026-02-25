@@ -1,12 +1,12 @@
 ---
 title: "Games Library"
 icon: "dice"
-description: "18 Games Integrated with Proof of Engagement"
+description: "20 Games Integrated with Proof of Engagement"
 ---
 
 # The Games
 
-The 555 Arcade hosts 18 games — a mix of production-ready titles and beta games — each integrated with the **Proof of Engagement** protocol. Every play session is verified by VAP and earns points.
+The 555 Arcade hosts 20 games — 8 production titles and 12 beta games — each integrated with the **Proof of Engagement** protocol. Every play session is verified by VAP and earns points.
 
 ## Reward System
 *   **Points**: Earned per verified session. 10,000 points = 1 USDC.
@@ -25,6 +25,7 @@ The 555 Arcade hosts 18 games — a mix of production-ready titles and beta game
 A fast-paced, top-down shooter set in a dystopian future. Survive waves of enemies while collecting Data Shards.
 *   **Integration**: Every enemy kill is a verified action on the state channel.
 *   **Alice's Favorite**: She frequently challenges players to beat her high score.
+*   **Possession**: Alice can grant weapons, adjust difficulty, and trigger God Mode (see [Game Mechanics](#game-mechanics) below).
 
 ### Clawstrike
 
@@ -41,7 +42,7 @@ A vertical platformer where precision is key. One slip means death.
 A classic side-scrolling beat-em-up.
 *   **Features**: Combo system, upgradable weapons, and boss battles.
 
-### Drive
+### 555 Drive
 
 > **Genre**: Retro Racing | **Difficulty**: Easy
 
@@ -60,6 +61,19 @@ On-chain lottery integrated with the $555 token economy.
 > **Genre**: Action Platformer | **Difficulty**: Medium
 
 Side-scrolling action game pitting a lone ninja against corporate drones.
+*   **Possession**: Alice can adjust difficulty levels and warp players between levels (see [Game Mechanics](#game-mechanics) below).
+
+### Flock
+
+> **Genre**: Flocking Simulation | **Difficulty**: Medium
+
+Guide a flock through obstacles using emergent behavior mechanics.
+
+### Dr1v3n Wild
+
+> **Genre**: Racing | **Difficulty**: Medium
+
+High-speed racing game with dynamic environments.
 
 ---
 
@@ -69,18 +83,52 @@ The following titles are in beta. They are playable and earn points (with beta s
 
 | Game | Genre | Status |
 | :--- | :--- | :--- |
-| Jungle Run | Endless Runner | Beta |
-| Space Drift | Space Shooter | Beta |
-| Tower Stack | Puzzle | Beta |
-| Hex Match | Match-3 | Beta |
-| Pixel Knight | Dungeon Crawler | Beta |
-| Cyber Dash | Cyberpunk Runner | Beta |
-| Block Breaker | Arcade Classic | Beta |
-| Sky Glider | Flight Sim | Beta |
-| Gem Rush | Puzzle | Beta |
-| Shadow Blade | Stealth Action | Beta |
-| Drift King | Racing | Beta |
-| Neon Pong | Arcade Classic | Beta |
+| Fighter Planes | Aerial Combat | Beta |
+| Peanball | Sports | Beta |
+| Chess Pursuit | Strategy | Beta |
+| Eat My Dust | Racing | Beta |
+| Floor 13 | Horror | Beta |
+| Godai Is Back | Action | Beta |
+| Left and Right | Reflex | Beta |
+| Pixel Copter | Arcade | Beta |
+| Playback | Puzzle | Beta |
+| Vedas Run | Endless Runner | Beta |
+| Where We're Going We Do Need Roads | Racing | Beta |
+| Wolf and Sheep | Strategy | Beta |
+
+---
+
+## Game Mechanics
+
+### Alice Possession
+
+Alice can **possess** active game cabinets — intervening in real-time to modify game state, challenge players, or create memorable moments on stream.
+
+#### How Possession Works
+
+1.  **Identify Target**: Alice queries active game cabinets via the API.
+2.  **Select Action**: Alice chooses a capability from the game's possession schema.
+3.  **Execute**: Alice sends a `POSSESS_CABINET` command with the game ID and action metadata.
+4.  **Observe & Learn**: Alice logs the outcome to memory, refining future interventions.
+
+#### Sector 13 Capabilities
+
+| Capability | Description |
+| :--- | :--- |
+| `set_lives` | Set the player's remaining lives (e.g., 99 for God Mode, 1 for Hardcore). |
+| `give_weapon` | Grant a powerup: `wingshot`, `trishot`, `doublerate`, `bomb`, `wingbomb`, `shield`. |
+| `set_difficulty` | Adjust rate-of-fire and enemy behavior. |
+| `show_message` | Display a full-screen message to the player (pauses the game). |
+
+#### Ninja vs EvilCorp Capabilities
+
+| Capability | Description |
+| :--- | :--- |
+| `set_difficulty` | Switch between Normal, Easy, Super Easy, and Nightmare modes. |
+| `set_level` | Warp the player to a specific level. |
+| `show_message` | Display a text message on the game canvas. |
+
+<Tip>Alice uses possession strategically — she might grant God Mode to a struggling player on stream, or crank difficulty to Nightmare when a top player gets too comfortable. Every intervention is logged and becomes part of her evolving strategy.</Tip>
 
 ---
 
@@ -88,6 +136,6 @@ The following titles are in beta. They are playable and earn points (with beta s
 
 Leaderboards are not just database rows — they are **Aggregated Proofs**.
 *   **Periods**: Day, Week, Month, Year, All-Time.
-*   **Cross-Game**: Normalized scores enable a unified leaderboard across all 18 games.
+*   **Cross-Game**: Normalized scores enable a unified leaderboard across all 20 games.
 *   **Verification**: Any score can be traced back to a signed VAP packet.
-*   **Source of Truth**: Redis ledger maintained by the VAP Verifier, synced to Postgres.
+*   **Source of Truth**: In-memory ledger maintained by the VAP Verifier, persisted to database.
