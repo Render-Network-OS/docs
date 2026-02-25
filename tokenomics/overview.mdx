@@ -1,7 +1,7 @@
 ---
 title: "Tokenomics Overview"
 icon: "coins"
-description: "$555-first model, 10/20/70 distribution, and stakeholder economy"
+description: "$555-first model, ARP / Buybacks / Treasury distribution, and stakeholder economy"
 ---
 
 ## The $555 Economy
@@ -13,7 +13,7 @@ Render Network’s economy centers on the $555 token and a creator-specific stak
   <br />
   <strong>Total Supply:</strong> 1,000,000,000 $555 · <strong>Public:</strong> 92% · <strong>Team:</strong> 8% (locked 5 years)
   <br />
-  <strong>Core Mechanism:</strong> Algorithmic split of all revenues into 10% Gamification Fund, 20%+ Token Buybacks, and 70% Profit Pool
+  <strong>Core Mechanism:</strong> Algorithmic split of all revenues into 10% ARP (Audience Reward Pool), 20%+ Token Buybacks, and 70% Treasury (ARP / Buybacks / Treasury)
   <br />
   <strong>Stakeholder Model:</strong> Viewers stake into creator economies to share revenue and govern the split
   
@@ -46,7 +46,7 @@ Render Network’s economy centers on the $555 token and a creator-specific stak
   </Accordion>
 
   <Accordion title="Stakeholder Subscriptions" icon="lock">
-    Stake $555 into creator economies to become a stakeholder: earn a share of the 70% Profit Pool and vote on the creator/stakeholder split.
+    Stake $555 into creator economies to become a stakeholder: earn a share of the Treasury and vote on the creator/stakeholder split.
   </Accordion>
 
   <Accordion title="Governance" icon="vote">
@@ -54,22 +54,30 @@ Render Network’s economy centers on the $555 token and a creator-specific stak
   </Accordion>
 </AccordionGroup>
 
-## Revenue Distribution (Canonical 10/20/70)
+## Revenue Distribution — Two-Level Cascade
+
+The same revenue pattern applies at **two levels** across the ecosystem. At both levels, revenue is processed identically:
 
 <Info>
-  All revenue ingested by the Monetization Contract is algorithmically split:
+  <strong>The Canonical Cascade (applies at both levels):</strong>
   <br />
-  <strong>10% – Gamification Fund:</strong> Prize pools and rewards powering the 555 Engine (provably fair via VRF).
+  <strong>10% – ARP (Audience Reward Pool):</strong> Off the top — goes directly to verified audience members via VAP attention proofs.
   <br />
-  <strong>20%+ – Token Buybacks:</strong> Automated buybacks for creator economies, with creator-configurable percentage (≥20%).
+  <strong>Post-ARP Split:</strong> The remaining 90% splits between Creator and Platform (configurable).
   <br />
-  <strong>70% – Profit Pool:</strong> Distributed between Creator and Stakeholders, governed by stake-weighted voting.
+  <strong>Platform Allocation:</strong> 70% Treasury (operations), 20% token buyback-and-burn, 5% token reserve, 5% SOL/USDC reserve.
 </Info>
 
-### Platform Profit Sharing (70:30)
+### Level 1: Platform Level ($555 as the "Creator")
 
 <Info>
-  In addition to the 10/20/70 revenue routing, platform‑level profit sharing is set to <strong>70:30 in favor of Render Network</strong> to sustainably fund ecosystem build‑out (infrastructure, tooling, security, creator support). The remaining <strong>30%</strong> of platform profits are directed to community programs and incentives. This policy exists alongside product‑level splits and the creator/stakeholder Profit Pool.
+  At the platform level, $555 acts as the "creator" in the cascade. All gross revenue first has <strong>10% ARP</strong> taken off the top for audience rewards. The remaining 90% splits <strong>50/50 between the $555 ecosystem (creator) and the platform</strong>. The platform's 50% is allocated: 70% treasury operations, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
+</Info>
+
+### Level 2: Creator Economy Level (Individual Creator Tokens)
+
+<Info>
+  At the creator economy level, individual creator tokens follow the same cascade. <strong>10% ARP</strong> off the top for audience rewards, then a configurable creator/platform split on the remaining 90%. Treasury, buybacks, and reserves follow the same pattern within each creator's economy.
 </Info>
 
 ### Revenue Sources
@@ -79,7 +87,7 @@ Render Network’s economy centers on the $555 token and a creator-specific stak
     Transparent campaigns via the on-chain marketplace: real-time attribution, verifiable engagement, and automatic revenue distribution.
   </Accordion>
   <Accordion title="Prediction & Arcade" icon="gamepad">
-    House edge and fees from the 555 Engine feed the 10/20/70 split and the creator’s economy.
+    House edge and fees from the 555 Engine feed the ARP / Buybacks / Treasury cascade and the creator’s economy.
   </Accordion>
   <Accordion title="Creator Tokens & Trading" icon="coins">
     Render Expand launches per-creator tokens; trading fees and buybacks reinforce each economy.
@@ -112,7 +120,7 @@ Render Network’s economy centers on the $555 token and a creator-specific stak
 </AccordionGroup>
 
 <Note>
-  Continue with: [10/20/70 Fee Distribution](/tokenomics/fee-distribution) · [Stakeholder Subscriptions](/products/subscriptions-staking) · [Creator Tokens](/tokenomics/creator-tokens) · [Ultimate Flywheel](/essentials/ultimate-flywheel)
+  Continue with: [Fee Distribution (ARP / Buybacks / Treasury)](/tokenomics/fee-distribution) · [Stakeholder Subscriptions](/products/subscriptions-staking) · [Creator Tokens](/tokenomics/creator-tokens) · [Ultimate Flywheel](/essentials/ultimate-flywheel)
 </Note>
 
 ## Future Roadmap

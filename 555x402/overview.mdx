@@ -14,7 +14,7 @@ The flow is simple: a request hits a 402‑protected endpoint, the client receiv
   WIP: 555x402 specifications are under active development. Interfaces, receipt formats, and facilitator options may evolve as we progress through pilots and partner integrations.
 </Note>
 <Note>
-  Related: [Fee Distribution (10/20/70)](/tokenomics/fee-distribution) · [Monetization Contract](/products/monetization-contract) · [CTRL Control Panel](/products/ctrl-control-panel)
+  Related: [Fee Distribution (ARP / Buybacks / Treasury)](/tokenomics/fee-distribution) · [Monetization Contract](/products/monetization-contract) · [CTRL Control Panel](/products/ctrl-control-panel)
 </Note>
 
 ![555x402 Diagram](/images/555x402-diagram.jpeg)
@@ -32,13 +32,13 @@ The flow is simple: a request hits a 402‑protected endpoint, the client receiv
     Client retries original request including `X‑PAYMENT: Bearer <proof>`. Service verifies and grants access.
   </Step>
   <Step title="Settlement & Payouts">
-    Facilitator converts to `$555` notional and posts to the Monetization Contract (buybacks, gamification fund, creator shares). Viewers/clippers get off‑chain payouts.
+    Facilitator converts to `$555` notional and posts to the Monetization Contract (ARP, buybacks, treasury, creator shares). Viewers/clippers get off‑chain payouts.
   </Step>
 </Steps>
 
 ## Components
 
-- **Monetization Contract** — Encodes splits (creator, gamification fund, buybacks, platform), budgets, and events.
+- **Monetization Contract** — Encodes splits (creator, ARP (Audience Reward Pool), buybacks, treasury, platform), budgets, and events.
 - **555x402 SDK** — Middleware for issuing 402 Offers, pricing, proof formats, retries, receipts, and webhooks.
 - **Facilitator Layer** — Custody/compliance (KYC/AML/PCI) and fiat rails; supports sub‑cent approvals.
 - **Off‑Chain Payouts** — Clipper/viewer/affiliate payouts via standard methods; reconciled back to contract state.
@@ -48,7 +48,7 @@ The flow is simple: a request hits a 402‑protected endpoint, the client receiv
 - **Studio & Control Panel** — Sync overlays across Twitch/Kick/YouTube. Unpaid interactions return 402; approvals instantly update overlays and budgets.
 - **555 Gamification Engine** — Gate boosts and entries with tiny fiat fees that pool into `$555` prize funds; reward viewers off‑chain.
 - **Monetization & Marketplace** — Capture subs/tips and ad buys; instant bids tie into assets and contract distributions.
-- **Render Expand** — Premium multi‑streaming and fan‑to‑stake funnels; route a set percent to buybacks/gamification automatically.
+- **Render Expand** — Premium multi‑streaming and fan‑to‑stake funnels; route a set percent to buybacks/ARP automatically.
 - **Hybrid Access** — Paid content on YouTube/Kick via 402; orchestrator nodes anchor access and settlements.
 
 ## Benefits
@@ -87,7 +87,7 @@ The flow is simple: a request hits a 402‑protected endpoint, the client receiv
 
 - Creator net uplift (vs. baseline splits)
 - Viewer participation and repeat purchases
-- `$555` buybacks funded and gamification pool growth
+- `$555` buybacks funded and ARP growth
 - Time‑to‑cash (creator), payout success rates (viewers/clippers)
 
 ## Rollout

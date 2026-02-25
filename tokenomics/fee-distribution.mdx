@@ -1,27 +1,43 @@
 ---
 title: "Fee Distribution"
 icon: "arrow-right-arrow-left"
-description: "Canonical 10/20/70 split, revenue ingestion, and on-chain automation"
+description: "Canonical ARP / Buybacks / Treasury cascade, revenue ingestion, and on-chain automation"
 ---
 
-## The Canonical Split
+## The Two-Level Revenue Cascade
 
-All revenue entering the system flows through the Monetization Contract and is split algorithmically:
+The same revenue pattern applies at **two levels** across the Render Network ecosystem. At both levels, revenue is processed through the same canonical cascade:
 
 <CardGroup cols={3}>
-  <Card title="10% Gamification Fund" icon="gamepad">
-    Prize pools and rewards for the 555 Engine; provably fair distributions.
+  <Card title="10% ARP (Audience Reward Pool)" icon="gift">
+    Off the top — goes directly to verified audience members via VAP attention proofs.
   </Card>
   <Card title="20%+ Buybacks" icon="trending-up">
-    Automated buybacks reinforce creator economies; creators may raise this above 20%.
+    Automated buybacks reinforce token economies; configurable above the 20% minimum.
   </Card>
-  <Card title="70% Profit Pool" icon="coins">
-    Payouts to Creator and Stakeholders, governed via stake-weighted voting.
+  <Card title="70% Treasury" icon="coins">
+    Operations, development, and growth — governed via stake-weighted voting.
   </Card>
 </CardGroup>
 
+### Level 1: Platform Level ($555 as the "Creator")
+
 <Info>
-  Platform profit sharing policy: <strong>70:30 in favor of Render Network</strong> to support ecosystem growth and sustainability. This applies at the platform profit layer and coexists with the 10/20/70 revenue routing and creator/stakeholder Profit Pool.
+  At the platform level, $555 acts as the "creator" in the cascade. All gross revenue first has <strong>10% ARP</strong> taken off the top for audience rewards. The remaining 90% splits <strong>50/50 between the $555 ecosystem (creator) and the platform</strong>. The platform's 50% is then allocated:
+  <br />
+  - <strong>70%</strong> → Treasury (operations, development, growth)
+  <br />
+  - <strong>20%</strong> → $555 buyback-and-burn (structural deflationary pressure)
+  <br />
+  - <strong>5%</strong> → $555 token reserve
+  <br />
+  - <strong>5%</strong> → SOL/USDC reserve
+</Info>
+
+### Level 2: Creator Economy Level (Individual Creator Tokens)
+
+<Info>
+  At the creator economy level, individual creator tokens follow the same cascade. <strong>10% ARP</strong> off the top for audience rewards, then a configurable creator/platform split on the remaining 90%. Treasury, buybacks, and reserves follow the same pattern within each creator's economy. The tiered creator shares below apply at this level.
 </Info>
 
 ## Revenue Streams
@@ -86,8 +102,8 @@ All revenue entering the system flows through the Monetization Contract and is s
 
   </Accordion>
 
-  <Accordion title="Tiered Reward System" icon="layers">
-    **Creator Progression Tiers:**
+  <Accordion title="Tiered Reward System (Creator Economy Level)" icon="layers">
+    **Creator Progression Tiers** (these tiers apply at Level 2, the creator economy level):
 
     **Tier Structure:**
     - **Bronze:** 0-100 monthly earnings (standard 70%)
