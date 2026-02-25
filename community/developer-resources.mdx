@@ -1,0 +1,54 @@
+---
+title: "Developer Resources"
+icon: "laptop-code"
+description: "API documentation and SDK for integrations"
+---
+
+## Render Network Developer Hub
+
+Comprehensive resources for developers building with Render Network, including APIs, SDKs, documentation, and integration guides.
+
+<Info>
+  **API Version:** v2.1.0 **SDK Languages:** JavaScript, Python, Go **Base
+  URL:** https://api.rndrntwrk.com/v2 **Rate Limit:** 1000 requests/minute
+</Info>
+
+## Getting Started
+
+### Development Environment Setup
+
+<Steps>
+  <Step title="Create Developer Account">
+    Register for API access and developer tools:
+
+    ```javascript
+    // Register for developer access
+    const registration = await fetch('/api/developer/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'developer@example.com',
+        project: 'My Render Network Integration',
+        useCase: 'Streaming overlay integration'
+      })
+    });
+    ```
+
+  </Step>
+
+  <Step title="Get API Keys">
+    Generate and secure your API credentials:
+
+    ```javascript
+    // Generate API keys
+    const keys = await fetch('/api/developer/keys', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${developerToken}` }
+    });
+
+    const { apiKey, secretKey } = await keys.json();
+    // Store securely - never expose in client-side code
+    ```
+
+  </Step>
+</Steps>

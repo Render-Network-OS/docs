@@ -1,0 +1,64 @@
+---
+title: "OBS Replacement Migration"
+icon: "right-left"
+description: "Migrate from OBS to Render Stream with minimal downtime"
+---
+
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
+## When to Migrate
+
+- Need lower latency and simpler operations
+- Desire web-native control without desktop encoders
+- Want integrated token-gated and on-chain features
+
+## Parity & Differences
+
+| Capability   | OBS             | Render Stream                |
+| ------------ | --------------- | ---------------------------- |
+| Scenes       | Yes             | Themes/Overlays (web)        |
+| Plugins      | Desktop plugins | Web modules & SDK            |
+| Latency      | Varies          | Low-latency regional servers |
+| Token Gating | External        | Native ($555)                |
+
+## Migration Steps
+
+1. Create matching theme/overlays in CTRL
+2. Set region for low-latency server
+3. Connect wallet and assign moderator roles
+4. Publish overlays and verify render
+5. Switch ingest to Render Stream (native) or keep OBS Browser Source temporarily
+
+## Browser Source Fallback (Temporary)
+
+```bash
+# OBS Browser Source
+# URL: https://555.rndrntwrk.com/overlay
+# Size: 1920x1080; Shutdown when not visible
+```
+
+## Performance Tips
+
+- Prefer native Render Stream for lower latency
+- Match bitrate/resolution to regional limits
+- Monitor ingest health and frame drops
+
+## Cross-Links
+
+- Product: [Render Stream](/products/render-stream)
+- CTRL: [CTRL Panel Guide](/guides/ctrl-panel)
+- SDK: [Render Stream SDK](/guides/render-stream-sdk)
+
+
+
+
+
+
+
+
+
+
+
+

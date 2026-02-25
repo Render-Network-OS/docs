@@ -1,0 +1,121 @@
+---
+title: "Render Stream"
+icon: "tower-broadcast"
+description: "Browser-based streaming studio"
+---
+
+## Overview
+
+Render Stream — powered by **555stream** — is a browser-based, Solana‑native streaming studio that replaces traditional desktop encoders. No download required. It supports **7-platform simulcast** (Twitch, YouTube, Kick, X, TikTok, Zora, pump.fun) with cloud encoding via headless Chrome + FFmpeg and Cloudflare RTMPS pipeline. **Alice** (the AI agent, built on Milaidy/ElizaOS) operates the stream autonomously — triggering ads, controlling scenes, managing guests, and scheduling programming.
+
+<Info>
+  Key benefits: Browser-based (no download), 7-platform simulcast, **L-Bar squeeze-back ads** (non-interruptive, 74%x71% program region with audio continuing), **AI-triggered ad placement** (5-sec polling, 4 engagement signals, 0.70 threshold), Always‑On programming, and direct integration with CTRL, 555 Engine, and the Monetization pipeline.
+</Info>
+
+## Key Capabilities
+
+<CardGroup cols={3}>
+  <Card title="Resilient Uptime" icon="clock">
+    Continuous, failover‑ready ingest with auto‑recovery and health checks.
+  </Card>
+  <Card title="Low-Latency Servers" icon="zap">
+    Choose regional servers to minimize end-to-end delay for interactive
+    streams.
+  </Card>
+  <Card title="Crypto-Native Controls" icon="wallet">
+    Configure permissions and actions from your wallet; wire in gamification and on‑chain triggers.
+  </Card>
+  <Card title="Always‑On Programming" icon="play-circle">
+    Keep your channel active when you’re offline with scheduled clips, mini‑games, raids/quests, and the 555 Lottery.
+  </Card>
+  <Card title="Alice (AI Operator)" icon="sparkles">
+    Alice (built on Milaidy/ElizaOS) operates your stream: triggers L-Bar ads at optimal engagement, controls scenes, invites guests via WebRTC SFU, and schedules Always-On programming. 12+ custom plugins, 16 MCP ad actions.
+  </Card>
+  <Card title="Stream‑Level 555 Lottery" icon="gift">
+    Enable a lottery for your own channel so your viewers and holders can participate without the global threshold.
+  </Card>
+</CardGroup>
+
+## Setup
+
+### Option A: 555stream (Browser-Based Studio)
+
+Use the browser-based studio at stream.rndrntwrk.com with wallet auth to start a stream. No desktop encoder needed — cloud encoding handles everything server-side.
+
+<Steps>
+  <Step title="Auto‑Optimized Routing">
+    We automatically route your stream to the best region and server based on
+    audience distribution and live health metrics. Manual override is available
+    in advanced settings if needed.
+  </Step>
+  <Step title="Connect Wallet & Configure Access">
+    Connect your Solana wallet to set stream ownership and define controller
+    permissions (e.g., moderator wallets). If integrating Pump.fun, ensure the
+    project wallet has the required scopes.
+  </Step>
+  <Step title="Start Stream & Monitor Health">
+    Start the session from the control surface. Monitor ingest health, bitrate,
+    dropped frames, and auto-recovery status.
+  </Step>
+  <Step title="Schedule Always‑On (Optional)">
+    Add a basic offline schedule: clips (from past streams and social channels), mini‑games, raids/quests, and 555 Lottery windows. You can also hand this off to Auto Pilot.
+  </Step>
+</Steps>
+
+### Option B: OBS Browser Source (Fallback)
+
+If you are transitioning from OBS or need a hybrid setup, add the Render overlay as a browser source while you migrate scenes.
+
+```bash
+# OBS Browser Source (example)
+# 1) Sources → Add → Browser Source
+# 2) Name: "Render Overlay"
+# 3) URL: https://555.rndrntwrk.com/overlay
+# 4) Width: 1920, Height: 1080
+# 5) Enable "Shutdown source when not visible"
+```
+
+<Tip>
+  Prefer the native Render Stream path for lowest latency and simpler
+  operations. Use the OBS Browser Source during migration only.
+</Tip>
+
+## Creator Token Integration
+
+If you already have a Creator Token, connect it to add token trading fees into your revenue stream. If you don’t, you can mint a Creator Token with
+[Render Expand](/products/render-expand) — it wires your token into the flywheel automatically.
+
+- Staker eligibility: all stakers are eligible for revenue sharing based on their staked amount
+- Staking choice: creators may configure staking to their own token or to $555
+- Buybacks: a minimum of 20% of all creator revenue is used to buy back the staked token (creators can raise this above 20%)
+- Controls: gate actions (chat modes, overlay triggers) behind $555 or Creator Token thresholds; associate moderator wallets for management
+
+See also: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution (10/20/70)](/tokenomics/fee-distribution)
+
+## Operations & Reliability
+
+- **Session Recovery:** Automatic reconnection and state recovery for transient network events.
+- **Health Metrics:** Ingest health, frame drops, CPU/network load recommendations, bitrate guidance.
+- **Failover & Regions:** Region selection with hot fallback; published bitrate and resolution limits per region (subject to change as capacity grows).
+
+## Roadmap: Decentralized Stream
+
+> **Note:** Decentralized streaming is a long-term vision item. The current architecture is centralized (Cloudflare + Hetzner K3s). These roadmap items have no active implementation path yet.
+
+- Peer‑assisted distribution and resilient ingest
+- Community‑operated nodes with performance and reputation metrics
+- Censorship‑resistant architecture governed by a future DAO
+
+## Cross-Links
+
+- Migration Guide: [OBS Replacement Migration](/guides/obs-migration)
+- Developer SDK: [Render Stream SDK](/guides/render-stream-sdk)
+- Dashboard: [CTRL Panel](/products/ctrl-control-panel)
+- Gamification: [555 Engine](/products/555-gamification)
+- Monetization: [Monetization Module](/products/monetization-module)
+
+
+
+
+
+

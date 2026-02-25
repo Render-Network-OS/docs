@@ -1,0 +1,58 @@
+---
+title: "Multi-Chat / Multi-Stream Architecture"
+icon: "comments"
+description: "Manage up to 10 concurrent Pump.fun chat streams with per-stream configs"
+---
+
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
+<Info>
+  WIP — This guide is being updated to reflect the latest OS workflows.
+</Info>
+
+## Overview
+
+Support up to 10 concurrent chat streams with per-stream configuration, token verification, and stream-specific analytics.
+
+## Core Components
+
+- **MultiChatManager:** Orchestrates concurrent chat streams
+- **MultiStreamTracker:** Tracks lifecycle and health per stream
+- **Per-Stream Config:** token address, token mint, min tokens
+- **Verification:** per-stream token verification on events
+- **Tagging:** entries tagged with `stream_id`
+
+## Data Model
+
+- **Stream Configs:** `id`, `token_address`, `token_mint`, `min_tokens`, `status`
+- **Entries:** `id`, `stream_id`, `wallet`, `message`, `verified`, `ts`
+- **Stats:** per-stream counters and rates
+
+## API & CRUD
+
+- Create/Update/Delete stream configs
+- Start/Stop streams; list stats
+- Query entries by `stream_id` and timeframe
+
+## Frontend Display
+
+- Per-stream panes with status and latest entries
+- Filters for verified vs unverified participants
+
+## Cross-Links
+
+- Moderation: [Chat Moderation Bot](/guides/chat-moderation-bot)
+- Programs: [Custom Solana Programs](/guides/custom-solana-programs)
+
+
+
+
+
+
+
+
+
+
+
