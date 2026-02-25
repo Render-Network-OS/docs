@@ -20,13 +20,13 @@ Traditional streaming platforms (Twitch, YouTube) are **Black Boxes**. Creators 
 
 ## Architecture
 
-The protocol is built on a multi-stack architecture:
+The protocol is built on a multi-layer architecture:
 
-*   **Solana** (Anchor framework): On-chain settlement, token operations, program execution.
-*   **Cloudflare** (Workers, D1, R2, KV): Edge computing, encoding, caching.
-*   **Go 1.24**: Backend API and payment routing.
-*   **Next.js 15**: Frontend applications (Arcade, 555stream).
-*   **Milaidy/ElizaOS v2**: Autonomous agent (Alice) with 12+ plugins.
+*   **Solana**: On-chain settlement, token operations, program execution.
+*   **Edge Layer**: Distributed encoding, caching, and real-time session management.
+*   **Service Layer**: Backend API, payment routing, and verification.
+*   **Client Layer**: Browser-based applications (Arcade, 555stream).
+*   **Agent Layer**: Autonomous AI operator (Alice) with 12+ plugins.
 
 ### Components
 
@@ -37,7 +37,7 @@ The protocol is built on a multi-stack architecture:
 | **Hyperlink** | Smart payment links with embedded wallets, analytics, and social attribution. |
 | **sw4p** | Cross-chain CCTP V2 USDC bridge (Solana, Base, Polygon). 5 independent security audits. |
 | **555stream** | Browser-based streaming studio with 7-platform simulcast and L-Bar ads. |
-| **Arcade** | 18 games integrated with Proof of Engagement. |
+| **Arcade** | 20 games integrated with Proof of Engagement. |
 | **Alice** | Autonomous AI operator (Milaidy/ElizaOS v2) managing streams, ads, and community. |
 
 ## The "402" Standard

@@ -69,13 +69,11 @@ This enables 24/7 streaming capabilities where Alice runs the broadcast and the 
 
 555stream runs on a multi-layer stack:
 
-| Layer | Technology |
+| Layer | Role |
 | :--- | :--- |
-| **Browser Client** | Next.js 15, React 19, WebRTC |
-| **Edge Encoding** | Cloudflare Workers, R2, Durable Objects |
-| **Control Plane** | Node.js service managing scenes, sources, routing |
+| **Browser Client** | Real-time video capture and WebRTC communication |
+| **Edge Encoding** | Cloud-based video encoding and media storage |
+| **Control Plane** | Scene management, source routing, and configuration |
 | **SFU Service** | Selective Forwarding Unit for multi-party WebRTC |
-| **Media Engine** | Composition and transcoding pipeline |
-| **Capture Service** | Browser-based capture for recording |
-
-Deployed on Hetzner K3s alongside the rest of the 555 infrastructure.
+| **Media Engine** | Video composition and transcoding pipeline |
+| **Capture Service** | Browser-based capture for recording and clips |

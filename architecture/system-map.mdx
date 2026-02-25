@@ -6,50 +6,49 @@ description: "How the pieces fit together"
 
 # Architecture Overview
 
-The 555 Ecosystem is a multi-stack system spanning client applications, edge workers, backend services, AI agents, and on-chain programs.
+The 555 Ecosystem is a multi-layer system spanning client applications, edge services, backend infrastructure, AI agents, and on-chain programs.
 
-## The Full Stack
+## System Diagram
 
 ```mermaid
 graph TD
     subgraph Client ["Client Layer"]
-        Arcade["555 Arcade (Next.js 15)"]
-        Stream["555stream (Streaming Studio)"]
-        SW4P_UI["sw4p (Bridge UI)"]
-        Wallet["Solana Wallet Adapter"]
+        Arcade["555 Arcade"]
+        Stream["555stream Studio"]
+        SW4P_UI["sw4p Bridge"]
+        Wallet["Wallet Adapter"]
     end
 
-    subgraph Edge ["Edge Layer (Cloudflare)"]
-        Workers["Workers (6)"]
-        D1["D1 (12 tables)"]
-        R2["R2 (2 buckets)"]
-        KV["KV (5 namespaces)"]
-        DO["Durable Objects (3 classes)"]
+    subgraph Edge ["Edge Layer"]
+        Encoding["Encoding Workers"]
+        Storage["Media Storage"]
+        Cache["Edge Cache"]
+        Sessions["Session Manager"]
         CDN["CDN / WAF"]
     end
 
     subgraph Backend ["Service Layer"]
-        API["Go 1.24 Backend (Render.com)"]
+        API["API Service"]
         VAP_Svc["VAP Verifier"]
         AGG_Svc["AGG Router"]
         CtrlPlane["Control Plane"]
         SFU["SFU Service"]
         MediaEngine["Media Engine"]
         Capture["Capture Service"]
-        HeadTTS["HeadTTS"]
-        MuseTalk["MuseTalk (GPU)"]
-        DB[("PostgreSQL")]
-        Redis[("Redis")]
+        TTS["Text-to-Speech"]
+        Avatar["Avatar Pipeline"]
+        DB[("Database")]
+        StateStore[("State Store")]
     end
 
-    subgraph Agent ["Alice (Milaidy/ElizaOS v2)"]
-        AliceBot["alice-bot"]
-        Plugins["12+ Plugins"]
-        PGlite["PGlite Vector DB"]
+    subgraph Agent ["Alice"]
+        AliceBot["Agent Core"]
+        Plugins["Plugins"]
+        VectorDB["Vector Memory"]
         Knowledge["Knowledge Corpus"]
     end
 
-    subgraph Blockchain ["Solana Layer"]
+    subgraph Blockchain ["Solana"]
         Token["$555 SPL Token"]
         SW4P_Bridge["sw4p (CCTP V2)"]
         Jupiter["Jupiter Aggregator"]
@@ -58,27 +57,26 @@ graph TD
 
     %% Client connections
     Arcade -->|HTTPS| CDN
-    Stream -->|HTTPS/WSS| Workers
+    Stream -->|HTTPS/WSS| Encoding
     SW4P_UI -->|HTTPS| API
 
     %% Edge connections
     CDN -->|Route| API
-    Workers -->|State| D1
-    Workers -->|Storage| R2
-    Workers -->|Cache| KV
-    Workers -->|Sessions| DO
+    Encoding -->|Persist| Storage
+    Encoding -->|Cache| Cache
+    Encoding -->|State| Sessions
 
     %% Backend connections
     API -->|Query| DB
-    API -->|Cache| Redis
-    VAP_Svc -->|State| Redis
+    API -->|State| StateStore
+    VAP_Svc -->|State| StateStore
     VAP_Svc -->|Persist| DB
     CtrlPlane -->|Manage| SFU
     CtrlPlane -->|Manage| MediaEngine
 
     %% Agent connections
     AliceBot -->|Read| DB
-    AliceBot -->|Read| Redis
+    AliceBot -->|Read| StateStore
     AliceBot -->|Post| API
     AliceBot -->|Stream| CtrlPlane
 
@@ -89,30 +87,46 @@ graph TD
     AGG_Svc -->|Gasless| Kora
 ```
 
-## Infrastructure
+## Layer Overview
 
-### Hetzner K3s Cluster
-Primary compute infrastructure at `<server-ip>`:
-*   **MetalLB** load balancer, **nginx-ingress**, **cert-manager**
-*   **15+ services** including alice-bot, control-plane, SFU, media-engine, capture-service, HeadTTS, MuseTalk
-*   **Storage**: 170Gi total PVCs (alice-milaidy-state 50Gi, alice-eliza-state 120Gi)
+### Client Layer
+User-facing applications that connect to the protocol:
+*   **555 Arcade** — Browser-based game platform with wallet authentication (SIWS). Games run in sandboxed iframes with the VAP SDK for verified engagement.
+*   **555stream Studio** — Browser-based streaming studio with 7-platform simulcast, scene composition, and guest management via WebRTC.
+*   **sw4p Bridge** — Cross-chain bridge interface for USDC transfers across Solana, Base, and Polygon.
 
-### Cloudflare Edge
-*   **6 Workers** handling routing, encoding, and edge logic
-*   **D1**: 12 tables for edge-local data
-*   **R2**: 2 buckets for media storage
-*   **KV**: 5 namespaces for caching
-*   **Durable Objects**: 3 classes for stateful edge sessions
+### Edge Layer
+Globally distributed infrastructure handling encoding, caching, and real-time sessions:
+*   **Encoding Workers** — Video encoding and distribution at the edge, offloading compute from creator devices.
+*   **Media Storage** — Persistent storage for stream recordings, clips, and media assets.
+*   **Edge Cache** — Low-latency caching for frequently accessed data.
+*   **Session Manager** — Stateful session handling for real-time interactions.
+*   **CDN / WAF** — Content delivery and web application firewall.
 
-### Render.com
-*   **Go 1.24 backend** deployed in Oregon region
-*   Handles API routing, payment processing, settlement
+### Service Layer
+Backend services handling API routing, verification, media composition, and settlement:
+*   **API Service** — Central API handling authentication, game state, leaderboards, rewards, referrals, and settlement.
+*   **VAP Verifier** — Validates cryptographic heartbeats from client sessions, maintains engagement proofs.
+*   **AGG Router** — Payment aggregation with optimal swap routing and gasless transaction sponsorship.
+*   **Control Plane** — Manages scene composition, source routing, and guest connections for 555stream.
+*   **SFU Service** — Selective Forwarding Unit for multi-party WebRTC.
+*   **Media Engine** — Video composition and transcoding pipeline.
+*   **Capture Service** — Browser-based capture for recording and clip generation.
+*   **Text-to-Speech + Avatar** — Alice's voice and visual presence pipeline.
 
-### Solana
-*   **$555 SPL token** (contract: `CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2`)
-*   **sw4p**: CCTP V2 bridge across Solana, Base, Polygon
-*   **Jupiter**: Optimal swap routing
-*   **Kora**: Gasless transaction sponsorship
+### Agent Layer (Alice)
+Autonomous AI operator with persistent memory and multi-platform capabilities:
+*   **Agent Core** — Autonomous decision engine with 12+ custom plugins.
+*   **Vector Memory** — Local-first RAG retrieval for contextual intelligence.
+*   **Knowledge Corpus** — 80+ documents covering the full protocol specification.
+*   See [Alice: The Operator](/alice/persona) for details.
+
+### Blockchain Layer (Solana)
+On-chain programs and integrations:
+*   **$555 SPL Token** — Protocol token for staking, burns, and participation.
+*   **sw4p (CCTP V2)** — USDC bridge across Solana, Base, and Polygon.
+*   **Jupiter Aggregator** — Optimal swap routing across Solana DEXs.
+*   **Kora** — Gasless transaction sponsorship for frictionless user experience.
 
 ## Data Flow: Play Session
 
@@ -122,17 +136,15 @@ Trace a user action through the system:
 2.  **Game Engine**: Emits events (`SCORE_UPDATE`, `ENEMY_KILL`, etc.).
 3.  **VAP SDK**: Hashes events into the current InputBlock and signs with session key.
 4.  **WebSocket**: Sends `PULSE` packet to VAP Verifier.
-5.  **Verifier**:
-    *   Verifies signature and nonce sequence.
-    *   Updates `SessionState` in Redis.
-6.  **Persistence**: Redis state periodically flushed to PostgreSQL.
+5.  **Verifier**: Validates signature, checks nonce sequence, updates session state.
+6.  **Persistence**: State periodically flushed to the database.
 7.  **Points**: Session score converted to points based on game normalization rules.
 8.  **Settlement**: Weekly engine converts credits to USDC payouts.
 
 ## Data Flow: Live Stream
 
 1.  **555stream**: Creator starts broadcast from browser.
-2.  **Cloudflare Workers**: Handle encoding and distribution.
+2.  **Edge Encoding**: Handles video encoding and distribution.
 3.  **Simulcast**: Output to 7 platforms simultaneously.
 4.  **Alice**: Monitors engagement signals, triggers L-Bar ads at optimal moments.
 5.  **Control Plane**: Manages scene composition, guest WebRTC, overlays.

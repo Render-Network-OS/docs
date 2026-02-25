@@ -6,7 +6,7 @@ description: "The High-Voltage Playground"
 
 # The 555 Arcade
 
-The **555 Arcade** is the user-facing layer of the ecosystem. It is where the protocol becomes visible. Built as a **Next.js 15 monorepo** (555-mono) with React 19, Turbopack, and Bun.
+The **555 Arcade** is the user-facing layer of the ecosystem. It is where the protocol becomes visible. Built as a web application integrated with the protocol.
 
 ## Integration Architecture
 
@@ -52,7 +52,7 @@ The Arcade is the primary engagement surface for the ecosystem's reward system.
 
 ## 18 Games
 
-The Arcade hosts 18 games — 6 production titles and 12 beta games — spanning shooters, platformers, racing, RPGs, puzzles, and more. See the [Games Library](/arcade/games) for the full catalog.
+The Arcade hosts 20 games — 8 production titles and 12 beta games — spanning shooters, platformers, racing, RPGs, puzzles, and more. See the [Games Library](/arcade/games) for the full catalog.
 
 ### Score Normalization
 Each game has a per-game normalization factor that maps raw scores to a comparable scale. This enables a unified cross-game leaderboard.
@@ -63,8 +63,8 @@ Beta games apply a 10% score scaling with an escalating penalty for repeat plays
 ## Leaderboards
 
 Leaderboards are not just database rows; they are **Aggregated Proofs**.
-*   **Source of Truth**: Redis ledger maintained by the VAP Verifier.
-*   **Sync**: Synced to PostgreSQL for querying by the frontend.
+*   **Source of Truth**: In-memory ledger maintained by the VAP Verifier.
+*   **Sync**: Persisted to database for querying by the frontend.
 *   **Verification**: Any score can be traced back to a signed VAP packet.
 *   **Periods**: Day, Week, Month, Year, All-Time.
-*   **Cross-Game**: Normalized rankings across all 18 games.
+*   **Cross-Game**: Normalized rankings across all 20 games.
