@@ -70,8 +70,7 @@ The flow is simple: a request hits a 402‑protected endpoint, the client receiv
 ## Security & Compliance
 
 - **Facilitator Governance** — KYC/AML/PCI where required; geo‑rolled enablement.
-- **Proofs & Replay Protection** — Signed JWT receipts, HMAC `X‑PAYMENT`, TTL and nonce checks.
- - **Proofs & Replay Protection** — Receipt/proof formats are verifiable on‑chain (e.g., hash commitments) alongside HMAC `X‑PAYMENT`, TTL, and nonce checks.
+- **Proofs & Replay Protection** — Signed JWT receipts with on‑chain verifiable hash commitments, HMAC `X‑PAYMENT`, TTL, and nonce checks.
 - **Contract Controls** — Versioned split templates, audit trails, emergency shutoffs.
 
 ## Developer Guide
