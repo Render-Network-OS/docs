@@ -1,0 +1,138 @@
+---
+title: "System Map"
+description: "How the pieces fit together"
+---
+
+# Architecture Overview
+
+The 555 Ecosystem is a multi-stack system spanning client applications, edge workers, backend services, AI agents, and on-chain programs.
+
+## The Full Stack
+
+```mermaid
+graph TD
+    subgraph Client ["Client Layer"]
+        Arcade["555 Arcade (Next.js 15)"]
+        Stream["555stream (Streaming Studio)"]
+        SW4P_UI["sw4p (Bridge UI)"]
+        Wallet["Solana Wallet Adapter"]
+    end
+
+    subgraph Edge ["Edge Layer (Cloudflare)"]
+        Workers["Workers (6)"]
+        D1["D1 (12 tables)"]
+        R2["R2 (2 buckets)"]
+        KV["KV (5 namespaces)"]
+        DO["Durable Objects (3 classes)"]
+        CDN["CDN / WAF"]
+    end
+
+    subgraph Backend ["Service Layer"]
+        API["Go 1.24 Backend (Render.com)"]
+        VAP_Svc["VAP Verifier"]
+        AGG_Svc["AGG Router"]
+        CtrlPlane["Control Plane"]
+        SFU["SFU Service"]
+        MediaEngine["Media Engine"]
+        Capture["Capture Service"]
+        HeadTTS["HeadTTS"]
+        MuseTalk["MuseTalk (GPU)"]
+        DB[("PostgreSQL")]
+        Redis[("Redis")]
+    end
+
+    subgraph Agent ["Alice (Milaidy/ElizaOS v2)"]
+        AliceBot["alice-bot"]
+        Plugins["12+ Plugins"]
+        PGlite["PGlite Vector DB"]
+        Knowledge["Knowledge Corpus"]
+    end
+
+    subgraph Blockchain ["Solana Layer"]
+        Token["$555 SPL Token"]
+        SW4P_Bridge["sw4p (CCTP V2)"]
+        Jupiter["Jupiter Aggregator"]
+        Kora["Kora (Gasless)"]
+    end
+
+    %% Client connections
+    Arcade -->|HTTPS| CDN
+    Stream -->|HTTPS/WSS| Workers
+    SW4P_UI -->|HTTPS| API
+
+    %% Edge connections
+    CDN -->|Route| API
+    Workers -->|State| D1
+    Workers -->|Storage| R2
+    Workers -->|Cache| KV
+    Workers -->|Sessions| DO
+
+    %% Backend connections
+    API -->|Query| DB
+    API -->|Cache| Redis
+    VAP_Svc -->|State| Redis
+    VAP_Svc -->|Persist| DB
+    CtrlPlane -->|Manage| SFU
+    CtrlPlane -->|Manage| MediaEngine
+
+    %% Agent connections
+    AliceBot -->|Read| DB
+    AliceBot -->|Read| Redis
+    AliceBot -->|Post| API
+    AliceBot -->|Stream| CtrlPlane
+
+    %% Blockchain connections
+    API -->|Settle| Token
+    API -->|Bridge| SW4P_Bridge
+    AGG_Svc -->|Swap| Jupiter
+    AGG_Svc -->|Gasless| Kora
+```
+
+## Infrastructure
+
+### Hetzner K3s Cluster
+Primary compute infrastructure at `116.202.35.171`:
+*   **MetalLB** load balancer, **nginx-ingress**, **cert-manager**
+*   **15+ services** including alice-bot, control-plane, SFU, media-engine, capture-service, HeadTTS, MuseTalk
+*   **Storage**: 170Gi total PVCs (alice-milaidy-state 50Gi, alice-eliza-state 120Gi)
+
+### Cloudflare Edge
+*   **6 Workers** handling routing, encoding, and edge logic
+*   **D1**: 12 tables for edge-local data
+*   **R2**: 2 buckets for media storage
+*   **KV**: 5 namespaces for caching
+*   **Durable Objects**: 3 classes for stateful edge sessions
+
+### Render.com
+*   **Go 1.24 backend** deployed in Oregon region
+*   Handles API routing, payment processing, settlement
+
+### Solana
+*   **$555 SPL token** (contract: `CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2`)
+*   **sw4p**: CCTP V2 bridge across Solana, Base, Polygon
+*   **Jupiter**: Optimal swap routing
+*   **Kora**: Gasless transaction sponsorship
+
+## Data Flow: Play Session
+
+Trace a user action through the system:
+
+1.  **Client**: User plays a game in the Arcade.
+2.  **Game Engine**: Emits events (`SCORE_UPDATE`, `ENEMY_KILL`, etc.).
+3.  **VAP SDK**: Hashes events into the current InputBlock and signs with session key.
+4.  **WebSocket**: Sends `PULSE` packet to VAP Verifier.
+5.  **Verifier**:
+    *   Verifies signature and nonce sequence.
+    *   Updates `SessionState` in Redis.
+6.  **Persistence**: Redis state periodically flushed to PostgreSQL.
+7.  **Points**: Session score converted to points based on game normalization rules.
+8.  **Settlement**: Weekly engine converts credits to USDC payouts.
+
+## Data Flow: Live Stream
+
+1.  **555stream**: Creator starts broadcast from browser.
+2.  **Cloudflare Workers**: Handle encoding and distribution.
+3.  **Simulcast**: Output to 7 platforms simultaneously.
+4.  **Alice**: Monitors engagement signals, triggers L-Bar ads at optimal moments.
+5.  **Control Plane**: Manages scene composition, guest WebRTC, overlays.
+6.  **Settlement**: Ad revenue flows through 10% ARP → 50/50 split cascade.

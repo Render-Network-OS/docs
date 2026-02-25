@@ -1,0 +1,37 @@
+# Game Mechanics & Possession Guide
+
+This document details the internal mechanics of games in the 555-mono ecosystem and how Alice can "possess" them.
+
+## Sector 13 (`sector-13`)
+A sci-fi space shooter/puzzle game.
+
+### Possession Capabilities
+Alice can modify the following state variables via `alice-sdk.js`:
+
+| Capability | Value Type | Description |
+| :--- | :--- | :--- |
+| `set_lives` | `number` | Set the player's remaining lives. (e.g., 99 for God Mode, 1 for Hardcore) |
+| `give_weapon` | `string` | Grant a specific powerup. Options: `wingshot`, `trishot`, `doublerate`, `bomb`, `wingbomb`, `shield`. |
+| `set_difficulty` | `number` | Adjust `rofAdjust` (Rate of Fire adjustment). Higher values might make enemies faster or player slower (needs verification). |
+| `show_message` | `string` | Display a full-screen communication message to the player. Pauses the game. |
+
+### Internal State (`state.ts`)
+- `lives`: Player lives (default 3).
+- `score`: Current score.
+- `powerups`: Object tracking active weapons.
+- `rofAdjust`: Affects fire rate.
+- `fear`: Fear level (affects visuals/audio).
+
+## Ninja vs EVILCORP (`ninja`)
+A stealth platformer.
+
+### Possession Capabilities (Planned)
+- `set_difficulty`: Change between `NORMAL`, `EASY`, `SUPER EASY`, `NIGHTMARE`.
+- `set_level`: Warp player to a specific level.
+- `show_message`: Display text on the canvas.
+
+## General Possession Protocol
+1.  **Identify Target**: Use `GET /arcade/cabinets` to find active games.
+2.  **Select Action**: Choose a capability from the table above.
+3.  **Execute**: Call `POSSESS_CABINET` with `game_id` and `metadata` (e.g., `{ "capability": "set_lives", "value": 5 }`).
+4.  **Observe**: Use `LOG_MEMORY` to record the outcome.

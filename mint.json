@@ -1,0 +1,87 @@
+{
+    "$schema": "https://mintlify.com/schema.json",
+    "name": "555 Ecosystem",
+    "logo": {
+        "dark": "/logo/dark.svg",
+        "light": "/logo/light.svg"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+        "primary": "#0D9488",
+        "light": "#2DD4BF",
+        "dark": "#115E59",
+        "anchors": "#0F766E"
+    },
+    "topbarLinks": [
+        {
+            "name": "Render Network",
+            "url": "https://rendernetwork.com"
+        }
+    ],
+    "topbarCtaButton": {
+        "name": "Launch Arcade",
+        "url": "https://555.rendernet.work"
+    },
+    "navigation": [
+        {
+            "group": "The Streaming OS",
+            "pages": [
+                "introduction",
+                "economics",
+                "tokenomics"
+            ]
+        },
+        {
+            "group": "Products",
+            "pages": [
+                "555stream",
+                "sw4p"
+            ]
+        },
+        {
+            "group": "555x402 Suite",
+            "pages": [
+                "555x402/vap",
+                "555x402/agg",
+                "555x402/hyperlink",
+                "555x402/inventory"
+            ]
+        },
+        {
+            "group": "Protocol",
+            "pages": [
+                "protocol/overview",
+                "protocol/audience-inventory",
+                "protocol/proof-of-engagement",
+                "protocol/vap-v2",
+                "protocol/roadmap"
+            ]
+        },
+        {
+            "group": "Alice (The Operator)",
+            "pages": [
+                "alice/persona",
+                "alice/intelligence"
+            ]
+        },
+        {
+            "group": "The Arcade",
+            "pages": [
+                "arcade/overview",
+                "arcade/games"
+            ]
+        },
+        {
+            "group": "Architecture",
+            "pages": [
+                "architecture/system-map"
+            ]
+        },
+        {
+            "group": "API Reference",
+            "pages": [
+                "api-reference"
+            ]
+        }
+    ]
+}

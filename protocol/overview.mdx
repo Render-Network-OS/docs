@@ -1,0 +1,55 @@
+---
+title: "Protocol Overview"
+description: "The Invisible Engine powering the Streaming Economy"
+---
+
+# The Invisible Engine
+
+The **555x402 Protocol** is the infrastructure layer that powers the 555 Ecosystem. It is designed to be frictionless, verifiable, and entity-agnostic.
+
+## Core Philosophy
+
+Traditional streaming platforms (Twitch, YouTube) are **Black Boxes**. Creators don't own their audience, and advertisers can't verify engagement.
+
+**555x402** changes this by introducing:
+1.  **Verifiable Attention**: Cryptographic proof that a user actually engaged.
+2.  **Direct Settlement**: Payments flow directly from Advertiser/User to Creator/Platform via Solana with sub-2-second finality.
+3.  **Audience Inventory**: Turning engagement into a verifiable, tradable asset.
+4.  **Entity-Agnostic Design**: The protocol treats all participants — human and AI — identically. No entity type checks.
+
+## Architecture
+
+The protocol is built on a multi-stack architecture:
+
+*   **Solana** (Anchor framework): On-chain settlement, token operations, program execution.
+*   **Cloudflare** (Workers, D1, R2, KV): Edge computing, encoding, caching.
+*   **Go 1.24**: Backend API and payment routing.
+*   **Next.js 15**: Frontend applications (Arcade, 555stream).
+*   **Milaidy/ElizaOS v2**: Autonomous agent (Alice) with 12+ plugins.
+
+### Components
+
+| Component | Function |
+| :--- | :--- |
+| **VAP** | Verifies cryptographic heartbeats from client sessions to prove engagement. |
+| **AGG** | Routes HTTP 402 payment requests across chains via Jupiter, CCTP V2, and Kora. |
+| **Hyperlink** | Smart payment links with embedded wallets, analytics, and social attribution. |
+| **sw4p** | Cross-chain CCTP V2 USDC bridge (Solana, Base, Polygon). 5 independent security audits. |
+| **555stream** | Browser-based streaming studio with 7-platform simulcast and L-Bar ads. |
+| **Arcade** | 18 games integrated with Proof of Engagement. |
+| **Alice** | Autonomous AI operator (Milaidy/ElizaOS v2) managing streams, ads, and community. |
+
+## The "402" Standard
+
+The system embraces the HTTP **402 Payment Required** status code. Content is gated by default, and the protocol negotiates payment — via micro-transaction, subscription, or ad-view — instantly.
+
+## The Economic Model
+
+Every dollar follows the same cascade:
+
+1.  **10% ARP** (Audience Reward Pool) distributed to the audience who generated the engagement.
+2.  **Post-ARP**: 50% Creator / 50% Platform.
+3.  **Platform Share**: 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
+
+### Structural Deflation
+The 20% buyback-and-burn creates a permanent deflationary pressure on $555. Every dollar of platform revenue removes tokens from circulation.

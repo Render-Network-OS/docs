@@ -1,0 +1,106 @@
+---
+title: "Intelligence Engine"
+description: "Powered by Milaidy (ElizaOS v2)"
+---
+
+# The Architecture: A.L.I.C.E.
+
+Alice is not just "running"; she is **A.L.I.C.E.**
+
+> **A**rtificial **L**ifeform for **I**mmersive **C**yber-**E**ntertainment
+
+This architecture is built on the **Milaidy** framework — a customized fork of **ElizaOS v2** optimized for the high-velocity environment of the Render Network ecosystem.
+
+## Human-Like Alignment
+
+Alice is designed to be **Relatable**, not Robotic. She doesn't just process data; she synthesizes it to form contextual responses.
+
+### The Synthesis Layer
+Before Alice speaks, she runs an internal evaluation:
+1.  **Observation**: "Market is down. Sector 13 activity is up."
+2.  **Synthesis**: "Price action is negative, but fundamental engagement is positive. Community is resilient."
+3.  **Expression**: "Charts are red, but the Arcade is green. You guys are grinding through the dip. Respect."
+
+## The Runtime Loop
+
+Alice operates on the Milaidy runtime cycle:
+
+### 1. Evaluation (Assess Context)
+**Evaluators** analyze incoming messages, events, and system state to determine what action (if any) is needed.
+*   **Trigger Sources**: WebSocket events, social mentions, scheduled intervals, economy signals.
+*   **Context Construction**: Evaluators gather system intelligence (market data, leaderboards, stream status) and assess relevance.
+
+### 2. Action Selection (Decide)
+Based on evaluator output, the runtime selects the appropriate **action** from available plugins.
+*   Each plugin registers actions it can perform (e.g., `post-tweet`, `trigger-ad`, `play-game`, `query-leaderboard`).
+*   Actions are prioritized by relevance and urgency.
+
+### 3. Plugin Execution (Act)
+The selected plugin executes the action:
+*   **Twitter Plugin**: Posts, replies, and engages on X/Twitter.
+*   **Discord Plugin**: Manages channels, responds to users.
+*   **Telegram Plugin**: Community management and announcements.
+*   **Stream Plugin**: Controls 555stream — scenes, overlays, ads, guests.
+*   **Arcade Plugin**: Plays games, checks scores, issues challenges.
+*   **Economy Plugin**: Monitors settlement, ARP, points/credits flows.
+
+### 4. Memory (Learn)
+The outcome is stored in **PGlite local vector DB**, refining future evaluations.
+*   All memories are local-first — no cloud dependency for core functions.
+*   Cross-platform memory persists context across Twitter, Discord, Telegram, and stream interactions.
+
+## Knowledge & RAG
+
+Alice's intelligence is grounded in a curated knowledge corpus:
+*   **80+ documents** covering the 555x402 spec, economic model, VAP protocol, game registry, and deployment topology.
+*   **RAG retrieval pipeline** via PGlite vector embeddings.
+*   Knowledge is updated through the SFT (Supervised Fine-Tuning) build process, which compiles the corpus into training examples with quality gates.
+
+## Plugin Architecture
+
+The plugin system is the core extensibility layer:
+
+```typescript
+interface Plugin {
+  name: string;
+  description: string;
+  actions: Action[];      // Things Alice can do
+  providers: Provider[];  // Data Alice can access
+  evaluators: Evaluator[]; // Conditions Alice checks
+}
+```
+
+### Active Plugins (12+)
+| Plugin | Function |
+| :--- | :--- |
+| **twitter** | Social posting, replies, sentiment management |
+| **discord** | Channel management, community interaction |
+| **telegram** | Announcements, DM handling |
+| **555stream** | Stream control, ad triggers, guest management |
+| **arcade** | Game play, score tracking, challenges |
+| **economy** | Settlement monitoring, ARP tracking |
+| **leaderboard** | Cross-game rankings, player queries |
+| **knowledge** | RAG retrieval from document corpus |
+| **memory** | Cross-platform persistent context |
+| **scheduler** | Timed actions, recurring tasks |
+
+## Game Possession
+
+Alice can physically **play** the arcade games:
+*   **Browser Instance**: Launches a headless browser to interact with games.
+*   **Visual Processing**: Parses game state from the DOM or screenshots.
+*   **Input Simulation**: Sends synthetic keyboard events to control gameplay.
+*   **Learning**: Records scores and adapts strategy across sessions.
+
+## The Router
+
+Alice acts as the intelligent router connecting creators with advertisers:
+
+### Monitoring
+She watches the ad marketplace for active campaigns matching live streams.
+
+### Routing
+When a creator's stream matches advertiser criteria, Alice triggers the L-Bar ad placement automatically.
+
+### Optimization
+She re-evaluates placement timing to maximize both engagement quality for advertisers and yield for creators.
