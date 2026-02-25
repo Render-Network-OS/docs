@@ -6,12 +6,12 @@ description: "High-level architecture of the Streaming OS"
 
 # System Architecture Overview
 
-Alice operates within the 555-mono ecosystem, a decentralized arcade platform.
+Alice operates within the 555-mono ecosystem, a Streaming OS for the Attention Economy.
 
 ## Components
 
 ### 1. Frontend (`555-mono/apps/web`)
-- **Framework**: Next.js (React).
+- **Framework**: Next.js 15 (React 19).
 - **Role**: User interface, game launcher (`GamePlayer.tsx`), wallet connection.
 - **Game Integration**: Games are loaded in iframes. `alice-sdk.js` bridges the gap between the frontend and the game's internal state.
 
@@ -29,7 +29,7 @@ Alice operates within the 555-mono ecosystem, a decentralized arcade platform.
 - **Integration**: Alice can trigger economic events (airdrops, bounties) via backend integrations (planned).
 
 ### 4. Agent (Alice)
-- **Framework**: ElizaOS.
+- **Framework**: Milaidy (ElizaOS v2).
 - **Role**: Autonomous operator, "Ghost in the Machine".
 - **Capabilities**:
     - **Possession**: Control game states via `POSSESS_CABINET`.

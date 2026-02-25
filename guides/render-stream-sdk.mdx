@@ -32,7 +32,7 @@ export default async function handler(
 ) {
   const auth = req.headers.authorization;
   // forward to backend service securely
-  const r = await fetch(process.env.RNDR_BACKEND + "/balance", {
+  const r = await fetch(process.env.RENDER_BACKEND + "/balance", {
     headers: { authorization: auth || "" }
   });
   res.status(r.status).send(await r.text());
