@@ -1,0 +1,143 @@
+---
+title: "For Developers"
+icon: "code"
+description: "Build on the protocol: API, VAP, AGG, Hyperlink, sw4p"
+---
+
+## What You Can Build
+
+- **Games** that earn players real USDC through verified engagement
+- **Payment flows** using the 555x402 suite (VAP + AGG + Hyperlink)
+- **Cross-chain USDC transfers** via sw4p (Solana, Base, Polygon)
+- **Stream overlays** and interactive experiences via CTRL Panel
+- **Bots and integrations** via the REST API and SSE event stream
+
+## API Overview
+
+**Base URL:** `https://api.rndrntwrk.com`
+
+**Authentication:** SIWS (Sign In With Solana):
+1. `POST /auth/nonce` — request a sign-in nonce
+2. Sign the nonce with a Solana wallet
+3. `POST /auth/verify` — submit signed message, receive session cookie
+4. Include the session cookie on all subsequent requests
+
+**Format:** JSON REST for requests/responses. SSE for real-time events.
+
+**Endpoint domains:**
+
+| Domain | Description |
+| :--- | :--- |
+| Authentication | Nonce, verify, logout, social linking |
+| Arcade & Gaming | Score submission, game state, per-game leaderboards, stats |
+| Battles | Create, join, and track PvP matches |
+| Lottery | Create rounds, buy tickets, finalize draws, audit trails |
+| Leaderboards | Global, per-game, quest, and referral rankings |
+| Rewards | Claim USDC, Merkle proofs, epoch management, projected earnings |
+| Referrals | Generate links, bind codes, track performance |
+| Profile & Tasks | User profile, daily tasks, payment history |
+| Events & SSE | Real-time event stream, burn events |
+| Quests | List quests, track progress, check multipliers |
+| Social | Twitter webhook, social sharing data |
+| Clips | Upload and list gameplay clips |
+| Eligibility & Config | Token-gate checks, normalization config, game registry |
+
+Full reference: [API Reference](/api-reference)
+
+## Integrate a Game
+
+Add a game to the 555 Arcade using the Game Harness:
+
+1. **Wrap your game** in the `<GameHarness>` React component
+2. **The harness manages the VAP lifecycle**: connect → play → hash → sign → transmit
+3. **Your game engine emits events** (`SCORE_UPDATE`, `ENEMY_KILL`, etc.); the harness aggregates them into a Merkle root
+4. **The user's session key signs** the root; the signed payload is sent to the VAP Verifier
+5. **Points accrue automatically** per the normalization config (all games normalize to a 0–10,000 scale)
+
+```tsx
+<GameHarness appId="your-game-id" onSessionStart={handleStart}>
+  <YourGameComponent />
+</GameHarness>
+```
+
+Score normalization, beta mode scaling, daily bonuses, and leaderboard integration are handled by the protocol — your game only needs to emit score events.
+
+## Use the Payment Stack (555x402)
+
+### VAP — Verifiable Attention Protocol
+
+Cryptographic proof of engagement via Ed25519 challenge-response sessions:
+- WebSocket heartbeat at 5-second intervals
+- Session lifecycle: connect → challenge → sign → verify → accumulate
+- Proof of Engagement records are anchored on-chain
+
+<Info>**Status:** VAP v1 is live. VAP v2 (cNFT minting, on-chain Proof of Engagement tokens) is in design. See [VAP](/protocol/vap) and [VAP v2](/protocol/vap-v2).</Info>
+
+### AGG — Payment Aggregator
+
+Routes payments across chains with Solana finality:
+- Solana-native settlement via Jupiter (live)
+- HTTP 402 (Payment Required) standard support
+- Cross-chain routing via CCTP V2 (planned)
+
+<Info>**Status: Partially Implemented** — Solana-native settlement is live. Cross-chain routing via CCTP V2 is in development. See [AGG](/protocol/agg).</Info>
+
+### Hyperlink — Smart Payment Links
+
+Payment links with embedded wallets, analytics, and social attribution:
+- Generate payment links programmatically
+- Track conversions and attribution
+- See [Hyperlink](/protocol/hyperlink)
+
+## Cross-Chain with sw4p
+
+[sw4p](/sw4p) bridges USDC across Solana, Base, and Polygon using Circle CCTP V2:
+
+1. **Burn** — USDC is burned on the source chain
+2. **Attest** — Circle's attestation service verifies the burn
+3. **Mint** — Native USDC is minted on the destination chain
+
+No wrapped tokens. No liquidity pools. 5 independent security audits. Gasless via Kora.
+
+**SDKs:**
+- TypeScript: `@sw4p/bridge` ([npm](https://npmjs.com/package/@sw4p/bridge))
+- Rust: `sw4p-bridge` ([crates.io](https://crates.io/crates/sw4p-bridge))
+- Full docs: [sw4p Documentation Site](https://docs.sw4p.io)
+
+## Real-Time Events (SSE)
+
+Subscribe to `GET /events` for a persistent SSE connection:
+
+- **Event types**: `new_entry`, `chat_message`, round state transitions, winner announcements, burn events, system notifications
+- **Format**: `text/event-stream` with typed JSON payloads
+- Use SSE instead of polling for all real-time updates
+
+## On-Chain Programs (Solana/Anchor)
+
+The protocol includes Anchor-based Solana programs:
+
+- **Rewards program**: `commit_epoch` → `fund_vault` → `claim_reward` pipeline
+- **Merkle-tree distribution** for provable USDC payouts
+- **PDA-based escrow** for tournament prizes and lottery pools
+- **On-chain randomness** via Switchboard VRF for lottery draws
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Complete endpoint reference with auth, params, and response formats.
+  </Card>
+  <Card title="Protocol Overview" icon="network-wired" href="/protocol/overview">
+    VAP, AGG, and Hyperlink protocol specification.
+  </Card>
+  <Card title="sw4p" icon="bridge" href="/sw4p">
+    Cross-chain USDC bridge reference and SDK docs.
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/architecture/overview">
+    System architecture and component map.
+  </Card>
+</CardGroup>
+
+<Note>
+  See also: [Security & Fairness](/guides/security-and-fairness) · [API Usage & Proxying](/guides/api-usage-and-proxying) · [Arcade Overview](/arcade/overview)
+</Note>

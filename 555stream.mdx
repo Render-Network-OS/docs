@@ -4,66 +4,130 @@ icon: "video"
 description: "Browser-Based Live Streaming Studio"
 ---
 
+<Info>**Status: Live** — 555stream is operational at [stream.rndrntwrk.com](https://stream.rndrntwrk.com).</Info>
+
 # 555stream
 
-**555stream** is a browser-based live streaming studio that lets creators broadcast to 7 platforms simultaneously without downloading anything. Cloud encoding via Cloudflare means your machine never touches the heavy lifting.
+**555stream** is a browser-based live streaming studio that lets creators broadcast to 7 platforms simultaneously without downloading anything. Cloud encoding at the edge means your machine never touches the heavy lifting.
 
-## Features
+## Key Capabilities
 
-### 7-Platform Simulcast
-Broadcast to all of these at the same time:
-*   Twitch
-*   YouTube
-*   Kick
-*   X (Twitter)
-*   TikTok
-*   Zora
-*   pump.fun
+<CardGroup cols={3}>
+  <Card title="7-Platform Simulcast" icon="tower-broadcast">
+    Broadcast to Twitch, YouTube, Kick, X, TikTok, Zora, and pump.fun simultaneously. One stream, seven audiences.
+  </Card>
+  <Card title="Cloud Encoding" icon="cloud">
+    Video encoding offloaded to edge network. No GPU load, consistent quality regardless of local hardware.
+  </Card>
+  <Card title="Crypto-Native Controls" icon="wallet">
+    Configure permissions and actions from your wallet; wire in gamification and on-chain triggers.
+  </Card>
+  <Card title="Always-On Programming" icon="play">
+    Keep your channel active when you're offline with scheduled clips, mini-games, raids/quests, and the 555 Lottery.
+  </Card>
+  <Card title="Alice (AI Operator)" icon="robot">
+    Alice (built on Milaidy/ElizaOS v2) operates your stream: triggers L-Bar ads at optimal engagement, controls scenes, invites guests via WebRTC SFU, and schedules Always-On programming. 12+ custom plugins, 16 MCP ad actions.
+  </Card>
+  <Card title="Resilient Uptime" icon="clock">
+    Continuous, failover-ready ingest with auto-recovery and health checks.
+  </Card>
+</CardGroup>
 
-One stream, seven audiences. No extra hardware, no split setups.
+## Setup
 
-### Cloud Encoding
-Video encoding is offloaded to Cloudflare's edge network. Your browser captures and sends; the cloud does the rest. This means:
-*   No GPU load on your machine.
-*   Consistent quality regardless of local hardware.
-*   Lower latency through edge-node proximity.
+### Option A: Browser Studio (Recommended)
 
-### Scene Control
+Use the browser-based studio at [stream.rndrntwrk.com](https://stream.rndrntwrk.com) with wallet auth. No desktop encoder needed — cloud encoding handles everything server-side.
+
+<Steps>
+  <Step title="Connect Wallet & Configure Access">
+    Connect your Solana wallet to set stream ownership and define controller permissions (e.g., moderator wallets). If integrating pump.fun, ensure the project wallet has the required scopes.
+  </Step>
+  <Step title="Add RTMP Keys">
+    Add RTMP keys for each platform: Twitch, YouTube, Kick, X, TikTok, Zora, pump.fun.
+  </Step>
+  <Step title="Choose Scene Layout">
+    Select a layout template: Solo, 2-grid, 4-grid, PIP (Picture-in-Picture). Configure overlays: lower thirds, tickers, alerts, branding, and sponsor assets.
+  </Step>
+  <Step title="Start Stream & Monitor Health">
+    Start the session from the control surface. Monitor ingest health, bitrate, dropped frames, and auto-recovery status. We automatically route your stream to the best region based on audience distribution and live health metrics.
+  </Step>
+  <Step title="Schedule Always-On (Optional)">
+    Add an offline schedule: clips (from past streams and social channels), mini-games, raids/quests, and 555 Lottery windows. You can also hand this off to Auto Pilot.
+  </Step>
+</Steps>
+
+### Option B: OBS Browser Source (Fallback)
+
+If you are transitioning from OBS or need a hybrid setup, add the Render overlay as a browser source while you migrate scenes.
+
+```bash
+# OBS Browser Source (example)
+# 1) Sources → Add → Browser Source
+# 2) Name: "Render Overlay"
+# 3) URL: https://555.rndrntwrk.com/overlay
+# 4) Width: 1920, Height: 1080
+# 5) Enable "Shutdown source when not visible"
+```
+
+<Tip>
+  Prefer the native 555stream path for lowest latency and simpler operations. Use the OBS Browser Source during migration only. See [OBS Migration Guide](/guides/obs-migration).
+</Tip>
+
+## Scene Control
+
 Full scene composition in the browser:
-*   Templates: Solo, 2-grid, 4-grid, PIP (Picture-in-Picture).
-*   Runtime controls: Lower thirds, tickers, alerts.
-*   Overlay management for branding and sponsor assets.
+- **Templates**: Solo, 2-grid, 4-grid, PIP (Picture-in-Picture).
+- **Runtime controls**: Lower thirds, tickers, alerts.
+- **Overlay management** for branding and sponsor assets.
 
-### Guest Management
+## Guest Management
+
 WebRTC-based guest system:
-*   Invite guests to join your stream live.
-*   Control guest audio/video independently.
-*   Grid layouts adjust automatically.
+- Invite guests to join your stream live.
+- Control guest audio/video independently.
+- Grid layouts adjust automatically.
 
 ## L-Bar Ads
 
-The **L-Bar** is a non-interruptive ad format inspired by broadcast TV (think ESPN during live sports). Instead of cutting to an ad break, the stream content squeezes into an L-shaped region while the ad occupies the remaining space.
+The **L-Bar** is a non-interruptive ad format inspired by broadcast TV (think ESPN during live sports). Instead of cutting to an ad break, the stream content squeezes into an L-shaped region (74% x 71% program area with audio continuing) while the ad occupies the remaining space.
 
 ### How It Works
-*   **No Interruption**: Content keeps playing. The viewer never loses the stream.
-*   **AI-Triggered Placement**: Alice polls engagement signals every 5 seconds across 4 metrics. When the composite score crosses the 0.70 threshold, she triggers an ad placement at the optimal moment.
-*   **Two-Sided Marketplace**: Advertisers create campaigns with budgets and targeting. Streamers browse and accept campaigns. The protocol handles matching and payment.
+- **No Interruption**: Content keeps playing. The viewer never loses the stream.
+- **AI-Triggered Placement**: Alice polls engagement signals every 5 seconds across 4 metrics. When the composite score crosses the 0.70 threshold, she triggers an ad placement at the optimal moment.
+- **Two-Sided Marketplace**: Advertisers create campaigns with budgets and targeting. Streamers browse and accept campaigns. The protocol handles matching and payment.
 
 ### Ad Revenue Flow
-Ad revenue follows the standard economic cascade:
-1.  10% ARP to audience.
-2.  Post-ARP: 50% creator, 50% platform.
-3.  Platform share: 70% treasury, 20% burns, 5% $555 reserve, 5% SOL/USDC reserve.
+Ad revenue follows the standard [economic cascade](/how-it-works):
+1. 10% ARP to audience.
+2. Post-ARP: 50% creator, 50% platform.
+3. Platform share: 70% treasury, 20% burns, 5% $555 reserve, 5% SOL/USDC reserve.
 
 ## Alice as Operator
 
-Alice (the autonomous AI agent) can operate 555stream without human intervention:
-*   **Start/Stop Broadcasts**: Alice can initiate and end streams on schedule.
-*   **Trigger Ads**: Monitors engagement and places L-Bar ads at optimal moments.
-*   **Manage Guests**: Invites and controls guest appearances.
-*   **Control Overlays**: Switches scenes, updates tickers, manages alerts.
+[Alice](/alice/persona) (the autonomous AI agent) can operate 555stream without human intervention:
+- **Start/Stop Broadcasts**: Alice can initiate and end streams on schedule.
+- **Trigger Ads**: Monitors engagement and places L-Bar ads at optimal moments.
+- **Manage Guests**: Invites and controls guest appearances.
+- **Control Overlays**: Switches scenes, updates tickers, manages alerts.
+- **Schedule Programming**: Auto Pilot automates Always-On programming — schedules events and rotates experiences.
 
 This enables 24/7 streaming capabilities where Alice runs the broadcast and the creator joins for structured segments.
+
+## Creator Token Integration
+
+If you already have a Creator Token, connect it to add token trading fees into your revenue stream. If you don't, you can mint a Creator Token with [Render Expand](/products/render-expand) — it wires your token into the flywheel automatically.
+
+- **Staker eligibility**: All stakers are eligible for revenue sharing based on their staked amount
+- **Staking choice**: Creators may configure staking to their own token or to $555
+- **Buybacks**: A minimum of 20% of all creator revenue is used to buy back the staked token (creators can raise this above 20%)
+- **Controls**: Gate actions (chat modes, overlay triggers) behind $555 or Creator Token thresholds; associate moderator wallets for management
+
+## Operations & Reliability
+
+- **Session Recovery**: Automatic reconnection and state recovery for transient network events.
+- **Health Metrics**: Ingest health, frame drops, CPU/network load recommendations, bitrate guidance.
+- **Failover & Regions**: Region selection with hot fallback; published bitrate and resolution limits per region.
 
 ## Architecture
 
@@ -77,3 +141,20 @@ This enables 24/7 streaming capabilities where Alice runs the broadcast and the 
 | **SFU Service** | Selective Forwarding Unit for multi-party WebRTC |
 | **Media Engine** | Video composition and transcoding pipeline |
 | **Capture Service** | Browser-based capture for recording and clips |
+
+## Roadmap: Decentralized Stream
+
+> **Note:** Decentralized streaming is a long-term vision item. The current architecture is centralized cloud infrastructure. These roadmap items have no active implementation path yet.
+
+- Peer-assisted distribution and resilient ingest
+- Community-operated nodes with performance and reputation metrics
+- Censorship-resistant architecture governed by a future DAO
+
+## Cross-Links
+
+- Migration Guide: [OBS Replacement Migration](/guides/obs-migration)
+- Developer Guide: [API Usage & Proxying](/guides/api-usage-and-proxying)
+- Dashboard: [CTRL Panel](/products/ctrl-control-panel)
+- Gamification: [555 Arcade](/arcade/overview)
+- Monetization: [Monetization Module](/products/monetization-module)
+- Tokens: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution](/tokenomics/fee-distribution)

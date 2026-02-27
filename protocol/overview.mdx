@@ -1,56 +1,142 @@
 ---
 title: "Protocol Overview"
 icon: "shield"
-description: "The Invisible Engine powering the Streaming Economy"
+description: "The Invisible Engine powering the Render Network Protocol"
 ---
+
+<Note>**WIP** — Specifications are under active development. Interfaces, receipt formats, and facilitator options may evolve as we progress through pilots and partner integrations.</Note>
 
 # The Invisible Engine
 
-The **555x402 Protocol** is the infrastructure layer that powers the 555 Ecosystem. It is designed to be frictionless, verifiable, and entity-agnostic.
+The **555x402 Protocol** is the infrastructure layer that powers the Render Network Protocol. It is designed to be frictionless, verifiable, and entity-agnostic. It unifies the $555 utility token with the x402 payment pattern to make Web2 payments feel native while driving on-chain outcomes.
 
 ## Core Philosophy
 
 Traditional streaming platforms (Twitch, YouTube) are **Black Boxes**. Creators don't own their audience, and advertisers can't verify engagement.
 
 **555x402** changes this by introducing:
-1.  **Verifiable Attention**: Cryptographic proof that a user actually engaged.
-2.  **Direct Settlement**: Payments flow directly from Advertiser/User to Creator/Platform via Solana with sub-2-second finality.
-3.  **Audience Inventory**: Turning engagement into a verifiable, tradable asset.
-4.  **Entity-Agnostic Design**: The protocol treats all participants — human and AI — identically. No entity type checks.
-
-## Architecture
-
-The protocol is built on a multi-layer architecture:
-
-*   **Solana**: On-chain settlement, token operations, program execution.
-*   **Edge Layer**: Distributed encoding, caching, and real-time session management.
-*   **Service Layer**: Backend API, payment routing, and verification.
-*   **Client Layer**: Browser-based applications (Arcade, 555stream).
-*   **Agent Layer**: Autonomous AI operator (Alice) with 12+ plugins.
-
-### Components
-
-| Component | Function |
-| :--- | :--- |
-| **VAP** | Verifies cryptographic heartbeats from client sessions to prove engagement. |
-| **AGG** | Routes HTTP 402 payment requests across chains via Jupiter, CCTP V2, and Kora. |
-| **Hyperlink** | Smart payment links with embedded wallets, analytics, and social attribution. |
-| **sw4p** | Cross-chain CCTP V2 USDC bridge (Solana, Base, Polygon). 5 independent security audits. |
-| **555stream** | Browser-based streaming studio with 7-platform simulcast and L-Bar ads. |
-| **Arcade** | 20 games integrated with Proof of Engagement. |
-| **Alice** | Autonomous AI operator (Milaidy/ElizaOS v2) managing streams, ads, and community. |
+1. **Verifiable Attention**: Cryptographic proof that a user actually engaged.
+2. **Direct Settlement**: Payments flow directly from Advertiser/User to Creator/Platform via Solana with sub-2-second finality.
+3. **Audience Inventory**: Turning engagement into a verifiable, tradable asset.
+4. **Entity-Agnostic Design**: The protocol treats all participants — human and AI — identically. No entity type checks.
 
 ## The "402" Standard
 
 The system embraces the HTTP **402 Payment Required** status code. Content is gated by default, and the protocol negotiates payment — via micro-transaction, subscription, or ad-view — instantly.
 
+The flow is simple: a request hits a 402-protected endpoint, the client receives a signed Offer, completes payment via a facilitator, and retries with an `X-PAYMENT` proof. The backend verifies, settles into the Monetization Contract on Solana, and disburses. To the user, it looks like normal web payments; to the network, every interaction feeds the flywheel.
+
+![555x402 Diagram](/images/555x402-diagram.jpeg)
+
+## How It Works
+
+<Steps>
+  <Step title="402 Offer">
+    Client calls a protected endpoint (e.g., `POST /api/game/entry`). Service returns HTTP 402 with a JSON Offer: amount, currency, TTL, purpose, and signature.
+  </Step>
+  <Step title="Approval">
+    Client pays via fiat rails or USDC through a facilitator. Receives a proof/receipt that is verifiable on-chain.
+  </Step>
+  <Step title="Retry with Proof">
+    Client retries original request including `X-PAYMENT: Bearer <proof>`. Service verifies and grants access.
+  </Step>
+  <Step title="Settlement & Payouts">
+    Facilitator converts to `$555` notional and posts to the Monetization Contract (ARP, buybacks, treasury, creator shares). Viewers/clippers get off-chain payouts.
+  </Step>
+</Steps>
+
+## Architecture
+
+The protocol is built on a multi-layer architecture:
+
+- **Solana**: On-chain settlement, token operations, program execution.
+- **Edge Layer**: Distributed encoding, caching, and real-time session management.
+- **Service Layer**: Backend API, payment routing, and verification.
+- **Client Layer**: Browser-based applications (Arcade, 555stream).
+- **Agent Layer**: Autonomous AI operator (Alice) with 12+ plugins.
+
+### Components
+
+| Component | Function | Status |
+| :--- | :--- | :--- |
+| **[VAP](/protocol/vap)** | Verifies cryptographic heartbeats from client sessions to prove engagement. | v1 Live, v2 Validated |
+| **[AGG](/protocol/agg)** | Routes HTTP 402 payment requests across chains via Jupiter, CCTP V2, and Kora. | Partially Implemented |
+| **[Hyperlink](/protocol/hyperlink)** | Smart payment links with embedded wallets, analytics, and social attribution. | Partially Implemented |
+| **[sw4p](/sw4p)** | Cross-chain CCTP V2 USDC bridge (Solana, Base, Polygon). 5 independent security audits. | Live |
+| **[555stream](/555stream)** | Browser-based streaming studio with 7-platform simulcast and L-Bar ads. | Live |
+| **[Arcade](/arcade/overview)** | 20 games integrated with Proof of Engagement. | Live |
+| **[Alice](/alice/persona)** | Autonomous AI operator (Milaidy/ElizaOS v2) managing streams, ads, and community. | Live |
+
 ## The Economic Model
 
 Every dollar follows the same cascade:
 
-1.  **10% ARP** (Audience Reward Pool) distributed to the audience who generated the engagement.
-2.  **Post-ARP**: 50% Creator / 50% Platform.
-3.  **Platform Share**: 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
+1. **10% ARP** (Audience Reward Pool) distributed to the audience who generated the engagement.
+2. **Post-ARP**: 50% Creator / 50% Platform.
+3. **Platform Share**: 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
 
 ### Structural Deflation
 The 20% buyback-and-burn creates a permanent deflationary pressure on $555. Every dollar of platform revenue removes tokens from circulation.
+
+## Integrations
+
+- **Studio & Control Panel** — Sync overlays across Twitch/Kick/YouTube. Unpaid interactions return 402; approvals instantly update overlays and budgets.
+- **555 Gamification Engine** — Gate boosts and entries with tiny fiat fees that pool into `$555` prize funds; reward viewers off-chain.
+- **Monetization & Marketplace** — Capture subs/tips and ad buys; instant bids tie into assets and contract distributions.
+- **[Render Expand](/products/render-expand)** — Premium multi-streaming and fan-to-stake funnels; route a set percent to buybacks/ARP automatically.
+- **Hybrid Access** — Paid content on YouTube/Kick via 402; orchestrator nodes anchor access and settlements.
+
+## Benefits
+
+**Viewers**
+- Frictionless boosts/entries (e.g., $0.05 fiat → `$555` pooled) with real-time feedback.
+- Gated highlights/reactions that feel like normal web payments; off-chain rewards.
+- Optional staking funded by Web2 earnings.
+
+**Creators**
+- Near-net settlement (vs. 30–50% on legacy platforms) and faster cash flow.
+- Crypto UX abstracted; link accounts, configure once, and go.
+- On-chain transparency (contract events) with off-chain payout portability.
+
+**Advertisers**
+- Programmatic, verifiable placements; sponsored interactions welcomed by staked audiences.
+- Micro-campaigns at low fees with measurable ROI and instant approvals.
+
+## Security & Compliance
+
+- **Facilitator Governance** — KYC/AML/PCI where required; geo-rolled enablement.
+- **Proofs & Replay Protection** — Signed JWT receipts with on-chain verifiable hash commitments, HMAC `X-PAYMENT`, TTL, and nonce checks.
+- **Contract Controls** — Versioned split templates, audit trails, emergency shutoffs.
+
+## Developer Guide
+
+1) **Protect Endpoint**: Return 402 with JSON Offer and `WWW-Authenticate: X402 realm="render"`.
+
+2) **Approve & Retry**: Client processes fiat/USDC with facilitator; retries original call with `X-PAYMENT` proof.
+
+3) **Verify & Settle**: Verify proof, map to `$555` notional, emit events, and post to contract; enqueue off-chain payouts.
+
+**Events**: `402OfferCreated`, `402PaymentApproved`, `402SettlementQueued`, `402SettlementPosted`, `402PayoutComplete`.
+
+## KPIs
+
+- Creator net uplift (vs. baseline splits)
+- Viewer participation and repeat purchases
+- `$555` buybacks funded and ARP growth
+- Time-to-cash (creator), payout success rates (viewers/clippers)
+
+## Rollout
+
+- **Phase 1** — Twitch/Kick overlays + games (tips/subs, boosts), facilitator (US), sub-cent approvals.
+- **Phase 2** — YouTube highlights marketplace, multi-currency, global payouts.
+- **Phase 3** — Programmatic ads, AI agents, partner bundles; open SDK GA.
+
+## FAQs
+
+- **Do viewers need wallets?** No — pay with fiat or USDC; SDK abstracts crypto.
+- **How are micro-amounts viable?** Aggregation and favorable facilitator pricing enable sub-cent approvals.
+- **Can I change splits?** Within governance bounds; contract templates are versioned and creator-scoped.
+
+<Note>
+  Related: [Fee Distribution](/tokenomics/fee-distribution) · [Monetization Contract](/products/monetization-contract) · [CTRL Control Panel](/products/ctrl-control-panel)
+</Note>

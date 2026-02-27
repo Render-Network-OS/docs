@@ -1,0 +1,164 @@
+---
+title: "VAP — Verifiable Attention Protocol"
+icon: "eye"
+description: "Cryptographic verification of user engagement"
+---
+
+<Info>**Status: Live (v1)** — VAP v1 is operational. VAP v2 is validated (234 tests passing) but not yet deployed.</Info>
+
+# The Heartbeat of the Economy
+
+**VAP (Verifiable Attention Protocol)** is the mechanism that transforms "playing a game" or "watching a stream" into verifiable work. It is the Proof of Engagement layer of the Render Network Protocol.
+
+Unlike traditional analytics which are fire-and-forget, VAP is a bidirectional, cryptographic handshake between the Client (User) and the Server (Verifier).
+
+## Protocol Mechanics (v1 — Live)
+
+VAP v1 operates over a secure WebSocket connection.
+
+### 1. The Handshake
+When a session begins, the client must authenticate and establish a secure channel.
+
+**Client -> Server (INIT)**
+```json
+{
+  "type": "INIT",
+  "payload": {
+    "appId": "sector-13",
+    "wallet": "HuW...9zP",
+    "timestamp": 1717171717
+  },
+  "signature": "Ed25519_Signature_of_Payload"
+}
+```
+
+**Server -> Client (ACK)**
+```json
+{
+  "type": "ACK",
+  "sessionId": "sess_88239123",
+  "nonce": 0,
+  "difficulty": 1
+}
+```
+
+### 2. The Heartbeat (Pulse)
+Every `N` seconds (dynamic based on trust score), the client sends a Pulse proving liveness and state continuity.
+
+**Client -> Server (PULSE)**
+```json
+{
+  "type": "PULSE",
+  "sessionId": "sess_88239123",
+  "nonce": 1,
+  "delta": {
+    "inputHash": "sha256_of_mouse_movements",
+    "gameStateHash": "sha256_of_memory_snapshot",
+    "score": 150
+  },
+  "signature": "Ed25519_Signature_of_Delta"
+}
+```
+
+### 3. State Channels & Settlement
+To scale to millions of concurrent users, VAP uses **State Channels**. We do not write every pulse to Solana.
+
+1. **Off-Chain Aggregation**: The VAP Verifier maintains a session ledger in an in-memory store. It verifies signatures and the hash chain (Nonce `N` must follow `N-1`).
+2. **The Dispute Window**: The session is kept optimistic. If the server detects cheating, it can slash the user's reputation immediately.
+3. **On-Chain Settlement**: When the session ends, the Verifier submits a Settlement Transaction to Solana. Only the result (e.g., "User X earned 500 points") is written on-chain.
+
+## Anti-Fraud Engine
+
+VAP includes a multi-layered anti-fraud engine to ensure Proof of Human.
+
+### Layer 1: Cryptographic Integrity
+- **Signature Verification**: Every packet must be signed by the user's wallet.
+- **Replay Protection**: Nonces ensure packets cannot be replayed.
+
+### Layer 2: Behavioral Heuristics
+The VAP Verifier analyzes the `inputHash` and `gameStateHash`.
+- **Entropy Analysis**: Human input has high entropy (micro-jitters). Bots are too perfect or too random.
+- **Timing Analysis**: Reaction times below physiological thresholds are flagged as suspicious.
+- **Reputation**: Long-term wallet history affects Trust Score. Higher trust = longer pulse intervals.
+
+### Layer 3: Active Challenges (Turing Tests)
+At random intervals, the server sends a `CHALLENGE` packet.
+- **"Click the Glitch"**: An overlay appears in-game that must be clicked.
+- **"Input Sequence"**: "Press UP, DOWN, A" within 2 seconds.
+
+Failure to respond results in session termination and reputation slashing.
+
+## Integration Guide
+
+Developers can integrate VAP into any HTML5 game using the VAP SDK.
+
+```typescript
+import { VAP } from '@555x402/vap';
+
+const vap = new VAP({
+  appId: 'sector-13',
+  wallet: window.solana,
+});
+
+await vap.connect();
+
+game.on('update', (state) => {
+  vap.recordFrame({
+    score: state.score,
+    position: state.player.position,
+    inputs: inputBuffer
+  });
+});
+
+vap.on('challenge', (challenge) => {
+  game.showOverlay(challenge);
+});
+```
+
+---
+
+## VAP v2 — Validated Design (Not Yet Deployed)
+
+VAP v2 research is complete with 234 tests passing and all 5 attack trees validated as SECURE. This section documents the validated design that will replace v1. See also: [VAP v2 Research Specification](/protocol/vap-v2).
+
+### Entity-Agnostic Design
+Zero protocol components check entity type. No differential rates between human and AI participants. All staked participants are treated equally — the protocol does not care *what* you are, only *what you contribute*.
+
+### Epoch-Based System
+- **Epoch Duration**: 6 hours (4 per day).
+- **Batch Auctions**: Advertisers bid for attention credits within each epoch. Settlement happens at epoch boundaries.
+- **Attention Credits**: 1 AC = $0.001 USDC. The atomic unit of verified attention.
+
+### Stake-Based Participation
+- **Minimum Stake**: 55,555 $555 tokens to participate.
+- **Stake Weight**: Logarithmic formula `ln(1 + S/27,778)` capped at 5.0. Diminishing returns prevent whale domination.
+- **Activation**: 7-day warmup period after staking.
+- **Maturation**: Full weight reached at 90 days.
+
+### The Burn Loop
+1. Burn $555 at oracle price to mint equivalent Attention Credits.
+2. Advertisers bid ACs in epoch auctions for verified airtime.
+3. Contributors earn ACs based on stake-weighted verified engagement.
+4. ARP (10%) distributed to audience from auction proceeds.
+
+### ContributionProof
+296-byte proof format containing session data, stake reference, and cryptographic signature. Entity-agnostic by design — the same proof format applies to all participants regardless of type.
+
+### Validated Security Results
+
+All 5 attack vectors tested and marked SECURE:
+
+| Attack Vector | ROI | Status |
+| :--- | :--- | :--- |
+| Sybil (identity splitting) | -81.7% | SECURE |
+| Fabrication (fake engagement) | -179.7% | SECURE |
+| Collusion (coordinated manipulation) | Negative | SECURE |
+| Eclipse (network isolation) | Negative | SECURE |
+| Griefing (economic disruption) | Negative | SECURE |
+
+Maximum Sybil advantage: 1.80x at 100 identities — not enough to overcome the stake cost.
+
+### Governance Trinity
+1. **ve$555 DAO**: Token-weighted governance for protocol parameters.
+2. **Algorithmic Layer**: Automated parameter adjustment within DAO-set bounds.
+3. **Alice Layer**: Real-time operational decisions within algorithmic bounds.

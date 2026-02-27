@@ -4,10 +4,6 @@ icon: "wrench"
 description: "Common issues and their solutions"
 ---
 
-<Info>
-  WIP — This guide is being updated to reflect the latest OS workflows.
-</Info>
-
 ## Quick Issue Resolution
 
 Find solutions to the most common Render Network problems with our comprehensive troubleshooting guide.
@@ -17,7 +13,7 @@ Find solutions to the most common Render Network problems with our comprehensive
 ### Connection Problems
 
 <AccordionGroup>
-  <Accordion title="Wallet Not Connecting" icon="wifi-off">
+  <Accordion title="Wallet Not Connecting" icon="wifi-slash">
     **Common Causes & Solutions:**
 
     **Browser Extension Issues:**
@@ -36,7 +32,7 @@ Find solutions to the most common Render Network problems with our comprehensive
 
   </Accordion>
 
-  <Accordion title="Transaction Failures" icon="x-circle">
+  <Accordion title="Transaction Failures" icon="circle-xmark">
     **Transaction Debugging:**
 
     **SOL Balance Issues:**
@@ -69,5 +65,101 @@ Find solutions to the most common Render Network problems with our comprehensive
     - ✅ Test with different RPC endpoints
     - ✅ Clear wallet transaction history
 
+  </Accordion>
+</AccordionGroup>
+
+## Gaming Issues
+
+<AccordionGroup>
+  <Accordion title="Score Not Recording" icon="circle-xmark">
+    **Check the following:**
+
+    - ✅ Verify your wallet is connected — scores are tied to your wallet session
+    - ✅ Confirm your VAP (Verified Action Proof) session is active — if your Ed25519 signature has expired, reconnect your wallet to start a new session
+    - ✅ Ensure you completed the game round fully (partial rounds may not submit scores)
+    - ✅ Check your browser console for network errors during score submission
+    - ✅ If the issue persists, try a different browser or disable extensions that may interfere with WebSocket connections
+  </Accordion>
+
+  <Accordion title="Leaderboard Delays" icon="clock">
+    **Expected behavior and troubleshooting:**
+
+    - Leaderboard scores sync every few seconds — brief delays are normal during high-traffic periods
+    - If your score does not appear after 30 seconds, refresh the leaderboard page
+    - Check if you are in **beta mode** — beta mode games may apply score penalties or separate leaderboard tracking
+    - Scores from games that trigger anti-cheat flags may be held for review before appearing on the leaderboard
+  </Accordion>
+
+  <Accordion title="Game Not Loading" icon="triangle-exclamation">
+    **Resolution steps:**
+
+    - ✅ Clear browser cache and cookies, then reload
+    - ✅ Confirm browser compatibility — Chrome, Brave, and Edge are recommended; Safari may have limited WebGL support
+    - ✅ Disable hardware acceleration if you experience rendering issues
+    - ✅ Check that JavaScript is enabled and no content blockers are preventing game assets from loading
+    - ✅ Try incognito/private browsing mode to rule out extension conflicts
+  </Accordion>
+</AccordionGroup>
+
+## Streaming Issues
+
+<AccordionGroup>
+  <Accordion title="RTMP Connection Failures" icon="tower-broadcast">
+    **Diagnose and fix RTMP problems:**
+
+    - ✅ Verify your stream key is correct — copy it fresh from CTRL Panel and ensure no trailing spaces
+    - ✅ Confirm the RTMP URL matches the destination platform (e.g., `rtmp://live.twitch.tv/app/`)
+    - ✅ Check firewall and router settings — RTMP uses port 1935 by default; ensure it is not blocked
+    - ✅ Test with a single destination first before enabling multi-platform simulcast
+    - ✅ If using OBS, check the "Stream" settings and verify the server selection
+  </Accordion>
+
+  <Accordion title="Encoding Problems" icon="film">
+    **Common encoding fixes:**
+
+    - ✅ Ensure camera and microphone permissions are granted in your browser and OS settings
+    - ✅ Check that no other application is using the camera or microphone exclusively
+    - ✅ Lower your output resolution or bitrate if your system is struggling — 720p at 2500 kbps is a safe baseline
+    - ✅ Update GPU drivers if hardware encoding (NVENC/AMF) is producing artifacts
+    - ✅ Restart your encoding software if the stream output freezes
+  </Accordion>
+
+  <Accordion title="Multi-Platform Sync Issues" icon="arrows-split-up-and-left">
+    **Troubleshooting simulcast:**
+
+    - ✅ Validate each platform-specific stream key individually before enabling simulcast
+    - ✅ Some platforms (YouTube, Kick) require the stream to be scheduled or the channel to be in live mode before accepting RTMP input
+    - ✅ Check that your upload bandwidth supports the combined bitrate for all destinations
+    - ✅ If one destination fails while others work, isolate and retest that platform's key independently
+  </Accordion>
+</AccordionGroup>
+
+## Reward Claims
+
+<AccordionGroup>
+  <Accordion title="Merkle Proof Errors" icon="tree">
+    **Understanding and resolving Merkle claim issues:**
+
+    - Merkle distribution trees are generated at settlement time — if your proof is invalid, your claim may not yet be included in the current tree
+    - ✅ Wait for the next settlement cycle (Monday 05:55 CST) and retry
+    - ✅ Verify that the wallet address you are claiming from matches the address that earned the rewards
+    - ✅ Check the on-chain Merkle root to confirm your leaf is included using a block explorer
+  </Accordion>
+
+  <Accordion title="Settlement Timing" icon="calendar">
+    **Weekly settlement schedule:**
+
+    - Settlements are processed every **Monday at 05:55 CST**
+    - Rewards earned during the week become claimable after the settlement transaction is confirmed on-chain
+    - Allow up to 1 hour after the scheduled time for the Merkle tree to be published and proofs to become available
+  </Accordion>
+
+  <Accordion title="Self-Withdrawal Process" icon="wallet">
+    **Claiming your rewards:**
+
+    - Navigate to the claims page in CTRL Panel and connect the wallet that earned the rewards
+    - Click "Claim" to submit the Merkle proof transaction — you will need a small amount of SOL for the transaction fee
+    - ✅ If the claim transaction fails, check that you have not already claimed for that period
+    - ✅ Unclaimed rewards remain available until the expiry window closes — check the [Fee Distribution](/tokenomics/fee-distribution) page for expiry details
   </Accordion>
 </AccordionGroup>

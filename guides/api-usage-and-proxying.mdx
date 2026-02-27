@@ -4,17 +4,13 @@ icon: "server"
 description: "SSR/edge proxy patterns to keep backend endpoints off the frontend"
 ---
 
-<Info>
-  WIP — This guide is being updated to reflect the latest OS workflows.
-</Info>
-
 ## Principles
 
 - Do not expose backend endpoints in frontend code
 - Use SSR/edge routes to forward authenticated calls
 - Keep secrets in server-only env vars
 
-## Next.js Example
+## Server-Side Proxy Example
 
 ```ts
 // pages/api/tokens/balance.ts
@@ -25,7 +21,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const auth = req.headers.authorization;
-  const r = await fetch(process.env.RENDER_BACKEND + "/balance", {
+  const r = await fetch(process.env.BACKEND_URL + "/balance", {
     headers: { authorization: auth || "" }
   });
   res.status(r.status).send(await r.text());
@@ -39,8 +35,8 @@ export default async function handler(
 
 ## Cross-Links
 
-- Integration: [Integration Guide](/integration)
-- SDK: [Render Stream SDK](/guides/render-stream-sdk)
+- OBS Integration: [OBS Integration Guide](/guides/obs-integration)
+- For Developers: [Developer Onboarding](/for-developers)
 
 
 

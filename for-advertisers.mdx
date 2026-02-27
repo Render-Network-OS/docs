@@ -1,0 +1,107 @@
+---
+title: "For Advertisers"
+icon: "bullseye-arrow"
+description: "Reach verified engaged audiences with non-interruptive ads"
+---
+
+## What You Get
+
+- **Cryptographically verified engagement metrics** — not self-reported, not estimated
+- **Non-interruptive L-Bar ad format** that keeps content playing (like ESPN during live sports)
+- **On-chain campaign contracts** with transparent receipts on Solana
+- **AI-optimized ad placement** — Alice monitors engagement and triggers ads at peak moments
+- **Two-sided marketplace** — browse creators and collectives, target by verified metrics
+
+## The L-Bar Ad Format
+
+The L-Bar is a non-interruptive ad unit. Instead of cutting to an ad break, the stream content squeezes into an L-shaped region while the ad occupies the remaining space. The viewer never loses the stream.
+
+**How placement works:**
+- Alice polls 4 engagement signals every 5 seconds
+- When the composite engagement score crosses the **0.70 threshold**, she triggers an ad placement
+- Metrics driving placement: watch time, active plays, engagement score, staking TVL
+- Result: Ads appear at moments of peak attention, not during lulls
+
+## Campaign Options
+
+### Option A: Pay for Ads
+
+Direct budget injection into the protocol's distribution system:
+
+- **Pricing models**: CPM, CPC, or CPA
+- **Bidding**: Fixed price or auction with reserve floors and auto-bid ranges
+- **Pacing**: Total and daily budgets with even or as-fast-as-possible delivery
+- **Scheduling**: Flight windows, dayparting, frequency caps per viewer or per session
+- **Creative**: Weighting and A/B variants supported
+
+### Option B: Stake Creator Token
+
+<Info>**Status: Partially Implemented** — Creator Token staking is being rolled out via [Render Expand](/products/render-expand).</Info>
+
+Become a stakeholder in a creator's economy:
+
+- Benefit from buybacks and treasury allocation as the creator grows
+- Aligned incentives — your success is the creator's success
+- Long-term positioning vs. per-campaign spend
+
+## Targeting & Measurement
+
+### Targeting
+- **Geography, language, device** presets
+- **Engagement cohorts** — stakers only, holders above threshold, activity-based segments
+- **Creator tags** and category fit
+- **Brand safety** — category filters, blocklists/allowlists, fallback creatives
+
+### Measurement
+- **Impressions, viewability, CTR, conversions** — all backed by on-chain receipts
+- **Public dashboards** for campaign transparency
+- First-party analytics included; third-party beacons optional
+
+## Revenue Flow (Full Transparency)
+
+When you fund a campaign, every dollar is traceable on Solana:
+
+| Step | Allocation | Recipient |
+| :--- | :--- | :--- |
+| **1. ARP** | 10% off the top | Directly to the audience you reached (verified engagement) |
+| **2. Creator** | 50% of post-ARP | Creator's wallet |
+| **3. Platform** | 50% of post-ARP | 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve |
+
+Programmatic payouts via PDAs with receipt events. No manual intervention, no hidden fees.
+
+## Workflow
+
+<Steps>
+  <Step title="Browse Creators">
+    Explore creators and collectives with verified metrics — watch time, plays, engagement score, staking TVL. All metrics are boosted by the 555 Engine and verifiable on-chain.
+  </Step>
+  <Step title="Define Campaign">
+    Set targeting, budget, creative, and schedule. Choose placement type: overlays (lower-thirds, sidebars, takeovers), sponsored segments, product placements, or read-outs.
+  </Step>
+  <Step title="Fund On-Chain">
+    Fund your campaign via the [Monetization Contract](/products/monetization-contract). The contract splits revenue automatically (10% ARP, 20%+ Buybacks, 70% Treasury).
+  </Step>
+  <Step title="Monitor Live">
+    Track metrics and on-chain receipts in real-time. Attribution events fire as ads render.
+  </Step>
+  <Step title="Settle & Report">
+    Settlement and performance reports are generated automatically. All data is verifiable on-chain.
+  </Step>
+</Steps>
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="Monetization Module" icon="coins" href="/products/monetization-module">
+    Full marketplace, targeting, bidding, and payout reference.
+  </Card>
+  <Card title="Monetization Contract" icon="file-code" href="/products/monetization-contract">
+    On-chain contract for campaign funding and splits.
+  </Card>
+  <Card title="555stream" icon="video" href="/555stream">
+    L-Bar ad format details and Alice-driven placement.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    The full ARP / Buybacks / Treasury breakdown.
+  </Card>
+</CardGroup>
