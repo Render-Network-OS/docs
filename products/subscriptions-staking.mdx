@@ -1,33 +1,48 @@
 ---
 title: "Subscriptions & Staking"
+icon: "lock"
 description: "Turn viewers into stakeholders with staked access and profit sharing"
 ---
 
+<Info>**Status: Partially Implemented** — Token-gated access tiers are live. Full staking-based subscriptions with unbonding mechanics are planned.</Info>
+
 ## Concept
 
-Subscriptions become investments. Viewers stake into a creator’s economy to unlock benefits and share in revenue distributed via the 70% Profit Pool.
+Subscriptions become investments. Holding $555 tokens unlocks tiered access, reward multipliers, and participation in the ecosystem economy.
 
-## How It Works
+> **Status (Feb 2026):** The current subscription model operates through **$555 token holdings** and the **points/credits system** — not through creator-level staking. Creator Token staking infrastructure is planned for a future phase. The VAP v2 protocol spec defines a **55,555 $555 minimum stake** with logarithmic stake weighting and **ve$555 DAO governance** (vote-escrowed $555 with 5 lock tiers, 1 month to 4 years).
+
+## How It Works Today
 
 <Steps>
-  <Step title="Connect & Stake">
-    Viewers connect their wallet and stake to the creator’s economy. Staking may use $555 or the Creator Token depending on the creator’s configuration.
+  <Step title="Hold $555 Tokens">
+    Hold $555 tokens in your wallet to unlock tiered access. The tier system (curious / creator / owner / institution) is based on token balance or credit burns, with a 12-dimension capability matrix.
   </Step>
-  <Step title="Earn & Participate">
-    Stakeholders accrue rewards from the Profit Pool and gain voting power for the creator/stakeholder split within bounds.
+  <Step title="Earn Points & Credits">
+    **Points**: Earned through gameplay, quests, social tasks, referrals. 10,000 points = 1 USDC (fixed). Token-gated multipliers: 1x base, 5x at 55,555, 55x at 555,555, 555x at 5,555,555 $555.
+    **Credits**: 1 credit = $0.01 USD. Append-only ledger with 1.25x burn bonus for $555 burns.
   </Step>
-  <Step title="Unstake & Cooldown">
-    Unstaking is subject to per‑creator cooldowns to preserve stability.
+  <Step title="Weekly USDC Settlement">
+    Every Monday at 05:55 CST, earned rewards settle to USDC via Merkle-tree on-chain commitment and SPL `transferChecked`.
   </Step>
 </Steps>
 
+## VAP v2 Staking (Designed, Not Yet Implemented)
+
+- **Minimum stake**: 55,555 $555 tokens
+- **Stake weight**: Logarithmic formula `w = ln(1 + stake/27,778)` — resists whale dominance
+- **ve$555 DAO governance**: Vote-escrowed $555 with 5 lock tiers (1 month to 4 years), up to 4.0x multiplier at max lock
+- **Governance Trinity**: ve$555 DAO (community votes) > Algorithmic (5 auto-adjusted parameters) > Alice (operational scope)
+- **Delegation**: Supported for ve$555 governance power
+
 ## Benefits
 
-- Priority access to features and drops
-- Profit sharing via the algorithmic split
-- Voting rights for split adjustments and policy bounds
+- Tiered access to CTRL Panel features and ecosystem modules
+- Token-gated reward multipliers (5x/55x/555x)
+- Weekly USDC settlement from points/credits
+- Future: ve$555 governance voting rights for protocol parameters
 
 <Note>
-  Related: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution](/tokenomics/fee-distribution)
+  Related: [$555 Token](/tokenomics/555-token) · [Fee Distribution](/tokenomics/fee-distribution)
 </Note>
 

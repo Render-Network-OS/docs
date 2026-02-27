@@ -3,7 +3,7 @@
 Welcome to the official documentation for **Render Network** - the future of sustainable streaming powered by blockchain technology.
 
 [![Deployed with Mintlify](https://img.shields.io/badge/Deployed%20with-Mintlify-8B5CF6)](https://mintlify.com)
-[![Render Network](https://img.shields.io/badge/Platform-Render%20Network-0b8cb7)](https://rendernet.work)
+[![Render Network](https://img.shields.io/badge/Platform-Render%20Network-0b8cb7)](https://rndrntwrk.com)
 
 ## 🌟 Overview
 
@@ -172,7 +172,7 @@ MIXPANEL_TOKEN=your_mixpanel_token
 GA_TRACKING_ID=your_ga_tracking_id
 
 # Custom domain (optional)
-CUSTOM_DOMAIN=rendernet.work
+CUSTOM_DOMAIN=rndrntwrk.com
 ```
 
 ## 🤝 Contributing
@@ -288,7 +288,7 @@ mint dev --port 3001
 - 📖 [Mintlify Documentation](https://mintlify.com/docs)
 - 🐛 [GitHub Issues](https://github.com/rndrntwrk/docs/issues)
 - 💬 [Discord Community](https://discord.gg/35UNPtu8M5)
-- 📧 [Support Email](mailto:support@rendernet.work)
+- 📧 [Support Email](mailto:support@rndrntwrk.com)
 
 ## 📊 Analytics & Monitoring
 
@@ -360,4 +360,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ by the Render Network Team**
 
-🌐 [rendernet.work](https://rendernet.work) • 📧 [support@rendernet.work](mailto:support@rendernet.work) • 💬 [Discord](https://discord.gg/35UNPtu8M5)
+🌐 [rndrntwrk.com](https://rndrntwrk.com) • 📧 [support@rndrntwrk.com](mailto:support@rndrntwrk.com) • 💬 [Discord](https://discord.gg/35UNPtu8M5)

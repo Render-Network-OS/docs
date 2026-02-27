@@ -1,26 +1,35 @@
 ---
 title: "Fee Distribution"
-description: "Canonical 10/20/70 split, revenue ingestion, and on-chain automation"
+icon: "arrow-right-arrow-left"
+description: "Canonical ARP / Buybacks / Treasury cascade, revenue ingestion, and on-chain automation"
 ---
 
-## The Canonical Split
+## The Two-Level Revenue Cascade
 
-All revenue entering the system flows through the Monetization Contract and is split algorithmically:
+The same revenue pattern applies at **two levels** across the Render Network ecosystem. At both levels, revenue is processed through the same canonical cascade:
 
 <CardGroup cols={3}>
-  <Card title="10% Gamification Fund" icon="gamepad">
-    Prize pools and rewards for the 555 Engine; provably fair distributions.
+  <Card title="10% ARP (Audience Reward Pool)" icon="gift">
+    Off the top — goes directly to verified audience members via VAP attention proofs.
   </Card>
   <Card title="20%+ Buybacks" icon="trending-up">
-    Automated buybacks reinforce creator economies; creators may raise this above 20%.
+    Automated buybacks reinforce token economies; configurable above the 20% minimum.
   </Card>
-  <Card title="70% Profit Pool" icon="coins">
-    Payouts to Creator and Stakeholders, governed via stake-weighted voting.
+  <Card title="70% Treasury" icon="coins">
+    Operations, development, and growth — governed via stake-weighted voting.
   </Card>
 </CardGroup>
 
+### Level 1: Platform Level ($555 as the "Creator")
+
 <Info>
-  Platform profit sharing policy: <strong>70:30 in favor of Render Network</strong> to support ecosystem growth and sustainability. This applies at the platform profit layer and coexists with the 10/20/70 revenue routing and creator/stakeholder Profit Pool.
+  At the platform level, $555 acts as the "creator" in the cascade. All gross revenue first has **10% ARP** taken off the top for audience rewards. The remaining 90% splits **50/50 between the $555 ecosystem (creator) and the platform**. The platform's 50% is then allocated: **70%** Treasury, **20%** buyback-and-burn, **5%** $555 reserve, **5%** SOL/USDC reserve.
+</Info>
+
+### Level 2: Creator Economy Level (Individual Creator Tokens)
+
+<Info>
+  At the creator economy level, individual creator tokens follow the same cascade. **10% ARP** off the top for audience rewards, then a configurable creator/platform split on the remaining 90%. Treasury, buybacks, and reserves follow the same pattern within each creator's economy. The tiered creator shares below apply at this level.
 </Info>
 
 ## Revenue Streams
@@ -45,7 +54,7 @@ All revenue entering the system flows through the Monetization Contract and is s
 ### Automated Processing
 
 <Info>
-  <strong>Frequency:</strong> Real-time · <strong>Control:</strong> Smart contracts · <strong>Transparency:</strong> On-chain proofs · <strong>Safety:</strong> Circuit breakers
+  **Frequency:** Real-time · **Control:** Smart contracts · **Transparency:** On-chain proofs · **Safety:** Circuit breakers
 </Info>
 
 ### Creator & Streamer Rewards
@@ -85,8 +94,8 @@ All revenue entering the system flows through the Monetization Contract and is s
 
   </Accordion>
 
-  <Accordion title="Tiered Reward System" icon="layers">
-    **Creator Progression Tiers:**
+  <Accordion title="Tiered Reward System (Creator Economy Level)" icon="layers">
+    **Creator Progression Tiers** (these tiers apply at Level 2, the creator economy level):
 
     **Tier Structure:**
     - **Bronze:** 0-100 monthly earnings (standard 70%)
@@ -179,9 +188,13 @@ All revenue entering the system flows through the Monetization Contract and is s
 ### Planned Improvements
 
 <Info>
-  **Dynamic Fee Adjustment:** AI-powered fee optimization **Multi-token
-  Support:** Additional reward currencies **Cross-chain Fees:** Multi-blockchain
-  fee distribution **Advanced Analytics:** Creator performance insights
+  **Dynamic Fee Adjustment:** AI-powered fee optimization
+  <br />
+  **Multi-token Support:** Additional reward currencies
+  <br />
+  **Cross-chain Fees:** Multi-blockchain fee distribution
+  <br />
+  **Advanced Analytics:** Creator performance insights
 </Info>
 
 ### Advanced Features Roadmap
@@ -195,18 +208,18 @@ All revenue entering the system flows through the Monetization Contract and is s
     - Competitive analysis integration
   </Card>
 
-{" "}
-
 <Card title="Multi-token Rewards" icon="coins">
-  **Expanded Reward Options:** - SOL rewards for network fees - USDC stablecoin
-  payouts - NFT achievement rewards - Custom token integrations
-</Card>
+    **Expanded Reward Options:**
+    - SOL rewards for network fees
+    - USDC stablecoin payouts
+    - NFT achievement rewards
+    - Custom token integrations
+  </Card>
 
   <Card title="Cross-chain Distribution" icon="link">
-    **Multi-blockchain Support:**
-    - Ethereum bridge integration
-    - BSC cross-chain transfers
+    **Multi-blockchain Support (via CCTP V2):**
+    - Solana (primary)
+    - Base cross-chain transfers
     - Polygon network support
-    - Arbitrum scaling solutions
   </Card>
 </CardGroup>

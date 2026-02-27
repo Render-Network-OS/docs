@@ -1,0 +1,63 @@
+---
+title: "sw4p"
+icon: "bridge"
+description: "Cross-Chain USDC Bridge"
+---
+
+<Info>**Status: Live** — This feature is operational.</Info>
+
+# sw4p
+
+**sw4p** is the cross-chain bridge powering the Render Network Protocol's multi-chain settlement. It uses Circle's CCTP V2 (Cross-Chain Transfer Protocol) to move USDC across chains non-custodially.
+
+## Key Facts
+
+| Property | Value |
+| :--- | :--- |
+| **Protocol** | Circle CCTP V2 |
+| **Supported Token** | USDC |
+| **Live Chains** | Solana, Base, Polygon |
+| **Security** | 5 independent security audits (EVM, Solana, Tron) |
+| **Custody** | Non-custodial — sw4p never holds your funds |
+| **Gasless** | Yes, via Kora integration |
+
+## How It Works
+
+1.  **Burn**: USDC is burned on the source chain.
+2.  **Attest**: Circle's attestation service verifies the burn.
+3.  **Mint**: USDC is minted on the destination chain and delivered to the recipient.
+
+No wrapped tokens. No liquidity pools. The USDC on the destination chain is native Circle USDC.
+
+## Security
+
+sw4p has undergone **5 independent security audits**:
+
+| Audit Scope | Result |
+| :--- | :--- |
+| EVM Contracts | Passed |
+| Solana Programs | Passed |
+| Tron Contracts | Passed |
+| USDC Integration | Passed |
+| Cross-Chain Flows | Passed |
+
+**Findings**: 0 critical, 0 high severity. All medium and low findings resolved.
+
+## Integration
+
+sw4p is integrated throughout the Render Network Protocol:
+*   **AGG**: Uses sw4p for cross-chain payment routing.
+*   **Hyperlink**: Payment links resolve cross-chain through sw4p.
+
+<Note>
+  **Supported Asset:** sw4p bridges USDC only (via CCTP V2). The $555 token is a Solana SPL token and is not bridged by sw4p.
+</Note>
+
+## SDKs
+
+*   **TypeScript**: `@sw4p/bridge` — [npm](https://npmjs.com/package/@sw4p/bridge)
+*   **Rust**: `sw4p-bridge` — [crates.io](https://crates.io/crates/sw4p-bridge)
+
+## Full Documentation
+
+For complete API reference, guides, and SDK documentation, see the [sw4p Documentation Site](https://docs.sw4p.io).

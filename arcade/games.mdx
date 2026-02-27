@@ -1,43 +1,143 @@
 ---
 title: "Games Library"
-description: "The Launch Titles"
+icon: "dice"
+description: "20 Games Integrated with Proof of Engagement"
 ---
+
+<Info>**Status: Live** — This feature is operational.</Info>
 
 # The Games
 
-The 555 Arcade launches with a curated selection of high-fidelity HTML5 games, each integrated with the **Proof of Engagement** protocol.
+The 555 Arcade hosts 20 games — 8 production titles and 12 beta games — each integrated with the **Proof of Engagement** protocol. Every play session is verified by VAP and earns points.
 
-## Sector 13
+## Reward System
+*   **Points**: Earned per verified session. 10,000 points = 1 USDC.
+*   **Daily Bonus**: +100 points per game per wallet per CST day.
+*   **Score Normalization**: Per-game normalization ensures fair cross-game leaderboard rankings.
+*   **Beta Penalty**: Beta games apply 10% score scaling with escalating penalty (1/50 → 1/500 → 1/5000 → 0) for repeat plays.
 
-> **Genre**: Sci-Fi Shooter
-> **Difficulty**: Hard
+---
 
-A fast-paced, top-down shooter set in a dystopian future. Players must survive waves of enemies while collecting "Data Shards".
-*   **Integration**: Every enemy kill is a verified "action" on the state channel.
-*   **Alice's Favorite**: She frequently challenges players to beat her high score here.
+## Production Games
 
-## Clawstrike
+### Sector 13
 
-> **Genre**: Precision Platformer
-> **Difficulty**: Expert
+> **Genre**: Sci-Fi Shooter | **Difficulty**: Hard
+
+A fast-paced, top-down shooter set in a dystopian future. Survive waves of enemies while collecting Data Shards.
+*   **Integration**: Every enemy kill is a verified action on the state channel.
+*   **Alice's Favorite**: She frequently challenges players to beat her high score.
+*   **Possession**: Alice can grant weapons, adjust difficulty, and trigger God Mode (see [Game Mechanics](#game-mechanics) below).
+
+### Clawstrike
+
+> **Genre**: Precision Platformer | **Difficulty**: Expert
 
 A vertical platformer where precision is key. One slip means death.
 *   **Mechanic**: The "Claw" allows for grappling and swinging.
-*   **Economy**: Coins collected in-game convert to $555 at the end of the run.
+*   **Economy**: Points earned based on distance and collectibles per run.
 
-## Knighthood
+### Knighthood
 
-> **Genre**: Action RPG
-> **Difficulty**: Medium
+> **Genre**: Action RPG | **Difficulty**: Medium
 
 A classic side-scrolling beat-em-up.
 *   **Features**: Combo system, upgradable weapons, and boss battles.
 
-## Drive
+### 555 Drive
 
-> **Genre**: Retro Racing
-> **Difficulty**: Easy
+> **Genre**: Retro Racing | **Difficulty**: Easy
 
 A chill, synthwave-inspired driving game.
 *   **Objective**: Drive as far as possible without crashing.
-*   **Vibe**: Perfect for casual engagement farming.
+*   **Vibe**: Perfect for casual engagement.
+
+### 555 Lottery
+
+> **Genre**: Chance | **Difficulty**: Easy
+
+On-chain lottery integrated with the $555 token economy.
+
+### Ninja vs EvilCorp
+
+> **Genre**: Action Platformer | **Difficulty**: Medium
+
+Side-scrolling action game pitting a lone ninja against corporate drones.
+*   **Possession**: Alice can adjust difficulty levels and warp players between levels (see [Game Mechanics](#game-mechanics) below).
+
+### Flock
+
+> **Genre**: Flocking Simulation | **Difficulty**: Medium
+
+Guide a flock through obstacles using emergent behavior mechanics.
+
+### Dr1v3n Wild
+
+> **Genre**: Racing | **Difficulty**: Medium
+
+High-speed racing game with dynamic environments.
+
+---
+
+## Beta Games
+
+The following titles are in beta. They are playable and earn points (with beta scaling applied), but are still being refined.
+
+| Game | Genre | Status |
+| :--- | :--- | :--- |
+| Fighter Planes | Aerial Combat | Beta |
+| Peanball | Sports | Beta |
+| Chess Pursuit | Strategy | Beta |
+| Eat My Dust | Racing | Beta |
+| Floor 13 | Horror | Beta |
+| Godai Is Back | Action | Beta |
+| Left and Right | Reflex | Beta |
+| Pixel Copter | Arcade | Beta |
+| Playback | Puzzle | Beta |
+| Vedas Run | Endless Runner | Beta |
+| Where We're Going We Do Need Roads | Racing | Beta |
+| Wolf and Sheep | Strategy | Beta |
+
+---
+
+## Game Mechanics
+
+### Alice Possession
+
+Alice can **possess** active game cabinets — intervening in real-time to modify game state, challenge players, or create memorable moments on stream.
+
+#### How Possession Works
+
+1.  **Identify Target**: Alice queries active game cabinets via the API.
+2.  **Select Action**: Alice chooses a capability from the game's possession schema.
+3.  **Execute**: Alice sends a `POSSESS_CABINET` command with the game ID and action metadata.
+4.  **Observe & Learn**: Alice logs the outcome to memory, refining future interventions.
+
+#### Sector 13 Capabilities
+
+| Capability | Description |
+| :--- | :--- |
+| `set_lives` | Set the player's remaining lives (e.g., 99 for God Mode, 1 for Hardcore). |
+| `give_weapon` | Grant a powerup: `wingshot`, `trishot`, `doublerate`, `bomb`, `wingbomb`, `shield`. |
+| `set_difficulty` | Adjust rate-of-fire and enemy behavior. |
+| `show_message` | Display a full-screen message to the player (pauses the game). |
+
+#### Ninja vs EvilCorp Capabilities
+
+| Capability | Description |
+| :--- | :--- |
+| `set_difficulty` | Switch between Normal, Easy, Super Easy, and Nightmare modes. |
+| `set_level` | Warp the player to a specific level. |
+| `show_message` | Display a text message on the game canvas. |
+
+<Tip>Alice uses possession strategically — she might grant God Mode to a struggling player on stream, or crank difficulty to Nightmare when a top player gets too comfortable. Every intervention is logged and becomes part of her evolving strategy.</Tip>
+
+---
+
+## Leaderboards
+
+Leaderboards are not just database rows — they are **Aggregated Proofs**.
+*   **Periods**: Day, Week, Month, Year, All-Time.
+*   **Cross-Game**: Normalized scores enable a unified leaderboard across all 20 games.
+*   **Verification**: Any score can be traced back to a signed VAP packet.
+*   **Source of Truth**: In-memory ledger maintained by the VAP Verifier, persisted to database.

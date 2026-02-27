@@ -1,19 +1,29 @@
 ---
 title: "Monetization Contract"
-description: "Revenue ingestion, algorithmic split (10/20/70), events, and payouts"
+icon: "file-contract"
+description: "Revenue ingestion, algorithmic split (ARP / Buybacks / Treasury), events, and payouts"
 ---
+
+<Info>
+**Status:** Partially implemented. AGG payment routing and Hyperlink smart payment links are live. The full on-chain Monetization Contract (automated split execution, buyback executor, Treasury PDA) is planned.
+</Info>
 
 ## Purpose
 
-Trustlessly ingest campaign budgets and platform fees, then algorithmically distribute proceeds across the Gamification Fund (10%), Buybacks (≥20%), and Profit Pool (70%).
+Trustlessly ingest campaign budgets and platform fees, then algorithmically distribute proceeds. The Monetization Contract is part of the **555x402 protocol suite**, which includes:
+
+- **AGG (Payment Aggregator)**: Facilitator router (Rust, Kafka) with multi-facilitator scoring, HTTP 402 middleware, and sub-2-second Solana settlement. Live on-chain at program `2XfsNMcrJCbkaEwYfg6zpNXKipmSDY3tvMUK1KVs7bfV`.
+- **Hyperlink (Smart Payment Links)**: Gasless, multi-chain USDC payment links at [555hyper.link](https://555hyper.link). Supports Solana, Base, and Polygon via Circle CCTP V2. Vanity URLs (`/@alice`), QR codes, webhook system, and claimable payouts.
+- **SCEP (State Channel Escrow Protocol)**: On-chain Anchor program for off-chain accumulation with on-chain settlement.
 
 ## Accounts & Entities
 
-- Inflow Vault: receives SOL/USDC and other supported tokens
-- Gamification PDA: prize pool escrow and reward schedules
-- Buyback Executor: programmatic DEX execution with guardrails
-- Profit Pool PDA: holds funds prior to creator/stakeholder distribution
+- Inflow Vault: receives SOL/USDC and other supported tokens via AGG payment router
+- ARP PDA: Audience Reward Pool escrow and reward schedules
+- Buyback Executor: programmatic DEX execution with guardrails (automated pipeline being built; manual burns operational)
+- Treasury PDA: holds funds prior to creator/stakeholder distribution
 - Receipt & Events: program logs for attribution and analytics
+- Hyperlink claimables: pending USDC payouts claimable via payment link
 
 ## Flow
 
@@ -21,21 +31,21 @@ Trustlessly ingest campaign budgets and platform fees, then algorithmically dist
   <Step title="Ingest">
     Campaigns and fees are deposited into the Inflow Vault with metadata for attribution and targeting.
   </Step>
-  <Step title="Split (10/20/70)">
-    The contract applies the canonical split and updates balances for the Gamification PDA, Buyback Executor, and Profit Pool.
+  <Step title="Split (ARP / Buybacks / Treasury)">
+    The contract applies the canonical split and updates balances for the ARP PDA, Buyback Executor, and Treasury.
   </Step>
   <Step title="Execute Buybacks">
     ≥20% is routed to automated buybacks for the creator economy. Creators can configure a higher percentage within governance bounds.
   </Step>
-  <Step title="Distribute Profit Pool">
-    Funds are shared between Creator and Stakeholders per the active split. Stake-weighted votes can adjust the split within a bounded range (e.g., 20/80 to 80/20).
+  <Step title="Distribute Treasury">
+    Funds are shared between Creator and Stakeholders per the active split. Stake-weighted votes can adjust the split within a bounded range (e.g., 20/80 to 80/20). Reserves (5% token, 5% SOL/USDC) are set aside.
   </Step>
 </Steps>
 
 ## Events & Telemetry
 
 - InflowReceived(amount, campaignId, asset)
-- SplitApplied(gamification, buybacks, profitPool)
+- SplitApplied(arp, buybacks, treasury)
 - BuybackExecuted(token, amountIn, amountOut, venue)
 - ProfitDistributed(creator, stakeholders, ratios)
 
@@ -46,6 +56,6 @@ Trustlessly ingest campaign budgets and platform fees, then algorithmically dist
 - Time-boxed windows for large batch operations
 
 <Note>
-  See also: [Fee Distribution](/tokenomics/fee-distribution) · [Streamer Collectives](/products/streamer-collectives)
+  See also: [Fee Distribution](/tokenomics/fee-distribution)
 </Note>
 

@@ -1,6 +1,10 @@
-# Countdown Announcements Feature
+---
+title: "Countdown Announcements"
+description: "Flip countdown timer announcements with digital clock-style animations"
+icon: "hourglass-half"
+---
 
-## Overview
+<Info>**Status: Live** — This feature is operational.</Info>
 
 Flip countdown timer announcements with digital clock-style animations. Counts down to a target date/time with smooth card-flip transitions on each digit change.
 
@@ -74,10 +78,10 @@ User → AnnouncementsPage → Backend API → Database
 ### 1. Creating a Countdown
 
 ```
-User fills form → POST /api/announcements → 
-Backend validates → Saves to DB → 
-Returns announcement with ID → 
-Frontend refreshes list → 
+User fills form → POST /api/announcements →
+Backend validates → Saves to DB →
+Returns announcement with ID →
+Frontend refreshes list →
 ControlPanelApp broadcasts to overlay
 ```
 
@@ -103,7 +107,7 @@ Updates every second with flip animations
 ### Auto Mode
 When enabled, automatically shows/hides units based on time remaining:
 - Hides "Days" if < 1 day
-- Hides "Hours" if < 1 hour  
+- Hides "Hours" if < 1 hour
 - Always shows minutes and seconds
 - Keeps display clean and relevant
 
@@ -147,7 +151,7 @@ Returns all announcements for authenticated user, including countdown fields.
       "textColor": "#ffffff",
       "fontSize": 16,
       "is_visible": true,
-      "target_time": "2025-11-19T20:00:00Z",
+      "target_time": "2026-06-15T20:00:00Z",
       "countdown_show_days": true,
       "countdown_show_hours": true,
       "countdown_show_minutes": true,
@@ -173,7 +177,7 @@ Creates a new countdown announcement.
   "textColor": "#ffffff",
   "fontSize": 16,
   "isVisible": true,
-  "targetTime": "2025-11-20T15:00:00Z",
+  "targetTime": "2026-06-16T15:00:00Z",
   "countdownShowDays": true,
   "countdownShowHours": true,
   "countdownShowMinutes": true,
@@ -182,10 +186,10 @@ Creates a new countdown announcement.
 }
 ```
 
-### PUT /v1/announcements/{id}
+### PUT /v1/announcements/\{id\}
 Updates an existing countdown.
 
-### DELETE /v1/announcements/{id}
+### DELETE /v1/announcements/\{id\}
 Deletes a countdown announcement.
 
 ## Placement Options
@@ -216,93 +220,45 @@ All standard placement options supported:
 - 0.6s duration with cubic-bezier easing
 - Smooth, professional transitions
 
-## Testing
-
-### Manual Test Steps
-
-1. **Create Countdown**:
-   - Navigate to Control Panel → Announcements
-   - Click "+ New Announcement"
-   - Select "Countdown" style
-   - Click "+1 hour" preset
-   - Enable visibility
-   - Click "Create"
-
-2. **Verify Control Panel**:
-   - Countdown appears in "Your Announcements"
-   - Preview section shows countdown ticking
-   - Edit/Delete buttons work
-
-3. **Verify Overlay**:
-   - Open `http://localhost:3000/overlay/[streamer-id]`
-   - Countdown displays in selected placement
-   - Updates every second
-   - Flip animations trigger on digit changes
-
-4. **Test Settings**:
-   - Change placement - countdown moves
-   - Change colors - countdown updates
-   - Toggle auto mode - units show/hide intelligently
-   - Toggle manual units - specific units show/hide
-
 ## Troubleshooting
 
-### Countdown Not Showing on Overlay
+<AccordionGroup>
+  <Accordion title="Countdown Not Showing on Overlay">
+    **Check**:
+    1. Is `isVisible` set to `true`?
+    2. Is the streamer ID correct in the overlay URL?
+    3. Open browser console - any errors?
+    4. Check if BroadcastChannel is working (same browser)
 
-**Check**:
-1. Is `isVisible` set to `true`?
-2. Is the streamer ID correct in the overlay URL?
-3. Open browser console - any errors?
-4. Check if BroadcastChannel is working (same browser)
+    **Solution**:
+    - Ensure countdown announcement has `is_visible = true` in database
+    - Verify ControlPanelApp is broadcasting (check console logs)
+    - Refresh overlay page to re-establish BroadcastChannel
+  </Accordion>
 
-**Solution**:
-- Ensure countdown announcement has `is_visible = true` in database
-- Verify ControlPanelApp is broadcasting (check console logs)
-- Refresh overlay page to re-establish BroadcastChannel
+  <Accordion title="Preview Erratic">
+    **Issue**: Preview flickering or not updating properly.
 
-### Preview Erratic
+    **Solution**:
+    - Fixed by ensuring `previewAnnouncements` includes form data when editing
+    - Only shows preview when form is open AND visibility is ON
+    - Uses consistent field mapping
+  </Accordion>
 
-**Issue**: Preview flickering or not updating properly.
+  <Accordion title="400 Bad Request">
+    **Issue**: Backend rejecting countdown creation.
 
-**Solution**:
-- Fixed by ensuring `previewAnnouncements` includes form data when editing
-- Only shows preview when form is open AND visibility is ON
-- Uses consistent field mapping
+    **Causes**:
+    1. Missing `targetTime` for countdown style
+    2. Invalid date format
+    3. Missing JSON tags on backend model
 
-### 400 Bad Request
-
-**Issue**: Backend rejecting countdown creation.
-
-**Causes**:
-1. Missing `targetTime` for countdown style
-2. Invalid date format
-3. Missing JSON tags on backend model
-
-**Solutions**:
-- Client validates `targetTime` before submission
-- Backend uses default "Countdown" text for empty text field
-- All model fields have proper JSON tags
-
-### Delete Shows "undefined" ID
-
-**Issue**: Frontend has `undefined` announcement ID.
-
-**Solution**:
-- Added JSON serialization tags to `Announcement` struct
-- Backend now returns proper `id` field
-- Frontend maps it correctly in `ControlPanelApp`
-
-## Production Deployment
-
-See `/backend/migrations/PRODUCTION_DEPLOYMENT.md` for complete deployment guide.
-
-**Quick Steps**:
-1. Backup production database
-2. Deploy backend code
-3. Deploy frontend code
-4. Run migration: `psql $DATABASE_URL -f migrations/002_add_countdown_fields.sql`
-5. Verify migration succeeded
-6. Test countdown creation
+    **Solutions**:
+    - Client validates `targetTime` before submission
+    - Backend uses default "Countdown" text for empty text field
+    - All model fields have proper JSON tags
+  </Accordion>
+</AccordionGroup>
 
 ## Performance
 
@@ -310,12 +266,3 @@ See `/backend/migrations/PRODUCTION_DEPLOYMENT.md` for complete deployment guide
 - **Animation Cost**: CSS transforms (GPU accelerated)
 - **Network**: No polling (BroadcastChannel is local)
 - **Database**: Indexed on `target_time` for queries
-
-## Future Enhancements
-
-- [ ] Custom flip card themes (glossy, matte, neon)
-- [ ] Sound effects on digit flip
-- [ ] Confetti/animation when countdown reaches zero
-- [ ] Multiple countdown templates (event, stream start, etc.)
-- [ ] Countdown completion triggers (auto-message, alert)
-

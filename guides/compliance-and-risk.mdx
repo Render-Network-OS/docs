@@ -1,11 +1,8 @@
 ---
 title: "Compliance & Risk"
+icon: "scale-balanced"
 description: "Disclaimers, regional restrictions, age gating, and KYC thresholds"
 ---
-
-<Info>
-  WIP — This guide is being updated to reflect the latest OS workflows.
-</Info>
 
 ## Disclaimers
 
@@ -13,20 +10,59 @@ description: "Disclaimers, regional restrictions, age gating, and KYC thresholds
 - Participation in markets/raffles may carry risk
 - Users are responsible for complying with local laws
 
+<Warning>
+  Nothing in this documentation constitutes investment advice, legal counsel, or a guarantee of returns. Token values fluctuate and past performance is not indicative of future results. Consult qualified professionals for financial or legal decisions.
+</Warning>
+
 ## Regional Restrictions
 
 - Certain features may be unavailable in specific jurisdictions
 - Access controls can be applied at the application layer
 
+### Geo-Blocking Details
+
+Jurisdictions with restricted access are determined by facilitator compliance requirements. The protocol itself is permissionless, but application-layer access (e.g., fiat on/off-ramp, hosted UI) may enforce geo-blocks as required by the facilitator partner's regulatory obligations. Restricted jurisdictions are subject to change as regulations evolve.
+
+<Info>
+  Geo-restrictions apply at the facilitator and application layer — not at the smart contract level. On-chain interactions remain permissionless, but UI-level access may be limited based on your jurisdiction.
+</Info>
+
 ## Age Gating
 
-- Age restrictions may apply for interactive features
-- Enforce gating where required by local regulations
+- Platform terms of service require all users to be **18 years of age or older**
+- Wallet-based authentication does not perform native age verification — compliance with the age requirement is the responsibility of the user
+- Where local regulations require explicit age gating mechanisms, additional verification steps may be enforced at the application layer
 
 ## KYC Thresholds (Where Applicable)
 
 - Large rewards or treasury interactions may require identity checks
 - Follow published thresholds and provide secure verification flows
+
+### Facilitator-Level KYC
+
+KYC requirements apply specifically for **fiat on/off-ramp** functionality. These checks are managed by the facilitator partner (not by the protocol directly). Users interacting purely on-chain with crypto assets are not subject to KYC unless they access facilitator services that require it.
+
+- Fiat conversion above facilitator-defined thresholds triggers identity verification
+- The facilitator handles all KYC data collection, storage, and compliance
+- The protocol does not store or have access to user identity documents
+
+## Risk Categories
+
+Understanding the types of risk associated with participation in the ecosystem:
+
+<AccordionGroup>
+  <Accordion title="Operational Risk" icon="gears">
+    Smart contract bugs, infrastructure downtime, or integration failures could result in temporary loss of access to funds or incorrect settlement calculations. Mitigation includes security audits, circuit breakers, and multi-sig controls.
+  </Accordion>
+
+  <Accordion title="Market Risk" icon="chart-line">
+    Token price volatility affects the value of $555 holdings, staking positions, and reward payouts denominated in tokens. Users should be aware that token values can fluctuate significantly.
+  </Accordion>
+
+  <Accordion title="Regulatory Risk" icon="gavel">
+    Evolving crypto legislation across jurisdictions may impact feature availability, KYC requirements, or token classification. The team monitors regulatory developments and adapts compliance posture accordingly.
+  </Accordion>
+</AccordionGroup>
 
 ## Cross-Links
 
