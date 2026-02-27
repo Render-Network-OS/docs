@@ -51,75 +51,69 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Start",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
               "introduction",
-              "quickstart",
-              "integration",
-              "essentials/ultimate-flywheel",
-              "essentials/glossary"
+              "how-it-works",
+              "for-creators",
+              "for-players",
+              "for-advertisers",
+              "for-developers"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Products",
+        "groups": [
           {
-            "group": "Products",
+            "group": "Core Products",
             "pages": [
-              "products/555-gamification",
-              "products/render-stream",
+              "arcade/overview",
+              "arcade/games",
               "555stream",
-              "sw4p",
-              "products/monetization-module",
-              "products/subscriptions-staking",
-              "products/ctrl-control-panel",
-              "products/monetization-contract",
-              "products/render-expand",
-              "products/animated-assets"
+              "alice/persona",
+              "alice/intelligence",
+              "alice/possession",
+              "sw4p"
             ]
           },
           {
-            "group": "Features",
+            "group": "Monetization",
             "pages": [
+              "products/monetization-module",
+              "products/monetization-contract",
+              "products/subscriptions-staking",
+              "products/render-expand"
+            ]
+          },
+          {
+            "group": "Tools & Features",
+            "pages": [
+              "products/ctrl-control-panel",
+              "products/animated-assets",
               "features/countdown-announcements"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Protocol",
+        "groups": [
           {
-            "group": "Guides",
+            "group": "Protocol",
             "pages": [
-              "guides/revenue-tracking",
-              "guides/troubleshooting",
-              "guides/ctrl-panel",
-              "guides/obs-migration",
-              "guides/chat-moderation-bot",
-              "guides/multi-chat-architecture",
-              "guides/security-and-fairness",
-              "guides/api-usage-and-proxying",
-              "guides/compliance-and-risk"
-            ]
-          },
-          {
-            "group": "Reference",
-            "pages": [
-              "api-reference"
-            ]
-          },
-          {
-            "group": "Community",
-            "pages": [
-              "community/discord-server",
-              "community/twitter",
-              "community/support-center",
-              "community/developer-resources",
-              "community/partnerships",
-              "community/ecosystem-philosophy",
-              "community/docs-changelog"
-            ]
-          },
-          {
-            "group": "Governance",
-            "pages": [
-              "governance/proposals-and-splits"
+              "protocol/overview",
+              "economics",
+              "protocol/vap",
+              "protocol/vap-v2",
+              "protocol/agg",
+              "protocol/hyperlink",
+              "protocol/audience-inventory",
+              "protocol/roadmap"
             ]
           }
         ]
@@ -143,69 +137,53 @@
         ]
       },
       {
-        "tab": "Protocol",
+        "tab": "Build",
         "groups": [
           {
-            "group": "Protocol",
+            "group": "Reference",
             "pages": [
-              "protocol/overview",
-              "economics",
-              "protocol/audience-inventory",
-              "protocol/proof-of-engagement",
-              "protocol/vap-v2",
-              "protocol/roadmap"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "555x402",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "555x402/overview",
-              "555x402/vap",
-              "555x402/agg",
-              "555x402/hyperlink",
-              "555x402/inventory"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Alice",
-        "groups": [
-          {
-            "group": "The Operator",
-            "pages": [
-              "alice/persona",
-              "alice/intelligence",
-              "alice/possession"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Arcade",
-        "groups": [
-          {
-            "group": "The Arcade",
-            "pages": [
-              "arcade/overview",
-              "arcade/games"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Architecture",
-        "groups": [
-          {
-            "group": "System",
-            "pages": [
+              "api-reference",
+              "essentials/glossary",
               "architecture/overview",
               "architecture/system-map"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/security-and-fairness",
+              "guides/compliance-and-risk",
+              "guides/api-usage-and-proxying",
+              "guides/ctrl-panel",
+              "guides/obs-migration",
+              "guides/obs-integration",
+              "guides/chat-moderation-bot",
+              "guides/multi-chat-architecture",
+              "guides/revenue-tracking",
+              "guides/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Community",
+        "groups": [
+          {
+            "group": "Community",
+            "pages": [
+              "community/discord-server",
+              "community/twitter",
+              "community/support-center",
+              "community/developer-resources",
+              "community/partnerships",
+              "community/ecosystem-philosophy",
+              "community/docs-changelog"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance/proposals-and-splits"
             ]
           }
         ]

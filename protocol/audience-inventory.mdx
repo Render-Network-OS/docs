@@ -4,45 +4,103 @@ icon: "users"
 description: "Tokenizing Attention as an Asset"
 ---
 
+<Info>**Status: Partially Implemented** — Points & Credits economy is live. cNFT inventory minting is in development (Phase 1, P1-A on the roadmap).</Info>
+
 # What is Audience Inventory?
 
-**Audience Inventory** is the concept of treating viewer attention as a verifiable, scarce, and tradable asset.
+**Audience Inventory** is the concept of treating viewer attention as a verifiable, scarce, and tradable asset. It is the end product of the 555x402 flywheel — turning ephemeral "attention" into a durable, monetizable asset.
 
 In the legacy model, "inventory" is just ad slots sold by a centralized platform. In the **555x402** model, inventory is **owned by the creator** and **verified by the protocol**.
 
-## How It Works Today (Live)
+## Current System: Points & Credits (Live)
 
-Currently, attention is verified and monetized through the **Points & Credits** system:
+Today, attention is verified and monetized through the **Points & Credits** system:
 
-1.  **Engagement**: A user plays a game or watches a stream.
-2.  **Verification**: **VAP** validates this activity via cryptographic heartbeats.
-3.  **Points**: Verified engagement earns points (10,000 points = 1 USDC).
-4.  **Settlement**: Weekly engine converts credits to USDC payouts.
+1. **Engagement**: A user plays a game or watches a stream.
+2. **Verification**: [VAP](/protocol/vap) validates this activity via cryptographic heartbeats.
+3. **Points**: Verified engagement earns points (10,000 points = 1 USDC). Non-transferable accounting abstraction.
+4. **Credits**: Settlement-ready unit (1 credit = $0.01 USD). Append-only ledger with 1.25x burn bonus for $555 burns.
+5. **Settlement**: Weekly engine distributes USDC payouts (Mondays 05:55 CST). Users can also self-withdraw.
+6. **Daily Bonus**: +100 points per game per wallet per CST day.
 
 For advertisers, the current system uses **L-Bar ads** — non-interruptive squeeze-back overlays triggered by Alice when engagement signals cross the placement threshold.
 
-## The Vision: On-Chain Inventory (In Development)
+## Planned: cNFT Inventory (In Development)
+
+<Warning>
+The cNFT inventory system described below is the target architecture. It is in development (Phase 1, P1-A on the roadmap) and not yet live.
+</Warning>
 
 The next evolution mints verified attention as **cNFTs** (Compressed NFTs) on Solana:
 
-1.  **Engagement**: User plays a game or watches a stream.
-2.  **Verification**: VAP validates via cryptographic heartbeats.
-3.  **Minting**: Validated attention minted as a cNFT on Solana via Metaplex Bubblegum.
-4.  **Utilization**:
-    *   **Advertisers** buy inventory programmatically to show targeted ads.
-    *   **Creators** earn yield from their verified audience.
-    *   **Users** earn rewards (via ARP) for generating high-quality inventory.
+1. **Engagement**: User plays a game or watches a stream.
+2. **Verification**: VAP validates via cryptographic heartbeats.
+3. **Minting**: Validated attention minted as a cNFT on Solana via Metaplex Bubblegum.
+4. **Utilization**:
+    - **Advertisers** buy inventory programmatically to show targeted ads.
+    - **Creators** earn yield from their verified audience.
+    - **Users** earn rewards (via ARP) for generating high-quality inventory.
+
+### Technical Standard: cNFTs
+
+We utilize **Compressed NFTs (cNFTs)** on Solana via the **Metaplex Bubblegum** program. This allows minting millions of inventory items for fractions of a penny, making high-volume attention tracking economically viable.
+
+### Merkle Tree Structure
+
+Inventory is stored in a concurrent Merkle Tree on-chain.
+- **Max Depth**: 24 (16M items).
+- **Canopy Depth**: 14 (Fast verification).
+
+### Metadata Schema
+
+Every unit of Audience Inventory adheres to a strict JSON schema for interoperability with advertisers:
+
+```json
+{
+  "name": "Sector 13 - Session #8821",
+  "symbol": "555-INV",
+  "description": "Verified gameplay session of Sector 13.",
+  "image": "https://arweave.net/...",
+  "attributes": [
+    { "trait_type": "Game", "value": "Sector 13" },
+    { "trait_type": "Duration", "value": "600" },
+    { "trait_type": "Score", "value": "15420" },
+    { "trait_type": "User Reputation", "value": "85" },
+    { "trait_type": "Bot Probability", "value": "0.01" },
+    { "trait_type": "Verified By", "value": "VAP Node 01" },
+    { "trait_type": "Streamer", "value": "@Ninja" },
+    { "trait_type": "Platform", "value": "Twitch" },
+    { "trait_type": "Viewer Count", "value": "15400" }
+  ],
+  "properties": {
+    "files": [
+      { "uri": "https://arweave.net/replay_data", "type": "application/json" }
+    ]
+  }
+}
+```
+
+### Bespoke Targeting (Vision)
+
+Advertisers will be able to use rich metadata to buy **Verified Airtime** that matches their exact niche:
+
+1. **The Stream**: Creator streams content, generating verified inventory (cNFTs).
+2. **The Plug**: Advertisers set criteria (e.g., "Sector 13, >1000 viewers").
+3. **The Yield**: When criteria match, the protocol automatically routes the ad to the stream.
+4. **The Payout**: Creator earns yield (USDC/$555) for verified airtime.
+
+### Market Dynamics (Planned)
+- **Floor Price**: Determined by the Cost of Attention (e.g., $0.01 per minute).
+- **Rarity**: High-reputation users or high-score sessions command a premium.
+- **Liquidity**: Inventory can be bundled and sold in bulk (e.g., "1000 hours of FPS gameplay").
 
 ## The Flywheel
 
 The Audience Inventory model creates a self-reinforcing economic flywheel:
 
-1.  **Content** attracts users.
-2.  **Verified Engagement** creates high-value Audience Inventory.
-3.  **Advertisers** purchase inventory, injecting liquidity.
-4.  **Revenue** is distributed: 10% ARP to audience, then 50/50 creator/platform.
-5.  **Burns** from platform's 20% buyback allocation create structural deflation.
-6.  **Rewards** incentivize more content and engagement.
-
-> "Your attention is not a commodity for them to harvest. It is an asset for us to build together."
-> — **Alice**
+1. **Content** attracts users.
+2. **Verified Engagement** creates high-value Audience Inventory.
+3. **Advertisers** purchase inventory, injecting liquidity.
+4. **Revenue** is distributed: 10% ARP to audience, then 50/50 creator/platform.
+5. **Burns** from platform's 20% buyback allocation create structural deflation.
+6. **Rewards** incentivize more content and engagement.

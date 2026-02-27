@@ -4,7 +4,11 @@ icon: "fire"
 description: "55-day Streamflow lock and 20% buybacks/burn mechanics"
 ---
 
+<Info>**Status: Live** — Buyback-and-burn and Streamflow locking are operational.</Info>
+
 ## Streamflow Locking (55 Days)
+
+Team and protocol tokens are locked via **Streamflow vesting contracts** with a 55-day cliff followed by a linear unlock schedule. This ensures alignment between core contributors and long-term ecosystem health.
 
 <Steps>
   <Step title="Initiate Lock">
@@ -18,10 +22,47 @@ description: "55-day Streamflow lock and 20% buybacks/burn mechanics"
   </Step>
 </Steps>
 
+### Voluntary Locking for Enhanced Tiers
+
+Users can voluntarily lock $555 via Streamflow to access enhanced tier benefits within the platform (e.g., higher ARP multipliers, priority queue access, and exclusive game modes).
+
+<Steps>
+  <Step title="Connect Wallet">
+    Navigate to the Streamflow app and connect the wallet that holds your $555 tokens.
+  </Step>
+  <Step title="Select Lock Duration">
+    Choose a 55-day lock period. Longer voluntary locks may qualify for additional tier boosts in future releases.
+  </Step>
+  <Step title="Set Amount & Confirm">
+    Enter the amount of $555 to lock and approve the on-chain transaction. Your tier status updates automatically once the lock is confirmed.
+  </Step>
+</Steps>
+
+<Info>
+  Voluntary locks are independent of team vesting schedules. You retain full ownership — tokens simply cannot be transferred until the lock period expires.
+</Info>
+
 ## Buybacks & Burns (20%)
 
-- A portion of fees is allocated for market buybacks and scheduled burns
-- Events are executed on a cadence and published with on-chain proofs
+20% of the platform's revenue share is allocated for **buyback-and-burn** operations. Buybacks are executed on a **weekly cadence**, aligned with the Monday 05:55 CST settlement cycle.
+
+### How It Works
+
+- Each Monday at settlement, 20% of accumulated platform fees are used to purchase $555 on the open market
+- Purchased tokens are sent directly to the burn wallet, permanently removing them from circulating supply
+- Every buyback transaction is published on-chain with verifiable proofs
+
+<Warning>
+  Buyback amounts vary week to week based on platform revenue. There is no guaranteed burn quantity — it is proportional to actual fee volume.
+</Warning>
+
+### Cumulative Burn Stats
+
+Cumulative burn statistics are available on-chain via the designated burn wallet address. Community dashboards and block explorers can be used to track total tokens burned over time.
+
+<Info>
+  The burn wallet is a standard Solana address with no private key access. Tokens sent to this address are permanently unrecoverable. On-chain verification is the canonical source of truth for all burn data.
+</Info>
 
 ## Cross-Links
 

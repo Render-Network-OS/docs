@@ -4,9 +4,11 @@ icon: "gamepad"
 description: "The High-Voltage Playground"
 ---
 
+<Info>**Status: Live** — The 555 Arcade hosts **20 browser games** (8 production + 12 beta) with a unified cross-game leaderboard, score normalization, and difficulty multipliers.</Info>
+
 # The 555 Arcade
 
-The **555 Arcade** is the user-facing layer of the ecosystem. It is where the protocol becomes visible. Built as a web application integrated with the protocol.
+The **555 Arcade** is the user-facing engagement layer of the ecosystem — where the protocol becomes visible. It powers a continuous loop of games, quests, and rewards that keep your community active even when you're offline. All activity is verifiable on-chain via the [Verifiable Attention Protocol (VAP)](/protocol/vap).
 
 ## Integration Architecture
 
@@ -22,49 +24,145 @@ The Harness is a React component that manages the VAP session lifecycle.
 ```
 
 ### The Event Loop
-1.  **Initialization**: The Harness connects to the VAP WebSocket.
-2.  **Gameplay**: The user plays the game. The game engine emits events (`SCORE_UPDATE`, `ENEMY_KILL`).
-3.  **Hashing**: The Harness aggregates events into a Merkle Root.
-4.  **Signing**: The user's wallet (via session key) signs the root.
-5.  **Transmission**: The signed payload is sent to the VAP Verifier.
+1. **Initialization**: The Harness connects to the VAP WebSocket.
+2. **Gameplay**: The user plays the game. The game engine emits events (`SCORE_UPDATE`, `ENEMY_KILL`).
+3. **Hashing**: The Harness aggregates events into a Merkle Root.
+4. **Signing**: The user's wallet (via session key) signs the root.
+5. **Transmission**: The signed payload is sent to the VAP Verifier.
 
 ### Authentication
 Users connect via **SIWS** (Sign-In With Solana) using the Solana wallet adapter. Supports Phantom, Backpack, Solflare, and other major wallets.
+
+## 20 Games
+
+The Arcade hosts 20 games — 8 production titles and 12 beta games — spanning shooters, platformers, racing, RPGs, puzzles, and more. See the [Games Library](/arcade/games) for the full catalog.
+
+- **8 Production titles**: ninja_vs_evilcorp.555, knighthood.555, drive.555, clawstrike.555, sector_13.555, flock, and more
+- **12 Beta titles**: chesspursuit, wolf_and_sheep, left_and_right, playback, fighter_planes, pixel_copter, floor13, godai_is_back, peanball, eat_my_dust, where_were_going, vedas_run
+- **1 Casino/Lottery**: 555 Lottery with SSE-driven live draws
+- Games are **free to play**; token holdings influence USDC reward eligibility and multiplier bonuses (1x/5x/55x/555x)
+- PvP 1v1 battles (Alice vs user), daily tasks, and skill-based progression
+- Alice (AI agent) can play games autonomously during live streams via per-game agent.js integration
+
+### Score Normalization
+Each game has a per-game normalization factor that maps raw scores to a comparable scale (0–10,000). This enables a unified cross-game leaderboard with difficulty multipliers.
+
+### Beta Mode
+Beta games apply a 10% score scaling with an escalating penalty for repeat plays (1/50 → 1/500 → 1/5000 → 0). This incentivizes exploration across the full catalog.
+
+## Core Features
+
+<AccordionGroup>
+  <Accordion title="Prediction Markets" icon="coins">
+    Let viewers participate in on-stream markets using creator economies. These are bonding-curve markets with AMM pricing that can be created by the streamer or any viewer. Streamers can also enable open markets from across the Render Network for their audience.
+    - Real-world events and predictions
+    - Game results and match outcomes
+    - Stream milestones and achievements
+    - Challenge completions and personal bests
+  </Accordion>
+
+  <Accordion title="Raids, Quests & Challenges" icon="flag">
+    Rally the community around purposeful activity:
+    - Daily/weekly questlines tied to creator goals
+    - Raid timers that concentrate chat activity and participation
+    - Creator-defined challenges (speedruns, milestone races)
+    - Auto Pilot suggestions for timing and rewards
+
+    **Outcome**: Sustained engagement that fuels inventory and discovery.
+  </Accordion>
+
+  <Accordion title="Clips" icon="scissors">
+    Capture moments and turn highlights into engagement:
+    - Get paid to clip for your favourite streamer
+    - Clip hunts and reaction showcases
+    - Creator-picked clips surfaced in overlays
+    - Points ladders that convert to rewards via the Treasury
+  </Accordion>
+
+  <Accordion title="555 Lottery (VRF)" icon="gift">
+    A provably fair draw that runs every hour using Switchboard VRF.
+    - Stream-level 555 Lottery: creators can turn it on so their viewers and holders can participate without meeting the global $555 threshold
+    - On-chain randomness with proofs
+    - Payouts via PDA escrow and Merkle claims
+    - Public results dashboard
+  </Accordion>
+</AccordionGroup>
 
 ## The Economy
 
 The Arcade is the primary engagement surface for the ecosystem's reward system.
 
 ### Points (The Reward)
-*   **Earning**: 10,000 points = 1 USDC. Earned through verified gameplay.
-*   **Daily Bonus**: +100 points per game per wallet per CST day.
-*   **Velocity**: Designed for high velocity — earned fast through engagement.
+- **Earning**: 10,000 points = 1 USDC (fixed conversion). Earned through verified gameplay.
+- **Daily Bonus**: +100 points per game per wallet per CST day.
+- **Velocity**: Designed for high velocity — earned fast through engagement.
+- Non-transferable accounting abstraction tracked in the database.
 
 ### Credits (The Settlement Unit)
-*   Points convert to credits when ready for settlement.
-*   Weekly settlement engine distributes USDC payouts.
-*   Users can also self-withdraw at any time.
+- 1 credit = $0.01 USD.
+- Append-only ledger with 1.25x burn bonus for $555 burns.
+- Points convert to credits when ready for settlement.
+- Weekly USDC settlement: Mondays 05:55 CST via Merkle-tree on-chain commitment and SPL `transferChecked`.
+- Users can also self-withdraw at any time.
+
+### Token-Gated Multipliers
+
+| Tier | $555 Required | Multiplier |
+| :--- | :--- | :--- |
+| Curious | 0 | 1x |
+| Creator | 55,555 | 5x |
+| Owner | 555,555 | 55x |
+| Institution | 5,555,555 | 555x |
 
 ### $555 Token
-*   Used for staking (VAP v2), burns, and protocol participation.
-*   Cross-chain via sw4p: Solana, Base, Polygon.
-*   Structural deflation via 20% buyback-and-burn from platform revenue.
-
-## 18 Games
-
-The Arcade hosts 20 games — 8 production titles and 12 beta games — spanning shooters, platformers, racing, RPGs, puzzles, and more. See the [Games Library](/arcade/games) for the full catalog.
-
-### Score Normalization
-Each game has a per-game normalization factor that maps raw scores to a comparable scale. This enables a unified cross-game leaderboard.
-
-### Beta Mode
-Beta games apply a 10% score scaling with an escalating penalty for repeat plays (1/50 → 1/500 → 1/5000 → 0). This incentivizes exploration across the full catalog.
+- Used for staking (VAP v2), burns, and protocol participation.
+- Cross-chain via [sw4p](/sw4p): Solana, Base, Polygon.
+- Structural deflation via 20% buyback-and-burn from platform revenue.
 
 ## Leaderboards
 
 Leaderboards are not just database rows; they are **Aggregated Proofs**.
-*   **Source of Truth**: In-memory ledger maintained by the VAP Verifier.
-*   **Sync**: Persisted to database for querying by the frontend.
-*   **Verification**: Any score can be traced back to a signed VAP packet.
-*   **Periods**: Day, Week, Month, Year, All-Time.
-*   **Cross-Game**: Normalized rankings across all 20 games.
+- **Source of Truth**: In-memory ledger maintained by the VAP Verifier.
+- **Sync**: Persisted to database for querying by the frontend.
+- **Verification**: Any score can be traced back to a signed VAP packet.
+- **Periods**: Day, Week, Month, Year, All-Time.
+- **Cross-Game**: Normalized rankings across all 20 games.
+
+## Always-On Mode
+
+- Games continue when the creator is offline (scheduled raids, hourly lottery, evergreen mini-games)
+- Stream clips from past streams — including clips posted across social channels (YouTube Shorts, X/Twitter, TikTok, Instagram) — surface in overlays to keep the channel lively
+- Creators can plan a curated offline schedule (clips, mini-games, lotteries) or let Auto Pilot automate programming
+- Keeps the community active, compounding growth and retention
+
+## Funding & Distribution
+
+- **10% ARP**: All revenue across the network flows to the Audience Reward Pool — off the top, for prize pools and audience rewards
+- **≥20% Buybacks**: Funds buybacks for creator economies, reinforcing token value
+- **70% Treasury**: Shared between Creator and Stakeholders (governed), with 5% token reserve and 5% SOL/USDC reserve
+
+**Prize Distribution**: Backed by the ARP; awards are provably fair and settled on-chain.
+
+## Access Prerequisites
+
+- Minimum holding: **55,555 $555** (or request whitelist access via [Discord](https://discord.gg/35UNPtu8M5))
+- See: [$555 Token](/tokenomics/555-token) and [Fee Distribution](/tokenomics/fee-distribution)
+
+## Fairness & Payouts
+
+- **VAP verification**: Ed25519 signature-based cryptographic proof of engagement via WebSocket heartbeat (5s interval)
+- Randomness via Switchboard VRF with on-chain proofs (lottery) and HKDF randomness (chat-based draws)
+- Commit-reveal and timestamped event logs for game resolution
+- Escrow PDAs and Merkle distribution for transparent payouts
+- On-chain rewards program: Anchor-based `commit_epoch` / `fund_vault` / `claim_reward` pipeline
+
+## Creator Controls (CTRL Panel)
+
+- Enable modules: prediction, mini-games, raids/quests, clips/challenges, lottery
+- Configure schedules, prize tiers, and eligibility
+- Copy your overlay URL and add to OBS (Browser Source 1920×1080)
+- Optionally enable Auto Pilot for recommendations and automation
+
+<Note>
+  Learn more: [Security & Fairness](/guides/security-and-fairness) · [Monetization Contract](/products/monetization-contract) · [CTRL Panel](/products/ctrl-control-panel)
+</Note>

@@ -4,11 +4,11 @@ icon: "expand"
 description: "Launch Creator Tokens, wire staking, buybacks, and Treasury in one flow"
 ---
 
+<Info>**Status: Planned** — Creator Token launch infrastructure depends on staking system completion. Current alternative: pump.fun simulcast.</Info>
+
 ## Overview
 
 Render Expand is the growth accelerator for creators. Launch a Creator Token via pump.fun, set policy bounds, and connect staking, buybacks, and Treasury to your stream and CTRL Panel.
-
-> **Status (Feb 2026):** pump.fun is available as a simulcast destination in 555stream. However, the full Creator Token infrastructure (staking, buybacks, Treasury at the creator level) is **planned** and not yet implemented. The current economy operates through $555 token holdings and the platform-level points/credits system. See [Subscriptions & Staking](/products/subscriptions-staking) for current staking details.
 
 ## Launch Flow
 
@@ -24,6 +24,38 @@ Render Expand is the growth accelerator for creators. Launch a Creator Token via
   </Step>
   <Step title="Go Live">
     Publish your profile to the marketplace with verifiable engagement metrics and staking TVL so advertisers can discover you.
+  </Step>
+</Steps>
+
+## Dependency Chain
+
+Render Expand's full vision requires several infrastructure components that are currently in development:
+
+| Dependency | Status | Description |
+|---|---|---|
+| **Creator Token staking infrastructure** | In development | On-chain staking contracts for creator-level tokens |
+| **Monetization Contract integration** | In development | Wiring creator tokens into the ARP / Buybacks / Treasury pipeline |
+| **CTRL Panel token-gating** | In development | UI support for gating content and features based on creator token holdings |
+
+<Warning>
+  Until these dependencies are complete, the full Render Expand flow (native token minting with enforced splits, staking, and governance) is not available. See the current alternative below.
+</Warning>
+
+## Current Alternative
+
+Creators can launch tokens today via **pump.fun simulcast**. 555stream integrates pump.fun as a broadcast destination, allowing creators to simulcast their stream while launching a token through pump.fun's fair-launch mechanics. This provides immediate token launch capability without waiting for the native Creator Token infrastructure.
+
+## Feature Roadmap
+
+<Steps>
+  <Step title="Phase 1: pump.fun Simulcast (Live)">
+    Creators simulcast to pump.fun via 555stream. Token launches use pump.fun's standard bonding curve and fair-launch mechanics. No native staking or enforced splits at this stage.
+  </Step>
+  <Step title="Phase 2: Native Token Minting with Enforced Splits">
+    Creator tokens are minted natively within the protocol. Policy bounds (minimum buyback %, split ranges, unbonding windows) are enforced on-chain via the Monetization Contract.
+  </Step>
+  <Step title="Phase 3: Full Staking + Governance">
+    Complete staking infrastructure with creator-level governance. Token holders can vote on creator policy adjustments, and staking TVL drives discovery ranking in the marketplace.
   </Step>
 </Steps>
 
