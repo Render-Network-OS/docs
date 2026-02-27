@@ -1,71 +1,1195 @@
 ---
 title: "API Reference"
+icon: "code"
 description: "555x402 Public API"
 ---
 
-# Public API
+# API Reference
 
-The 555x402 API allows developers to integrate the Streaming OS into their own applications.
+Complete reference for the 555 backend API. All endpoints are served from a single REST server and use JSON for request/response bodies unless otherwise noted.
 
-**Base URL**: `https://api.rendernet.work`
+**Base URL:** `https://api.rndrntwrk.com`
+
+## Authentication Model
+
+Most endpoints require a valid session cookie obtained through the **SIWS (Sign In With Solana)** flow. The flow works as follows:
+
+1. Request a nonce via `POST /auth/nonce`
+2. Sign the nonce with your Solana wallet
+3. Submit the signed message to `POST /auth/verify` to receive a session cookie
+4. Include the session cookie on all subsequent requests
+
+Admin endpoints additionally require a server-side admin token passed via the `requireAdminToken` middleware.
+
+---
 
 ## Authentication
 
-All requests to `/pub/v1` require an API Key.
-`X-API-Key: <your_api_key>`
+<AccordionGroup>
+  <Accordion title="POST /auth/nonce" icon="key">
+    **Request a sign-in nonce**
 
-## Endpoints
+    Generates a one-time nonce for the SIWS authentication flow. The client signs this nonce with their Solana wallet private key and submits it to `/auth/verify`.
 
-### PayLinks
+    - **Auth:** None
+    - **Returns:** JSON object containing the nonce string
+  </Accordion>
 
-#### Create PayLink
-`POST /pub/v1/links`
-Creates a new Hyperlink for payments or engagement.
+  <Accordion title="POST /auth/verify" icon="shield-check">
+    **Verify signed nonce and create session**
+
+    Validates the signed SIWS message. On success, sets an authenticated session cookie and returns the wallet address.
+
+    - **Auth:** None (establishes auth)
+    - **Returns:** Session cookie + wallet address
+  </Accordion>
+
+  <Accordion title="POST /auth/logout" icon="right-from-bracket">
+    **End the current session**
+
+    Destroys the server-side session and clears the session cookie.
+
+    - **Auth:** Session cookie
+    - **Returns:** `200 OK`
+  </Accordion>
+
+  <Accordion title="GET /me" icon="user">
+    **Get current authenticated user**
+
+    Returns the wallet address and account metadata for the currently authenticated session.
+
+    - **Auth:** Session cookie
+    - **Returns:** Wallet address, eligibility status, and session metadata
+  </Accordion>
+
+  <Accordion title="POST /auth/social/link/start" icon="link">
+    **Start social account linking**
+
+    Initiates the flow to link a social account (e.g. Twitter/X) to the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** OAuth redirect URL or verification challenge
+  </Accordion>
+
+  <Accordion title="POST /auth/social/link/verify" icon="circle-check">
+    **Verify social account link**
+
+    Completes the social account linking flow by verifying the OAuth callback or challenge response.
+
+    - **Auth:** Session cookie
+    - **Returns:** Linked social account confirmation
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Arcade & Gaming
+
+<AccordionGroup>
+  <Accordion title="GET /game/{id}/rank" icon="ranking-star">
+    **Get wallet rank for a game**
+
+    Returns the current authenticated wallet's rank within a specific game leaderboard.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Rank position, score, and percentile
+  </Accordion>
+
+  <Accordion title="POST /arcade/score" icon="gamepad">
+    **Submit an arcade score**
+
+    Records a game score for the authenticated wallet. Scores are validated server-side and contribute to leaderboard standings and point accrual.
+
+    - **Auth:** Session cookie
+    - **Returns:** Recorded score confirmation and updated rank
+  </Accordion>
+
+  <Accordion title="GET /arcade/state" icon="ghost">
+    **Get current arcade state**
+
+    Returns the current arcade theme, active events, and visual state. Used by the frontend to render the Alice-themed arcade environment.
+
+    - **Auth:** None
+    - **Returns:** Theme configuration, active event data, and arcade metadata
+  </Accordion>
+
+  <Accordion title="GET /arcade/cabinets" icon="tv-retro">
+    **List arcade cabinets**
+
+    Returns all arcade cabinets and their current possession state (which entity or character is controlling each cabinet).
+
+    - **Auth:** None
+    - **Returns:** Array of cabinet objects with game ID, possession status, and display metadata
+  </Accordion>
+
+  <Accordion title="GET /game/{id}/state" icon="floppy-disk">
+    **Get game state**
+
+    Retrieves the persisted game state for the authenticated wallet in a specific game.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Serialized game state object
+  </Accordion>
+
+  <Accordion title="PUT /game/{id}/state" icon="floppy-disk">
+    **Save game state**
+
+    Persists game state for the authenticated wallet. Used for saving progress in stateful games.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Confirmation of saved state
+  </Accordion>
+
+  <Accordion title="POST /game/{id}/record" icon="medal">
+    **Post a game record**
+
+    Submits a finalized game record (e.g. completed run, match result) that is immutably logged.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Recorded entry confirmation
+  </Accordion>
+
+  <Accordion title="POST /game/{id}/play" icon="play">
+    **Register a game play session**
+
+    Logs that the user started a play session for a specific game. Used for engagement tracking and quest completion.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Play session acknowledgment
+  </Accordion>
+
+  <Accordion title="GET /game/{id}/leaderboard" icon="trophy">
+    **Get per-game leaderboard**
+
+    Returns the leaderboard for a specific game. Supports period-based filtering.
+
+    - **Auth:** None
+    - **Path params:** `id` -- game identifier
+    - **Query params:** `period` -- `day`, `week`, `month`, or `year`
+    - **Returns:** Ranked array of wallet addresses and scores
+  </Accordion>
+
+  <Accordion title="GET /game/{id}/stats" icon="chart-bar">
+    **Get game statistics**
+
+    Returns aggregate statistics for a specific game (total plays, unique players, etc.).
+
+    - **Auth:** None
+    - **Path params:** `id` -- game identifier
+    - **Returns:** Aggregate game stats object
+  </Accordion>
+
+  <Accordion title="GET /game/referral/leaderboard" icon="user-group">
+    **Get referral pseudo-game leaderboard**
+
+    Returns a leaderboard ranked by referral activity, formatted like a game leaderboard.
+
+    - **Auth:** None
+    - **Returns:** Ranked array of wallets by referral performance
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Battles
+
+<AccordionGroup>
+  <Accordion title="POST /battle/create" icon="swords">
+    **Create a new battle**
+
+    Creates a head-to-head or multiplayer battle instance for a specific game.
+
+    - **Auth:** Session cookie
+    - **Returns:** Battle ID, game configuration, and join details
+  </Accordion>
+
+  <Accordion title="GET /battle/active" icon="bolt">
+    **Get active battles**
+
+    Lists all currently active (joinable or in-progress) battles.
+
+    - **Auth:** None
+    - **Returns:** Array of active battle objects
+  </Accordion>
+
+  <Accordion title="POST /battle/{id}/join" icon="hand-fist">
+    **Join an active battle**
+
+    Enrolls the authenticated wallet into an existing battle.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- battle identifier
+    - **Returns:** Battle state with participant list
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Lottery
+
+<AccordionGroup>
+  <Accordion title="POST /round" icon="dice">
+    **Create a lottery round** (legacy)
+
+    Creates a new lottery round. This is the original endpoint kept for backwards compatibility.
+
+    - **Auth:** Session cookie
+    - **Returns:** Round ID and configuration
+  </Accordion>
+
+  <Accordion title="POST /round/{id}/ticket" icon="ticket">
+    **Buy a lottery ticket** (legacy)
+
+    Purchases a ticket for an existing round.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Ticket number and transaction confirmation
+  </Accordion>
+
+  <Accordion title="POST /round/{id}/finalize" icon="flag-checkered">
+    **Finalize a lottery round** (legacy)
+
+    Triggers the finalization and winner selection for a round.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Winning ticket, payout details
+  </Accordion>
+
+  <Accordion title="GET /round/{id}" icon="circle-info">
+    **Get a lottery round** (legacy)
+
+    Retrieves metadata and status for a specific round.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Round object with status, entries, and prize pool
+  </Accordion>
+
+  <Accordion title="POST /chat/round" icon="comments">
+    **Create a chat-based lottery round**
+
+    Creates a new chat-integrated lottery round where entries are submitted via the chat system.
+
+    - **Auth:** Admin token
+    - **Returns:** Round ID and configuration
+  </Accordion>
+
+  <Accordion title="GET /chat/round/active" icon="circle-play">
+    **Get the active chat round**
+
+    Returns the currently active chat-based lottery round, if any.
+
+    - **Auth:** None
+    - **Returns:** Active round object or `null`
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/entries" icon="list-ol">
+    **Get entries for a chat round**
+
+    Returns all entries submitted to a specific chat round.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Array of chat entry objects
+  </Accordion>
+
+  <Accordion title="POST /chat/round/{id}/start" icon="play">
+    **Start a chat round**
+
+    Transitions a chat round from pending to active, allowing entries.
+
+    - **Auth:** Admin token
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Updated round state
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/winning-numbers" icon="star">
+    **Get winning numbers**
+
+    Returns the winning numbers for a finalized chat round.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Winning number set and derivation proof
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/audit" icon="magnifying-glass">
+    **Get round audit trail**
+
+    Returns the full audit trail for a round including randomness source, entry hashes, and selection proof.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Audit object with cryptographic proofs
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/entries/root" icon="tree">
+    **Get Merkle root of entries**
+
+    Returns the Merkle root hash of all entries in a chat round for on-chain verification.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Merkle root hash
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/winners" icon="award">
+    **Get chat round winners**
+
+    Returns the list of winners for a finalized chat round.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Array of winner objects with wallet and prize
+  </Accordion>
+
+  <Accordion title="GET /chat/round/{id}/payouts" icon="money-bill-transfer">
+    **Get round payout details**
+
+    Returns payout transaction details for a finalized round.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Payout status and transaction signatures
+  </Accordion>
+
+  <Accordion title="GET /chat/round/recent-finalized" icon="clock-rotate-left">
+    **Get recently finalized rounds**
+
+    Returns a list of recently finalized chat rounds for display.
+
+    - **Auth:** None
+    - **Returns:** Array of finalized round summaries
+  </Accordion>
+
+  <Accordion title="GET /chat/status" icon="signal">
+    **Get chat system status**
+
+    Returns the current status of the chat/lottery system, including connection health.
+
+    - **Auth:** None
+    - **Returns:** Status object with system health indicators
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Leaderboards
+
+<AccordionGroup>
+  <Accordion title="GET /leaderboard/global" icon="earth-americas">
+    **Get global leaderboard**
+
+    Returns the cross-game global leaderboard combining points from all sources (games, quests, referrals).
+
+    - **Auth:** None
+    - **Query params:** `period` -- `day`, `week`, `month`, or `year`; `limit`, `offset`
+    - **Returns:** Ranked array of wallets with composite scores
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/global/stats" icon="chart-line">
+    **Get global leaderboard stats**
+
+    Returns aggregate statistics for the global leaderboard (total participants, total points distributed, etc.).
+
+    - **Auth:** None
+    - **Returns:** Global stats summary object
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/global/period-stats" icon="calendar-days">
+    **Get period-based global stats**
+
+    Returns global stats scoped to a specific time period.
+
+    - **Auth:** None
+    - **Query params:** `period` -- `day`, `week`, `month`, or `year`
+    - **Returns:** Period-scoped stats object
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/global/rank" icon="hashtag">
+    **Get current wallet's global rank**
+
+    Returns the authenticated wallet's rank on the global leaderboard.
+
+    - **Auth:** Session cookie
+    - **Returns:** Rank position, score, and percentile
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/quests" icon="scroll">
+    **Get quest leaderboard**
+
+    Returns a leaderboard ranked by social/quest points only (excludes game scores).
+
+    - **Auth:** None
+    - **Returns:** Ranked array of wallets with quest point totals
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/quests/rank" icon="hashtag">
+    **Get current wallet's quest rank**
+
+    Returns the authenticated wallet's rank on the quest leaderboard.
+
+    - **Auth:** Session cookie
+    - **Returns:** Rank position and quest point total
+  </Accordion>
+
+  <Accordion title="GET /leaderboard/quests/stats" icon="chart-pie">
+    **Get quest leaderboard stats**
+
+    Returns aggregate statistics for the quest leaderboard.
+
+    - **Auth:** None
+    - **Returns:** Quest leaderboard stats summary
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Rewards
+
+<AccordionGroup>
+  <Accordion title="POST /api/rewards/claim" icon="hand-holding-dollar">
+    **Claim a reward**
+
+    Submits a Merkle proof to claim a reward for a specific epoch. The proof is verified on-chain and tokens are transferred to the wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Transaction signature and claim confirmation
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/epoch/{epoch}/proof/{wallet}" icon="certificate">
+    **Get reward proof for a wallet**
+
+    Returns the Merkle proof needed to claim rewards for a specific epoch and wallet address.
+
+    - **Auth:** None
+    - **Path params:** `epoch` -- epoch number; `wallet` -- Solana wallet address
+    - **Returns:** Merkle proof, amount, and leaf index
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/epoch/{epoch}" icon="layer-group">
+    **Get reward epoch details**
+
+    Returns metadata for a specific reward epoch including totals, Merkle root, and status.
+
+    - **Auth:** None
+    - **Path params:** `epoch` -- epoch number
+    - **Returns:** Epoch object with root, total, status, and timestamp
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/epochs" icon="list">
+    **List all reward epochs**
+
+    Returns all reward epochs ordered by epoch number.
+
+    - **Auth:** None
+    - **Returns:** Array of epoch summary objects
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/epochs/committed" icon="lock">
+    **List committed (on-chain) epochs**
+
+    Returns only epochs that have been committed on-chain, excluding those settled off-chain. Used post-go-live.
+
+    - **Auth:** None
+    - **Returns:** Array of committed epoch objects
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/wallet/{wallet}/claimable" icon="coins">
+    **Get claimable rewards for a wallet**
+
+    Returns all unclaimed reward amounts across all epochs for the specified wallet.
+
+    - **Auth:** None
+    - **Path params:** `wallet` -- Solana wallet address
+    - **Returns:** Array of claimable epoch/amount pairs
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/wallet/{wallet}/claimable-epochs" icon="filter">
+    **Get claimable epochs (filtered)**
+
+    Returns claimable epochs excluding off-chain settled ones. Used for the post-go-live claim UI.
+
+    - **Auth:** None
+    - **Path params:** `wallet` -- Solana wallet address
+    - **Returns:** Filtered array of claimable epoch objects
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/wallet/{wallet}/projected" icon="chart-line">
+    **Get projected rewards for today**
+
+    Returns the estimated reward amount for today based on current leaderboard standing and pool size.
+
+    - **Auth:** None
+    - **Path params:** `wallet` -- Solana wallet address
+    - **Returns:** Projected reward amount and calculation breakdown
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/wallet/{wallet}/pending-usdc" icon="dollar-sign">
+    **Get pending USDC balance**
+
+    Returns the pending (not yet claimed) USDC balance for a wallet.
+
+    - **Auth:** None
+    - **Path params:** `wallet` -- Solana wallet address
+    - **Returns:** Pending USDC amount
+  </Accordion>
+
+  <Accordion title="GET /api/rewards/pool/today" icon="piggy-bank">
+    **Get today's reward pool**
+
+    Returns the current day's total reward pool size and distribution parameters.
+
+    - **Auth:** None
+    - **Returns:** Pool total, distribution curve, and timestamp
+  </Accordion>
+
+  <Accordion title="GET /config/rewards" icon="gear">
+    **Get rewards configuration**
+
+    Returns the dynamic rewards configuration including total reward amounts and distribution rules.
+
+    - **Auth:** None
+    - **Returns:** Rewards config object
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Referrals
+
+<AccordionGroup>
+  <Accordion title="GET /api/referral/link" icon="link">
+    **Get referral link**
+
+    Returns the referral link for the authenticated wallet. Creates one if it does not exist.
+
+    - **Auth:** Session cookie
+    - **Returns:** Referral link URL and code
+  </Accordion>
+
+  <Accordion title="POST /api/referral/link" icon="link">
+    **Create referral link**
+
+    Explicitly creates a new referral link for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Referral link URL and code
+  </Accordion>
+
+  <Accordion title="POST /api/referral/bind" icon="handshake">
+    **Bind a referral code**
+
+    Binds the authenticated wallet to a referrer using a referral code. A wallet can only be referred once.
+
+    - **Auth:** Session cookie
+    - **Returns:** Binding confirmation
+  </Accordion>
+
+  <Accordion title="GET /api/referral/summary" icon="chart-simple">
+    **Get referral summary**
+
+    Returns a summary of the authenticated wallet's referral activity (total referrals, points earned).
+
+    - **Auth:** Session cookie
+    - **Returns:** Referral count, total points earned from referrals
+  </Accordion>
+
+  <Accordion title="GET /api/referral/stats" icon="chart-bar">
+    **Get referral stats**
+
+    Returns detailed referral statistics for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Detailed referral performance metrics
+  </Accordion>
+
+  <Accordion title="GET /api/referral/referred" icon="users">
+    **Get referred wallets**
+
+    Returns a list of wallets that were referred by the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Array of referred wallet addresses and timestamps
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Profile & Daily Tasks
+
+<AccordionGroup>
+  <Accordion title="GET /api/profile" icon="id-card">
+    **Get user profile**
+
+    Returns the profile for the authenticated wallet including points balance, rank, and linked accounts.
+
+    - **Auth:** Session cookie
+    - **Returns:** Profile object with balances, rank, and social links
+  </Accordion>
+
+  <Accordion title="GET /api/profile/beta-points" icon="flask">
+    **Get beta points balance**
+
+    Returns the beta (devnet) points balance for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Beta points total and breakdown
+  </Accordion>
+
+  <Accordion title="GET /api/profile/beta-stats" icon="chart-column">
+    **Get beta statistics**
+
+    Returns detailed beta-mode statistics for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Beta stats object
+  </Accordion>
+
+  <Accordion title="GET /api/beta/preference" icon="toggle-on">
+    **Get beta mode preference**
+
+    Returns whether the authenticated wallet has opted into beta (devnet) mode.
+
+    - **Auth:** Session cookie
+    - **Returns:** Boolean preference flag
+  </Accordion>
+
+  <Accordion title="POST /api/beta/preference" icon="toggle-on">
+    **Set beta mode preference**
+
+    Toggles the beta (devnet) mode preference for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Updated preference
+  </Accordion>
+
+  <Accordion title="GET /api/tasks/daily" icon="list-check">
+    **Get daily tasks**
+
+    Returns the list of daily tasks and their completion status for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Array of task objects with completion state
+  </Accordion>
+
+  <Accordion title="POST /api/tasks/daily/complete" icon="circle-check">
+    **Complete a daily task**
+
+    Marks a daily task as completed for the authenticated wallet and awards associated points.
+
+    - **Auth:** Session cookie
+    - **Returns:** Points awarded and updated task state
+  </Accordion>
+
+  <Accordion title="GET /api/me/payments" icon="receipt">
+    **Get my payment history**
+
+    Returns USDC payment transactions for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Array of payment objects with amounts and timestamps
+  </Accordion>
+
+  <Accordion title="GET /users/{wallet}/stats" icon="chart-user">
+    **Get public user stats**
+
+    Returns publicly visible stats for any wallet address.
+
+    - **Auth:** None
+    - **Path params:** `wallet` -- Solana wallet address
+    - **Returns:** Public stats summary
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Events & SSE
+
+<AccordionGroup>
+  <Accordion title="GET /events" icon="tower-broadcast">
+    **Subscribe to Server-Sent Events (SSE)**
+
+    Opens a persistent SSE connection for real-time event streaming. The server pushes events for new chat entries, lottery updates, battle results, and system notifications.
+
+    - **Auth:** None (public stream)
+    - **Returns:** `text/event-stream` with typed JSON payloads
+
+    **Event types include:**
+    - `new_entry` -- New chat lottery entry submitted
+    - `chat_message` -- Chat message broadcast
+    - Round state transitions, winner announcements, etc.
+  </Accordion>
+
+  <Accordion title="GET /events/burn/active" icon="fire">
+    **Get active burn event**
+
+    Returns the currently active token burn event, if any.
+
+    - **Auth:** None
+    - **Returns:** Active burn event object or `null`
+  </Accordion>
+
+  <Accordion title="POST /events/burn" icon="fire-flame-curved">
+    **Create a burn event**
+
+    Creates a new token burn event with specified parameters.
+
+    - **Auth:** Session cookie
+    - **Returns:** Burn event ID and configuration
+  </Accordion>
+
+  <Accordion title="POST /events/burn/{id}/activate" icon="bolt">
+    **Activate a burn event**
+
+    Transitions a burn event from pending to active.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Updated burn event state
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/leaderboard" icon="ranking-star">
+    **Get burn event leaderboard**
+
+    Returns the overall leaderboard for a burn event ranked by total burn amount.
+
+    - **Auth:** None
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Ranked array of participants
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/leaderboard/referrals" icon="user-group">
+    **Get burn referral leaderboard**
+
+    Returns the burn event leaderboard filtered to referral-sourced burns.
+
+    - **Auth:** None
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Ranked array by referral burns
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/leaderboard/game" icon="gamepad">
+    **Get burn game leaderboard**
+
+    Returns the burn event leaderboard filtered to game-sourced burns.
+
+    - **Auth:** None
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Ranked array by game burns
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/leaderboard/social" icon="share-nodes">
+    **Get burn social leaderboard**
+
+    Returns the burn event leaderboard filtered to social-sourced burns.
+
+    - **Auth:** None
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Ranked array by social burns
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/rank" icon="hashtag">
+    **Get my burn event rank**
+
+    Returns the authenticated wallet's rank within a burn event.
+
+    - **Auth:** Session cookie
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Rank position and burn total
+  </Accordion>
+
+  <Accordion title="GET /events/burn/{id}/quests" icon="scroll">
+    **Get burn event quests**
+
+    Returns quests associated with a specific burn event.
+
+    - **Auth:** None
+    - **Path params:** `id` -- burn event identifier
+    - **Returns:** Array of event-scoped quest objects
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Quests
+
+<AccordionGroup>
+  <Accordion title="GET /quests" icon="scroll">
+    **List all quests**
+
+    Returns all available quests with their requirements and reward amounts.
+
+    - **Auth:** None
+    - **Returns:** Array of quest objects
+  </Accordion>
+
+  <Accordion title="GET /me/quests" icon="clipboard-check">
+    **Get my quest progress**
+
+    Returns quest completion status for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Array of quests with per-wallet progress and completion state
+  </Accordion>
+
+  <Accordion title="GET /me/quest-multiplier" icon="xmark">
+    **Get quest multiplier**
+
+    Returns the current quest point multiplier for the authenticated wallet based on completed quests and streaks.
+
+    - **Auth:** Session cookie
+    - **Returns:** Multiplier value and contributing factors
+  </Accordion>
+
+  <Accordion title="GET /ledger/quests" icon="book">
+    **Get quest ledger**
+
+    Returns the full quest point ledger showing all quest point transactions for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Array of ledger entries with quest ID, points, and timestamp
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Social Integration
+
+<AccordionGroup>
+  <Accordion title="POST /integrations/twitter/events" icon="x-twitter">
+    **Twitter bot event webhook**
+
+    Receives webhook events from the Twitter/X bot integration. Used for tracking social engagement quests (retweets, follows, mentions).
+
+    - **Auth:** Webhook signature verification
+    - **Returns:** `200 OK` acknowledgment
+  </Accordion>
+
+  <Accordion title="GET /social/round/{id}" icon="share-nodes">
+    **Get social round data**
+
+    Returns social-optimized data for a lottery round, formatted for sharing on social media.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Round summary with shareable metadata
+  </Accordion>
+
+  <Accordion title="GET /social/latest" icon="clock">
+    **Get latest social data**
+
+    Returns the most recent round data formatted for social sharing.
+
+    - **Auth:** None
+    - **Returns:** Latest round social summary
+  </Accordion>
+
+  <Accordion title="GET /social/round/{id}/post" icon="message">
+    **Get social post content**
+
+    Returns pre-formatted post content for a round result, ready for social media publishing.
+
+    - **Auth:** None
+    - **Path params:** `id` -- round identifier
+    - **Returns:** Formatted post text and media references
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Clips
+
+<AccordionGroup>
+  <Accordion title="POST /clip/upload" icon="video">
+    **Upload a clip**
+
+    Uploads a gameplay or stream clip. Triggers `clip_upload` quest completion if applicable.
+
+    - **Auth:** Session cookie
+    - **Returns:** Clip ID and upload confirmation
+  </Accordion>
+
+  <Accordion title="GET /clips" icon="film">
+    **List clips**
+
+    Returns uploaded clips, optionally filtered by game or wallet.
+
+    - **Auth:** None
+    - **Returns:** Array of clip objects with metadata
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Eligibility & Configuration
+
+<AccordionGroup>
+  <Accordion title="GET /eligibility" icon="door-open">
+    **Check token-gate eligibility**
+
+    Checks whether the authenticated wallet meets the token-holding requirements for platform access.
+
+    - **Auth:** Session cookie
+    - **Returns:** Boolean eligibility status and token balance
+  </Accordion>
+
+  <Accordion title="GET /config/normalization" icon="sliders">
+    **Get normalization config**
+
+    Returns the current point normalization rules and score caps, exposed for frontend transparency.
+
+    - **Auth:** None
+    - **Returns:** Normalization parameters and cap values
+  </Accordion>
+
+  <Accordion title="GET /config/games" icon="list">
+    **Get games registry**
+
+    Returns the registry of all games and their category mappings.
+
+    - **Auth:** None
+    - **Returns:** Array of game objects with IDs, names, and categories
+  </Accordion>
+
+  <Accordion title="GET /api/price/sol" icon="coins">
+    **Get SOL/USD price**
+
+    Returns a cached SOL/USD price. Provided as a convenience endpoint to avoid frontend CORS and rate-limit issues with external price APIs.
+
+    - **Auth:** None
+    - **Returns:** `{ "price": <float> }` -- SOL price in USD
+  </Accordion>
+
+  <Accordion title="GET /healthz" icon="heart-pulse">
+    **Health check**
+
+    Returns server health status. Used by load balancers and monitoring.
+
+    - **Auth:** None
+    - **Returns:** `200 OK`
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Wallet & Webhooks
+
+<AccordionGroup>
+  <Accordion title="POST /api/wallet/resolve" icon="magnifying-glass-dollar">
+    **Resolve a wallet address**
+
+    Resolves a wallet identifier (e.g. SNS domain, Twitter handle) to a Solana wallet address. Used internally by the bot to map user-friendly identifiers.
+
+    - **Auth:** None
+    - **Returns:** Resolved Solana wallet address
+  </Accordion>
+
+  <Accordion title="POST /webhooks/payment-status" icon="bell">
+    **Payment status webhook**
+
+    Receives payment status updates from the Hyperlink orchestrator. Updates internal payment records.
+
+    - **Auth:** Webhook signature
+    - **Returns:** `200 OK` acknowledgment
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Admin
+
+All admin endpoints require the `requireAdminToken` middleware. These are not intended for public consumption.
+
+<AccordionGroup>
+  <Accordion title="POST /admin/theme" icon="palette">
+    **Update arcade theme**
+
+    Sets the arcade visual theme and aesthetic parameters.
+
+    - **Auth:** Admin token
+    - **Returns:** Updated theme configuration
+  </Accordion>
+
+  <Accordion title="POST /admin/event" icon="bolt">
+    **Trigger arcade event**
+
+    Triggers a one-time arcade event (animation, announcement, etc.).
+
+    - **Auth:** Admin token
+    - **Returns:** Event acknowledgment
+  </Accordion>
+
+  <Accordion title="POST /admin/cabinet/possess" icon="ghost">
+    **Possess a cabinet**
+
+    Sets a cabinet to "possessed" state, assigning an AI character or entity to control it.
+
+    - **Auth:** Admin token
+    - **Returns:** Updated cabinet state
+  </Accordion>
+
+  <Accordion title="POST /admin/cabinet/release" icon="unlock">
+    **Release a cabinet**
+
+    Releases a cabinet from possessed state, returning it to normal operation.
+
+    - **Auth:** Admin token
+    - **Returns:** Updated cabinet state
+  </Accordion>
+
+  <Accordion title="POST /rewards/trigger-epoch" icon="clock-rotate-left">
+    **Trigger a rewards epoch**
+
+    Manually triggers the daily rewards epoch generation. Normally run by the scheduler.
+
+    - **Auth:** Admin token
+    - **Returns:** Epoch creation confirmation
+  </Accordion>
+
+  <Accordion title="POST /auto/start" icon="play">
+    **Start auto-scheduler**
+
+    Starts the automatic round scheduling system.
+
+    - **Auth:** Admin token
+    - **Returns:** Scheduler status
+  </Accordion>
+
+  <Accordion title="POST /auto/stop" icon="stop">
+    **Stop auto-scheduler**
+
+    Stops the automatic round scheduling system.
+
+    - **Auth:** Admin token
+    - **Returns:** Scheduler status
+  </Accordion>
+
+  <Accordion title="GET /auto/status" icon="signal">
+    **Get auto-scheduler status**
+
+    Returns the current state of the automatic round scheduler.
+
+    - **Auth:** Admin token
+    - **Returns:** Scheduler running state and next scheduled time
+  </Accordion>
+
+  <Accordion title="POST /quests (admin)" icon="plus">
+    **Create a quest**
+
+    Creates a new quest definition with requirements and reward configuration.
+
+    - **Auth:** Admin token
+    - **Returns:** Created quest object
+  </Accordion>
+
+  <Accordion title="GET /quests/{id} (admin)" icon="eye">
+    **Get quest by ID**
+
+    Returns full quest details including internal configuration.
+
+    - **Auth:** Admin token
+    - **Path params:** `id` -- quest identifier
+    - **Returns:** Quest object with admin-level detail
+  </Accordion>
+
+  <Accordion title="PATCH /quests/{id}" icon="pen">
+    **Update a quest**
+
+    Partially updates a quest definition.
+
+    - **Auth:** Admin token
+    - **Path params:** `id` -- quest identifier
+    - **Returns:** Updated quest object
+  </Accordion>
+
+  <Accordion title="DELETE /quests/{id}" icon="trash">
+    **Delete a quest**
+
+    Removes a quest definition.
+
+    - **Auth:** Admin token
+    - **Path params:** `id` -- quest identifier
+    - **Returns:** `204 No Content`
+  </Accordion>
+
+  <Accordion title="POST /admin/quests/{id}/complete" icon="check-double">
+    **Manually complete a quest for a user**
+
+    Admin override to mark a quest as completed for a specific wallet.
+
+    - **Auth:** Admin token
+    - **Path params:** `id` -- quest identifier
+    - **Returns:** Completion confirmation
+  </Accordion>
+
+  <Accordion title="POST /api/rewards/settled-offchain" icon="file-invoice-dollar">
+    **Mark epochs settled off-chain**
+
+    Marks specified epochs as having been settled off-chain (e.g. direct transfer). Idempotent.
+
+    - **Auth:** Admin token
+    - **Returns:** Updated epoch settlement status
+  </Accordion>
+
+  <Accordion title="POST /api/rewards/epoch/import" icon="file-import">
+    **Import reward epoch distribution**
+
+    Imports a pre-computed distribution blob from an external job into the rewards system.
+
+    - **Auth:** Admin token / internal
+    - **Returns:** Import confirmation with epoch number
+  </Accordion>
+
+  <Accordion title="POST /api/beta/convert" icon="rotate">
+    **Convert beta points**
+
+    Converts beta (devnet) points to mainnet points for a wallet.
+
+    - **Auth:** Admin token
+    - **Returns:** Conversion result
+  </Accordion>
+
+  <Accordion title="GET /debug/points" icon="bug">
+    **Debug points visibility**
+
+    Diagnostic endpoint showing both beta and regular point balances for the authenticated wallet.
+
+    - **Auth:** Session cookie
+    - **Returns:** Dual-mode points breakdown
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Error Responses
+
+All endpoints return errors in a consistent JSON format:
 
 ```json
 {
-  "creatorId": "creator_123",
-  "chainType": "solana",
-  "model": "engagement",
-  "splits": { "creator": 8500, "platform": 1500 }
+  "error": "human-readable error message"
 }
 ```
 
-#### Get PayLink
-`GET /pub/v1/links/{code}`
-Retrieves metadata for a specific link.
+| Status Code | Meaning |
+|---|---|
+| `400` | Bad request -- missing or invalid parameters |
+| `401` | Unauthorized -- missing or invalid session |
+| `403` | Forbidden -- insufficient permissions (e.g. admin-only) |
+| `404` | Not found -- resource does not exist |
+| `409` | Conflict -- duplicate action (e.g. already claimed, already bound) |
+| `500` | Internal server error |
 
-### Payments (AGG)
+---
 
-#### Verify Payment
-`POST /pub/v1/payments/verify`
-Verifies a 402 payment header and returns a settlement proof.
+## Rate Limiting
 
-#### Payment Status
-`GET /pub/v1/payments/{id}`
-Checks the status of a transaction.
-
-### Attention (VAP)
-
-#### Request Token
-`POST /pub/v1/attention/token`
-Requests a session token for tracking engagement.
-
-### Cross-Chain Settlement
-
-> **Note**: These endpoints handle the bridging of assets between Solana and EVM chains (Base, Polygon).
-
-#### Get Transfer Status
-`GET /pub/v1/bridge/status/{id}`
-Checks the status of a cross-chain settlement.
-
-#### Estimate Fees
-`GET /pub/v1/fees/estimate`
-Estimates the gas and platform fees for a cross-chain transfer.
-
-```json
-{
-  "totalFee": "1.50 USDC",
-  "estimatedTime": "15 seconds"
-}
-```
+The API does not currently enforce per-IP rate limits at the application layer, but is fronted by infrastructure-level protections. Excessive request volume may result in temporary throttling. Be respectful with polling intervals -- prefer the SSE stream at `GET /events` for real-time updates.

@@ -1,0 +1,110 @@
+---
+title: "For Players"
+icon: "gamepad"
+description: "Play games, earn points, receive USDC"
+---
+
+## What You Get
+
+- **20 free browser games** across arcade, RPG, puzzle, racing, and casino categories
+- **Earn points with real value** — 10,000 points = 1 USDC
+- **Weekly USDC payouts** every Monday at 05:55 CST
+- **Cross-game leaderboards** with daily, weekly, monthly, and yearly periods
+- **PvP battles** against other players and Alice (AI)
+- **Prediction markets, lotteries, and quests** for additional earnings
+
+## Step 1: Connect Your Wallet
+
+Go to [555.rndrntwrk.com](https://555.rndrntwrk.com) and connect a Solana wallet:
+
+- **Phantom** (recommended), Solflare, Backpack, or other major Solana wallets
+- SIWS (Sign In With Solana) authentication — sign once, play all session
+- Games are **free to play** — no token holdings required to start
+
+## Step 2: Play Games
+
+The [555 Arcade](/arcade/overview) hosts 20 browser-based games:
+
+**8 Production titles:**
+- ninja_vs_evilcorp.555, knighthood.555, drive.555, clawstrike.555, sector_13.555, flock, and more
+
+**12 Beta titles:**
+- chesspursuit, wolf_and_sheep, left_and_right, playback, fighter_planes, pixel_copter, floor13, godai_is_back, peanball, eat_my_dust, where_were_going, vedas_run
+
+**1 Casino/Lottery:**
+- 555 Lottery — hourly Switchboard VRF draws with on-chain proofs
+
+Beta games apply 10% score scaling with diminishing returns on repeat plays, encouraging exploration across the full catalog. See the [Games Library](/arcade/games) for the complete catalog.
+
+## Step 3: Earn Points
+
+Points accrue from every verified gameplay session:
+
+- **VAP-signed sessions** — every play is cryptographically verified (Ed25519 heartbeats)
+- **Daily bonus**: +100 points per game per wallet per CST day
+- **Quest bonuses**: Complete daily tasks, social quests, and referrals for extra points
+- **Score normalization**: All games map to a 0–10,000 scale for fair cross-game ranking
+
+**Token-gated multipliers** boost earning rates based on $555 holdings:
+
+| $555 Holdings | Multiplier |
+| :--- | :--- |
+| 0 (base) | 1x |
+| 55,555 | 5x |
+| 555,555 | 55x |
+| 5,555,555 | 555x |
+
+## Step 4: Climb Leaderboards
+
+Compete on per-game and global cross-game leaderboards:
+
+- **Periods**: Day, Week, Month, Year, All-Time
+- **Verified scores**: Every score is traceable to a signed VAP packet — no spoofing
+- **PvP battles**: Challenge other players or Alice (AI) in head-to-head 1v1 matches
+- **Normalized rankings**: Cross-game leaderboard combines scores from all 20 games
+
+## Step 5: Get Paid
+
+Points convert to USDC through the settlement pipeline:
+
+1. **Points** accrue from gameplay, quests, and referrals
+2. **Credits** — points convert to credits (1 credit = $0.01 USD) when ready for settlement
+3. **USDC settlement** runs every Monday at 05:55 CST via Merkle-tree on-chain commitment and SPL `transferChecked`
+
+Self-withdrawal is available at any time. Pending USDC balance is visible in your profile.
+
+## Other Ways to Earn
+
+### Prediction Markets
+Create or trade on bonding-curve markets for stream events, game outcomes, and real-world predictions. Markets can be created by any user.
+
+### 555 Lottery
+Hourly Switchboard VRF draws with provably fair on-chain randomness. Both stream-level draws (per-creator) and global draws are available. Payouts via PDA escrow and Merkle claims.
+
+### Referrals
+Share your referral link and earn points for every player who joins and plays. Track referral performance on the [referral leaderboard](/api-reference).
+
+### Quests
+Daily and weekly tasks award bonus points:
+- Play X different games
+- Link your Twitter/X account
+- Refer a friend who plays
+- Upload a gameplay clip
+- Participate in burn events
+
+### Burn Events
+Periodic community events with dedicated leaderboards across referral, game, and social categories. Special rewards for top participants.
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="Arcade Overview" icon="gamepad" href="/arcade/overview">
+    Architecture, economy, leaderboard system, prediction markets, and quests.
+  </Card>
+  <Card title="Games Library" icon="dice" href="/arcade/games">
+    Full catalog of all 20 games.
+  </Card>
+  <Card title="Security & Fairness" icon="shield" href="/guides/security-and-fairness">
+    VAP verification, VRF randomness, and payout proofs.
+  </Card>
+</CardGroup>
