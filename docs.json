@@ -5,74 +5,115 @@
   "hideMintlifyBranding": true,
   "forceDarkMode": true,
   "colors": {
-    "primary": "#0b8cb7",
-    "light": "#66cbfa",
-    "dark": "#0a7aa3"
+    "primary": "#0D9488",
+    "light": "#2DD4BF",
+    "dark": "#115E59"
   },
   "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Launch Games",
+        "href": "https://555.rndrntwrk.com"
+      },
+      {
+        "label": "Launch Stream",
+        "href": "https://stream.rndrntwrk.com"
+      },
+      {
+        "label": "Support",
+        "href": "mailto:support@rndrntwrk.com"
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/RNDRNTWRK",
+      "github": "https://github.com/render-network-os",
+      "discord": "https://discord.gg/35UNPtu8M5"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Start",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
-              "index",
-              "integration",
-              "essentials/ultimate-flywheel"
+              "introduction",
+              "how-it-works",
+              "for-creators",
+              "for-players",
+              "for-advertisers",
+              "for-developers"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Products",
+        "groups": [
+          {
+            "group": "Core Products",
+            "pages": [
+              "arcade/overview",
+              "arcade/games",
+              "555stream",
+              "alice/persona",
+              "alice/intelligence",
+              "alice/possession",
+              "sw4p"
             ]
           },
           {
-            "group": "Products",
+            "group": "Monetization",
             "pages": [
-              "products/555-gamification",
-              "products/prediction-market",
               "products/monetization-module",
-              "products/subscriptions-staking",
-              "products/render-stream",
-              "products/ctrl-control-panel",
               "products/monetization-contract",
-              "products/render-expand",
-              "products/streamer-collectives",
-              "products/streaming-kit-marketplace",
-              "products/stream-pack-generator",
-              "products/animated-assets"
+              "products/subscriptions-staking",
+              "products/render-expand"
             ]
           },
           {
-            "group": "Guides",
+            "group": "Tools & Features",
             "pages": [
-              "guides/revenue-tracking",
-              "guides/troubleshooting",
-              "guides/ctrl-panel",
-              "guides/obs-migration",
-              "guides/render-stream-sdk",
-              "guides/chat-moderation-bot",
-              "guides/multi-chat-architecture",
-              "guides/security-and-fairness",
-              "guides/api-usage-and-proxying"
+              "products/ctrl-control-panel",
+              "products/animated-assets",
+              "features/countdown-announcements"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Protocol",
+        "groups": [
           {
-            "group": "Reference",
+            "group": "Protocol",
             "pages": [
-              "api-reference"
-            ]
-          },
-          {
-            "group": "Community",
-            "pages": [
-              "community/discord-server",
-              "community/twitter",
-              "community/support-center",
-              "community/developer-resources"
-            ]
-          },
-          {
-            "group": "Governance",
-            "pages": [
-              "governance/proposals-and-splits"
+              "protocol/overview",
+              "economics",
+              "protocol/vap",
+              "protocol/vap-v2",
+              "protocol/agg",
+              "protocol/hyperlink",
+              "protocol/audience-inventory",
+              "protocol/roadmap"
             ]
           }
         ]
@@ -96,53 +137,53 @@
         ]
       },
       {
-        "tab": "555x402",
+        "tab": "Build",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Reference",
             "pages": [
-              "555x402/overview",
-              "555x402/vap",
-              "555x402/agg",
-              "555x402/hyperlink",
-              "555x402/inventory"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Alice",
-        "groups": [
-          {
-            "group": "The Operator",
-            "pages": [
-              "alice/persona",
-              "alice/intelligence",
-              "alice/possession"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Arcade",
-        "groups": [
-          {
-            "group": "The Arcade",
-            "pages": [
-              "arcade/overview",
-              "arcade/games"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Architecture",
-        "groups": [
-          {
-            "group": "System",
-            "pages": [
+              "api-reference",
+              "essentials/glossary",
               "architecture/overview",
               "architecture/system-map"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/security-and-fairness",
+              "guides/compliance-and-risk",
+              "guides/api-usage-and-proxying",
+              "guides/ctrl-panel",
+              "guides/obs-migration",
+              "guides/obs-integration",
+              "guides/chat-moderation-bot",
+              "guides/multi-chat-architecture",
+              "guides/revenue-tracking",
+              "guides/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Community",
+        "groups": [
+          {
+            "group": "Community",
+            "pages": [
+              "community/discord-server",
+              "community/twitter",
+              "community/support-center",
+              "community/developer-resources",
+              "community/partnerships",
+              "community/ecosystem-philosophy",
+              "community/docs-changelog"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance/proposals-and-splits"
             ]
           }
         ]
@@ -151,61 +192,26 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Launch App",
-          "href": "https://rendernet.work",
-          "icon": "rocket"
+          "anchor": "Launch Games",
+          "href": "https://555.rndrntwrk.com",
+          "icon": "gamepad"
+        },
+        {
+          "anchor": "Launch Stream",
+          "href": "https://stream.rndrntwrk.com",
+          "icon": "tower-broadcast"
         },
         {
           "anchor": "Tokenomics",
-          "href": "https://docs.rendernet.work/tokenomics/overview",
+          "href": "/tokenomics/overview",
           "icon": "coins"
         },
         {
-          "anchor": "555x402",
-          "href": "https://docs.rendernet.work/555x402/overview",
-          "icon": "zap"
-        },
-        {
           "anchor": "Community",
-          "href": "https://x.com/RNDRNTWRK",
+          "href": "https://discord.gg/35UNPtu8M5",
           "icon": "users"
         }
       ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Launch App",
-        "href": "https://rendernet.work"
-      },
-      {
-        "label": "Support",
-        "href": "mailto:support@rendernet.work"
-      }
-    ]
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/RNDRNTWRK",
-      "github": "https://github.com/rndrntwrk",
-      "discord": "https://discord.gg/35UNPtu8M5"
     }
   }
 }

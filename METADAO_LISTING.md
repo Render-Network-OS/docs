@@ -1,8 +1,8 @@
 # Render Network — MetaDAO Listing Package
 
 Project owner: Render Network (building tools and a network for a sustainable creator economy)
-Contact: founders@rendernet.work
-Website: https://rendernet.work
+Contact: founders@rndrntwrk.com
+Website: https://rndrntwrk.com
 Repository: monorepo (backend, frontend, chat-gateway, discord)
 
 ## Project Name & Description
@@ -15,12 +15,12 @@ Long
 - The stack includes a creator‑controlled overlay system, a simple control panel, a real‑time gateway for events, and a dynamic ad layer. Creators choose size, placement, duration, and theme; updates propagate instantly across OBS/Streamlabs and platforms like Twitch, Kick, and YouTube. We meet users where they are, starting with crypto‑native venues (Pump.fun, Binance Square, Zora) to battle‑harden before broad rollout.
 - Our wedge is “555” gamification—fun, high‑retention interactions that normalize overlays and build inventory before monetization. As the network grows, ads stay creator‑controlled and measured with clear, simple reports.
 
-Why participate: This is streaming‑native monetization done right—creator‑controlled, measurable, and simple. As supply (creators) and demand (brands) grow, network effects compound: better targeting, higher fill, and more revenue per minute watched. RNDR governance brings the community into key decisions. Proceeds fund ~12–15 months of execution, security hardening, and scaling.
+Why participate: This is streaming‑native monetization done right—creator‑controlled, measurable, and simple. As supply (creators) and demand (brands) grow, network effects compound: better targeting, higher fill, and more revenue per minute watched. $555 governance brings the community into key decisions. Proceeds fund ~12–15 months of execution, security hardening, and scaling.
 
 ## Token Name & Ticker
 
-- Name: RNDR
-- Ticker: RNDR
+- Name: $555
+- Ticker: $555
 - Rationale: Aligns directly with the Render Network brand. (We recognize the ticker overlaps with other ecosystems and will coordinate listings/metadata to avoid user confusion.)
 
 ## Project Image & Token Image
@@ -50,8 +50,8 @@ Note: If the sale clears at the minimum, the implied ICO price is ~$0.002 (= $2.
 
 ## Performance Package Configuration
 
-- Pre‑allocation: 12,500,000 RNDR to performance package (up to 15M permissible)
-- Tranches: 5 equal tranches of 2,500,000 RNDR each
+- Pre‑allocation: 12,500,000 $555 to performance package (up to 15M permissible)
+- Tranches: 5 equal tranches of 2,500,000 $555 each
 - Price milestones: Unlock at 2×, 4×, 8×, 16×, 32× the ICO price
 - Minimum unlock time: 24 months from ICO date (≥ 18 months requirement)
 - TWAP: 3‑month TWAP at threshold; the first real unlock occurs only after the TWAP window completes, extending unlock timing by ~3 months
@@ -60,7 +60,7 @@ Example at minimum raise: ICO ≈ $0.002. Tranche thresholds (TWAP) ≈ $0.004, 
 
 ## Intellectual Property Assignment
 
-- Domains & DNS: rendernet.work (and subdomains) and any future brand‑aligned domains
+- Domains & DNS: rndrntwrk.com (and subdomains) and any future brand‑aligned domains
 - Software/Code: full rights to backend (Go API, Solana client, IPFS, Pump.fun proxy), frontend (Next.js overlay + control), chat‑gateway (Node/Bun WS/HTTP), discord tooling, build/deploy configs, CI/CD assets, documentation
 - Incubated projects & ventures: the companies and products incubated under Render Network, including 555 (gamification) and Sculptr (AI 3D asset generation and animation technology)
 - Brand & Creative: logos/marks, palettes, design files, marketing assets; project and token imagery source files

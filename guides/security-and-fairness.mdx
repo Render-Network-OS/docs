@@ -1,44 +1,92 @@
-<Info>
-  WIP — This guide is being updated to reflect the latest OS workflows.
-</Info>
+---
+title: "Security & Fairness"
+icon: "shield-check"
+description: "Cryptographic proofs and on-chain transparency for games and payouts"
+---
 
 ## Overview
- 
+
 Ensure integrity across games, payouts, and campaign execution using cryptographic proofs and on-chain transparency.
- 
+
+## Implementation Status
+
+Not all security measures are live today. The following breakdown clarifies what is currently active and what is planned.
+
+### Live
+
+| Measure | Description |
+|---|---|
+| **Switchboard VRF lottery** | Verifiable Random Function for all lottery and draw-based events |
+| **PDA escrow** | Program Derived Address accounts hold funds during game resolution |
+| **Merkle distributions** | Efficient weekly reward claims with on-chain proof verification |
+| **Ed25519 VAP signatures** | Verified Action Proofs sign each game action to prevent tampering |
+| **Anti-spam rate limiting** | Request throttling and reputation scoring to prevent abuse |
+
+### Planned
+
+| Measure | Target |
+|---|---|
+| **Full on-chain game state verification** | Move complete game state proofs on-chain for trustless verification |
+| **cNFT audit trails** | Compressed NFTs as immutable records of game outcomes and payouts |
+| **Decentralized dispute resolution** | Community-driven arbitration for contested results |
+
+<Info>
+  Planned features are part of the progressive decentralization roadmap. Timelines will be announced as development milestones are reached.
+</Info>
+
 ## Randomness & Game Resolution
- 
+
 - Switchboard VRF for lottery and draw-based events
 - Commit-reveal where appropriate (pre-committed hashes, later reveals)
 - Timestamped event logs and deterministic resolution rules
- 
+
+### Verifying VRF Lottery Fairness
+
+Users can independently verify that lottery outcomes were generated fairly using on-chain VRF proofs:
+
+<Steps>
+  <Step title="Locate the Transaction">
+    Find the lottery settlement transaction on a Solana block explorer (e.g., Solscan, Solana Explorer) using the transaction signature published after the draw.
+  </Step>
+  <Step title="Inspect the VRF Account">
+    The transaction references a Switchboard VRF account. Open this account to view the randomness request and the resulting proof.
+  </Step>
+  <Step title="Verify the Proof">
+    Confirm that the VRF proof is valid — the on-chain program verifies the proof at execution time. The randomness value, combined with the deterministic resolution rules, should reproduce the published outcome.
+  </Step>
+</Steps>
+
 ## Payouts & Escrow
- 
+
 - PDA escrow accounts hold funds during resolution
 - Merkle root distributions enable efficient claims and verification
 - Public receipts with winner lists and amounts
- 
+
 ## Safeguards & Controls
- 
+
 - Anti-manipulation: bet caps, rate limits, reputation scoring
 - Circuit breakers for abnormal conditions and upgrades
 - Multi-signature controls for sensitive operations
- 
+
 ## Audits & Monitoring
- 
-- Independent security reviews
+
+- Independent security reviews (see [sw4p's 5 audit results](https://sw4p.com) for completed assessments)
 - Continuous monitoring and anomaly detection
 - Public reporting and transparency dashboards
- 
+
+<Warning>
+  Security audits reduce risk but do not eliminate it. Smart contracts may contain undiscovered vulnerabilities. Users should only participate with funds they can afford to lose.
+</Warning>
+
 ## Incident Response
- 
+
 - Triage, disclosure, remediation timelines
 - Community updates and postmortems
- 
+
 ## Cross-Links
- 
-- Raffles: [Endless Raffle](/guides/endless-raffle)
-- Programs: [Custom Solana Programs](/guides/custom-solana-programs)
+
+- Raffles: [555 Arcade](/arcade/overview)
+- Programs: [Monetization Contract](/products/monetization-contract)
 - Tokenomics: [Fee Distribution](/tokenomics/fee-distribution)
 
 

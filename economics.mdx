@@ -1,0 +1,88 @@
+---
+title: "Economic Model"
+icon: "chart-line"
+description: "How value flows through the Render Network Protocol"
+---
+
+# The Economic Model
+
+Every dollar flowing through the Render Network Protocol follows the same deterministic cascade. No exceptions.
+
+## The Revenue Cascade
+
+```
+Gross Revenue
+    └── 10% ARP (Audience Reward Pool) → distributed to audience
+    └── 90% Remaining
+        ├── 50% Creator
+        └── 50% Platform
+            ├── 70% Treasury Operations
+            ├── 20% $555 Buyback & Burn
+            ├── 5% $555 Reserve
+            └── 5% SOL/USDC Reserve
+```
+
+### ARP (Audience Reward Pool)
+10% of every dollar is taken off the top and distributed to the audience that generated the engagement. This is policy-enforced — not optional, not adjustable by creators or the platform.
+
+### Creator Share
+50% of post-ARP revenue goes directly to the creator. No negotiation, no minimum thresholds.
+
+### Platform Share
+50% of post-ARP revenue goes to the platform, allocated as:
+*   **70% Treasury**: Operational expenses, development, infrastructure.
+*   **20% Buyback & Burn**: Purchases $555 on the open market and burns it permanently. Creates structural deflation.
+*   **5% $555 Reserve**: Token reserve for protocol operations.
+*   **5% SOL/USDC Reserve**: Stablecoin reserve for settlement liquidity.
+
+## Points System
+
+Points are the user-facing reward unit.
+
+| Property | Value |
+| :--- | :--- |
+| **Exchange Rate** | 10,000 points = 1 USDC |
+| **Transferable** | No |
+| **Earning** | Verified gameplay, engagement, daily bonuses |
+| **Daily Bonus** | +100 points per game per wallet per CST day |
+
+### How Points Work
+1.  User plays a game or engages with a stream.
+2.  VAP verifies the engagement.
+3.  Points are awarded based on the game's normalization rules.
+4.  Points accumulate in the user's account.
+
+## Credits System
+
+Credits are the settlement-ready unit.
+
+| Property | Value |
+| :--- | :--- |
+| **Source** | Points conversion |
+| **Tracked** | Database ledger |
+| **Settlement** | Weekly engine or self-withdrawal |
+| **Payout** | USDC to user's Solana wallet |
+
+### Settlement Engine
+*   **Weekly**: Engine snapshots all credit balances and processes USDC payouts.
+*   **Self-Withdrawal**: Users can withdraw earned credits at any time.
+*   **Minimum**: Configurable minimum withdrawal threshold.
+
+## The ARP / Buybacks / Treasury Engine (10/20/70)
+
+At the platform level, token allocation follows the 10/20/70 (ARP / Buybacks / Treasury) model:
+*   **10%** of all ecosystem revenue → ARP (audience rewards)
+*   **20%** of platform share → $555 buyback and permanent burn
+*   **70%** of platform share → treasury and operations
+
+This creates a self-reinforcing economic flywheel: more engagement → more revenue → more burns → higher token scarcity → more incentive to participate.
+
+## Launch Profiles
+
+The economic model supports progressive unlock via launch profiles:
+
+| Profile | Phase | Features |
+| :--- | :--- | :--- |
+| **Prelaunch** | Before token launch | Points only, no USDC settlement |
+| **Launch** | Token live | Points + credits, weekly settlement enabled |
+| **Postlaunch** | Mature | Full economic model, cNFT inventory, ad marketplace |

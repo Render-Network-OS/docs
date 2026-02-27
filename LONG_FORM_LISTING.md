@@ -1,4 +1,6 @@
-# Render Network (RNDR)
+> **Note**: Product details in this document may be outdated. See the [main documentation](https://docs.rndrntwrk.com) for current product information.
+
+# Render Network ($555)
 
 **Launch is Live**
 
@@ -7,15 +9,15 @@
 
 Render Network builds tools and a network to connect viewers, creators, advertisers, and partner businesses. The goal is to support a sustainable creator economy. The platform makes dynamic livestream overlays simple and runs a real-time ad marketplace to deliver targeted ads across multiple streams. It's built on Solana for fast settlements, security, and scalability.
 
-Website: [rendernet.work](https://rendernet.work)  
+Website: [rndrntwrk.com](https://rndrntwrk.com)  
 Monorepo: [github.com/rndrntwrk](https://github.com/rndrntwrk)  
 Docs (MVP & Audit): In the repo (IMPLEMENTATION_CHECKLIST.md, PRODUCTION_READINESS_AUDIT.md)  
 Follow on X: TBA  
-RNDR Token Mint: TBA
+$555 Token Mint: TBA
 
 The $2,000,000 minimum raise covers 12–15 months of work, including product design and development, security improvements (cookies, CSRF, uploads, CSP, rate-limits, migrations, observability), and scaling the overlay and ad marketplace for early creators and brands.
 
-The RNDR token enables futarchy-governed decisions. Funds are managed through market-based governance, creating an unruggable ICO where proposals must show value.
+The $555 token enables futarchy-governed decisions. Funds are managed through market-based governance, creating an unruggable ICO where proposals must show value.
 
 ### Problem
 
@@ -35,10 +37,10 @@ Looking ahead, Render Network aims to become a key part of decentralized media, 
 
 ### Tokenomics (High-Level)
 
-- Name & Ticker: Render Network | RNDR
-- Total Supply: 1,000,000,000 RNDR
+- Name & Ticker: Render Network | $555
+- Total Supply: 1,000,000,000 $555
 - Minimum Raise: $2,000,000 → Implied ICO Price ≈ $0.002 ($2.0M / 1,000,000,000)
-- Performance Package: 12,500,000 RNDR pre-allocated in 5 equal tranches, unlocking at 2×, 4×, 8×, 16×, 32× ICO price. First unlock at 24 months post-ICO, using 3-month TWAP.
+- Performance Package: 12,500,000 $555 pre-allocated in 5 equal tranches, unlocking at 2×, 4×, 8×, 16×, 32× ICO price. First unlock at 24 months post-ICO, using 3-month TWAP.
 - Liquidity & Sale: Tokens distributed pro-rata; some USDC and tokens for liquidity pools; treasury governed by futarchy (see MetaDAO docs).
 
 ### Use of Funds (Summary)
@@ -61,11 +63,11 @@ Looking ahead, Render Network aims to become a key part of decentralized media, 
 ### Incubated Projects
 
 - 555: Gamification and overlays for audience and inventory growth.
-- Sculptr: AI for 3D asset creation and animation for creators/brands.
+- Sculptr: AI for 3D asset creation and animation for creators/brands. (Sculptr has been deprecated in favor of focusing resources on the core 555 Ecosystem)
 
 ### Terms & Conditions
 
-By buying RNDR tokens ("Tokens"), you agree to these terms:
+By buying $555 tokens ("Tokens"), you agree to these terms:
 
 **No Guarantees**  
 Tokens are "as-is" and "as-available." Buying them doesn't guarantee returns, performance, utility, or access to platforms/products/services.

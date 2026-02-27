@@ -1,0 +1,128 @@
+---
+title: "VAP v2 Research"
+icon: "flask"
+description: "Validated Design for the Next-Generation Attention Protocol"
+---
+
+# VAP v2: The Validated Design
+
+VAP v2 is the next-generation Verifiable Attention Protocol. After 14 weeks of research, the design has been validated with **234 tests passing** and **all 5 attack trees marked SECURE**.
+
+<Warning>
+VAP v2 is validated but not yet deployed. The current live system runs VAP v1 (see [VAP documentation](/protocol/vap)).
+</Warning>
+
+## Design Principles
+
+### Entity-Agnostic
+Zero protocol components check entity type. No differential rates between human and AI participants. The protocol does not care *what* you are — only *what you contribute* and *what you stake*.
+
+### Stake-Weighted Meritocracy
+Participation requires skin in the game. Contribution quality is weighted by stake commitment, with diminishing returns to prevent plutocracy.
+
+### Deterministic Economics
+All economic parameters are formula-driven. No discretionary allocation, no manual intervention.
+
+## Core Mechanics
+
+### Epochs
+*   **Duration**: 6 hours (4 per day).
+*   **Boundary**: Settlement occurs at each epoch boundary.
+*   **Auctions**: Advertisers bid for attention credits within each epoch.
+
+### Attention Credits (AC)
+The atomic unit of verified attention.
+*   **Value**: 1 AC = $0.001 USDC.
+*   **Source**: Burn $555 at oracle price to mint equivalent ACs.
+*   **Usage**: Bidding unit in epoch auctions for verified airtime.
+
+### The Burn Loop
+```
+$555 Token
+  → Burn at oracle price
+  → Mint equivalent Attention Credits
+  → Advertisers bid ACs in epoch auctions
+  → Contributors earn ACs from verified engagement
+  → ARP (10%) distributed to audience
+  → Remaining ACs redeemable for USDC
+```
+
+## Stake Model
+
+### Parameters
+
+| Parameter | Value |
+| :--- | :--- |
+| **Minimum Stake** | 55,555 $555 |
+| **Weight Formula** | `ln(1 + S/27,778)` |
+| **Weight Cap** | 5.0 |
+| **Activation Period** | 7 days |
+| **Maturation** | 90 days to full weight |
+
+### Logarithmic Weighting
+The formula `ln(1 + S/27,778)` ensures diminishing returns on additional stake:
+
+*   55,555 $555 (minimum) → weight ~1.0
+*   500,000 $555 → weight ~3.0
+*   5,000,000 $555 → weight ~5.0 (cap)
+
+This makes Sybil attacks economically irrational — splitting stake across identities reduces total weight.
+
+## ContributionProof
+
+The v2 proof format is a 296-byte structure containing:
+*   Session identifier and epoch reference.
+*   Stake reference and weight at time of contribution.
+*   Engagement metrics (hashed).
+*   Ed25519 signature.
+
+Entity-agnostic: the proof contains no field for entity type.
+
+## Security Validation
+
+### Attack Tree Results
+
+| Attack | Strategy | ROI | Max Advantage | Verdict |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sybil** | Split stake across identities | -81.7% | 1.80x at 100 IDs | SECURE |
+| **Fabrication** | Generate fake engagement | -179.7% | N/A | SECURE |
+| **Collusion** | Coordinate manipulation | Negative | Limited by stake | SECURE |
+| **Eclipse** | Network isolation | Negative | Detected by epoch validation | SECURE |
+| **Griefing** | Economic disruption | Negative | Self-harming | SECURE |
+
+### Why Sybil Fails
+At 100 identities (the point of maximum Sybil advantage), the attacker achieves 1.80x return. But:
+*   Each identity requires the minimum 55,555 $555 stake.
+*   100 identities = 5,555,500 $555 at risk.
+*   The 1.80x advantage does not cover the opportunity cost of locked capital.
+*   ROI is -81.7% after accounting for stake requirements and gas costs.
+
+## Governance
+
+VAP v2 introduces a three-layer governance model:
+
+### 1. ve$555 DAO
+Token-weighted governance for protocol-level decisions:
+*   Epoch duration adjustments.
+*   Fee schedule changes.
+*   Minimum stake thresholds.
+
+### 2. Algorithmic Layer
+Automated parameter adjustment within DAO-set bounds:
+*   Dynamic difficulty adjustment based on network load.
+*   Automatic stake weight recalculation.
+
+### 3. Alice Layer
+Real-time operational decisions within algorithmic bounds:
+*   Ad placement timing optimization.
+*   Engagement signal weighting.
+*   Anomaly detection and response.
+
+## Migration Path
+
+v1 → v2 migration will be phased:
+1.  **Parallel Run**: v2 runs alongside v1, validating results match.
+2.  **Gradual Migration**: Traffic shifted from v1 to v2 incrementally.
+3.  **Sunset**: v1 deprecated once v2 is stable in production.
+
+No tokens at risk during migration. Stake activation begins after v2 goes live.

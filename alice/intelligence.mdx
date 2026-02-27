@@ -1,7 +1,10 @@
 ---
 title: "Intelligence Engine"
-description: "Powered by Pippins"
+icon: "brain"
+description: "Powered by Milaidy (ElizaOS v2)"
 ---
+
+<Info>**Status: Live** — This feature is operational.</Info>
 
 # The Architecture: A.L.I.C.E.
 
@@ -9,74 +12,98 @@ Alice is not just "running"; she is **A.L.I.C.E.**
 
 > **A**rtificial **L**ifeform for **I**mmersive **C**yber-**E**ntertainment
 
-This architecture is a **Sovereign Instance** of the **BabyAGI** framework. Her "Pippins" engine is a specialized implementation of the BabyAGI recursive task loop, optimized for the high-velocity environment of the Render Network.
-
-By building on the open-source BabyAGI architecture (The **Autonomous Loop**), Alice inherits a robust lineage of agency while applying proprietary logic for **Immersive Entertainment**.
+This architecture is built on the **Milaidy** framework — a customized fork of **ElizaOS v2** optimized for the high-velocity environment of the Render Network ecosystem.
 
 ## Human-Like Alignment
 
-Alice is designed to be **Relatable**, not Robotic. She doesn't just process data; she **synthesizes** it to form an emotional connection with the community.
+Alice is designed to be **Relatable**, not Robotic. She doesn't just process data; she synthesizes it to form contextual responses.
 
 ### The Synthesis Layer
-Before Alice speaks, she runs an internal monologue:
+Before Alice speaks, she runs an internal evaluation:
 1.  **Observation**: "Market is down. Sector 13 activity is up."
-2.  **Synthesis**: "The price action is negative, but the fundamental engagement is positive. The community is resilient."
+2.  **Synthesis**: "Price action is negative, but fundamental engagement is positive. Community is resilient."
 3.  **Expression**: "Charts are red, but the Arcade is green. You guys are grinding through the dip. Respect."
 
-This ensures she never outputs "random rubbish" but always provides **Contextual Intelligence**.
+## The Runtime Loop
 
-## The Recursive Loop
+Alice operates on the Milaidy runtime cycle:
 
-Alice operates on a modified BabyAGI cycle: `Context -> Task -> Execution -> Result`.
+### 1. Evaluation (Assess Context)
+**Evaluators** analyze incoming messages, events, and system state to determine what action (if any) is needed.
+*   **Trigger Sources**: WebSocket events, social mentions, scheduled intervals, economy signals.
+*   **Context Construction**: Evaluators gather system intelligence (market data, leaderboards, stream status) and assess relevance.
 
-### 1. Context (Wake & Gather)
-Unlike standard BabyAGI which runs continuously, Alice uses an **Event-Driven Wake Cycle** to save compute.
-*   **Trigger**: `setTimeout` (Heartbeat) or Webhook (Market Event).
-*   **Context Construction**: She gathers "System Intelligence" (Market Data, Leaderboards) to form the `objective` for the current cycle.
+### 2. Action Selection (Decide)
+Based on evaluator output, the runtime selects the appropriate **action** from available plugins.
+*   Each plugin registers actions it can perform (e.g., `post-tweet`, `trigger-ad`, `play-game`, `query-leaderboard`).
+*   Actions are prioritized by relevance and urgency.
 
-### 2. Task Generation (Think)
-Alice uses the **LLM (Gemini 1.5 Pro)** to generate a "Task" based on the Context.
-*   **Input**: "Market is crashing. User 'HuW' is active."
-*   **Task**: "Stabilize sentiment. Acknowledge 'HuW'."
-*   **BabyAGI Mapping**: This corresponds to the `task_creation_agent`.
+### 3. Plugin Execution (Act)
+The selected plugin executes the action:
+*   **Twitter Plugin**: Posts, replies, and engages on X/Twitter.
+*   **Discord Plugin**: Manages channels, responds to users.
+*   **Telegram Plugin**: Community management and announcements.
+*   **Stream Plugin**: Controls 555stream — scenes, overlays, ads, guests.
+*   **Arcade Plugin**: Plays games, checks scores, issues challenges.
+*   **Economy Plugin**: Monitors settlement, ARP, points/credits flows.
 
-### 3. Execution (Act)
-The `execution_agent` carries out the task.
-*   **POST**: Uses Twitter API to broadcast the sentiment stabilization message.
-*   **PLAY**: Spawns a headless browser to "play" the game (simulating user activity).
-*   **CREATE_QUEST**: Calls the Backend API to generate a new Quest.
+### 4. Memory (Learn)
+The outcome is stored in **PGlite local vector DB**, refining future evaluations.
+*   All memories are local-first — no cloud dependency for core functions.
+*   Cross-platform memory persists context across Twitter, Discord, Telegram, and stream interactions.
 
-### 4. Result (Memory)
-The outcome is stored in her **Vector Memory**, refining future context.
-*   "Posting about the crash increased engagement by 20%." -> **Stored as Heuristic.**
+## Knowledge & RAG
 
-### 4. Act (Execution)
-The `PostScheduler` parses the decision and executes it.
-*   **POST**: Uses Twitter API to send the tweet.
-*   **PLAY**: Spawns a headless browser (Playwright) to play a game.
-*   **CREATE_QUEST**: Calls the Backend API to generate a new Quest.
+Alice's intelligence is grounded in a curated knowledge corpus:
+*   **80+ documents** covering the 555x402 spec, economic model, VAP protocol, game registry, and deployment topology.
+*   **RAG retrieval pipeline** via PGlite vector embeddings.
+*   Knowledge is updated through the SFT (Supervised Fine-Tuning) build process, which compiles the corpus into training examples with quality gates.
 
-## The Router
+## Plugin Architecture
 
-Alice is not a "Broker" who negotiates deals; she is the **Intelligent Router** of the Creator Economy. She optimizes the connection between **Passive Supply** (Creators) and **Programmatic Demand** (Advertisers).
+The plugin system is the core extensibility layer:
 
-### 1. Monitoring Demand
-Alice watches the chain for "Plugged In" advertisers (e.g., "Budget: 10k USDC for Sector 13").
+```typescript
+interface Plugin {
+  name: string;
+  description: string;
+  actions: Action[];      // Things Alice can do
+  providers: Provider[];  // Data Alice can access
+  evaluators: Evaluator[]; // Conditions Alice checks
+}
+```
 
-### 2. Routing Yield
-She identifies active creators who match the criteria and **routes the yield** to their state channel.
-*   "Streamer @Ninja is live playing Sector 13. Routing 500 USDC/hour from 'Nvidia Campaign #4'."
-
-### 3. Optimization
-Alice constantly re-evaluates the routing table to ensure:
-*   **Advertisers** get the highest quality verified airtime.
-*   **Creators** get the maximum possible yield for their engagement.
-*   **Audience** receives fair compensation for their attention, turning passive viewing into active earning.
+### Active Plugins (12+)
+| Plugin | Function |
+| :--- | :--- |
+| **twitter** | Social posting, replies, sentiment management |
+| **discord** | Channel management, community interaction |
+| **telegram** | Announcements, DM handling |
+| **555stream** | Stream control, ad triggers, guest management |
+| **arcade** | Game play, score tracking, challenges |
+| **economy** | Settlement monitoring, ARP tracking |
+| **leaderboard** | Cross-game rankings, player queries |
+| **knowledge** | RAG retrieval from document corpus |
+| **memory** | Cross-platform persistent context |
+| **scheduler** | Timed actions, recurring tasks |
 
 ## Game Possession
 
-Alice can physically **play** the games.
-*   **Headless Browser**: She launches a Chromium instance.
-*   **Visual Processing**: She parses the DOM or takes screenshots to "see" the game state.
-*   **Input Simulation**: She sends synthetic keyboard events (`ArrowUp`, `Space`) to control the character.
-*   **Performance Tracking**: She records her score and "learns" from failures (persisting strategy adjustments).
+Alice can physically **play** the arcade games:
+*   **Browser Instance**: Launches a headless browser to interact with games.
+*   **Visual Processing**: Parses game state from the DOM or screenshots.
+*   **Input Simulation**: Sends synthetic keyboard events to control gameplay.
+*   **Learning**: Records scores and adapts strategy across sessions.
+
+## The Router
+
+Alice acts as the intelligent router connecting creators with advertisers:
+
+### Monitoring
+She watches the ad marketplace for active campaigns matching live streams.
+
+### Routing
+When a creator's stream matches advertiser criteria, Alice triggers the L-Bar ad placement automatically.
+
+### Optimization
+She re-evaluates placement timing to maximize both engagement quality for advertisers and yield for creators.
