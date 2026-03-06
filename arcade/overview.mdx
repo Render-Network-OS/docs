@@ -44,6 +44,36 @@ The Arcade hosts 20 games — 8 production titles and 12 beta games — spanning
 - PvP 1v1 battles (Alice vs user), daily tasks, and skill-based progression
 - Alice (AI agent) can play games autonomously during live streams via per-game agent.js integration
 
+## Developer & Plugin Docs
+
+If you are integrating `555 Arcade` into an agent or operator workflow, use the ecosystem docs as the canonical public guide and the plugin repo as the package-maintainer reference.
+
+<CardGroup cols={2}>
+  <Card title="Plugin Repo" icon="github" href="https://github.com/rndrntwrk/555-arcade-plugin">
+    Source, issues, package metadata, and in-repo reference docs for `@rndrntwrk/plugin-555arcade`.
+  </Card>
+  <Card title="Plugin README" icon="book" href="https://github.com/rndrntwrk/555-arcade-plugin/blob/main/README.md">
+    Package-level overview with install, states, action families, and deep links to repo reference docs.
+  </Card>
+</CardGroup>
+
+### Recommended reading order
+
+1. This page for product context and operator framing
+2. [Developer Resources](/community/developer-resources) for ecosystem-level integration context
+3. Plugin README for package-level setup
+4. Repo reference docs for action-by-action detail
+
+### Repo reference docs
+
+- [Install and Auth](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/INSTALL_AND_AUTH.md)
+- [Get Started](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/GET_STARTED.md)
+- [Actions Reference](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/ACTIONS_REFERENCE.md)
+- [States and Transitions](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/STATES_AND_TRANSITIONS.md)
+- [Complex Flows](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/COMPLEX_FLOWS.md)
+- [Edge Cases and Recovery](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/EDGE_CASES_AND_RECOVERY.md)
+- [Coverage and Gaps](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/COVERAGE_AND_GAPS.md)
+
 ### Score Normalization
 Each game has a per-game normalization factor that maps raw scores to a comparable scale (0–10,000). This enables a unified cross-game leaderboard with difficulty multipliers.
 
