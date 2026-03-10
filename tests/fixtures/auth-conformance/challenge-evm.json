@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "challengeId": "challenge-evm-001",
+  "nonce": "challenge-evm-001",
+  "walletAddress": "0x1111111111111111111111111111111111111111",
+  "chainType": "EVM",
+  "message": "Sign in to SW4P\nNonce: challenge-evm-001",
+  "expiresAt": "2026-03-10T00:10:00.000Z"
+}

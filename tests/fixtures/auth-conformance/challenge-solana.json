@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "challengeId": "challenge-solana-001",
+  "nonce": "challenge-solana-001",
+  "walletAddress": "9wk5JfKMhcQjgUQPFfKEDZorCz8MKuawx5VnPkGkYNBq",
+  "chainType": "solana",
+  "message": "Sign in to 555stream\nWallet: 9wk5JfKMhcQjgUQPFfKEDZorCz8MKuawx5VnPkGkYNBq\nNonce: challenge-solana-001\nTimestamp: 2026-03-10T00:00:00.000Z",
+  "expiresAt": "2026-03-10T00:10:00.000Z",
+  "ttl": 600
+}

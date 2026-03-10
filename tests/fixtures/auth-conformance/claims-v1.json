@@ -1,0 +1,24 @@
+{
+  "required": [
+    "iss",
+    "aud",
+    "sub",
+    "jti",
+    "iat",
+    "exp",
+    "actorId",
+    "actorType",
+    "authMethod",
+    "policyId",
+    "sessionKind",
+    "subjectUserId",
+    "walletAddress",
+    "chainType"
+  ],
+  "optional": [
+    "scopes",
+    "tier",
+    "effectiveTier",
+    "delegatedByActorId"
+  ]
+}

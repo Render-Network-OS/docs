@@ -1,0 +1,20 @@
+{
+  "authenticated": true,
+  "session": {
+    "authenticated": true,
+    "iss": "auth-fixture",
+    "aud": "auth-fixture-api",
+    "sub": "fixture-wallet-subject",
+    "jti": "fixture-jti-001",
+    "iat": 1773100800,
+    "exp": 1773187200,
+    "actorId": "actor-fixture-001",
+    "actorType": "human_wallet",
+    "authMethod": "wallet_sig",
+    "policyId": "policy-v1",
+    "sessionKind": "interactive",
+    "subjectUserId": "user-fixture-001",
+    "walletAddress": "fixture-wallet-subject",
+    "chainType": "solana"
+  }
+}

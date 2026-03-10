@@ -1,0 +1,32 @@
+{
+  "missing_actor_context": {
+    "status": 401,
+    "code": "ACTOR_CONTEXT_REQUIRED",
+    "error": "Actor context required"
+  },
+  "actor_claims_incomplete": {
+    "status": 401,
+    "code": "ACTOR_CLAIMS_INCOMPLETE",
+    "error": "Canonical actor claims required"
+  },
+  "policy_stale": {
+    "status": 403,
+    "code": "POLICY_STALE",
+    "error": "Actor policy version is stale"
+  },
+  "deprecated_identity_source": {
+    "status": 401,
+    "code": "DEPRECATED_IDENTITY_SOURCE",
+    "error": "Deprecated identity source"
+  },
+  "ownership_denied": {
+    "status": 403,
+    "code": "OWNERSHIP_DENIED",
+    "error": "Ownership denied"
+  },
+  "invalid_internal_token": {
+    "status": 401,
+    "code": "INVALID_INTERNAL_TOKEN",
+    "error": "Invalid internal token"
+  }
+}
