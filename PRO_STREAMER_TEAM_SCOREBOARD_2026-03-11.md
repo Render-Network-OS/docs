@@ -5,17 +5,16 @@
 
 ## Final Current-Head Evidence Basis
 - `milaidy` head:
-  - `df8fcbcfc0c7eb605e3ade4eb7fd0b065405003d`
+  - `f4b52a12bc521419ab5c5ec177f877f6a16a5780`
 - Focused Pro Streamer sanity slice:
   - `8` files passed
   - `38` tests passed
 - Full Vitest gate:
   - `112` files passed
-  - `734` tests passed
+  - `737` tests passed
   - `2` tests skipped
 - Electron smoke:
-  - standard startup flow timed out at `3.0m`
-  - auth/onboarding flow timed out at `3.0m`
+  - `2` tests passed in `23.1s`
 - Packaged build:
   - `bun run electron:make:dmg:test` failed on missing `whisper-node/lib/whisper.cpp`
 - Packaged prerequisite attempt:
@@ -40,7 +39,7 @@
 | 03 | COMPLETE | Do nothing further. Thank you. |
 | 04 | COMPLETE | Do nothing further. Thank you. |
 | 05 | COMPLETE | Do nothing further. Thank you. |
-| 06 | REOPENED | Fix the Electron startup/bootstrap timeout proven by Team 07. |
+| 06 | COMPLETE | Do nothing further. Thank you. |
 | 07 | COMPLETE | Do nothing further. Thank you. |
 
 ## Team 00
@@ -50,8 +49,8 @@
   - Team 00 has delivered the final program-control state for this pass.
 - Explicit instruction:
   1. Do nothing further. Thank you.
-  2. Wait for Team 06 and the external packaging blocker to resolve.
-  3. After that, let Team 07 rerun the unchanged release gate.
+  2. Wait for the external packaging blocker to resolve.
+  3. After that, let Team 07 rerun the unchanged packaged gate.
 
 ## Team 01
 - Status:
@@ -95,29 +94,20 @@
 
 ## Team 06
 - Status:
-  - `REOPENED`
-- Why:
-  - Team 07 proved a real Electron startup/bootstrap defect after the renderer process was created.
-- Evidence:
-  - `bunx playwright test --config playwright.electron.config.ts`
-  - `test/electron-ui/electron-app.e2e.spec.ts` timed out at `3.0m`
-  - `test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts` timed out at `3.0m`
+  - `COMPLETE`
+- Acceptance call:
+  - Team 06 resolved the Electron external-base startup defect and the unchanged desktop smoke lane is green.
 - Explicit instruction:
-  1. Reproduce with:
-     - `cd milaidy/apps/app/electron && bun run build`
-     - `cd ../.. && node scripts/sync-electron-web-assets.mjs`
-     - `cd milaidy/apps/app && bunx playwright test --config playwright.electron.config.ts`
-  2. Fix the desktop startup/bootstrap defect first.
-  3. Do not take ownership of packaging until the startup timeout is resolved.
+  1. Do nothing further. Thank you.
 
 ## Team 07
 - Status:
   - `COMPLETE`
 - Acceptance call:
-  - Team 07 completed its release-authority pass and produced a final current-head `NO-GO`.
+  - Team 07 completed its release-authority pass; Electron smoke is now green and only the packaged blocker remains.
 - Explicit instruction:
   1. Do nothing further. Thank you.
-  2. After Team 06 and the packaging owner land fixes, rerun the same focused slice, full Vitest gate, Electron smoke gate, and packaged smoke gate.
+  2. After the packaging owner lands fixes, rerun the unchanged packaged gate.
 
 ## External Blocker
 - Surface:

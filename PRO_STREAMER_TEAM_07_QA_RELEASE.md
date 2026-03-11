@@ -4,6 +4,33 @@
 - Turn the remaining Pro Streamer work into a hard release gate.
 - Own evidence, smoke coverage, deploy verification, and rollback readiness.
 
+## Team 06 Follow-Up Rerun (Authoritative, 2026-03-11, Later Pass)
+- Current `milaidy` head:
+  - `f4b52a12bc521419ab5c5ec177f877f6a16a5780`
+- Current Team 07 state:
+  - `COMPLETED FOR THIS PASS`
+- Current release decision:
+  - `NO-GO`
+- Current evidence after Team 06 closeout:
+  - `bunx vitest run --config vitest.config.ts`
+    - `112` files passed
+    - `737` tests passed
+    - `2` tests skipped
+  - `bunx playwright test --config playwright.electron.config.ts`
+    - `2` tests passed in `23.1s`
+- Remaining blocker:
+  - packaged build and packaged smoke only
+  - `cd milaidy/apps/app/electron && bun run electron:make:dmg:test` still fails on missing `whisper-node/lib/whisper.cpp`
+  - `cd milaidy/apps/app/electron && npm install` still fails with `EOVERRIDE` on `pg`
+  - `bunx playwright test --config playwright.electron.packaged.config.ts` still cannot run because `milaidy/apps/app/electron/dist` does not exist
+- Final blocker assignment after Team 06 completion:
+  - Team 06 is no longer reopened
+  - the only blocking owner is the external `milaidy/apps/app/electron` packaging dependency chain
+- Team 07 explicit instruction:
+  1. Do nothing further. Thank you.
+  2. Wait for the packaging owner to restore a working packaged build path.
+  3. After that, rerun the unchanged packaged smoke gate and update this packet.
+
 ## Final Gate Update (Authoritative, 2026-03-11)
 - Current `milaidy` head:
   - `df8fcbcfc0c7eb605e3ade4eb7fd0b065405003d`
@@ -96,6 +123,7 @@
 
 ### Historical Note
 - Any older section in this packet that reports pre-fix red Vitest counts, the old `AgentManager` import blocker, or a missing Electron binary is historical only and superseded by this section.
+- Any older section in this packet that reports Electron startup smoke red is also historical only and superseded by the Team 06 follow-up rerun above.
 
 ## Source Of Truth
 - Runtime scope: `milaidy/apps/app`

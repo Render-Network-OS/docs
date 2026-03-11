@@ -80,6 +80,6 @@
   1. Keep the reconciled inline-`partial` launch contract frozen across Team 00 and Team 07.
   2. Treat Team 01, Team 02, Team 03, Team 04, Team 05, and Team 07 as completed scoped streams.
   3. Their closeout instruction is: do nothing further. Thank you.
-  4. Reopen Team 06 for the Electron startup/bootstrap timeout proven by Team 07’s desktop smoke coverage.
-  5. Treat the `milaidy/apps/app/electron` packaging dependency chain as an explicit external blocker until it can produce a real `electron/dist` DMG artifact.
-  6. Team 00 is complete for this pass and should do nothing further until Team 06 and the packaging blocker are resolved.
+  4. Team 06 is re-closed. Its closeout instruction is: do nothing further. Thank you.
+  5. Treat the `milaidy/apps/app/electron` packaging dependency chain as the only explicit external blocker until it can produce a real `electron/dist` packaged artifact.
+  6. Team 00 is complete for this pass and should do nothing further until the packaging blocker is resolved.

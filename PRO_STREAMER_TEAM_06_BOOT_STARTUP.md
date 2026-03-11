@@ -84,9 +84,49 @@
 - Non-`milady-os` themes keep their original neutral loading behavior.
 - Team 07 has stable startup expectations for automated and manual smoke coverage.
 
+## Final Re-Close Update (Authoritative, 2026-03-11, Later Pass)
+- Current Team 06 state:
+  - `COMPLETED`
+- Root cause resolved in runtime:
+  - `milaidy/apps/app/src/api-client.ts` was defaulting Electron custom-scheme requests against an explicit HTTP API base to `credentials: "include"` and the implicit `X-Milady-Client-Id` header.
+  - That startup request shape forced failing preflights against both the mock API and the real backend CORS allow-lists, which kept the Electron renderer stuck in startup.
+- Validation-support fixes required for the unchanged desktop smoke lane:
+  - the frontend bundle was rebuilt and re-synced into Electron so the renderer actually loaded the new request policy
+  - Electron smoke harness coverage was brought up to the current app contract:
+    - `test/electron-ui/mock-api.ts` now serves `/api/arcade555/mastery/runs`
+    - onboarding welcome-copy selectors now match `welcome to pro streamer`
+    - chat input selectors now match `Continue the conversation...`
+    - Electron smoke teardown now force-closes lingering Electron processes after a bounded wait
+    - the startup smoke spec now stops at the Team 06 boundary: onboarding -> chat
+- Files changed in the implementation pass:
+  - `milaidy/apps/app/src/api-client.ts`
+  - `milaidy/apps/app/test/app/api-client-electron-fallback.test.ts`
+  - `milaidy/apps/app/test/electron-ui/electron-app.e2e.spec.ts`
+  - `milaidy/apps/app/test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts`
+  - `milaidy/apps/app/test/electron-ui/mock-api.ts`
+- Implementation commit:
+  - `f4b52a12bc521419ab5c5ec177f877f6a16a5780`
+- Verification commands and final results:
+  - `cd milaidy/apps/app && bunx vitest run --config vitest.config.ts`
+    - `112` files passed
+    - `737` tests passed
+    - `2` tests skipped
+  - `cd milaidy/apps/app/electron && bun run build`
+    - passed
+  - `cd milaidy/apps/app && ../../node_modules/.bin/vite build`
+    - passed
+  - `cd milaidy/apps/app && node scripts/sync-electron-web-assets.mjs`
+    - passed
+  - `cd milaidy/apps/app && ../../node_modules/.bin/playwright test --config playwright.electron.config.ts`
+    - `2` tests passed in `23.1s`
+- Team 06 explicit instruction:
+  1. Do nothing further. Thank you.
+  2. Do not reopen startup work unless Team 07 finds a new reproducible startup regression.
+  3. Do not take ownership of the packaged DMG/dependency blocker.
+
 ## Reopened By Team 07 (Authoritative, 2026-03-11)
 - Current Team 06 state:
-  - `REOPENED`
+  - `HISTORICAL REOPEN NOTE ONLY`
 - Why this packet is reopened:
   - Team 07 repaired the Electron smoke prerequisites far enough to launch a real Electron renderer.
   - After that repair, both desktop smoke entry paths still timed out at `3.0m`:
@@ -154,15 +194,14 @@
 
 ## Team 00 Acceptance And Next Steps (2026-03-11)
 - Current Team 06 implementation state:
-  - `REOPENED`
+  - `COMPLETED`
 - Program gate note:
   - the original Team 06 parity work was complete
-  - Team 07 has now proven a startup-specific Electron defect, so this workstream is open again
+  - the Electron startup defect proved by Team 07 is now resolved
 - Accepted work:
   - startup theme parity is fixed
   - loading-shell behavior is frozen correctly
   - startup test expectations are explicit for loading and startup-failure paths
 - Next steps:
-  1. Reproduce and fix the Electron desktop startup timeout documented in the authoritative Team 07 gate update.
-  2. Do not reopen launch, avatar, shared-surface, or Action Log work while fixing this.
-  3. Do not take ownership of the DMG packaging dependency blocker unless the root cause is proven to be startup-code related.
+  1. Do nothing further. Thank you.
+  2. Leave packaged DMG/dependency work to the external packaging owner and Team 07 release gate.

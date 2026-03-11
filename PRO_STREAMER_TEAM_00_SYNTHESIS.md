@@ -18,9 +18,7 @@
 - Why the program is `NO-GO`:
   - Team 07 produced a clean current-head release gate for the scoped app.
   - The current-head Vitest lane is green.
-  - The Electron smoke lane is not green:
-    - `test/electron-ui/electron-app.e2e.spec.ts` timed out at `3.0m`
-    - `test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts` timed out at `3.0m`
+  - The Electron smoke lane is green.
   - The packaged lane is not green:
     - `cd milaidy/apps/app/electron && bun run electron:make:dmg:test` failed because `whisper-node/lib/whisper.cpp` is missing
     - `cd milaidy/apps/app/electron && npm install` failed with `EOVERRIDE` on `pg`
@@ -43,15 +41,13 @@
   - `COMPLETED`
   - do nothing further. Thank you.
 - Team 06:
-  - `REOPENED`
-  - Team 07 proved a startup-specific Electron defect after renderer creation.
+  - `COMPLETED`
+  - do nothing further. Thank you.
 - Team 07:
   - `COMPLETED FOR THIS PASS`
   - do nothing further. Thank you.
 
 ### Reopened And External Owners
-- Reopened owner:
-  - Team 06, for the Electron startup/bootstrap timeout proven by Team 07 smoke coverage
 - External packaging blocker:
   - `milaidy/apps/app/electron` dependency chain
   - no human owner-of-record is available from local repo artifacts
@@ -59,8 +55,8 @@
 ### Team 00 Final Direction
 - Team 00 next step:
   1. Do nothing further in this pass. Thank you.
-  2. Keep the program closed at `NO-GO` until Team 06 resolves the Electron startup timeout and the packaging dependency chain produces a real `electron/dist` artifact.
-  3. Once those fixes land, Team 07 reruns the unchanged gate and Team 00 records the new final decision.
+  2. Keep the program closed at `NO-GO` until the packaging dependency chain produces a real `electron/dist` artifact.
+  3. Once that fix lands, Team 07 reruns the unchanged packaged gate and Team 00 records the new final decision.
 
 ## Staffing And Speed
 - Staffing: 1 lead architect or program owner
