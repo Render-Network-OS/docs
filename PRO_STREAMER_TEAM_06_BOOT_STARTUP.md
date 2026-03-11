@@ -84,6 +84,38 @@
 - Non-`milady-os` themes keep their original neutral loading behavior.
 - Team 07 has stable startup expectations for automated and manual smoke coverage.
 
+## Reopened By Team 07 (Authoritative, 2026-03-11)
+- Current Team 06 state:
+  - `REOPENED`
+- Why this packet is reopened:
+  - Team 07 repaired the Electron smoke prerequisites far enough to launch a real Electron renderer.
+  - After that repair, both desktop smoke entry paths still timed out at `3.0m`:
+    - `test/electron-ui/electron-app.e2e.spec.ts`
+    - `test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts`
+  - This is now treated as a real startup-specific desktop defect, not a missing-binary or missing-assets issue.
+- Team 06 exact next steps:
+  1. Go to `/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app`.
+  2. Reproduce the current desktop startup blocker with these commands, in this order:
+     - `cd electron && bun run build`
+     - `cd .. && node scripts/sync-electron-web-assets.mjs`
+     - `bunx playwright test --config playwright.electron.config.ts`
+  3. Do not spend time on DMG packaging yet. Treat the desktop startup timeout as the first blocker.
+  4. Focus on why the Electron renderer starts but the app never satisfies the onboarding/chat assertions within `3.0m`.
+  5. Inspect these files first:
+     - `milaidy/apps/app/electron/build/src/index.js`
+     - `milaidy/apps/app/electron/src/index.ts`
+     - `milaidy/apps/app/electron/src/web-assets.ts`
+     - `milaidy/apps/app/src/App.tsx`
+     - `milaidy/apps/app/src/components/LoadingScreen.tsx`
+     - `milaidy/apps/app/src/components/StartupFailureView.tsx`
+  6. Keep the packaging blocker separate from the startup blocker. Do not conflate them in this packet.
+  7. After you land the desktop startup fix, do not change Team 07’s commands. Team 07 must be able to rerun the same smoke gate unchanged.
+  8. When your fix is in, update this packet with:
+     - exact failing assertion reproduced
+     - root cause
+     - files changed
+     - proof that the `electron-app` and `electron-onboarding-auth-permissions` smoke tests move past the current timeout
+
 ## Implementation Update (2026-03-11)
 - Validation baseline:
   - `LoadingScreen.tsx` already preserved the `milady-os` boot shell, randomized ASCII dither, and agent-name fallback behavior.
@@ -122,15 +154,15 @@
 
 ## Team 00 Acceptance And Next Steps (2026-03-11)
 - Current Team 06 implementation state:
-  - `COMPLETED`
+  - `REOPENED`
 - Program gate note:
-  - this packet's implementation work is locally complete
-  - Team 00 still records the program control state as `NOT ACCEPTED` until Team 07 clears the remaining release-evidence blockers
+  - the original Team 06 parity work was complete
+  - Team 07 has now proven a startup-specific Electron defect, so this workstream is open again
 - Accepted work:
   - startup theme parity is fixed
   - loading-shell behavior is frozen correctly
   - startup test expectations are explicit for loading and startup-failure paths
 - Next steps:
-  1. Do nothing further. Thank you.
-  2. No more feature work in this stream unless a startup regression is found.
-  3. Do not reopen startup UI code because of unrelated Electron or packaging blockers.
+  1. Reproduce and fix the Electron desktop startup timeout documented in the authoritative Team 07 gate update.
+  2. Do not reopen launch, avatar, shared-surface, or Action Log work while fixing this.
+  3. Do not take ownership of the DMG packaging dependency blocker unless the root cause is proven to be startup-code related.

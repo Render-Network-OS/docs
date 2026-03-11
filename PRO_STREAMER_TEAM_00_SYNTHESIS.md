@@ -10,6 +10,58 @@
 - Planning baseline: `PRO_STREAMER_REMAINING_WORK_PLAN.md`
 - Program index: `PRO_STREAMER_PROGRAM_INDEX.md`
 
+## Final Program Closeout (Authoritative, 2026-03-11)
+- Current Team 00 state:
+  - `COMPLETED FOR THIS PASS`
+- Final program-control decision:
+  - `NO-GO`
+- Why the program is `NO-GO`:
+  - Team 07 produced a clean current-head release gate for the scoped app.
+  - The current-head Vitest lane is green.
+  - The Electron smoke lane is not green:
+    - `test/electron-ui/electron-app.e2e.spec.ts` timed out at `3.0m`
+    - `test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts` timed out at `3.0m`
+  - The packaged lane is not green:
+    - `cd milaidy/apps/app/electron && bun run electron:make:dmg:test` failed because `whisper-node/lib/whisper.cpp` is missing
+    - `cd milaidy/apps/app/electron && npm install` failed with `EOVERRIDE` on `pg`
+    - `bunx playwright test --config playwright.electron.packaged.config.ts` failed because `milaidy/apps/app/electron/dist` does not exist
+
+### Program-Level Acceptance Call
+- Team 01:
+  - `COMPLETED`
+  - do nothing further. Thank you.
+- Team 02:
+  - `COMPLETED`
+  - do nothing further. Thank you.
+- Team 03:
+  - `COMPLETED`
+  - do nothing further. Thank you.
+- Team 04:
+  - `COMPLETED`
+  - do nothing further. Thank you.
+- Team 05:
+  - `COMPLETED`
+  - do nothing further. Thank you.
+- Team 06:
+  - `REOPENED`
+  - Team 07 proved a startup-specific Electron defect after renderer creation.
+- Team 07:
+  - `COMPLETED FOR THIS PASS`
+  - do nothing further. Thank you.
+
+### Reopened And External Owners
+- Reopened owner:
+  - Team 06, for the Electron startup/bootstrap timeout proven by Team 07 smoke coverage
+- External packaging blocker:
+  - `milaidy/apps/app/electron` dependency chain
+  - no human owner-of-record is available from local repo artifacts
+
+### Team 00 Final Direction
+- Team 00 next step:
+  1. Do nothing further in this pass. Thank you.
+  2. Keep the program closed at `NO-GO` until Team 06 resolves the Electron startup timeout and the packaging dependency chain produces a real `electron/dist` artifact.
+  3. Once those fixes land, Team 07 reruns the unchanged gate and Team 00 records the new final decision.
+
 ## Staffing And Speed
 - Staffing: 1 lead architect or program owner
 - Best case: continuous same-day support
@@ -181,31 +233,13 @@
     - `npx vitest run --config vitest.config.ts test/avatar/resolve-gltf-animation-clip-for-vrm.test.ts test/avatar/vrm-engine-idle.test.ts test/avatar/vrm-viewer-resize.test.tsx`
     - result: targeted Team 04 avatar runtime suites passed
 
-## Team 00 Program Direction (2026-03-11)
-- Current Team 00 acceptance state:
-  - `NOT ACCEPTED`
-- Why:
-  - the gate layer is behind the implementation reality
-  - some root control docs are still untracked
-  - the launch contract is still split across Team 00, Team 01, Team 02, and Team 07 packets
-- Canonical correction recorded by Team 00:
-  - current implementation truth is `success` closes the modal
-  - current implementation truth is `partial` stays inline in the modal
-  - current implementation truth is `blocked` stays inline in the modal
-  - current implementation truth is `failed` stays inline in the modal
-- Team 00 next steps:
-  1. Update the program index so it no longer describes the app as a pre-implementation baseline.
-  2. Commit the currently untracked gate docs into the root repo so the operating layer is durable.
-  3. Treat the canonical launch contract as:
-     - `success` closes the modal
-     - `partial` stays inline in the modal and also writes Action Log follow-up when `followUp.target === "action-log"`
-     - `blocked` stays inline in the modal
-     - `failed` stays inline in the modal
-  4. Require Team 07 to refresh release evidence against the current `milaidy` head after any additional contract or runtime change.
-  5. Keep the program in `NO-GO` until Team 07 refreshes the evidence bundle and the repo-wide blockers are re-evaluated.
-
 ## Review Remarks (2026-03-11)
 - Team 00 now agrees with the live Team 01 contract on modal behavior.
 - Any downstream packet that still implies `partial` closes the modal is stale.
-- Until Team 07 republishes its broader release evidence against the current `milaidy` head, Team 00 should treat the Team 01 focused launch suites as the reliable scoped proof for the launch contract.
-- Teams 01, 02, 03, 04, 05, and 06 are complete for their scoped workstreams and should do nothing further. Thank you.
+- Team 07 has now republished current-head release evidence for the scoped app:
+  - focused slice green
+  - full Vitest green
+  - Electron smoke red
+  - packaged build and packaged smoke red
+- Teams 01, 02, 03, 04, 05, and 07 are complete for this pass and should do nothing further. Thank you.
+- Team 06 is no longer complete because Team 07 proved a startup-specific Electron defect.

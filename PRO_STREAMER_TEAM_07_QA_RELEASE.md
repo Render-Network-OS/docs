@@ -4,6 +4,99 @@
 - Turn the remaining Pro Streamer work into a hard release gate.
 - Own evidence, smoke coverage, deploy verification, and rollback readiness.
 
+## Final Gate Update (Authoritative, 2026-03-11)
+- Current `milaidy` head:
+  - `df8fcbcfc0c7eb605e3ade4eb7fd0b065405003d`
+- Current Team 07 state:
+  - `COMPLETED FOR THIS PASS`
+- Final release decision:
+  - `NO-GO`
+- Canonical launch contract frozen for this gate:
+  - `success` closes the Go Live modal
+  - `partial` stays inline in the Go Live modal and persists Action Log follow-up
+  - `blocked` stays inline in the Go Live modal
+  - `failed` stays inline in the Go Live modal
+
+### Final Current-Head Evidence
+- Focused Pro Streamer sanity gate:
+  - command:
+    - `bunx vitest run test/app/loading-screen.test.tsx test/app/startup-failure-view.test.tsx test/app/startup-failure-routing.test.tsx test/app/go-live-modal.test.tsx test/app/milady-os-dashboard-smoke.test.tsx test/app/agent-core-layout.test.tsx test/app/config-renderer-minimal-controls.test.tsx test/avatar/vrm-engine-idle.test.ts`
+  - result:
+    - `8` files passed
+    - `38` tests passed
+- Full Team 07 release gate, Vitest lane:
+  - command:
+    - `bunx vitest run --config vitest.config.ts`
+  - result:
+    - `112` files passed
+    - `734` tests passed
+    - `2` tests skipped
+
+### Electron Smoke Findings
+- Smoke prerequisites repaired in this pass:
+  - Vitest no longer collects Playwright `.spec.ts` files from the Electron smoke directory.
+  - The misplaced startup-failure unit test was moved from `test/electron-ui` into the Vitest lane at `milaidy/apps/app/test/electron/electron-startup-failure.test.ts`.
+  - Electron smoke specs now accept `electron/build/src/index.js` and `electron/out/src/index.js` as valid entry artifacts.
+  - Electron main-process build command succeeded:
+    - `cd /Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app/electron && bun run build`
+  - Electron binary install succeeded:
+    - `cd /Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app/electron && node ../../../node_modules/electron/install.js`
+  - Electron web assets sync succeeded:
+    - `cd /Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app && node scripts/sync-electron-web-assets.mjs`
+- Full Electron smoke command:
+  - `bunx playwright test --config playwright.electron.config.ts`
+- Result:
+  - the standard startup flow `test/electron-ui/electron-app.e2e.spec.ts` timed out at `3.0m`
+  - the auth/onboarding flow `test/electron-ui/electron-onboarding-auth-permissions.e2e.spec.ts` also timed out at `3.0m`
+  - both reruns reached a live Electron renderer process before timing out
+  - both reruns required manual termination because worker teardown did not exit cleanly after timeout
+- Interpretation:
+  - this is no longer a missing-binary or missing-assets failure
+  - this is now a real desktop startup/bootstrap defect in the Electron runtime path
+
+### Packaged Build And Smoke Findings
+- Canonical packaged-artifact build command:
+  - `cd /Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app/electron && bun run electron:make:dmg:test`
+- Build result:
+  - failed before artifact creation
+  - blocking error:
+    - `whisper.cpp directory not found at .../apps/app/electron/node_modules/whisper-node/lib/whisper.cpp`
+    - build script guidance:
+      - `Run 'npm install' in the electron directory first.`
+- Packaging prerequisite attempt:
+  - command:
+    - `cd /Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app/electron && npm install`
+  - result:
+    - failed immediately with `EOVERRIDE`
+    - blocking message:
+      - `Override for pg@^8.16.3 conflicts with direct dependency`
+    - npm log:
+      - `/Users/mac/.npm/_logs/2026-03-11T20_23_48_101Z-debug-0.log`
+- Packaged smoke command:
+  - `bunx playwright test --config playwright.electron.packaged.config.ts`
+- Packaged smoke result:
+  - failed immediately because `milaidy/apps/app/electron/dist` does not exist
+  - retained artifact:
+    - `/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/milaidy/apps/app/test-results/electron-dmg-startup.e2e-p-c3731-ches-chat-agent-ready-state/trace.zip`
+
+### Final Blocker Assignment
+- Reopened workstream owner:
+  - Team 06, because Team 07 proved a startup-specific Electron desktop defect after renderer creation
+- External packaging blocker owner:
+  - `milaidy/apps/app/electron` packaging dependency chain
+  - no human owner-of-record is available from local repo artifacts
+- Team 07 next step:
+  1. Do nothing further in this pass. Thank you.
+  2. Wait for Team 06 to land a desktop startup fix and for the packaging dependency chain to be repaired.
+  3. After those fixes land, rerun these unchanged commands:
+     - `bunx vitest run test/app/loading-screen.test.tsx test/app/startup-failure-view.test.tsx test/app/startup-failure-routing.test.tsx test/app/go-live-modal.test.tsx test/app/milady-os-dashboard-smoke.test.tsx test/app/agent-core-layout.test.tsx test/app/config-renderer-minimal-controls.test.tsx test/avatar/vrm-engine-idle.test.ts`
+     - `bunx vitest run --config vitest.config.ts`
+     - `bunx playwright test --config playwright.electron.config.ts`
+     - `bunx playwright test --config playwright.electron.packaged.config.ts`
+
+### Historical Note
+- Any older section in this packet that reports pre-fix red Vitest counts, the old `AgentManager` import blocker, or a missing Electron binary is historical only and superseded by this section.
+
 ## Source Of Truth
 - Runtime scope: `milaidy/apps/app`
 - Primary test locations:
@@ -265,7 +358,7 @@
 
 ## Current Release Evidence Bundle (Local, 2026-03-11)
 - Commit/build identifier:
-  - `036e5f6bfbc9b04980c789ee6404a6a1b628399e`
+  - `df8fcbcfc0c7eb605e3ade4eb7fd0b065405003d`
 - Focused Team 07 verification:
   - command:
     - `bunx vitest run test/app/go-live-modal.test.tsx test/app/go-live-launch-contract.test.tsx test/app/milady-os-dashboard-smoke.test.tsx test/app/agent-core-layout.test.tsx test/app/loading-screen.test.tsx test/app/startup-failure-view.test.tsx test/avatar/vrm-viewer-resize.test.tsx test/avatar/vrm-engine-idle.test.ts`
