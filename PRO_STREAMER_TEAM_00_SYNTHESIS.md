@@ -132,7 +132,7 @@
     - readiness states are `ready`, `disabled`, `missing-stream-key`, and `missing-url`
   - frozen modal rules:
     - `success` closes the modal
-    - `partial` closes the modal
+    - `partial` stays inline in the modal and preserves Action Log follow-up
     - `blocked` stays inline in the modal
     - `failed` stays inline in the modal
   - frozen partial taxonomy:
@@ -148,7 +148,64 @@
 - Team 03 contract snapshot:
   - no API or persistence changes
   - Action Log shell selectors are `data-action-log-shell`, `data-action-log-header`, `data-action-log-pinned-region`, `data-action-log-inline-notice-slot`, and `data-action-log-feed-region`
+  - inline notice selectors are `data-action-log-inline-notice` and `data-action-log-inline-cta`, plus dismiss control `aria-label="Dismiss action log notice"`
   - stage entry selectors are `data-stage-entry-role` and `data-stage-entry-kind`
   - valid stage entry kinds are `bubble`, `action-pill`, `action-chip`, and `system-event`
   - historical `source="operator_action"` cleanup is render-only and preserves stored message history
   - desktop uses explicit `80vh`; tablet/mobile use explicit `80dvh`
+  - the Team 02 integration surface is no longer slot-only; Team 03 now renders a live inline Action Log notice inside the pinned region above live controls
+- Team 04 contract snapshot:
+  - runtime files changed:
+    - `milaidy/apps/app/src/components/avatar/VrmEngine.ts`
+    - `milaidy/apps/app/src/components/avatar/resolveGltfAnimationClipForVrm.ts`
+  - tests added or expanded:
+    - `milaidy/apps/app/test/avatar/resolve-gltf-animation-clip-for-vrm.test.ts`
+    - `milaidy/apps/app/test/avatar/vrm-engine-idle.test.ts`
+    - `milaidy/apps/app/test/avatar/vrm-viewer-resize.test.tsx`
+  - frozen runtime diagnostics:
+    - `activeIdleSource: alice-native | mixamo-retargeted | legacy-fallback | procedural-fallback | null`
+    - `idleFallbackActive: boolean`
+    - `idleHealthy: boolean`
+    - `activeAnimationState: idle | emote | static-fallback`
+  - frozen stage idle rules:
+    - the default stage candidate list is runtime-owned in `VrmEngine.ts` and includes `catching-breath`, `idle-03`, `idle-04`, `idle-07`, `idle-09`, and `idle-15`
+    - additive `idleGlbPaths` do not define the stage idle path by themselves
+    - `animations/alice/idle/catching-breath.glb` is both a normal stage candidate and the pinned first fallback URL; use `idleFallbackActive`, not clip path alone, to distinguish fallback takeover
+    - fallback order is `animations/alice/idle/catching-breath.glb` then `animations/idle.glb` then procedural fallback
+    - only verified clips rotate in the live pool, and failed candidates are evicted until the VRM or idle inventory changes
+  - QA evidence handoff:
+    - the validated admitted/rejected idle inventory record lives in `verifiedIdleGlbUrls`, `failedIdleGlbUrls`, and `rejectedIdleReasons`
+    - that record is not part of `VrmEngineState`
+    - Team 07 must capture it in focused avatar runtime evidence and carry it in the release bundle
+  - focused evidence published:
+    - `npx vitest run --config vitest.config.ts test/avatar/resolve-gltf-animation-clip-for-vrm.test.ts test/avatar/vrm-engine-idle.test.ts test/avatar/vrm-viewer-resize.test.tsx`
+    - result: targeted Team 04 avatar runtime suites passed
+
+## Team 00 Program Direction (2026-03-11)
+- Current Team 00 acceptance state:
+  - `NOT ACCEPTED`
+- Why:
+  - the gate layer is behind the implementation reality
+  - some root control docs are still untracked
+  - the launch contract is still split across Team 00, Team 01, Team 02, and Team 07 packets
+- Canonical correction recorded by Team 00:
+  - current implementation truth is `success` closes the modal
+  - current implementation truth is `partial` stays inline in the modal
+  - current implementation truth is `blocked` stays inline in the modal
+  - current implementation truth is `failed` stays inline in the modal
+- Team 00 next steps:
+  1. Update the program index so it no longer describes the app as a pre-implementation baseline.
+  2. Commit the currently untracked gate docs into the root repo so the operating layer is durable.
+  3. Treat the canonical launch contract as:
+     - `success` closes the modal
+     - `partial` stays inline in the modal and also writes Action Log follow-up when `followUp.target === "action-log"`
+     - `blocked` stays inline in the modal
+     - `failed` stays inline in the modal
+  4. Require Team 07 to refresh release evidence against the current `milaidy` head after any additional contract or runtime change.
+  5. Keep the program in `NO-GO` until Team 07 refreshes the evidence bundle and the repo-wide blockers are re-evaluated.
+
+## Review Remarks (2026-03-11)
+- Team 00 now agrees with the live Team 01 contract on modal behavior.
+- Any downstream packet that still implies `partial` closes the modal is stale.
+- Until Team 07 republishes its broader release evidence against the current `milaidy` head, Team 00 should treat the Team 01 focused launch suites as the reliable scoped proof for the launch contract.
+- Teams 01, 02, 03, 04, 05, and 06 are complete for their scoped workstreams and should do nothing further. Thank you.

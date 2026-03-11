@@ -102,11 +102,13 @@
 - `milaidy/apps/app/src/components/GoLiveModal.tsx`
 - `milaidy/apps/app/src/components/PluginOperatorPanels.tsx`
 - `milaidy/apps/app/src/components/PluginsView.tsx`
+- `milaidy/apps/app/src/stream555Readiness.ts`
 - `milaidy/apps/app/src/components/config-renderer.tsx`
 - `milaidy/apps/app/src/components/config-field.tsx`
 
 ### Bespoke Controls Removed
 - Removed duplicate Stream555 and Arcade555 operator-panel implementations plus duplicated Stream555 summary helpers from `PluginsView.tsx`; `PluginOperatorPanels.tsx` is now the canonical operator surface.
+- Moved shared Stream555 readiness calculation and destination readiness-state modeling into `stream555Readiness.ts` so the modal and operator surfaces consume one readiness contract.
 - Replaced the Go Live modal’s raw channel-selection card buttons with shared `Button` composition.
 - Replaced the Go Live modal’s manual scrolling container with `ScrollArea`.
 - Replaced one-off inline notice chrome in the Go Live modal with shared `Card` + `Badge` composition.
@@ -124,25 +126,40 @@
 ### Residual Divergence Intentionally Kept
 - `SelectablePillGrid` remains the shared launch-mode selector in the Go Live flow instead of being rewritten into a new primitive.
 - Existing `pro-streamer-*` classes and tokenized Milady OS styling remain the styling layer; this pass did not introduce a second design system.
-- Blocked and failed launch outcomes stay inline inside the Go Live modal; partial and success outcomes still follow the existing close-and-route behavior owned by the launch/feedback flows.
+- In the committed Team 05 UI surface, blocked, failed, and partial launch outcomes stay inline inside the Go Live modal; any later Action Log follow-up routing for `partial` is outside the scoped Team 05 commits and must be reconciled with Team 01 and Team 02 before release.
 - Native `Switch`, `Input`, `Select`, and `Textarea` field renderers were not redesigned beyond removing ad hoc button chrome around them.
 
 ### Files Touched
 - `milaidy/apps/app/src/components/GoLiveModal.tsx`
 - `milaidy/apps/app/src/components/PluginsView.tsx`
+- `milaidy/apps/app/src/components/PluginOperatorPanels.tsx`
+- `milaidy/apps/app/src/stream555Readiness.ts`
 - `milaidy/apps/app/src/components/config-renderer.tsx`
 - `milaidy/apps/app/src/components/config-field.tsx`
+- `milaidy/apps/app/test/app/stream555-readiness.test.ts`
 - `milaidy/apps/app/test/app/go-live-modal.test.tsx`
-- `milaidy/apps/app/test/app/go-live-launch-contract.test.tsx`
 - `milaidy/apps/app/test/app/plugins-view-stream555-operator-controls.test.ts`
 - `milaidy/apps/app/test/app/plugins-view-arcade555-operator-controls.test.ts`
 - `milaidy/apps/app/test/app/config-renderer-minimal-controls.test.tsx`
 
 ### Verification
-- Focused Vitest coverage now exercises the Go Live setup-required gate, readiness-state messaging, disabled unready channels, the four-step launch flow, blocked/failed inline notice behavior, Stream555 operator controls, Arcade555 canonical operator actions, and minimal-mode config-renderer controls.
+- Scoped Team 05 Vitest coverage exercises the shared readiness helper, the Go Live setup-required gate, readiness-state messaging, disabled unready channels, the four-step flow, Stream555 operator controls, Arcade555 canonical operator actions, and minimal-mode config-renderer controls.
 - Command run:
-  - `bunx vitest run --config vitest.config.ts test/app/go-live-modal.test.tsx test/app/go-live-launch-contract.test.tsx test/app/plugins-view-stream555-operator-controls.test.ts test/app/plugins-view-arcade555-operator-controls.test.ts test/app/config-renderer-minimal-controls.test.tsx`
+  - `bunx vitest run --config vitest.config.ts test/app/stream555-readiness.test.ts test/app/go-live-modal.test.tsx test/app/plugins-view-stream555-operator-controls.test.ts test/app/plugins-view-arcade555-operator-controls.test.ts test/app/config-renderer-minimal-controls.test.tsx`
 
 ### Remaining Risks
-- The focused suite passes, but `test/app/go-live-launch-contract.test.tsx` still emits pre-existing `AppContext` stderr noise for emote/greeting startup paths that are outside Team 05 scope.
+- Team 05 documents the scoped committed UI proof for `partial` staying inline, while Team 01 and Team 02 document broader runtime-routing behavior that may also persist Action Log follow-up. Release evidence must label which scope it is proving.
 - Full-project TypeScript and unrelated app suites were not used as the release gate for this packet because the workspace already contains unrelated dirty changes and unrelated baseline failures outside the shared-surface scope.
+
+## Team 00 Acceptance And Next Steps (2026-03-11)
+- Current acceptance state:
+  - `COMPLETED`
+- Accepted work:
+  - shared primitive convergence is documented
+  - `PluginsView.tsx` churn is now explained
+  - focused coverage exists for the target surfaces
+- Next steps:
+  1. Do nothing further. Thank you.
+  2. Treat the audited surfaces list in this packet as the final scope boundary.
+  3. Do not reopen raw-control rewrites or shared-surface churn unless Team 07 finds a regression in one of the audited target surfaces.
+  4. Leave any remaining release-gate work to Team 07.

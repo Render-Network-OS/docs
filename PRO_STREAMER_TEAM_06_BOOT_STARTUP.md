@@ -9,6 +9,8 @@
 - Primary surfaces:
   - `src/components/LoadingScreen.tsx`
   - `src/components/MiladyBootShell.tsx`
+  - `src/components/StartupFailureView.tsx`
+  - `src/App.tsx`
 
 ## Staffing And Speed
 - Staffing: 1 frontend engineer
@@ -26,6 +28,8 @@
 4. Open these files first:
    - `src/components/LoadingScreen.tsx`
    - `src/components/MiladyBootShell.tsx`
+   - `src/components/StartupFailureView.tsx`
+   - `src/App.tsx`
 5. Validate current behavior before changing code.
 6. Check `milady-os` startup first:
    - randomized ASCII dither
@@ -95,6 +99,10 @@
   - non-`milady-os` cold start shows the neutral loading path with no boot diagnostics or broadcast-shell copy.
   - `backend-unreachable` on `milady-os` keeps the shell treatment and exposes retry plus `OPEN_APP`.
   - `backend-unreachable` on non-`milady-os` shows the neutral failure card with the same recovery controls and error copy.
+- Startup coverage status:
+  - cold startup/loading parity is covered by the expanded `LoadingScreen` assertions
+  - startup-failure parity is covered by `StartupFailureView` assertions plus App-level routing coverage
+  - onboarding-adjacent startup is not yet isolated in a Team 06-specific assertion and remains an open smoke/evidence item for Team 07
 - Files touched:
   - `milaidy/apps/app/src/App.tsx`
   - `milaidy/apps/app/src/components/StartupFailureView.tsx`
@@ -109,4 +117,20 @@
   - `test/app/startup-backend-missing.e2e.test.ts`
   - `test/app/startup-failure-routing.test.tsx`
 - Remaining risks:
-  - This packet now has unit-level and App-shell coverage, but Team 07 still needs browser/Electron startup screenshots or clips for release evidence.
+  - onboarding-adjacent startup still lacks dedicated Team 06 assertion coverage and should remain on Team 07's startup smoke checklist
+  - Team 07 still needs browser/Electron startup screenshots or clips for release evidence.
+
+## Team 00 Acceptance And Next Steps (2026-03-11)
+- Current Team 06 implementation state:
+  - `COMPLETED`
+- Program gate note:
+  - this packet's implementation work is locally complete
+  - Team 00 still records the program control state as `NOT ACCEPTED` until Team 07 clears the remaining release-evidence blockers
+- Accepted work:
+  - startup theme parity is fixed
+  - loading-shell behavior is frozen correctly
+  - startup test expectations are explicit for loading and startup-failure paths
+- Next steps:
+  1. Do nothing further. Thank you.
+  2. No more feature work in this stream unless a startup regression is found.
+  3. Do not reopen startup UI code because of unrelated Electron or packaging blockers.

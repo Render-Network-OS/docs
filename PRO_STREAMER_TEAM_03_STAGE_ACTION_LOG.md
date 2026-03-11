@@ -33,7 +33,7 @@
    - `src/components/shared/OperatorActionPill.tsx`
    - `src/components/CognitiveTracePanel.tsx`
 5. Freeze the rail shell layout before tuning spacing.
-6. Coordinate with Team 02 before choosing the exact mount point for inline Action Log notices.
+6. The inline Action Log notice mount point is frozen at the top of the pinned region; coordinate with Team 02 only if payload semantics or routing behavior change.
 7. Implement historical `source="operator_action"` cleanup as render-time collapse only.
 8. Do not mutate stored history and do not rewrite backend payloads.
 9. Validate desktop, tablet, and narrow mobile separately.
@@ -87,7 +87,7 @@
 - Do not change persisted messages to solve historical clutter.
 - Keep operator-action collapse compact; the goal is suppression of raw prompt dumps, not hidden context loss.
 - Validate the three viewport classes explicitly: desktop, tablet, narrow mobile.
-- Coordinate with Team 02 before finalizing the inline Action Log notice slot.
+- Keep the inline Action Log notice mount point stable; coordinate with Team 02 only on routing semantics, not placement.
 
 ## Interfaces Owned
 - Action Log shell layout contract
@@ -104,8 +104,12 @@
   - `data-action-log-shell`
   - `data-action-log-header`
   - `data-action-log-pinned-region`
-  - `data-action-log-inline-notice-slot`
+  - `data-action-log-inline-notice-slot` (container mount)
   - `data-action-log-feed-region`
+- Final inline notice selectors:
+  - `data-action-log-inline-notice` (primary rendered notice selector)
+  - `data-action-log-inline-cta`
+  - dismiss control with `aria-label="Dismiss action log notice"`
 - Final stage selectors:
   - `data-stage-entry-role="operator|assistant|system"`
   - `data-stage-entry-kind="bubble|action-pill|action-chip|system-event"`
@@ -121,4 +125,18 @@
   - desktop Action Log shell is a left rail at explicit `80vh` with `top: 10vh`
   - tablet and narrow mobile Action Log shell use the bottom sheet path at explicit `80dvh`
   - pinned controls stay above the feed; only the feed region is the primary long-scroll surface
-  - the inline notice slot is reserved between pinned controls and feed but remains contract-only until Team 02 routing is frozen
+  - the inline notice slot is rendered inside the pinned region above live controls
+  - the current notice contract includes visible body text, optional CTA, and dismiss control
+  - Team 02 may still change notice payload semantics, but not the mount point without updating this packet and Team 07 targets
+
+## Team 00 Acceptance And Next Steps (2026-03-11)
+- Current acceptance state:
+  - `COMPLETED`
+- Accepted work:
+  - shell selectors are frozen
+  - stage render rules are explicit
+  - historical `operator_action` cleanup is correctly render-only
+- Next steps:
+  1. Do nothing further. Thank you.
+  2. Do not expand scope into visual redesign or storage mutation.
+  3. Do not edit this packet or the scoped UI unless Team 07 files a reproducible defect and Team 00 explicitly reopens the stream.

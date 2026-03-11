@@ -122,7 +122,8 @@
 ## Status Update (2026-03-11)
 - Contract frozen in `milaidy/apps/app`.
 - Destination readiness is now centralized and shared across the modal, operator panels, and plugin summary surfaces.
-- The modal now closes on `success` and `partial`, and stays open with inline remediation on `blocked` and `failed`.
+- The modal now closes on `success`, and stays open with inline remediation on `partial`, `blocked`, and `failed`.
+- `partial` still emits Action Log follow-up metadata and the current runtime routes that follow-up into the pinned Action Log notice as well.
 - Focused contract and modal coverage is green.
 
 ## Final Contract
@@ -137,7 +138,7 @@
   - `layoutMode`
 - Modal close rules:
   - `success`: close modal
-  - `partial`: close modal
+  - `partial`: keep modal open, render inline warning, and preserve follow-up metadata
   - `blocked`: keep modal open and render inline notice
   - `failed`: keep modal open and render inline notice
 
@@ -190,4 +191,30 @@
 - Focused automated run:
   - `node ../../node_modules/vitest/vitest.mjs run test/app/stream555-readiness.test.ts test/app/go-live-modal.test.tsx test/app/go-live-launch-contract.test.tsx`
   - result: 3 files passed, 15 tests passed
-- Team 00 and Team 07 packet updates are required consumers of this frozen contract and were updated in the same pass.
+- Superseded release-gate slice:
+  - `bunx vitest run test/app/go-live-modal.test.tsx test/app/go-live-launch-contract.test.tsx test/app/milady-os-dashboard-smoke.test.tsx test/app/agent-core-layout.test.tsx test/app/loading-screen.test.tsx test/app/startup-failure-view.test.tsx test/avatar/vrm-viewer-resize.test.tsx test/avatar/vrm-engine-idle.test.ts`
+  - result: 8 files passed, 45 tests passed
+- Review note:
+  - treat the focused 3-file run above as the reproducible launch-contract proof
+  - any larger release-gate slice that mixes launch work with broader in-flight AppContext or feedback-routing changes must be labeled as mixed-worktree evidence, not single-SHA proof
+- Team 00 consumed this contract in its ledger update.
+- Team 07 still requires QA-owned reconciliation before its packet should be treated as authoritative release-gate evidence.
+
+## Team 00 Acceptance And Next Steps (2026-03-11)
+- Current acceptance state:
+  - `COMPLETED`
+- Accepted work:
+  - centralized readiness contract
+  - typed `GoLiveLaunchResult`
+  - focused launch coverage now green
+- Required correction before full acceptance:
+  - none for this scoped workstream
+- Next steps:
+  1. Do nothing further. Thank you.
+  2. Do not reopen launch code or this packet unless Team 07 reports a new reproducible launch defect after the evidence refresh.
+
+## Review Remarks (2026-03-11)
+- This packet now matches the current `GoLiveModal.tsx` behavior: `success` closes the modal; `partial`, `blocked`, and `failed` stay inline.
+- The focused Team 01 launch suites are the reliable acceptance evidence for this packet.
+- The broader Team 07 release packet still needs QA-owned republication before it should override the scoped Team 01 contract and evidence recorded here.
+- Team 01 is complete for this closeout and should do nothing further. Thank you.

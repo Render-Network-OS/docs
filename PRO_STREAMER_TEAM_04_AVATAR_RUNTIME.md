@@ -94,7 +94,8 @@
 ## Exit Criteria
 - Alice rotates through verified idles on the live stage when healthy.
 - Fallback takes over deterministically on bad clip load/playback.
-- Team 07 can assert visibility, healthy idle, and fallback activation without manual inspection only.
+- Team 07 can assert visibility, healthy idle, active idle source, and fallback activation from runtime diagnostics without manual scene inspection.
+- The validated idle-classification record includes the admitted/rejected inventory plus rejection reasons in focused runtime evidence.
 
 ## Runtime Contract Update
 - Shipped stage idle candidate inventory now comes from runtime-owned defaults in `VrmEngine.ts`:
@@ -104,6 +105,10 @@
   - `animations/alice/idle/idle-07.glb`
   - `animations/alice/idle/idle-09.glb`
   - `animations/alice/idle/idle-15.glb`
+- `animations/alice/idle/catching-breath.glb` has a dual role in the runtime:
+  - it is part of the normal stage candidate inventory
+  - it is also the pinned first fallback URL when the verified pool cannot take over
+- Because the same asset serves both roles, clip path alone does not distinguish healthy rotation from fallback takeover; `idleFallbackActive` is the supported diagnostic for that distinction.
 - Optional `idleGlbPaths` remain additive only. They no longer define the stage idle path by themselves.
 - Verified clip inventory is the runtime-admitted subset of the candidate list above plus any additive `idleGlbPaths`, tracked by `verifiedIdleGlbUrls`.
 - Rejected clip inventory is the runtime-rejected subset of the same configured list, tracked by `failedIdleGlbUrls` with reasons recorded in `rejectedIdleReasons`.
@@ -118,13 +123,23 @@
 - `idleHealthy`
 - `activeAnimationState`
 
+## QA Handoff
+- Public Team 07 assertions come from `VrmEngineState` only:
+  - `activeIdleSource`
+  - `idleFallbackActive`
+  - `idleHealthy`
+  - `activeAnimationState`
+- The verified/rejected inventory record is not part of `VrmEngineState`.
+- Team 07 must capture `verifiedIdleGlbUrls`, `failedIdleGlbUrls`, and `rejectedIdleReasons` from focused `VrmEngine` coverage or direct engine inspection during stage smoke, then attach that record to the release evidence bundle.
+
 ## Fallback Takeover Rules
 1. Classify the configured idle candidates first and admit only verified clips into the live pool.
 2. Rotate only across the verified pool during normal healthy stage idle playback.
-3. If no verified clip can take over, try `animations/alice/idle/catching-breath.glb`.
-4. If that fails, try `animations/idle.glb`.
-5. If all clip-based paths fail, activate procedural fallback immediately.
-6. Any failed candidate is removed from future selection until the VRM or idle inventory changes.
+3. `animations/alice/idle/catching-breath.glb` is also pinned as the first fallback URL; if it appears with `idleFallbackActive=false`, treat it as healthy rotation rather than fallback takeover.
+4. If no verified clip can take over, retry `animations/alice/idle/catching-breath.glb` first.
+5. If that fails, try `animations/idle.glb`.
+6. If all clip-based paths fail, activate procedural fallback immediately.
+7. Any failed candidate is removed from future selection until the VRM or idle inventory changes.
 
 ## Implementation Notes
 - Files touched:
@@ -138,4 +153,17 @@
   - stage idle runtime coverage for verified rotation, failed-candidate eviction, deterministic fallback, procedural fallback, and emote return-to-idle
   - viewer mock state updated for the new QA diagnostics
 - Residual risk:
-  - the exact admitted/rejected split across shipped GLB assets is finalized by runtime loading against Alice; Team 07 should read the new diagnostics during stage smoke and record the resulting verified/rejected inventory.
+  - the exact admitted/rejected split across shipped GLB assets is finalized by runtime loading against Alice; Team 07 must capture the resulting verified/rejected inventory and rejection reasons as release evidence, because that record is runtime-owned rather than part of `VrmEngineState`.
+
+## Team 00 Acceptance And Next Steps (2026-03-11)
+- Current acceptance state:
+  - `COMPLETED`
+- Accepted work:
+  - idle candidate ownership is now runtime-driven
+  - diagnostics are explicit and test-backed
+  - fallback takeover rules are specific enough for QA
+- Next steps:
+  1. Do nothing further. Thank you.
+  2. Treat the runtime contract as frozen unless a stage regression is discovered.
+  3. Do not edit this packet or the runtime files unless Team 07 shows a stage-smoke failure that contradicts the exposed diagnostics.
+  4. Do not broaden scope into avatar styling, stage composition, or unrelated VRM loading work.
