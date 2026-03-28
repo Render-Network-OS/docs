@@ -32,6 +32,8 @@ define how documentation work is scoped, written, evidenced, and closed across:
   public, partner, and investor outputs.
 - `ARTICLE_SERIES_ROADMAP.md`
   The proof-backed article sequence.
+- `articles/`
+  The first shipped article drafts linked from the roadmap.
 - `PARTNER_VC_NARRATIVE.md`
   The concise positioning framework for partner and investor materials.
 - `PARTNER_VC_ONE_PAGER.md`
@@ -42,6 +44,8 @@ define how documentation work is scoped, written, evidenced, and closed across:
   Proof-backed outreach drafts for partners, investors, and programs.
 - `TARGET_DOSSIER_TEMPLATE.md`
   The one-page dossier template for specific targets and programs.
+- `dossiers/`
+  The live target-specific dossiers derived from the template.
 - `CATEGORY_DECK_BRIEF.md`
   The current category-deck spine and proof expectations.
 - `LAUNCH_STRATEGY_AND_NEXT_90.md`
