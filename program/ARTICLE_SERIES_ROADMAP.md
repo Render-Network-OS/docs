@@ -17,6 +17,8 @@ proof assets from `PROOF_ASSET_LIBRARY.md`.
   - Alice deploy/runbook canon
   - Milady operator bootstrap
   - stream and SW4P operator handbooks
+- Draft:
+  - `articles/why-ai-agents-need-runbooks.md`
 
 ### 2. Decentralized streaming OS: what operators actually need
 
