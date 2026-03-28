@@ -57,6 +57,9 @@ Examples:
 ### Close condition
 Define the single sentence that makes the ticket closable.
 
+The close condition must assume default-branch or agreed canonical-branch
+reality. A ticket is not done only because a draft or topic branch exists.
+
 ## Example skeleton
 
 ```md
@@ -96,5 +99,5 @@ Create the canonical stream operator handbook for setup, go-live, recovery, and 
 - Preview/build output
 
 ## Close condition
-The owning repo has one canonical operator entrypoint and the issue contains evidence links to it.
+The owning repo has one canonical operator entrypoint on the default or agreed canonical branch, and the issue contains evidence links to it.
 ```
