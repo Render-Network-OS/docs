@@ -59,7 +59,9 @@ define how documentation work is scoped, written, evidenced, and closed across:
 
 1. Tickets are the unit of execution and acceptance.
 2. Repo-local documentation remains canonical.
-3. Public narrative is derived from operator truth and proof assets.
-4. No doc ticket closes without evidence links.
-5. Recurring/cadence tickets close only when the template exists and the first
+3. Board status must reflect default-branch or agreed canonical-branch reality,
+   not the existence of work on a topic branch.
+4. Public narrative is derived from operator truth and proof assets.
+5. No doc ticket closes without evidence links.
+6. Recurring/cadence tickets close only when the template exists and the first
    real artifact has shipped.
