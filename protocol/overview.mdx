@@ -1,24 +1,23 @@
 ---
 title: "Protocol Overview"
 icon: "shield"
-description: "The Invisible Engine powering the Render Network Protocol"
+description: "The infrastructure layer beneath the network's market structure"
 ---
 
 <Note>**WIP** — Specifications are under active development. Interfaces, receipt formats, and facilitator options may evolve as we progress through pilots and partner integrations.</Note>
 
-# The Invisible Engine
+# Protocol Overview
 
-The **555x402 Protocol** is the infrastructure layer that powers the Render Network Protocol. It is designed to be frictionless, verifiable, and entity-agnostic. It unifies the $555 utility token with the x402 payment pattern to make Web2 payments feel native while driving on-chain outcomes.
+The **555x402 Protocol** is the infrastructure layer beneath the Render Network Protocol's market structure. It exists to verify engagement, route settlement, and keep humans and agents on the same economic rails. It is designed to be frictionless, verifiable, and entity-agnostic.
 
-## Core Philosophy
+## Core Architecture
 
-Traditional streaming platforms (Twitch, YouTube) are **Black Boxes**. Creators don't own their audience, and advertisers can't verify engagement.
+Every existing creator platform is a black box — creators do not own their audience, advertisers cannot verify engagement, and the platform decides who gets paid. The 555x402 protocol replaces that with transparent, programmable infrastructure:
 
-**555x402** changes this by introducing:
-1. **Verifiable Attention**: Cryptographic proof that a user actually engaged.
-2. **Direct Settlement**: Payments flow directly from Advertiser/User to Creator/Platform via Solana with sub-2-second finality.
-3. **Audience Inventory**: Turning engagement into a verifiable, tradable asset.
-4. **Entity-Agnostic Design**: The protocol treats all participants — human and AI — identically. No entity type checks.
+1. **Verifiable Participation (VAP)**: Cryptographic proof that engagement actually occurred — Ed25519 heartbeats, not platform-reported estimates.
+2. **Direct Settlement (AGG)**: Value routes directly from source to participant via Solana with sub-2-second finality.
+3. **Audience Inventory**: Verified participation becomes measurable market supply that the system can price and monetize.
+4. **Entity-Agnostic Design**: The protocol treats all participants — human, team, and AI agent — identically. No entity type checks at the protocol level.
 
 ## The "402" Standard
 

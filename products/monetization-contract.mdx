@@ -1,7 +1,7 @@
 ---
 title: "Monetization Contract"
 icon: "file-contract"
-description: "Revenue ingestion, algorithmic split (ARP / Buybacks / Treasury), events, and payouts"
+description: "The rules that govern how value enters and moves through the system"
 ---
 
 <Info>
@@ -10,7 +10,7 @@ description: "Revenue ingestion, algorithmic split (ARP / Buybacks / Treasury), 
 
 ## Purpose
 
-Trustlessly ingest campaign budgets and platform fees, then algorithmically distribute proceeds. The Monetization Contract is part of the **555x402 protocol suite**, which includes:
+The Monetization Contract defines how value enters and moves through the Render Network Protocol. It trustlessly ingests campaign budgets and platform fees, then algorithmically distributes proceeds. The contract is part of the **555x402 protocol suite**, which includes:
 
 - **AGG (Payment Aggregator)**: Facilitator router (Rust, Kafka) with multi-facilitator scoring, HTTP 402 middleware, and sub-2-second Solana settlement. Live on-chain at program `2XfsNMcrJCbkaEwYfg6zpNXKipmSDY3tvMUK1KVs7bfV`.
 - **Hyperlink (Smart Payment Links)**: Gasless, multi-chain USDC payment links at [555hyper.link](https://555hyper.link). Supports Solana, Base, and Polygon via Circle CCTP V2. Vanity URLs (`/@alice`), QR codes, webhook system, and claimable payouts.
