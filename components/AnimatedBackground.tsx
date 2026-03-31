@@ -1,0 +1,175 @@
+'use client'
+
+import { useEffect } from 'react'
+
+interface AnimatedBackgroundProps {
+  className?: string
+}
+
+export default function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
+  useEffect(() => {
+    // Dynamically inject CSS
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes beamMove {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+        50% { transform: translateX(100%) translateY(100%) rotate(180deg); }
+        100% { transform: translateX(-100%) translateY(-100%) rotate(360deg); }
+      }
+
+      @keyframes noise {
+        0%, 100% { transform: translate(0, 0) }
+        10% { transform: translate(-5%, -10%) }
+        20% { transform: translate(-10%, 5%) }
+        30% { transform: translate(5%, -5%) }
+        40% { transform: translate(-5%, 15%) }
+        50% { transform: translate(10%, 10%) }
+        60% { transform: translate(0%, 5%) }
+        70% { transform: translate(-10%, 0%) }
+        80% { transform: translate(15%, -10%) }
+        90% { transform: translate(5%, -5%) }
+      }
+
+      .render-bg-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        overflow: hidden;
+        background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+        pointer-events: none;
+      }
+
+      .render-beam {
+        position: absolute;
+        width: 3px;
+        height: 200px;
+        background: linear-gradient(180deg, transparent 0%, #0b8cb7 50%, transparent 100%);
+        border-radius: 2px;
+        animation: beamMove 8s ease-in-out infinite;
+        opacity: 0.3;
+      }
+
+      .render-beam:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+      .render-beam:nth-child(2) { top: 20%; left: 30%; animation-delay: 1s; }
+      .render-beam:nth-child(3) { top: 30%; left: 50%; animation-delay: 2s; }
+      .render-beam:nth-child(4) { top: 40%; left: 70%; animation-delay: 3s; }
+      .render-beam:nth-child(5) { top: 50%; left: 20%; animation-delay: 4s; }
+      .render-beam:nth-child(6) { top: 60%; left: 40%; animation-delay: 5s; }
+      .render-beam:nth-child(7) { top: 70%; left: 60%; animation-delay: 6s; }
+      .render-beam:nth-child(8) { top: 80%; left: 80%; animation-delay: 7s; }
+
+      .render-noise {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><filter id="noise"><feTurbulence baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter></defs><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.05"/></svg>');
+        animation: noise 20s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      .render-particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: #66cbfa;
+        border-radius: 50%;
+        animation: particleFloat 15s linear infinite;
+      }
+
+      @keyframes particleFloat {
+        0% {
+          transform: translateY(100vh) translateX(0px);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) translateX(100px);
+          opacity: 0;
+        }
+      }
+
+      .render-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+      .render-particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+      .render-particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+      .render-particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+      .render-particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+      .render-particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+      .render-particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+      .render-particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+
+      .render-bg-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        pointer-events: none;
+      }
+    `
+    document.head.appendChild(style)
+
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
+
+  return (
+    <div className={`render-bg-container ${className}`}>
+      {/* Animated beams */}
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+      <div className="render-beam"></div>
+
+      {/* Noise overlay */}
+      <div className="render-noise"></div>
+
+      {/* Floating particles */}
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+      <div className="render-particle"></div>
+    </div>
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
