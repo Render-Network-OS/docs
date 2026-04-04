@@ -1,22 +1,40 @@
 ---
 title: "For Developers"
 icon: "code"
-description: "Build on the economic layer beneath human and agent media"
+description: "Build games, payments, agents, and real-time experiences on RNDRNTWRK."
 ---
 
-## Build on the Economic Layer
-
-RNDRNTWRK exposes the primitives you need to build participation-native applications: verification, routing, settlement, overlays, stateful event streams, and cross-chain movement. If you want to build systems where interaction is measurable and value-bearing, this is the surface to build on.
+**RNDRNTWRK gives developers the surfaces to build games, payment flows, agents, overlays, and live creator experiences on top of one active system. If your application needs to verify participation, react to live events, or move value across the network, this is where you build it.**
 
 ## What You Can Build
 
-- **Games** that earn players real USDC through verified engagement
-- **Payment flows** using the 555x402 suite (VAP + AGG + Hyperlink)
-- **Cross-chain USDC transfers** via sw4p (Solana, Base, Polygon)
-- **Stream overlays** and interactive experiences via CTRL Panel
-- **Bots and integrations** via the REST API and SSE event stream
+- **Games** that verify player activity and settle rewards in USDC
+- **Payment flows** that combine verification, routing, and programmable payment links
+- **Cross-chain USDC movement** through sw4p across supported chains
+- **Interactive stream surfaces**, overlays, and live participation modules
+- **Bots, agents, and automations** that react to REST and live SSE events
+
+## Choose Your Starting Point
+
+### Build a game
+
+Use GameHarness and VAP to integrate verified gameplay, scoring, and reward accrual.
+
+### Build payment flows
+
+Use AGG, Hyperlink, and sw4p to route and move value.
+
+### Build bots and automations
+
+Use the REST API and SSE stream to react to live system events.
+
+### Build on-chain
+
+Use the Solana / Anchor program layer for rewards, escrow, and lottery logic.
 
 ## API Overview
+
+Most integrations start the same way: authenticate with SIWS, keep the session cookie, use REST for actions, and SSE for live state.
 
 **Base URL:** `https://api.rndrntwrk.com`
 
@@ -26,37 +44,43 @@ RNDRNTWRK exposes the primitives you need to build participation-native applicat
 3. `POST /auth/verify` — submit signed message, receive session cookie
 4. Include the session cookie on all subsequent requests
 
-**Format:** JSON REST for requests/responses. SSE for real-time events.
+**Format:** JSON REST for requests and responses. SSE for real-time events.
 
-**Endpoint domains:**
+**Endpoint groups:**
 
-| Domain | Description |
+| Group | What It Covers |
 | :--- | :--- |
 | Authentication | Nonce, verify, logout, social linking |
-| Arcade & Gaming | Score submission, game state, per-game leaderboards, stats |
+| Arcade and Gaming | Score submission, game state, per-game leaderboards, stats |
 | Battles | Create, join, and track PvP matches |
 | Lottery | Create rounds, buy tickets, finalize draws, audit trails |
 | Leaderboards | Global, per-game, quest, and referral rankings |
 | Rewards | Claim USDC, Merkle proofs, epoch management, projected earnings |
 | Referrals | Generate links, bind codes, track performance |
-| Profile & Tasks | User profile, daily tasks, payment history |
-| Events & SSE | Real-time event stream, burn events |
+| Profile and Tasks | User profile, daily tasks, payment history |
+| Events and SSE | Real-time event stream, burn events |
 | Quests | List quests, track progress, check multipliers |
 | Social | Twitter webhook, social sharing data |
 | Clips | Upload and list gameplay clips |
-| Eligibility & Config | Token-gate checks, normalization config, game registry |
+| Eligibility and Config | Token-gate checks, normalization config, game registry |
 
 Full reference: [API Reference](/api-reference)
 
 ## Integrate a Game
 
-Add a game to the 555 Arcade using the Game Harness:
+**GameHarness is the fastest path for integrating a game into RNDRNTWRK.**
 
-1. **Wrap your game** in the `<GameHarness>` React component
-2. **The harness manages the VAP lifecycle**: connect → play → hash → sign → transmit
-3. **Your game engine emits events** (`SCORE_UPDATE`, `ENEMY_KILL`, etc.); the harness aggregates them into a Merkle root
-4. **The user's session key signs** the root; the signed payload is sent to the VAP Verifier
-5. **Points accrue automatically** per the normalization config (all games normalize to a 0–10,000 scale)
+Your game is responsible for:
+- Gameplay logic
+- Event emission
+- Score-producing actions
+
+The harness is responsible for:
+- Session lifecycle
+- VAP connection
+- Hashing and signing flow
+- Verifier submission
+- Reward accrual hooks based on normalization settings
 
 ```tsx
 <GameHarness appId="your-game-id" onSessionStart={handleStart}>
@@ -64,44 +88,50 @@ Add a game to the 555 Arcade using the Game Harness:
 </GameHarness>
 ```
 
-Score normalization, beta mode scaling, daily bonuses, and leaderboard integration are handled by the protocol — your game only needs to emit score events.
+The harness manages the full VAP lifecycle: connect, play, hash, sign, transmit. Your game emits events (`SCORE_UPDATE`, `ENEMY_KILL`, etc.) and the harness aggregates them into a Merkle root. The session key signs the root and the signed payload is sent to the VAP Verifier.
 
-## Use the Payment Stack (555x402)
+Score normalization maps all games to a 0 to 10,000 scale. Normalization config is managed at the protocol level. See [Arcade Overview](/arcade/overview) for the current normalization rules and scoring model.
+
+## Verification, Routing, and Settlement
+
+Four components handle verification, routing, and settlement across the network. Each has a distinct role.
 
 ### VAP — Verifiable Attention Protocol
 
-Cryptographic proof of engagement via Ed25519 challenge-response sessions:
-- WebSocket heartbeat at 5-second intervals
-- Session lifecycle: connect → challenge → sign → verify → accumulate
-- Proof of Engagement records are anchored on-chain
+VAP verifies participation.
 
-<Info>**Status:** VAP v1 is live. VAP v2 (cNFT minting, on-chain Proof of Engagement tokens) is in design. See [VAP](/protocol/vap) and [VAP v2](/protocol/vap-v2).</Info>
+- Ed25519 challenge-response sessions
+- WebSocket heartbeat at 5-second intervals
+- Session lifecycle: connect, challenge, sign, verify, accumulate
+
+<Info>**Status:** VAP v1 is live. VAP v2 is in design (not yet deployed). See [VAP](/protocol/vap) and [VAP v2](/protocol/vap-v2).</Info>
 
 ### AGG — Payment Aggregator
 
-Routes payments across chains with Solana finality:
+AGG routes and settles supported payment flows inside the protocol.
+
 - Solana-native settlement via Jupiter (live)
 - HTTP 402 (Payment Required) standard support
-- Cross-chain routing via CCTP V2 (planned)
 
-<Info>**Status: Partially Implemented** — Solana-native settlement is live. Cross-chain routing via CCTP V2 is in development. See [AGG](/protocol/agg).</Info>
+<Info>**Status:** Solana-native settlement is live. Cross-chain routing via CCTP V2 is in development. See [AGG](/protocol/agg).</Info>
 
 ### Hyperlink — Smart Payment Links
 
-Payment links with embedded wallets, analytics, and social attribution:
+Hyperlink creates programmable payment surfaces.
+
 - Generate payment links programmatically
-- Track conversions and attribution
+- Embedded wallets, analytics, and social attribution
 - See [Hyperlink](/protocol/hyperlink)
 
-## Cross-Chain with sw4p
+### sw4p — Cross-Chain USDC Movement
 
-[sw4p](/sw4p) bridges USDC across Solana, Base, and Polygon using Circle CCTP V2:
+sw4p is the dedicated cross-chain USDC movement surface.
+
+Use sw4p when your application needs USDC to move between supported chains without wrapped assets or liquidity-pool dependencies.
 
 1. **Burn** — USDC is burned on the source chain
 2. **Attest** — Circle's attestation service verifies the burn
 3. **Mint** — Native USDC is minted on the destination chain
-
-No wrapped tokens. No liquidity pools. 5 independent security audits. Gasless via Kora.
 
 **SDKs:**
 - TypeScript: `@sw4p/bridge` ([npm](https://npmjs.com/package/@sw4p/bridge))
@@ -110,35 +140,49 @@ No wrapped tokens. No liquidity pools. 5 independent security audits. Gasless vi
 
 ## Real-Time Events (SSE)
 
-Subscribe to `GET /events` for a persistent SSE connection:
+Use SSE when your application needs live state without polling.
 
-- **Event types**: `new_entry`, `chat_message`, round state transitions, winner announcements, burn events, system notifications
-- **Format**: `text/event-stream` with typed JSON payloads
-- Use SSE instead of polling for all real-time updates
+Subscribe to `GET /events` for a persistent SSE connection. Authentication follows the same SIWS session model as the REST API.
 
-## On-Chain Programs (Solana/Anchor)
+**Event categories:**
 
-The protocol includes Anchor-based Solana programs:
+| Category | Examples |
+| :--- | :--- |
+| Gameplay | `new_entry`, score updates, game state changes |
+| Chat | `chat_message`, moderation events |
+| Round state | Round transitions, winner announcements |
+| Rewards | Claim events, epoch transitions |
+| System | Burn events, system notifications |
+
+**Format:** `text/event-stream` with typed JSON payloads.
+
+Reconnection should be handled client-side. Events are delivered in order within each category.
+
+## Protocol Programs and Settlement Logic (Solana / Anchor)
+
+The protocol includes Anchor-based Solana programs that handle on-chain settlement and reward distribution.
 
 - **Rewards program**: `commit_epoch` → `fund_vault` → `claim_reward` pipeline
 - **Merkle-tree distribution** for provable USDC payouts
 - **PDA-based escrow** for tournament prizes and lottery pools
 - **On-chain randomness** via Switchboard VRF for lottery draws
 
+These programs handle the on-chain logic beneath the higher-level application surfaces. Most developers will interact with the REST API and SSE rather than calling these programs directly.
+
 ## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="API Reference" icon="code" href="/api-reference">
-    Complete endpoint reference with auth, params, and response formats.
+    Start integrating against the live endpoints.
   </Card>
   <Card title="Protocol Overview" icon="network-wired" href="/protocol/overview">
-    VAP, AGG, and Hyperlink protocol specification.
+    Understand how verification, routing, and settlement fit together.
   </Card>
   <Card title="sw4p" icon="bridge" href="/sw4p">
-    Cross-chain USDC bridge reference and SDK docs.
+    Build cross-chain USDC movement into your application.
   </Card>
   <Card title="Architecture" icon="sitemap" href="/architecture/overview">
-    System architecture and component map.
+    See how the system is wired across client, service, agent, and chain layers.
   </Card>
 </CardGroup>
 

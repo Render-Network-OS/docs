@@ -1,95 +1,167 @@
 ---
 title: "For Advertisers"
 icon: "bullseye-arrow"
-description: "Buy verified engagement, not synthetic reach"
+description: "Advertise where viewers are already playing, predicting, clipping, and coming back."
 ---
 
-## Buy Verified Engagement
+**RNDRNTWRK helps advertisers reach people while they are active around a creator, not just watching passively. In RNDRNTWRK, your brand can appear while viewers are already playing games, entering predictions, clipping moments, completing quests, and returning between live segments.**
 
-RNDRNTWRK gives advertisers access to measurable, cryptographically grounded audience participation. Campaigns are placed into environments where engagement is verified, performance is traceable, and payout logic is explicit.
+**That changes the value of the inventory. You are not only buying an impression. You are buying access to a creator system that already has repeat activity, visible incentives, and measurable participation.**
 
-## What You Get
+## What Advertisers Get
 
-- **Cryptographically verified engagement metrics** — not self-reported, not estimated
-- **Non-interruptive L-Bar ad format** that keeps content playing (like ESPN during live sports)
-- **On-chain campaign contracts** with transparent receipts on Solana
-- **AI-optimized ad placement** — Alice monitors engagement and triggers ads at peak moments
-- **Two-sided marketplace** — browse creators and collectives, target by verified metrics
+### Active inventory
+Reach viewers while they are already playing, predicting, clipping, questing, and returning around a creator.
 
-## The L-Bar Ad Format
+### A live-native ad format
+Keep the creator visible on screen while the ad unit stays present.
 
-The L-Bar is a non-interruptive ad unit. Instead of cutting to an ad break, the stream content squeezes into an L-shaped region while the ad occupies the remaining space. The viewer never loses the stream.
+### Creator and collective buying
+Buy one creator directly or buy across multiple creators where collectives are enabled.
 
-**How placement works:**
-- Alice polls 4 engagement signals every 5 seconds
-- When the composite engagement score crosses the **0.70 threshold**, she triggers an ad placement
-- Metrics driving placement: watch time, active plays, engagement score, staking TVL
-- Result: Ads appear at moments of peak attention, not during lulls
+### Sharper targeting
+Target by creator fit, category fit, geography, language, device, brand safety, and participation cohorts.
 
-## Campaign Options
+### Clearer reporting
+Track impressions, viewability, CTR, conversions, and receipt data where on-chain funding applies.
 
-### Option A: Pay for Ads
+## Why This Inventory Is Different
 
-Direct budget injection into the protocol's distribution system:
+Most ad systems buy around passive attention.
 
-- **Pricing models**: CPM, CPC, or CPA
-- **Bidding**: Fixed price or auction with reserve floors and auto-bid ranges
-- **Pacing**: Total and daily budgets with even or as-fast-as-possible delivery
-- **Scheduling**: Flight windows, dayparting, frequency caps per viewer or per session
-- **Creative**: Weighting and A/B variants supported
+RNDRNTWRK lets advertisers buy around active participation.
 
-### Option B: Stake Creator Token
+Here, the audience can:
+- Play games
+- Enter predictions
+- Submit clips
+- Complete quests
+- Return around the creator over time
 
-<Info>**Status: Partially Implemented** — Creator Token staking is being rolled out via [Render Expand](/products/render-expand).</Info>
+That matters because the ad is not landing beside a passive viewer. It is landing inside a creator system where people are already doing something.
 
-Become a stakeholder in a creator's economy:
+## The Ads Platform
 
-- Benefit from buybacks and treasury allocation as the creator grows
-- Aligned incentives — your success is the creator's success
-- Long-term positioning vs. per-campaign spend
+The ads platform is the buying surface for the network.
 
-## Targeting & Measurement
+It lets advertisers:
+- Browse creators
+- Browse collectives where enabled
+- Compare creator and collective metrics
+- Choose placements
+- Define campaign terms
+- Fund campaigns
+- Monitor performance
+- Review reporting and receipts
 
-### Targeting
-- **Geography, language, device** presets
-- **Engagement cohorts** — stakers only, holders above threshold, activity-based segments
-- **Creator tags** and category fit
-- **Brand safety** — category filters, blocklists/allowlists, fallback creatives
+This is what makes RNDRNTWRK useful beyond one-off sponsorships.
 
-### Measurement
-- **Impressions, viewability, CTR, conversions** — all backed by on-chain receipts
-- **Public dashboards** for campaign transparency
-- First-party analytics included; third-party beacons optional
+## The L-Bar Format
 
-## Revenue Flow (Full Transparency)
+**L-Bar keeps the creator visible while the ad is on screen.**
 
-When you fund a campaign, every dollar is traceable on Solana:
+Instead of cutting away into a standard ad break, the stream stays live and the ad unit occupies the remaining screen space.
 
-| Step | Allocation | Recipient |
-| :--- | :--- | :--- |
-| **1. ARP** | 10% off the top | Directly to the audience you reached (verified engagement) |
-| **2. Creator** | 50% of post-ARP | Creator's wallet |
-| **3. Platform** | 50% of post-ARP | 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve |
+This matters because:
+- The audience keeps the live context
+- The creator does not disappear
+- The ad shows up inside the moment instead of replacing it
 
-Programmatic payouts via PDAs with receipt events. No manual intervention, no hidden fees.
+Current placement logic uses live signals including watch time, active plays, engagement score, and staking TVL. Alice can trigger placements when those signals cross the required threshold. See [Monetization Module](/products/monetization-module) and [555stream](/555stream) for the detailed trigger logic.
 
-## Workflow
+## Two Ways to Buy
+
+### Standard campaign buying
+This is the direct media-buying path.
+
+Use it when you want to:
+- Set budget
+- Choose pricing model
+- Control pacing
+- Schedule campaigns
+- Test creatives
+- Measure performance
+
+### Creator-aligned buying
+
+<Info>**Status: Partially Implemented** — Creator-aligned buying is being rolled out via [Render Expand](/products/render-expand).</Info>
+
+Where enabled, advertisers can take a longer-term position around a creator instead of only buying one campaign at a time.
+
+Use it when you want:
+- Longer-term alignment with a creator
+- Exposure to creator-side growth
+- More than a one-flight sponsorship relationship
+
+## Creator Collectives
+
+Collectives let advertisers buy across multiple creators without rebuilding the campaign from scratch for each one.
+
+Where enabled, collective buying can provide:
+- Aggregated creator metrics
+- Standardized placement specifications
+- Broader reach across aligned creator systems
+- Shared payout logic across multiple creators
+
+## Hypertargeting
+
+Campaigns can be targeted by:
+- Creator
+- Collective, where enabled
+- Creator tags
+- Category fit
+- Geography
+- Language
+- Device
+- Participation cohort
+- Brand-safety constraints
+
+Participation cohorts can include activity-based segments and, where supported, holder or staking-based segments.
+
+## Measurement
+
+Campaigns can be measured through:
+- Impressions
+- Viewability
+- CTR
+- Conversions
+- First-party reporting
+- Public dashboards where supported
+- On-chain receipts where funding and settlement use on-chain paths
+
+## Why the Economics Matter to Advertisers
+
+When campaign spend enters RNDRNTWRK, it does not disappear into a closed platform black box.
+
+Current protocol routing is:
+- **10%** to the Audience Reward Pool
+- **50% of post-ARP value** to the creator
+- **50% of post-ARP value** to platform allocation
+
+This matters because:
+- The audience has a reason to keep participating
+- The creator has a reason to keep the system active
+- The network has a reason to keep supply healthy
+
+See [Fee Distribution](/tokenomics/fee-distribution) for the full current split and reserve breakdown.
+
+## Campaign Workflow
 
 <Steps>
-  <Step title="Browse Creators">
-    Explore creators and collectives with verified metrics — watch time, plays, engagement score, staking TVL. All metrics are boosted by the 555 Engine and verifiable on-chain.
+  <Step title="Choose a creator or collective">
+    Browse solo creators or grouped inventory where collectives are enabled.
   </Step>
-  <Step title="Define Campaign">
-    Set targeting, budget, creative, and schedule. Choose placement type: overlays (lower-thirds, sidebars, takeovers), sponsored segments, product placements, or read-outs.
+  <Step title="Set campaign terms">
+    Define budget, targeting, format, creative, schedule, and brand-safety constraints.
   </Step>
-  <Step title="Fund On-Chain">
-    Fund your campaign via the [Monetization Contract](/products/monetization-contract). The contract splits revenue automatically (10% ARP, 20%+ Buybacks, 70% Treasury).
+  <Step title="Fund the campaign">
+    Use the supported funding flow for the current implementation.
   </Step>
-  <Step title="Monitor Live">
-    Track metrics and on-chain receipts in real-time. Attribution events fire as ads render.
+  <Step title="Launch and monitor performance">
+    Watch the campaign inside the live creator system while it is running.
   </Step>
-  <Step title="Settle & Report">
-    Settlement and performance reports are generated automatically. All data is verifiable on-chain.
+  <Step title="Review reporting and receipts">
+    Measure results through the supported reporting and settlement outputs.
   </Step>
 </Steps>
 
@@ -97,15 +169,15 @@ Programmatic payouts via PDAs with receipt events. No manual intervention, no hi
 
 <CardGroup cols={2}>
   <Card title="Monetization Module" icon="coins" href="/products/monetization-module">
-    Full marketplace, targeting, bidding, and payout reference.
+    See marketplace, targeting, budgeting, bidding, and payout details.
   </Card>
   <Card title="Monetization Contract" icon="file-code" href="/products/monetization-contract">
-    On-chain contract for campaign funding and splits.
+    See what is live now and what is still rolling out in the contract layer.
   </Card>
   <Card title="555stream" icon="video" href="/555stream">
-    L-Bar ad format details and Alice-driven placement.
+    See the live environment where campaigns run.
   </Card>
   <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
-    The full ARP / Buybacks / Treasury breakdown.
+    See the current allocation model.
   </Card>
 </CardGroup>

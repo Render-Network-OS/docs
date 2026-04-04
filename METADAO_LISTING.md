@@ -1,6 +1,6 @@
-# Render Network — MetaDAO Listing Package
+# RNDRNTWRK — MetaDAO Listing Package
 
-Project owner: Render Network (building tools and a network for a sustainable creator economy)
+Project owner: RNDRNTWRK (building the economic operating system for human and agent media)
 Contact: founders@rndrntwrk.com
 Website: https://rndrntwrk.com
 Repository: monorepo (backend, frontend, chat-gateway, discord)
@@ -8,10 +8,10 @@ Repository: monorepo (backend, frontend, chat-gateway, discord)
 ## Project Name & Description
 
 Short (1–2 sentences)
-- Render Network is building the tools and the network that connect viewers, creators, advertisers, and partner businesses to power a sustainable creator economy. We provide creator‑controlled overlays and a straightforward ad system that can show the same ad on many live streams at once—or target specific streams—using simple, transparent rules.
+- RNDRNTWRK is building the economic operating system for human and agent media. We provide creator-controlled overlays, verified participation loops, and straightforward ad surfaces that can run across many live streams at once or target specific streams with simple, transparent rules.
 
 Long
-- Render Network is building the tools and the network between viewers, creators, advertisers, and partner businesses needed for a sustainable creator economy. Today, most streams use static badges or manual overlays; brands can’t reliably reach smaller creators, and creators miss revenue. We provide a Solana‑native overlay system and ad tools that make it easy to show ads inside overlays across many streams—and to measure what happens—without pop‑ups or intrusive formats.
+- RNDRNTWRK is building the economic operating system for human and agent media. Today, most streams use static badges or manual overlays; brands cannot reliably reach smaller creators, and creators miss revenue. We provide a Solana-native overlay system and ad tools that make it easy to show ads inside overlays across many streams and measure what happens without pop-ups or intrusive formats.
 - The stack includes a creator‑controlled overlay system, a simple control panel, a real‑time gateway for events, and a dynamic ad layer. Creators choose size, placement, duration, and theme; updates propagate instantly across OBS/Streamlabs and platforms like Twitch, Kick, and YouTube. We meet users where they are, starting with crypto‑native venues (Pump.fun, Binance Square, Zora) to battle‑harden before broad rollout.
 - Our wedge is “555” gamification—fun, high‑retention interactions that normalize overlays and build inventory before monetization. As the network grows, ads stay creator‑controlled and measured with clear, simple reports.
 
@@ -21,7 +21,7 @@ Why participate: This is streaming‑native monetization done right—creator‑
 
 - Name: $555
 - Ticker: $555
-- Rationale: Aligns directly with the Render Network brand. (We recognize the ticker overlaps with other ecosystems and will coordinate listings/metadata to avoid user confusion.)
+- Rationale: Aligns directly with the RNDRNTWRK brand. (We recognize the ticker overlaps with other ecosystems and will coordinate listings/metadata to avoid user confusion.)
 
 ## Project Image & Token Image
 
@@ -62,7 +62,7 @@ Example at minimum raise: ICO ≈ $0.002. Tranche thresholds (TWAP) ≈ $0.004, 
 
 - Domains & DNS: rndrntwrk.com (and subdomains) and any future brand‑aligned domains
 - Software/Code: full rights to backend (Go API, Solana client, IPFS, Pump.fun proxy), frontend (Next.js overlay + control), chat‑gateway (Node/Bun WS/HTTP), discord tooling, build/deploy configs, CI/CD assets, documentation
-- Incubated projects & ventures: the companies and products incubated under Render Network, including 555 (gamification) and Sculptr (AI 3D asset generation and animation technology)
+- Incubated projects & ventures: the companies and products incubated under RNDRNTWRK, including 555 (gamification) and Sculptr (AI 3D asset generation and animation technology)
 - Brand & Creative: logos/marks, palettes, design files, marketing assets; project and token imagery source files
 - Social & Communications: official brand accounts (X/Twitter, Discord, Telegram, YouTube/Twitch), GitHub org, email lists
 - Data & Content: website/docs copy, templates, non‑PII operational content

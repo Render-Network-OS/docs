@@ -1,141 +1,131 @@
 ---
 title: "Protocol Overview"
 icon: "shield"
-description: "The infrastructure layer beneath the network's market structure"
+description: "The infrastructure layer that verifies participation, routes value, and connects products across Render Network Protocol."
 ---
 
-<Note>**WIP** — Specifications are under active development. Interfaces, receipt formats, and facilitator options may evolve as we progress through pilots and partner integrations.</Note>
+<Note>Some protocol interfaces and facilitator options are still evolving as the system expands through pilots and partner integrations. See the component pages for current implementation status.</Note>
 
-# Protocol Overview
+**The protocol layer is the infrastructure beneath Render Network Protocol. It is responsible for verifying participation, routing value, and exposing the payment and settlement surfaces that the rest of the network builds on.**
 
-The **555x402 Protocol** is the infrastructure layer beneath the Render Network Protocol's market structure. It exists to verify engagement, route settlement, and keep humans and agents on the same economic rails. It is designed to be frictionless, verifiable, and entity-agnostic.
+**When a stream goes live, a game session starts, or an agent acts inside the network, the protocol layer is what verifies that activity, decides how value moves, and keeps every surface on the same economic logic.**
 
-## Core Architecture
+## What the Protocol Layer Is Responsible For
 
-Every existing creator platform is a black box — creators do not own their audience, advertisers cannot verify engagement, and the platform decides who gets paid. The 555x402 protocol replaces that with transparent, programmable infrastructure:
+### Verify participation
+The protocol verifies that activity actually happened, rather than relying only on platform-reported metrics.
 
-1. **Verifiable Participation (VAP)**: Cryptographic proof that engagement actually occurred — Ed25519 heartbeats, not platform-reported estimates.
-2. **Direct Settlement (AGG)**: Value routes directly from source to participant via Solana with sub-2-second finality.
-3. **Audience Inventory**: Verified participation becomes measurable market supply that the system can price and monetize.
-4. **Entity-Agnostic Design**: The protocol treats all participants — human, team, and AI agent — identically. No entity type checks at the protocol level.
+### Route value
+Once participation or payment enters the network, the protocol decides how value moves through the system.
 
-## The "402" Standard
+### Expose payment surfaces
+The protocol gives products and integrations programmable ways to request, route, and confirm payments.
 
-The system embraces the HTTP **402 Payment Required** status code. Content is gated by default, and the protocol negotiates payment — via micro-transaction, subscription, or ad-view — instantly.
+### Support settlement
+The protocol connects activity and payments to the settlement logic underneath the network.
 
-The flow is simple: a request hits a 402-protected endpoint, the client receives a signed Offer, completes payment via a facilitator, and retries with an `X-PAYMENT` proof. The backend verifies, settles into the Monetization Contract on Solana, and disburses. To the user, it looks like normal web payments; to the network, every interaction feeds the flywheel.
+### Keep humans and AI agents on the same rules
+The protocol does not need one set of economic rules for humans and another for agents. It handles both through the same verification and routing logic.
 
-![555x402 Diagram](/images/555x402-diagram.jpeg)
+## The Core Protocol Components
 
-## How It Works
+The payment and verification surface is sometimes referred to internally as **555x402**.
 
-<Steps>
-  <Step title="402 Offer">
-    Client calls a protected endpoint (e.g., `POST /api/game/entry`). Service returns HTTP 402 with a JSON Offer: amount, currency, TTL, purpose, and signature.
-  </Step>
-  <Step title="Approval">
-    Client pays via fiat rails or USDC through a facilitator. Receives a proof/receipt that is verifiable on-chain.
-  </Step>
-  <Step title="Retry with Proof">
-    Client retries original request including `X-PAYMENT: Bearer <proof>`. Service verifies and grants access.
-  </Step>
-  <Step title="Settlement & Payouts">
-    Facilitator converts to `$555` notional and posts to the Monetization Contract (ARP, buybacks, treasury, creator shares). Viewers/clippers get off-chain payouts.
-  </Step>
-</Steps>
+What matters here is not the internal label. What matters is what the stack does.
 
-## Architecture
+| Component | Role | What it handles | Current status |
+|---|---|---|---|
+| [VAP](/protocol/vap) | Verification layer | Session verification and proof of participation | v1 live, v2 validated |
+| [AGG](/protocol/agg) | Routing layer | Payment routing and settlement coordination | Partially implemented |
+| [Hyperlink](/protocol/hyperlink) | Payment surface | Programmable payment links, embedded wallets, and attribution | Partially implemented |
+| [sw4p](/sw4p) | Settlement rail | Cross-chain USDC movement across supported chains | Live |
 
-The protocol is built on a multi-layer architecture:
+## Key Protocol Concepts
 
-- **Solana**: On-chain settlement, token operations, program execution.
-- **Edge Layer**: Distributed encoding, caching, and real-time session management.
-- **Service Layer**: Backend API, payment routing, and verification.
-- **Client Layer**: Browser-based applications (Arcade, 555stream).
-- **Agent Layer**: Autonomous AI operator (Alice) with 12+ plugins.
+### Verified participation
+The protocol turns activity into something it can verify. That is what makes the network more than a content platform or a game layer.
 
-### Components
+### Audience inventory
+Once participation is verified, it becomes inventory the network can measure, rank, and monetize.
 
-| Component | Function | Status |
-| :--- | :--- | :--- |
-| **[VAP](/protocol/vap)** | Verifies cryptographic heartbeats from client sessions to prove engagement. | v1 Live, v2 Validated |
-| **[AGG](/protocol/agg)** | Routes HTTP 402 payment requests across chains via Jupiter, CCTP V2, and Kora. | Partially Implemented |
-| **[Hyperlink](/protocol/hyperlink)** | Smart payment links with embedded wallets, analytics, and social attribution. | Partially Implemented |
-| **[sw4p](/sw4p)** | Cross-chain CCTP V2 USDC bridge (Solana, Base, Polygon). 5 independent security audits. | Live |
-| **[555stream](/555stream)** | Browser-based streaming studio with custom RTMP output and L-Bar ads. | Live |
-| **[Arcade](/arcade/overview)** | 20 games integrated with Proof of Engagement. | Live |
-| **[Alice](/alice/persona)** | Autonomous AI operator (Milaidy/ElizaOS v2) managing streams, ads, and community. | Live |
+### Entity-agnostic participation
+The same protocol logic can support humans and AI agents participating inside the same system.
 
-## The Economic Model
+## How the Protocol Connects to Products
 
-Every dollar follows the same cascade:
+The protocol is not the same thing as the products built on top of it.
 
-1. **10% ARP** (Audience Reward Pool) distributed to the audience who generated the engagement.
-2. **Post-ARP**: 50% Creator / 50% Platform.
-3. **Platform Share**: 70% treasury, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
+Products are the places where the protocol becomes visible.
 
-### Structural Deflation
-The 20% buyback-and-burn creates a permanent deflationary pressure on $555. Every dollar of platform revenue removes tokens from circulation.
+### 555stream
+555stream is the distribution surface. It uses the protocol layer when live media, monetization, and settlement need to stay on one set of rules.
 
-## Integrations
+### 555 Arcade
+Arcade is the participation surface. It uses the protocol layer to verify play, rank activity, and route rewards.
 
-- **Studio & Control Panel** — Sync overlays across all broadcast destinations. Unpaid interactions return 402; approvals instantly update overlays and budgets.
-- **555 Gamification Engine** — Gate boosts and entries with tiny fiat fees that pool into `$555` prize funds; reward viewers off-chain.
-- **Monetization & Marketplace** — Capture subs/tips and ad buys; instant bids tie into assets and contract distributions.
-- **[Render Expand](/products/render-expand)** — Premium multi-streaming and fan-to-stake funnels; route a set percent to buybacks/ARP automatically.
-- **Hybrid Access** — Paid content on YouTube/Kick via 402; orchestrator nodes anchor access and settlements.
+### Alice
+Alice is the operator proof. She uses the same live surfaces and economic logic the rest of the system uses.
 
-## Benefits
+### Monetization Surfaces
+Ad formats, payment links, and creator-side economic flows rely on the protocol layer to verify, route, and settle value.
 
-**Viewers**
-- Frictionless boosts/entries (e.g., $0.05 fiat → `$555` pooled) with real-time feedback.
-- Gated highlights/reactions that feel like normal web payments; off-chain rewards.
-- Optional staking funded by Web2 earnings.
+## Current Implementation Status
 
-**Creators**
-- Near-net settlement (vs. 30–50% on legacy platforms) and faster cash flow.
-- Crypto UX abstracted; link accounts, configure once, and go.
-- On-chain transparency (contract events) with off-chain payout portability.
+Render Network Protocol is live in parts and expanding in parts.
 
-**Advertisers**
-- Programmatic, verifiable placements; sponsored interactions welcomed by staked audiences.
-- Micro-campaigns at low fees with measurable ROI and instant approvals.
+### Live now
+- VAP v1
+- sw4p
+- Product surfaces that already rely on protocol verification and routing
 
-## Security & Compliance
+### Expanding now
+- AGG
+- Hyperlink
+- Broader programmable payment and monetization surfaces
 
-- **Facilitator Governance** — KYC/AML/PCI where required; geo-rolled enablement.
-- **Proofs & Replay Protection** — Signed JWT receipts with on-chain verifiable hash commitments, HMAC `X-PAYMENT`, TTL, and nonce checks.
-- **Contract Controls** — Versioned split templates, audit trails, emergency shutoffs.
+### Deeper work continues
+- VAP v2
+- Broader settlement and payment abstractions
+- More complete contract-layer execution across the network
 
-## Developer Guide
+## What This Page Does Not Cover
 
-1) **Protect Endpoint**: Return 402 with JSON Offer and `WWW-Authenticate: X402 realm="render"`.
+This page is the overview.
 
-2) **Approve & Retry**: Client processes fiat/USDC with facilitator; retries original call with `X-PAYMENT` proof.
+It does **not** try to be:
+- The full HTTP 402 integration guide
+- The source of truth for tokenomics
+- The source of truth for payout splits
+- The developer implementation page
+- The roadmap page
 
-3) **Verify & Settle**: Verify proof, map to `$555` notional, emit events, and post to contract; enqueue off-chain payouts.
+Use the deeper pages for those details.
 
-**Events**: `402OfferCreated`, `402PaymentApproved`, `402SettlementQueued`, `402SettlementPosted`, `402PayoutComplete`.
+## Where to Go Deeper
 
-## KPIs
-
-- Creator net uplift (vs. baseline splits)
-- Viewer participation and repeat purchases
-- `$555` buybacks funded and ARP growth
-- Time-to-cash (creator), payout success rates (viewers/clippers)
-
-## Rollout
-
-- **Phase 1** — Twitch/Kick overlays + games (tips/subs, boosts), facilitator (US), sub-cent approvals.
-- **Phase 2** — YouTube highlights marketplace, multi-currency, global payouts.
-- **Phase 3** — Programmatic ads, AI agents, partner bundles; open SDK GA.
-
-## FAQs
-
-- **Do viewers need wallets?** No — pay with fiat or USDC; SDK abstracts crypto.
-- **How are micro-amounts viable?** Aggregation and favorable facilitator pricing enable sub-cent approvals.
-- **Can I change splits?** Within governance bounds; contract templates are versioned and creator-scoped.
-
-<Note>
-  Related: [Fee Distribution](/tokenomics/fee-distribution) · [Monetization Contract](/products/monetization-contract) · [CTRL Control Panel](/products/ctrl-control-panel)
-</Note>
+<CardGroup cols={2}>
+  <Card title="VAP" icon="eye" href="/protocol/vap">
+    See how participation is verified.
+  </Card>
+  <Card title="AGG" icon="route" href="/protocol/agg">
+    See how payment routing and settlement coordination work.
+  </Card>
+  <Card title="Hyperlink" icon="link" href="/protocol/hyperlink">
+    See how programmable payment links fit into the system.
+  </Card>
+  <Card title="Economic Model" icon="chart-line" href="/economics">
+    See how value moves once it enters the network.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See the current allocation model and source-of-truth split.
+  </Card>
+  <Card title="For Developers" icon="code" href="/for-developers">
+    See how to build against the live surfaces.
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/architecture/overview">
+    See how the protocol sits across client, service, agent, and chain layers.
+  </Card>
+  <Card title="sw4p" icon="bridge" href="/sw4p">
+    See the settlement engine beneath cross-chain movement.
+  </Card>
+</CardGroup>

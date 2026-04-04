@@ -1,8 +1,8 @@
 # Partner Mini-Brief 2026-03-25
 
-## What Render Network is proving
+## What RNDRNTWRK is proving
 
-Render Network is not shipping disconnected demos. It is assembling an
+RNDRNTWRK is not shipping disconnected demos. It is assembling an
 operator-grade stack where AI runtime, streaming, gameplay, monetization, and
 cross-chain transfer surfaces can be reasoned about together.
 

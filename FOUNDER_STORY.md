@@ -1,8 +1,8 @@
-# Render Network — Founder Story & Vision
+# RNDRNTWRK — Founder Story & Vision
 
 I found a multi‑billion‑dollar market waiting to be taken: dynamic ads on live streams, done right. Today, most creators pin a static badge or hack overlays by hand. Advertisers who want the long tail can’t find, target, or trust what they’re buying. The result is under‑monetized creators and frustrated brands.
 
-Render Network is my answer. I’m building a Solana‑native, real‑time overlay system and ad marketplace that makes dynamic, non‑intrusive placements simple, measurable, and aligned with creators.
+RNDRNTWRK is my answer. I’m building a Solana‑native, real‑time overlay system and ad marketplace that makes dynamic, non‑intrusive placements simple, measurable, and aligned with creators.
 
 ## The Opportunity
 

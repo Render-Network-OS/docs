@@ -16,7 +16,7 @@ Recommended proof attachments:
 
 ## Investor message
 
-Render Network is not just another agent wrapper. The wedge is an operator
+RNDRNTWRK is not just another agent wrapper. The wedge is an operator
 stack: runtime, stream control, interactive play, and economic rails, all tied
 back to proof and release discipline. I can share the current narrative, proof
 library, and launch/next-90 plan if you want to evaluate the thesis seriously.

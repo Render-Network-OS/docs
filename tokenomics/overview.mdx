@@ -1,139 +1,138 @@
 ---
 title: "Tokenomics Overview"
 icon: "coins"
-description: "How the network’s economic logic is structured"
+description: "How $555 fits into the network's economic logic"
 ---
 
-## The $555 Economy
+**$555 is the network token of Render Network Protocol. It is not a bolt-on incentive wrapper. It is part of how RNDRNTWRK coordinates access, participation, buyback pressure, reserves, and selected governance surfaces across the system.**
 
-RNDRNTWRK’s tokenomics are not a bolt-on incentive wrapper. They are part of the operating logic of the network: access, staking, participation, treasury growth, and structural buybacks all sit inside one system. The economy centers on $555 and a creator-specific staking model that turns participants into stakeholders.
+**The broader economic model lives at the network level. This page explains how $555 fits into that model, what it is responsible for, and where its current role begins and ends.**
 
-<Info>
-  **Token:** $555 (SPL, Solana) · **Contract:** `CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2` · **Total Supply:** 1,000,000,000 $555 · **Public:** 92% · **Team:** 8% (locked 5 years) · **Core Mechanism:** Algorithmic split of all revenues into 10% ARP, 20%+ Token Buybacks, and 70% Treasury · **Stakeholder Model:** Viewers stake into creator economies to share revenue and govern the split
-</Info>
+## What $555 Is
 
-## Economic Philosophy
+$555 is an SPL token on Solana.
 
-<CardGroup cols={3}>
-  <Card title="Stakeholder Alignment" icon="users">
-    Viewers become stakeholders via staking, sharing in creator revenue and governance.
+Current published supply model:
+- **Total supply:** 1,000,000,000 $555
+- **Public allocation:** 92%
+- **Team allocation:** 8%, locked for 5 years
+
+Those numbers matter, but they are not the whole story. The token only makes sense in the context of the network's wider value-routing logic.
+
+## What $555 Does
+
+### 1. Coordinates access
+
+Some RNDRNTWRK surfaces use $555 for access, activation, or higher-value participation modes.
+
+This can include:
+- Creator-facing surfaces
+- Premium tools and controls
+- Token-gated participation layers where supported
+
+### 2. Sits inside the buyback model
+
+Part of the network's value flow routes toward buyback and burn logic tied to $555.
+
+This is one of the ways the token stays connected to network activity instead of existing as a detached asset.
+
+### 3. Supports participation and alignment
+
+In supported surfaces, $555 can be used to increase participation weight, unlock additional utility, or align creators, participants, and the broader network more tightly.
+
+### 4. Supports governance where enabled
+
+Governance-related uses of $555 exist in stages across the system. Governance surfaces should be treated according to their actual current implementation status.
+
+## How $555 Fits Into the Economic Model
+
+$555 does not replace the economic model. It sits inside it.
+
+The network's value-routing logic determines how value enters, splits, and compounds. $555 matters because some of that value flow affects:
+- Buyback and burn
+- Reserve logic
+- Access and activation
+- Aligned participation surfaces
+
+For the canonical routing model, see:
+
+- [Economic Model](/economics)
+- [Fee Distribution](/tokenomics/fee-distribution)
+
+Those pages own the exact allocation logic.
+
+## Why $555 Exists
+
+$555 exists because the network needs a coordination mechanism that can do more than represent ownership on paper.
+
+It needs to help the system:
+- Control access
+- Reinforce participation
+- Absorb part of the value moving through the network
+- Maintain reserve logic
+- Support governance and alignment where those surfaces are live
+
+That makes $555 part of the operating logic of RNDRNTWRK, not just an external incentive token.
+
+## Current Token Surfaces
+
+The current token surface includes:
+
+- Fixed supply on Solana
+- Access roles on supported RNDRNTWRK surfaces
+- Buyback and reserve interaction through the economic model
+- Participation boosts and token-gated mechanics where enabled
+- Governance-related functions in staged rollout form
+
+Some token surfaces are live and some are still expanding.
+
+## What Is Live Now vs What Is Expanding
+
+### Live now
+- $555 as the network token on Solana
+- Fixed supply and current allocation model
+- Token-linked access on supported surfaces
+- Buyback interaction inside the broader economic model
+
+### Expanding
+- More advanced staking structures
+- Broader creator-side participation mechanics
+- Governance surfaces with deeper control
+- Wider token-linked roles across the ecosystem
+
+## Design Principles
+
+### Alignment over abstraction
+$555 should remain tied to the actual activity of the network, not float above it as a separate speculative layer.
+
+### Explicit routing over black-box economics
+The token should sit inside visible system logic, not opaque platform discretion.
+
+### Sustainability over short-term extraction
+Treasury, reserves, and buyback logic exist to support continuity and long-term system operation.
+
+### Utility over ornament
+$555 should continue to matter because it does something in the system, not because it is mentioned everywhere.
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="Economic Model" icon="chart-line" href="/economics">
+    See the canonical value-routing logic for the network.
   </Card>
-  <Card title="Deflationary Pressure" icon="trending-down">
-    Perpetual buybacks (min 20%) create sustained demand for creator economies.
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See the current allocation model in detail.
   </Card>
-  <Card title="Sustainable Engagement" icon="clock">
-    A 24/7 gamification loop continuously generates inventory and revenue.
+  <Card title="$555 Token" icon="dollar-sign" href="/tokenomics/555-token">
+    See the token-specific reference page.
   </Card>
-</CardGroup>
-
-## Token Utility
-
-### Platform and Participation
-
-<AccordionGroup>
-  <Accordion title="Access & Tools" icon="key">
-    - CTRL Panel modules, overlays, badges, on-chain triggers
-    - 555 Engine premium features (Arcade, Prediction, Rewards)
-    - Marketplace priority and creator tooling
-    - API access for developers
-  </Accordion>
-
-  <Accordion title="Stakeholder Subscriptions" icon="lock">
-    Stake $555 into creator economies to become a stakeholder: earn a share of the Treasury and vote on the creator/stakeholder split.
-  </Accordion>
-
-  <Accordion title="Governance" icon="vote">
-    Configure creator-level profit splits, approve module upgrades, and shape fee policies through stake-weighted proposals.
-  </Accordion>
-</AccordionGroup>
-
-## Revenue Distribution — Two-Level Cascade
-
-The same revenue pattern applies at **two levels** across the ecosystem. At both levels, revenue is processed identically:
-
-<Info>
-  **The Canonical Cascade (applies at both levels):** **10% ARP** off the top for verified audience members via VAP attention proofs. **Post-ARP Split:** The remaining 90% splits between Creator and Platform (configurable). **Platform Allocation:** 70% Treasury (operations), 20% token buyback-and-burn, 5% token reserve, 5% SOL/USDC reserve.
-</Info>
-
-### Level 1: Platform Level ($555 as the "Creator")
-
-<Info>
-  At the platform level, $555 acts as the "creator" in the cascade. All gross revenue first has **10% ARP** taken off the top for audience rewards. The remaining 90% splits **50/50 between the $555 ecosystem (creator) and the platform**. The platform's 50% is allocated: 70% treasury operations, 20% $555 buyback-and-burn, 5% $555 reserve, 5% SOL/USDC reserve.
-</Info>
-
-### Level 2: Creator Economy Level (Individual Creator Tokens)
-
-<Info>
-  At the creator economy level, individual creator tokens follow the same cascade. **10% ARP** off the top for audience rewards, then a configurable creator/platform split on the remaining 90%. Treasury, buybacks, and reserves follow the same pattern within each creator's economy.
-</Info>
-
-### Revenue Sources
-
-<AccordionGroup>
-  <Accordion title="Advertising" icon="megaphone">
-    Transparent campaigns via the on-chain marketplace: real-time attribution, verifiable engagement, and automatic revenue distribution.
-  </Accordion>
-  <Accordion title="Prediction & Arcade" icon="gamepad">
-    House edge and fees from the 555 Engine feed the ARP / Buybacks / Treasury cascade and the creator’s economy.
-  </Accordion>
-  <Accordion title="Creator Tokens & Trading" icon="coins">
-    Render Expand launches per-creator tokens; trading fees and buybacks reinforce each economy.
-  </Accordion>
-  <Accordion title="Marketplace & Subscriptions" icon="shopping-bag">
-    Asset sales, premium features, and subscription flows contribute to the split.
-  </Accordion>
-</AccordionGroup>
-
-## Supply and Distribution
-
-<Info>
-  **Total Supply:** 1,000,000,000 $555 · **Public:** 92% · **Team:** 8% (locked 5 years). Emissions and distributions are transparent and on-chain; buybacks provide continuous demand pressure for creator economies.
-</Info>
-
-## Risk & Stability
-
-<AccordionGroup>
-  <Accordion title="Circuit Breakers" icon="shield">
-    Emergency pause controls, rate-limiters, and staged rollouts.
-  </Accordion>
-  <Accordion title="Liquidity Management" icon="droplets">
-    Programmatic buybacks, optional liquidity incentives, and cross-venue execution.
-  </Accordion>
-  <Accordion title="Transparency" icon="eye">
-    Real-time public dashboards, on-chain proofs for prize draws and payouts, and audited contracts.
-  </Accordion>
-</AccordionGroup>
-
-<Note>
-  Continue with: [Fee Distribution (ARP / Buybacks / Treasury)](/tokenomics/fee-distribution) · [Stakeholder Subscriptions](/products/subscriptions-staking) · [Creator Tokens](/tokenomics/creator-tokens) · [How the Protocol Works](/how-it-works)
-</Note>
-
-## Future Roadmap
-
-### Tokenomics Evolution
-
-<Info>
-  **Phase 1 (Launch):** Basic utility and governance — Completed
-  <br />
-  **Phase 2:** Advanced staking mechanisms — In Progress
-  <br />
-  **Phase 3:** Cross-chain expansion
-  <br />
-  **Phase 4:** Full DAO implementation
-</Info>
-
-### Upcoming Features
-
-<CardGroup cols={3}>
-  <Card title="Advanced Staking" icon="layers">
-    Multi-tier staking with enhanced rewards
+  <Card title="Creator Tokens" icon="star" href="/tokenomics/creator-tokens">
+    See how creator-side economic surfaces relate to the broader network.
   </Card>
-
-<Card title="DAO Governance" icon="building">
-  Full community control over protocol decisions
-</Card>
-
-  <Card title="Cross-Chain Bridge" icon="link">
-    Multi-blockchain compatibility and liquidity
+  <Card title="Locking & Buybacks" icon="lock" href="/tokenomics/locking-and-buybacks">
+    See the current buyback and locking mechanics.
+  </Card>
+  <Card title="Ecosystem Growth Fund" icon="seedling" href="/tokenomics/ecosystem-growth-fund">
+    See how capital allocation supports the broader system.
   </Card>
 </CardGroup>

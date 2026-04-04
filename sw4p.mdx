@@ -1,63 +1,196 @@
 ---
 title: "sw4p"
 icon: "bridge"
-description: "The settlement rail for multi-chain participation"
+description: "Settlement engine for cross-chain execution across EVM and Solana."
 ---
 
-<Info>**Status: Live** — sw4p is operational.</Info>
+<Info>**Status: Live** — sw4p is operational. Current production flows use Circle CCTP V2.</Info>
 
 # sw4p
 
-**sw4p** is the settlement rail of Render Network Protocol. It gives the system native cross-chain value movement — USDC across chains without custody, excessive fees, or manual bridging friction. Built on Circle's CCTP V2 (Cross-Chain Transfer Protocol).
+**sw4p is the settlement engine of RNDRNTWRK.** It turns fragmented cross-chain value movement into a single settlement layer for routing, gas abstraction, and execution. Instead of exposing bridges directly, sw4p resolves the route, coordinates settlement, and tracks the transaction through completion.
+
+sw4p matters because value gets trapped behind fragmented rails, different fee models, and chain-specific logic. That makes cross-chain settlement operationally heavy, expensive to integrate, and hard to standardize across products. sw4p gives the network a single settlement primitive so cross-chain movement becomes operational rather than exceptional.
 
 ## Key Facts
 
-| Property | Value |
-| :--- | :--- |
-| **Protocol** | Circle CCTP V2 |
-| **Supported Token** | USDC |
-| **Live Chains** | Solana, Base, Polygon |
-| **Security** | 5 independent security audits (EVM, Solana, Tron) |
-| **Custody** | Non-custodial — sw4p never holds your funds |
-| **Gasless** | Yes, via Kora integration |
+| | |
+|---|---|
+| **Category** | Cross-chain settlement engine |
+| **Current production rail** | Circle CCTP V2 for native USDC corridors |
+| **Pilot chains** | Base, Arbitrum, Polygon, Avalanche, Solana |
+| **Routing architecture** | CCTP V2, Hyperlane, Wormhole NTT, Allbridge |
+| **Gas abstraction** | Kora on Solana; ERC-4337 and EIP-7702 on EVM |
+| **Settlement model** | 11-state lifecycle with retries, recovery, and completion tracking |
+| **Interfaces** | `@sw4p/sdk`, `@sw4p/widget`, storefronts, bots, agent API |
+| **Custody** | Non-custodial |
+| **Fee model** | Transparent 50 bps pricing with path-specific minimums |
 
 ## How It Works
 
-1.  **Burn**: USDC is burned on the source chain.
-2.  **Attest**: Circle's attestation service verifies the burn.
-3.  **Mint**: USDC is minted on the destination chain and delivered to the recipient.
+sw4p starts from the outcome, not the bridge choice.
 
-No wrapped tokens. No liquidity pools. The USDC on the destination chain is native Circle USDC.
+1. A client expresses the settlement intent
+2. sw4p resolves the best available route for the token and corridor
+3. The engine provisions gas where needed and coordinates execution
+4. Settlement is tracked through a persistent 11-state lifecycle until completion
+5. Recovery logic handles retries, stalled transfers, and partial failures
+
+For native USDC corridors, the current production flow is:
+
+**Burn → Attest → Mint**
+
+No wrapped tokens. No liquidity pool dependency. No manual bridge selection for the end user. The USDC on the destination chain is native Circle USDC.
+
+## Routing and Settlement
+
+sw4p is not a wrapper around a single bridge. It is a routing and settlement layer designed to choose the right rail for the job.
+
+- **Circle CCTP V2** for native USDC corridors (current production rail)
+- **Allbridge** for supported USDT and Tron corridors
+- **Hyperlane** for expanded message and route support (expansion path)
+- **Wormhole NTT** for native token transfer patterns (expansion path)
+
+The engine is also designed around ERC-7683-compatible intents, making competitive solver-based execution a first-class expansion path.
+
+## Supported Chains
+
+| Chain | CCTP Domain | Notes |
+|---|---|---|
+| Solana | 5 | Current production |
+| Base | 6 | Current production |
+| Arbitrum | 3 | Current production |
+| Polygon | 7 | Current production |
+| Avalanche | — | Via Allbridge |
+| Tron | — | Via Allbridge |
+| Ethereum | 0 | In broader repo surface, not initial launch scope |
+| Optimism | — | Via Hyperlane / Allbridge |
+
+## Advanced Capabilities
+
+Beyond basic cross-chain transfers, sw4p includes:
+
+- **DCA (dollar-cost averaging)** — schedule recurring buys with Jupiter execution on Solana
+- **Limit orders** — price-triggered fills monitored by a background worker
+- **Agent API** — batch settlement, cross-chain portfolio aggregation, rebalance planning and execution
+- **Solver auction framework** — ERC-7683-compatible intent system with competitive filler execution
+- **Universal storefront** — multi-tenant storefront with per-project config and custom subdomains
+- **Fiat on-ramp** — Transak integration with webhook settlement
+- **Referral system** — referral codes with automatic fee splitting
+- **Telegram and Discord bots** — conversational bridge interface
+
+## Current Status
+
+### Live now
+
+- Circle CCTP V2 bridging across pilot chains and Solana
+- Jupiter integration for Solana SPL output
+- Kora gas abstraction on Solana
+- Stateful 11-state transaction watcher with recovery
+- Allbridge corridor support for Tron
+- DCA and limit order workers
+- SDK, widget, storefront, and bot interfaces
+- Monitoring with Prometheus, Grafana, and OpenTelemetry
+
+### Framework-complete
+
+- Intent API with house filler
+- ERC-7683 type compliance
+- Solver auction framework
+- Multi-hop route planner
+- Agent API for batch settlement and rebalance
+
+### In development
+
+- External solver network
+- Hyperlane Warp Routes
+- Wormhole NTT transfers
+- EVM V3 contracts
 
 ## Security
 
-sw4p has undergone **5 independent security audits**:
+sw4p is hardened as a settlement system.
 
-| Audit Scope | Result |
-| :--- | :--- |
-| EVM Contracts | Passed |
-| Solana Programs | Passed |
-| Tron Contracts | Passed |
-| USDC Integration | Passed |
-| Cross-Chain Flows | Passed |
+The stack includes rate limiting, authentication, circuit breakers, fee audit logs, configurable security policies per route, and observability across the full settlement lifecycle.
 
-**Findings**: 0 critical, 0 high severity. All medium and low findings resolved.
+The Kora gasless subsystem alone includes 1,743+ tests with adversarial coverage. The full monorepo has been assessed using Trail of Bits Code Maturity methodology across 9 categories.
 
-## Integration
-
-sw4p is integrated throughout the Render Network Protocol:
-*   **AGG**: Uses sw4p for cross-chain payment routing.
-*   **Hyperlink**: Payment links resolve cross-chain through sw4p.
+See the [Architecture Audit](/sw4p-audit) for the full security assessment.
 
 <Note>
-  **Supported Asset:** sw4p bridges USDC only (via CCTP V2). The $555 token is a Solana SPL token and is not bridged by sw4p.
+  **Supported production asset:** USDC via CCTP V2. The $555 token is a Solana SPL token and is not bridged by sw4p. Any USDC-to-555 conversion is explicit product policy, not an implied default.
 </Note>
 
-## SDKs
+## Integration Inside RNDRNTWRK
 
-*   **TypeScript**: `@sw4p/bridge` — [npm](https://npmjs.com/package/@sw4p/bridge)
-*   **Rust**: `sw4p-bridge` — [crates.io](https://crates.io/crates/sw4p-bridge)
+Within RNDRNTWRK, sw4p serves as the settlement backend for cross-chain routing and value movement.
+
+- **AGG** uses sw4p for cross-chain payment routing
+- **Hyperlink** resolves cross-chain payment links through sw4p
+- Broader asset and route support follows the sw4p routing roadmap
+
+## Interfaces
+
+### SDK
+
+**TypeScript:** `@sw4p/sdk`
+
+15+ methods covering transfer, estimate, status, Solana two-step flow, pairs, and limits.
+
+### Widget
+
+**React / iframe:** `@sw4p/widget`
+
+Drop-in embeddable component for cross-chain transfers.
+
+### Bots
+
+Telegram and Discord conversational interfaces for bridge operations.
+
+### Storefronts
+
+Multi-tenant storefront surfaces with per-project config, custom subdomains, and token picker.
+
+## Architecture
+
+```
+  Clients (Frontend / SDK / Bots / Agents)
+          |
+  +-------+--------+
+  |   Axum Router   |  rate-limit, CORS, JWT / API-key auth
+  +-------+--------+
+          |
+  +--+----+----+-----+-----+------+
+  Relay  Withdraw  DCA  Limit  Intent  Agent API
+          |
+  +-------+---------+
+  |  Route Selector  |  CCTP | Hyperlane | Wormhole | Allbridge
+  +-------+---------+
+          |
+  +-------+-------+
+  |  Gas Abstract  |  Kora (SOL) | ERC-4337 | EIP-7702
+  +-------+-------+
+          |
+  EVM RPC / Solana RPC / Jupiter / Pyth
+```
 
 ## Full Documentation
 
-For complete API reference, guides, and SDK documentation, see the [sw4p Documentation Site](https://docs.sw4p.io).
+For complete API reference, integration guides, and SDK documentation, see the [sw4p Documentation Site](https://docs.sw4p.io).
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="AGG" icon="route" href="/protocol/agg">
+    See how AGG routes payments through sw4p.
+  </Card>
+  <Card title="Hyperlink" icon="link" href="/protocol/hyperlink">
+    See how payment links resolve cross-chain.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See how settled value routes through the protocol cascade.
+  </Card>
+  <Card title="For Developers" icon="code" href="/for-developers">
+    See all developer entry points across the network.
+  </Card>
+</CardGroup>
