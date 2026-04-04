@@ -1,18 +1,18 @@
-# 🚀 Render Network Documentation
+# 🚀 RNDRNTWRK Documentation
 
-Welcome to the official documentation for **Render Network** - the future of sustainable streaming powered by blockchain technology.
+Welcome to the official documentation for **RNDRNTWRK** - the future of sustainable streaming powered by blockchain technology.
 
 [![Deployed with Mintlify](https://img.shields.io/badge/Deployed%20with-Mintlify-8B5CF6)](https://mintlify.com)
-[![Render Network](https://img.shields.io/badge/Platform-Render%20Network-0b8cb7)](https://rndrntwrk.com)
+[![RNDRNTWRK](https://img.shields.io/badge/Platform-Render%20Network-0b8cb7)](https://rndrntwrk.com)
 
 ## 🌟 Overview
 
-Render Network is revolutionizing the streaming industry by combining gamification, blockchain technology, and interactive experiences. Our documentation provides comprehensive guides, API references, and resources for developers, streamers, and community members.
+RNDRNTWRK is revolutionizing the streaming industry by combining gamification, blockchain technology, and interactive experiences. Our documentation provides comprehensive guides, API references, and resources for developers, streamers, and community members.
 
 ### 🎯 What You'll Find Here
 
 - **📚 Getting Started**: Quick setup guides for new users
-- **🎮 Products**: Detailed documentation for all Render Network products
+- **🎮 Products**: Detailed documentation for all RNDRNTWRK products
 - **🔧 Guides**: Step-by-step tutorials and integration guides
 - **💰 Tokenomics**: $555 token, creator staking, and the 10/20/70 model
 - **👥 Community**: Resources for community engagement and support
@@ -109,7 +109,7 @@ docs/
 
 ### Branding
 
-The documentation uses Render Network's official branding:
+The documentation uses RNDRNTWRK's official branding:
 
 - **Primary Color**: `#0b8cb7` (Ocean Blue)
 - **Secondary Color**: `#66cbfa` (Light Blue)
@@ -129,7 +129,7 @@ Edit `docs.json` to customize:
 Example configuration:
 ```json
 {
-  "name": "Render Network",
+  "name": "RNDRNTWRK",
   "colors": {
     "primary": "#0b8cb7",
     "light": "#66cbfa",
@@ -213,7 +213,7 @@ We welcome contributions from the community! Here's how to get involved:
 
 ### 🎨 Design Guidelines
 
-- **Consistent Branding**: Use Render Network colors and fonts
+- **Consistent Branding**: Use RNDRNTWRK colors and fonts
 - **Mobile-first**: Ensure content works on all devices
 - **Fast Loading**: Optimize images and avoid heavy assets
 - **User-friendly**: Clear navigation and intuitive structure
@@ -332,7 +332,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Mintlify** for the amazing documentation platform
-- **Render Network Community** for valuable feedback and contributions
+- **RNDRNTWRK Community** for valuable feedback and contributions
 - **Open Source Community** for tools and inspiration
 
 ## 🎯 Roadmap
@@ -343,7 +343,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Multi-language support (i18n)
 - [ ] Advanced search with filters
 - [ ] User feedback system
-- [ ] Integration with Render Network API
+- [ ] Integration with RNDRNTWRK API
 - [ ] Automated content validation
 - [ ] Performance optimization tools
 
@@ -358,6 +358,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ by the Render Network Team**
+**Built with ❤️ by the RNDRNTWRK Team**
 
 🌐 [rndrntwrk.com](https://rndrntwrk.com) • 📧 [support@rndrntwrk.com](mailto:support@rndrntwrk.com) • 💬 [Discord](https://discord.gg/35UNPtu8M5)

@@ -1,13 +1,13 @@
 > **Note**: Product details in this document may be outdated. See the [main documentation](https://docs.rndrntwrk.com) for current product information.
 
-# Render Network ($555)
+# RNDRNTWRK ($555)
 
 **Launch is Live**
 
 **Minimum Raise:** $2,000,000  
 **Monthly Allowance:** $60,000
 
-Render Network builds tools and a network to connect viewers, creators, advertisers, and partner businesses. The goal is to support a sustainable creator economy. The platform makes dynamic livestream overlays simple and runs a real-time ad marketplace to deliver targeted ads across multiple streams. It's built on Solana for fast settlements, security, and scalability.
+RNDRNTWRK is the economic operating system for human and agent media. It connects viewers, creators, advertisers, and partner businesses through programmable overlays, settlement rails, and a real-time ad marketplace. The system is built on Solana for fast settlement, security, and interoperability.
 
 Website: [rndrntwrk.com](https://rndrntwrk.com)  
 Monorepo: [github.com/rndrntwrk](https://github.com/rndrntwrk)  
@@ -25,7 +25,7 @@ Livestreams often use static sponsor badges or manual overlays. Brands have trou
 
 ### Solution
 
-Render Network provides a Solana-based overlay and marketplace system that links viewers, creators, advertisers, and partners:
+RNDRNTWRK provides a Solana-based overlay and marketplace system that links viewers, creators, advertisers, and partners:
 
 - Overlays controlled by creators, with options for size, placement, duration, and theme.
 - Real-time gateway for events and state sync in OBS, Streamlabs, Twitch, Kick, YouTube.
@@ -33,11 +33,11 @@ Render Network provides a Solana-based overlay and marketplace system that links
 - "555" gamification to introduce overlays and build inventory before ads.
 - Blockchain for clear revenue splits, quick settlements, wallet identity, and access controls.
 
-Looking ahead, Render Network aims to become a key part of decentralized media, using AI personalization and community governance to help creators access tools and grow.
+Looking ahead, RNDRNTWRK aims to become a key part of decentralized media, using AI personalization and community governance to help creators access tools and grow.
 
 ### Tokenomics (High-Level)
 
-- Name & Ticker: Render Network | $555
+- Name & Ticker: RNDRNTWRK | $555
 - Total Supply: 1,000,000,000 $555
 - Minimum Raise: $2,000,000 → Implied ICO Price ≈ $0.002 ($2.0M / 1,000,000,000)
 - Performance Package: 12,500,000 $555 pre-allocated in 5 equal tranches, unlocking at 2×, 4×, 8×, 16×, 32× ICO price. First unlock at 24 months post-ICO, using 3-month TWAP.
@@ -63,7 +63,7 @@ Looking ahead, Render Network aims to become a key part of decentralized media, 
 ### Incubated Projects
 
 - 555: Gamification and overlays for audience and inventory growth.
-- Sculptr: AI for 3D asset creation and animation for creators/brands. (Sculptr has been deprecated in favor of focusing resources on the core 555 Ecosystem)
+- Sculptr: AI for 3D asset creation and animation for creators/brands. (Sculptr has been deprecated in favor of focusing resources on the core RNDRNTWRK)
 
 ### Terms & Conditions
 

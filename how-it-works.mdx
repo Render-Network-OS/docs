@@ -1,101 +1,125 @@
 ---
 title: "How the Protocol Works"
 icon: "arrows-spin"
-description: "Creation becomes inventory. Inventory attracts value. Value routes through one economic system."
+description: "Participation is verified, monetized, and routed through one fixed economic loop."
 ---
+
+**Render Network Protocol, or RNDRNTWRK, runs as one continuous economic loop. A stream goes live, a game session starts, an audience engages, or an AI agent operates. The protocol verifies that activity, turns it into monetizable inventory, and routes value through fixed economic logic.**
 
 ## The Market Loop
 
-RNDRNTWRK runs one continuous economic cycle. Creation becomes inventory, inventory attracts value, and value routes algorithmically back to every participant:
+### 1. Activity enters the network
 
-### 1. Engagement Generates Inventory
+Activity begins in a live surface such as 555stream, 555 Arcade, or an agent-operated flow. The protocol starts tracking from here.
 
-Players play games, viewers watch streams, and participants interact with the ecosystem. The **Verifiable Attention Protocol (VAP)** verifies each session with Ed25519 cryptographic heartbeats every 5 seconds. Verified engagement becomes **Proof of Engagement** — the atomic unit of value in the protocol.
+### 2. Participation is verified
 
-### 2. Inventory Attracts Revenue
+The **Verifiable Attention Protocol**, or **VAP**, verifies sessions with Ed25519 cryptographic heartbeats every 5 seconds.
 
-Verified attention creates inventory that advertisers, marketplaces, and games monetize:
-- **L-Bar Ads**: Non-interruptive squeeze-back ads placed by AI at optimal engagement moments
-- **Prediction Markets**: Bonding-curve AMM markets on stream events, game outcomes, and real-world predictions
-- **Game Fees**: Entry fees, tournament prizes, and casino/lottery pools
-- **Creator Token Trading**: Per-creator SPL tokens with enforced economic splits
+Once participation is verified, the network can measure it and treat it as economic inventory.
 
-### 3. Revenue Is Distributed Algorithmically
+### 3. Verified participation becomes inventory
 
-Every dollar follows the same cascade. No manual payouts, no discretionary allocation.
+Verified participation creates inventory the network can monetize.
+
+That inventory can support:
+
+* L-Bar ads
+* Prediction markets
+* Game fees
+* Creator-side markets
+
+This is the point where participation stops being a reported metric and becomes an economic surface.
+
+### 4. Value routes through a fixed cascade
+
+Value entering RNDRNTWRK follows fixed economic logic.
 
 | Step | Allocation | Recipient |
-| :--- | :--- | :--- |
-| **1. ARP** | 10% off the top | Audience Reward Pool — distributed to verified engaged audience members |
-| **2. Creator** | 50% of post-ARP | Creator's wallet |
-| **3. Platform** | 50% of post-ARP | Platform allocation (see below) |
+|---|---:|---|
+| 1. ARP | 10% off the top | Audience Reward Pool |
+| 2. Creator | 50% of post-ARP value | Creator wallet |
+| 3. Platform | 50% of post-ARP value | Platform allocation |
 
-**Platform allocation breakdown:**
+Platform allocation then routes to:
 
-| Share | Purpose |
-| :--- | :--- |
-| 70% | Treasury — operations, development, growth |
-| 20% | $555 buyback-and-burn — structural deflation |
-| 5% | $555 token reserve |
-| 5% | SOL/USDC reserve |
+| Platform Split | Allocation |
+|---|---:|
+| Treasury | 70% |
+| Buyback and burn | 20% |
+| $555 reserve | 5% |
+| SOL / USDC reserve | 5% |
 
-### 4. Distribution Accelerates Growth
+### 5. Settlement closes the loop
 
-- Audience rewards attract more players (ARP pays verified participants)
-- Token burns increase $555 scarcity (20% of platform revenue, permanently)
-- Creator economies compound (buybacks reinforce creator token value)
-- Higher engagement → more inventory → more revenue → repeat
+Some RNDRNTWRK surfaces use internal accounting layers before payout, but they all resolve back into the same economic loop.
 
-## Points & Credits
+Settlement closes the cycle and prepares the next one to begin.
 
-The protocol uses a two-layer reward system that converts engagement into USDC.
+## Points and Credits
 
-**Points** are the engagement reward:
-- **Conversion**: 10,000 points = 1 USDC (fixed)
-- Non-transferable accounting abstraction
-- Earned through gameplay, quests, referrals, and engagement
-- Daily bonus: +100 points per game per wallet per CST day
+Some RNDRNTWRK surfaces use points and credits before settlement.
 
-**Credits** are the settlement unit:
-- 1 credit = $0.01 USD
-- Append-only ledger with 1.25x burn bonus for $555 burns
-- Points convert to credits when ready for settlement
+### Points
+Points track eligible participation across supported activities such as gameplay, quests, and referrals.
 
-**Weekly USDC settlement** runs every Monday at 05:55 CST via Merkle-tree on-chain commitment and SPL `transferChecked`. Self-withdrawal is available at any time.
+Current rule:
 
-## Token-Gated Tiers
+* **10,000 points = 1 USDC**
 
-$555 token holdings unlock reward multipliers across the ecosystem:
+Points are non-transferable.
 
-| Tier | $555 Required | Multiplier |
-| :--- | :--- | :--- |
+### Credits
+Credits track internal balances before payout.
+
+Current rule:
+
+* **1 credit = $0.01**
+
+Some surfaces may also apply burn bonuses or other surface-specific reward logic.
+
+### Settlement cadence
+Current settlement runs:
+
+* **Weekly**
+* **Mondays at 05:55 CST**
+* **via Merkle distribution**
+
+See the relevant product pages for current implementation details.
+
+## Token-Gated Participation
+
+Some RNDRNTWRK surfaces use $555-gated participation multipliers.
+
+| Tier | $555 Balance | Multiplier |
+|---|---:|---:|
 | Curious | 0 | 1x |
 | Creator | 55,555 | 5x |
 | Owner | 555,555 | 55x |
 | Institution | 5,555,555 | 555x |
 
-## The Flywheel
+See Tokenomics and product-specific pages for current multiplier logic and eligibility rules.
 
-<Note>
-  The Ultimate Flywheel — engagement, revenue, and distribution form a self-reinforcing economic cycle.
-</Note>
+## The Economic Flywheel
 
-![Render Network Protocol: The Ultimate Flywheel](https://res.cloudinary.com/davqktkik/image/upload/v1761223434/render_flywheel_r9ctsr.png)
+Participation creates inventory. Inventory attracts monetization. Monetization strengthens audience rewards, creator economics, and protocol funding. Then the loop starts again.
+
+![RNDRNTWRK: The Economic Flywheel](https://res.cloudinary.com/davqktkik/image/upload/v1761223434/render_flywheel_r9ctsr.png)
 
 ## Where to Go Next
 
 <CardGroup cols={2}>
-  <Card title="For Creators" icon="tower-broadcast" href="/for-creators">
-    Stream, monetize, and build your own economy.
+  <Card title="555stream" icon="video" href="/555stream">
+    See how distribution enters the system.
   </Card>
-  <Card title="For Players" icon="gamepad" href="/for-players">
-    Play games, earn points, receive USDC.
+  <Card title="555 Arcade" icon="gamepad" href="/arcade/overview">
+    See how participation becomes verified economic input.
   </Card>
-  <Card title="For Advertisers" icon="bullseye-arrow" href="/for-advertisers">
-    Reach verified engaged audiences with non-interruptive ads.
+  <Card title="Tokenomics" icon="coins" href="/tokenomics/overview">
+    See how the protocol routes value across audience, creator, and platform surfaces.
   </Card>
-  <Card title="For Developers" icon="code" href="/for-developers">
-    Build on the protocol: API, VAP, AGG, Hyperlink, sw4p.
+  <Card title="API Reference" icon="code" href="/api-reference">
+    See how to build on verification, monetization, and settlement surfaces.
   </Card>
 </CardGroup>
 

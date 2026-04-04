@@ -8,7 +8,7 @@ Lead with the operator problem and the proven stack, not category rhetoric.
 
 ### Wedge
 
-Render Network is building operator-grade infrastructure for interactive,
+RNDRNTWRK is building operator-grade infrastructure for interactive,
 monetized, AI-assisted streaming and play.
 
 ### Why now

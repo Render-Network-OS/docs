@@ -2,7 +2,7 @@
 
 ## System thesis
 
-Render Network is building operator-grade infrastructure for AI-assisted
+RNDRNTWRK is building operator-grade infrastructure for AI-assisted
 streaming, play, and monetization.
 
 ## Product proofs

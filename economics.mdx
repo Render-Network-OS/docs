@@ -4,85 +4,171 @@ icon: "chart-line"
 description: "How value enters, splits, compounds, and exits the network"
 ---
 
-# The Economic Model
+**RNDRNTWRK is designed so value does not disappear into a black box. When value enters the network, it follows fixed economic logic that rewards participation, funds creators, and supports the long-term operation of the system.**
 
-Every dollar that enters RNDRNTWRK follows the same deterministic cascade. No exceptions. This is how value enters, splits, compounds, and exits the system.
+**The percentages matter, but the bigger point is simpler: value is routed by explicit rules instead of platform discretion.**
 
-## The Revenue Cascade
+## Why the Model Exists
 
-```
-Gross Revenue
-    └── 10% ARP (Audience Reward Pool) → distributed to audience
-    └── 90% Remaining
-        ├── 50% Creator
-        └── 50% Platform
-            ├── 70% Treasury Operations
-            ├── 20% $555 Buyback & Burn
-            ├── 5% $555 Reserve
-            └── 5% SOL/USDC Reserve
-```
+The economic model exists to solve three problems at once.
 
-### ARP (Audience Reward Pool)
-10% of every dollar is taken off the top and distributed to the audience that generated the engagement. This is policy-enforced — not optional, not adjustable by creators or the platform.
+### 1. Participation should matter economically
+Audience activity is not treated as exhaust. If participation helps create value, the model should return value to the people generating it.
 
-### Creator Share
-50% of post-ARP revenue goes directly to the creator. No negotiation, no minimum thresholds.
+### 2. Creators need direct economic exposure
+Creators should not rely only on opaque platform payouts. The model gives creators a defined share of the value flowing through their environment.
 
-### Platform Share
-50% of post-ARP revenue goes to the platform, allocated as:
-*   **70% Treasury**: Operational expenses, development, infrastructure.
-*   **20% Buyback & Burn**: Purchases $555 on the open market and burns it permanently. Creates structural deflation.
-*   **5% $555 Reserve**: Token reserve for protocol operations.
-*   **5% SOL/USDC Reserve**: Stablecoin reserve for settlement liquidity.
+### 3. The network needs durable funding
+Treasury, buyback, and reserve logic exist so the system can keep operating, expanding, and coordinating value over time.
 
-## Points System
+## Canonical Value Routing
 
-Points are the user-facing reward unit.
+This is the canonical routing model for network value flows unless a specific surface is explicitly documented otherwise.
 
-| Property | Value |
-| :--- | :--- |
-| **Exchange Rate** | 10,000 points = 1 USDC |
-| **Transferable** | No |
-| **Earning** | Verified gameplay, engagement, daily bonuses |
-| **Daily Bonus** | +100 points per game per wallet per CST day |
+### Step 1: Audience Reward Pool
 
-### How Points Work
-1.  User plays a game or engages with a stream.
-2.  VAP verifies the engagement.
-3.  Points are awarded based on the game's normalization rules.
-4.  Points accumulate in the user's account.
+| Allocation | Destination |
+|---|---|
+| 10% off the top | Audience Reward Pool |
 
-## Credits System
+### Step 2: Post-ARP Split
 
-Credits are the settlement-ready unit.
+| Allocation | Destination |
+|---|---|
+| 50% of post-ARP value | Creator allocation |
+| 50% of post-ARP value | Platform allocation |
 
-| Property | Value |
-| :--- | :--- |
-| **Source** | Points conversion |
-| **Tracked** | Database ledger |
-| **Settlement** | Weekly engine or self-withdrawal |
-| **Payout** | USDC to user's Solana wallet |
+### Step 3: Platform Allocation
 
-### Settlement Engine
-*   **Weekly**: Engine snapshots all credit balances and processes USDC payouts.
-*   **Self-Withdrawal**: Users can withdraw earned credits at any time.
-*   **Minimum**: Configurable minimum withdrawal threshold.
+| Allocation | Destination |
+|---|---|
+| 70% | Treasury |
+| 20% | Buyback and burn |
+| 5% | $555 reserve |
+| 5% | SOL / USDC reserve |
 
-## The ARP / Buybacks / Treasury Engine (10/20/70)
+## What Each Part Does
 
-At the platform level, token allocation follows the 10/20/70 (ARP / Buybacks / Treasury) model:
-*   **10%** of all ecosystem revenue → ARP (audience rewards)
-*   **20%** of platform share → $555 buyback and permanent burn
-*   **70%** of platform share → treasury and operations
+### Audience Reward Pool
+The Audience Reward Pool routes value back toward participation. It is how the system makes audience activity economically meaningful instead of treating it as something the platform extracts from without sharing.
 
-This creates a self-reinforcing economic flywheel: more engagement → more revenue → more burns → higher token scarcity → more incentive to participate.
+### Creator Allocation
+Creator allocation gives the supply side a direct claim on the value flowing through the environment they host.
 
-## Launch Profiles
+### Treasury
+Treasury funds network continuity, expansion, and longer-term system growth.
 
-The economic model supports progressive unlock via launch profiles:
+### Buyback and Burn
+Buyback and burn creates structural demand around $555 as value flows through the network.
 
-| Profile | Phase | Features |
-| :--- | :--- | :--- |
-| **Prelaunch** | Before token launch | Points only, no USDC settlement |
-| **Launch** | Token live | Points + credits, weekly settlement enabled |
-| **Postlaunch** | Mature | Full economic model, cNFT inventory, ad marketplace |
+### Reserve Buckets
+The reserve buckets help keep the system liquid and operable across supported surfaces.
+
+## Points
+
+Points are the user-facing participation unit used in supported RNDRNTWRK surfaces.
+
+They are used to track eligible activity before settlement.
+
+### Current rules
+
+- **10,000 points = 1 USDC**
+- Points are **non-transferable**
+- **+100 daily bonus** per game, per wallet, per CST day
+- Points only apply on surfaces where the points layer is enabled
+
+Points are not the payout unit. They are the participation accounting layer before settlement.
+
+## Credits
+
+Credits are the settlement-ready accounting unit used before payout.
+
+They convert eligible participation balances into a form the payout system can settle.
+
+### Current rules
+
+- **1 credit = $0.01**
+- Credits are used before payout
+- Credits resolve into USDC on supported settlement flows
+
+If a surface supports self-withdrawal, that should be documented on the relevant product page.
+
+## Settlement
+
+Settlement is how eligible balances become actual payouts.
+
+### Current settlement flow
+
+- **Points → Credits**
+- **Credits → USDC**
+- **USDC settles to a supported Solana wallet**
+
+### Current settlement cadence
+
+- **Weekly**
+- **Mondays at 05:55 CST**
+- **Merkle-based distribution where applicable**
+
+Product-specific payout details should always be documented on the relevant product pages.
+
+## Economic Modes
+
+The model can operate in different modes depending on which surfaces are live.
+
+### Current mode: Launch
+
+This mode includes:
+- Points
+- Credits
+- Settlement
+- The active routing model
+- Creator and audience participation through the current live system
+
+### Earlier mode: Prelaunch
+
+This mode is used when:
+- Points exist
+- Settlement is not yet live
+- The participation layer is active before full payout routing
+
+### Expanded mode: Postlaunch
+
+This mode can include:
+- cNFT-linked surfaces
+- Marketplace extensions
+- Deeper creator-side economics
+- Broader programmable participation and monetization modules
+
+When the system moves between modes, the current live state should be documented explicitly.
+
+## What This Page Owns
+
+This page is the canonical source for:
+
+- Value routing
+- Points
+- Credits
+- Settlement logic
+- Economic modes
+
+Other pages should reference this page rather than restating the same model in full.
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="Tokenomics Overview" icon="coins" href="/tokenomics/overview">
+    See how the wider token model fits around the economic core.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See the allocation model in the context of live network flows.
+  </Card>
+  <Card title="How the Protocol Works" icon="arrows-spin" href="/how-it-works">
+    See how participation turns into inventory, monetization, and settlement.
+  </Card>
+  <Card title="Arcade Overview" icon="gamepad" href="/arcade/overview">
+    See how points, rankings, and rewards appear in the player layer.
+  </Card>
+  <Card title="Monetization Module" icon="bullseye-arrow" href="/products/monetization-module">
+    See where value enters the system in live creator and advertiser surfaces.
+  </Card>
+</CardGroup>

@@ -140,7 +140,7 @@ ${noise}
 
 void main() {
   float randomNoise = noise(gl_FragCoord.xy);
-  vec3 color = vec3(0.086, 0.8, 0.733); // Render Network blue: #0b8cb7
+  vec3 color = vec3(0.086, 0.8, 0.733); // RNDRNTWRK teal: #0b8cb7
   color += vNoise * 0.1;
   color -= randomNoise / 15. * uNoiseIntensity;
 

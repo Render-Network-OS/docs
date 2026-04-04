@@ -1,54 +1,201 @@
 ---
 title: "System Overview"
 icon: "sitemap"
-description: "High-level architecture of the Render Network Protocol"
+description: "How distribution, participation, verification, settlement, and operations fit together across Render Network Protocol."
 ---
 
 <Info>**Status: Live** — This system is operational.</Info>
 
-# System Architecture Overview
+**Render Network Protocol, or RNDRNTWRK, is the economic operating system for human and agent media. At a system level, it is organized into five operational layers: distribution, participation, verification, settlement, and operations.**
 
-Render Network Protocol (RNDRNTWRK) is the economic operating system for human and agent media. It consists of five operational layers that work together to make participation measurable, value-bearing, and programmable across human and agent media: distribution (555stream), participation (555 Arcade), proof (VAP), settlement (sw4p), and operations (Alice). $555 coordinates the system.
+**These layers are distinct, but they do not operate as separate worlds. A stream, a game session, a clip, a prediction, a payment, or an agent action all move through one connected system.**
 
-## Components
+## The Five Operational Layers
 
-### 1. Frontend
-- **Role**: User interface for the Arcade, wallet connection, and game launcher.
-- **Game Integration**: Games run in sandboxed iframes. An SDK bridges the frontend and each game's internal state, enabling real-time communication between the protocol and gameplay.
+### 1. Distribution
 
-### 2. Backend
-- **Role**: API service, database, and state management.
-- **Key Models**:
-    - `Cabinet`: Represents a game instance. Stores possession metadata and schema for Alice's interventions.
-    - `ArcadeState`: Global settings (theme, music).
-- **API**: REST endpoints serving both the frontend and agent layer.
+The distribution layer is how media gets out into the world.
 
-### 3. Economics (555x402)
-- **Blockchain**: Solana.
-- **Role**: Token management, rewards, payments, and settlement.
-- **Integration**: Alice can trigger economic events (airdrops, bounties) via backend integrations.
+This layer includes:
+- Live broadcast output
+- Scene and overlay control
+- Guest management
+- RTMP routing
+- Always-on programming
 
-### 4. Agent (Alice)
-- **Role**: Autonomous operator — the "Ghost in the Machine".
-- **Capabilities**:
-    - **Possession**: Control game states via `POSSESS_CABINET`.
-    - **Memory**: Learn from interactions via `LOG_MEMORY`.
-    - **Communication**: Chat with users, post updates across platforms.
+**555stream** is the primary distribution surface in the network. It is where creator and agent media are configured, routed, and kept live across the open internet.
 
-## Data Flow
+### 2. Participation
 
-1.  **User** plays a game (Frontend).
-2.  **Game** reports score/state to **Backend**.
-3.  **Alice** (Agent) polls **Backend** for active cabinets.
-4.  **Alice** decides to intervene (Possession).
-5.  **Alice** sends `POSSESS_CABINET` command to **Backend**.
-6.  **Backend** updates `Cabinet` state.
-7.  **Frontend** (via SSE or polling) receives update and forwards to **Game** via the SDK.
-8.  **Game** applies effect (e.g., God Mode).
-9.  **Alice** observes result and calls `LOG_MEMORY`.
+The participation layer is where audiences stop just watching and start doing something.
 
-## Cross-Links
+This layer includes:
+- Games
+- Clips
+- Quests
+- Prediction markets
+- Lotteries
+- Recurring participation loops
 
-- Full system diagram: [System Map](/architecture/system-map)
-- Alice details: [Alice: The Operator](/alice/persona)
-- Protocol spec: [Protocol Overview](/protocol/overview)
+**555 Arcade** is the clearest participation surface in the network. It is where activity becomes visible, competitive, and repeatable.
+
+### 3. Verification
+
+The verification layer is what makes participation meaningful to the system.
+
+This layer is responsible for:
+- Verifying sessions
+- Verifying activity
+- Attaching scores and records to signed participation
+- Making participation measurable and attributable
+
+**VAP** sits here. It is the verification surface that allows the rest of the network to treat activity as something real, not just reported.
+
+### 4. Settlement
+
+The settlement layer is where value moves.
+
+This layer is responsible for:
+- Payment routing
+- Reward routing
+- Programmable payment surfaces
+- Cross-chain value movement
+- Payout and distribution logic
+
+This includes:
+- **AGG** for routing and settlement coordination
+- **Hyperlink** for programmable payment surfaces
+- **sw4p** for cross-chain USDC movement
+- The broader reward and fee-distribution logic beneath the network
+
+### 5. Operations
+
+The operations layer keeps the system running.
+
+This layer includes:
+- Creator controls
+- Scheduling
+- Moderation
+- Overlays
+- Automation
+- Agent participation
+- Operator memory and continuity
+
+**Alice** and **CTRL Panel** sit here. They are how the network is operated, extended, and kept coherent across live and always-on states.
+
+## Products and Protocol Are Not the Same Thing
+
+RNDRNTWRK is easiest to understand when the layers are separated clearly.
+
+### Protocol components
+These are the infrastructure surfaces that verify activity and move value.
+
+- VAP
+- AGG
+- Hyperlink
+- Settlement and distribution logic
+
+### Product surfaces
+These are where the protocol becomes visible to users.
+
+- 555stream
+- 555 Arcade
+- Monetization surfaces
+- Creator and player experiences
+
+### Operator surfaces
+These are where humans and AI agents run the system.
+
+- Alice
+- CTRL Panel
+- API and event-driven integrations
+- Scheduling and automation layers
+
+The protocol is not the same thing as the products. The products are where the protocol becomes visible. The operator surfaces are how the system is run.
+
+## How the Layers Connect
+
+The system works as a sequence.
+
+### 1. Media or activity enters the network
+A creator goes live, a player starts a game, a clip is created, a prediction is opened, or an agent begins operating inside the system.
+
+### 2. Participation enters a product surface
+That activity appears inside a live surface such as 555stream, 555 Arcade, or a monetization layer.
+
+### 3. The protocol verifies what matters
+The verification layer determines which sessions, actions, and outcomes are eligible to be measured and routed.
+
+### 4. Verified activity becomes economic input
+Once participation is verified, the system can treat it as something that can be ranked, monetized, rewarded, or settled.
+
+### 5. Value moves through the settlement layer
+Payments, rewards, fees, and transfers route through the same economic logic instead of being split across disconnected tools.
+
+### 6. The operations layer keeps the system coherent
+Alice, CTRL Panel, schedules, and automation help keep the live environment, participation loops, and monetization surfaces working together.
+
+## Example Flow: A Creator Broadcast
+
+One way to see the system is to follow a creator broadcast.
+
+1. A creator opens 555stream and starts a live session.
+2. The stream is routed to one or more destinations, while overlays, guests, and live layout are managed through the distribution surface.
+3. Audience activity enters the participation layer through games, clips, quests, predictions, and other live modules.
+4. The verification layer checks eligible participation.
+5. If monetization surfaces are active, value can enter the settlement layer through ads, fees, or other supported flows.
+6. The operations layer keeps the environment running, whether through creator controls, schedules, Auto Pilot logic, or Alice.
+
+## Example Flow: Alice Inside Arcade
+
+Alice can also act inside one narrow part of the system. This is not the whole architecture. It is one example.
+
+1. A player session starts inside Arcade.
+2. Gameplay events are emitted through the game surface and supporting logic.
+3. Alice observes the live state and can decide to intervene where that behavior is supported.
+4. State updates move through backend and event layers.
+5. The frontend receives the update and the game surface responds.
+6. Alice stores the interaction as part of her continuing operating context.
+
+This is one example of how the operations layer can act on top of a participation surface.
+
+## Lower-Level Implementation Surfaces
+
+Under the system model, the implementation can still be understood in lower-level layers.
+
+### Client surfaces
+These include browser-facing products such as 555stream, Arcade, overlays, and live UI controls.
+
+### Service layer
+This includes API services, auth, state management, runtime coordination, and live event delivery such as SSE.
+
+### Chain layer
+This includes rewards programs, escrow logic, Merkle-based distribution, randomness, and settlement programs.
+
+### Agent runtime
+This includes Alice, Milaidy, memory, plugin access, and operator continuity.
+
+These implementation surfaces are important, but they should be understood as implementation detail inside the larger five-layer system.
+
+## Where to Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="System Map" icon="diagram-project" href="/architecture/system-map">
+    See the broader architectural map of the network.
+  </Card>
+  <Card title="Protocol Overview" icon="shield" href="/protocol/overview">
+    See the protocol layer, components, and current implementation status.
+  </Card>
+  <Card title="555stream" icon="video" href="/555stream">
+    See the distribution layer in detail.
+  </Card>
+  <Card title="555 Arcade" icon="gamepad" href="/arcade/overview">
+    See the participation layer in detail.
+  </Card>
+  <Card title="Alice" icon="robot" href="/alice/persona">
+    See how the operator layer works.
+  </Card>
+  <Card title="sw4p" icon="bridge" href="/sw4p">
+    See the settlement engine for cross-chain movement.
+  </Card>
+</CardGroup>

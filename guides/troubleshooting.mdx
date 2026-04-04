@@ -110,7 +110,7 @@ Find solutions to the most common RNDRNTWRK problems below.
     - ✅ Verify your stream key is correct — copy it fresh from CTRL Panel and ensure no trailing spaces
     - ✅ Confirm the RTMP URL matches the destination platform (e.g., `rtmp://live.twitch.tv/app/`)
     - ✅ Check firewall and router settings — RTMP uses port 1935 by default; ensure it is not blocked
-    - ✅ Test with a single destination first before enabling multi-platform simulcast
+    - ✅ Test with a single destination first before enabling multi-destination output
     - ✅ If using OBS, check the "Stream" settings and verify the server selection
   </Accordion>
 
@@ -125,9 +125,9 @@ Find solutions to the most common RNDRNTWRK problems below.
   </Accordion>
 
   <Accordion title="Multi-Platform Sync Issues" icon="arrows-split-up-and-left">
-    **Troubleshooting simulcast:**
+    **Troubleshooting multi-destination output:**
 
-    - ✅ Validate each platform-specific stream key individually before enabling simulcast
+    - ✅ Validate each platform-specific stream key individually before enabling multi-destination output
     - ✅ Some platforms (YouTube, Kick) require the stream to be scheduled or the channel to be in live mode before accepting RTMP input
     - ✅ Check that your upload bandwidth supports the combined bitrate for all destinations
     - ✅ If one destination fails while others work, isolate and retest that platform's key independently
