@@ -12,6 +12,14 @@
 ## Validation
 - What did you check locally?
 
+## Config / Secret Changes
+<!-- REQUIRED: check one. Reviewers use this to know whether to scrutinize auth, env, or infra code. -->
+- [ ] **None** — this PR does not touch env vars, secrets, or config
+- [ ] **Yes** — describe below:
+  - Env vars added/changed:
+  - Secrets added/rotated:
+  - Config files changed:
+
 ## Reviewer notes
 - What should the reviewer pay special attention to?
 
