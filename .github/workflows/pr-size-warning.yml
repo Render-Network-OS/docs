@@ -1,0 +1,138 @@
+name: PR Size Warning
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  warn-on-large-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Warn on oversized PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- docs-pr-size-warning -->';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const ignoredFiles = new Set([
+              'package-lock.json',
+              'pnpm-lock.yaml',
+              'yarn.lock',
+              'bun.lock',
+              'bun.lockb',
+            ]);
+
+            const docsExtensions = new Set([
+              '.md',
+              '.mdx',
+              '.txt',
+              '.png',
+              '.jpg',
+              '.jpeg',
+              '.gif',
+              '.svg',
+              '.webp',
+              '.avif',
+            ]);
+
+            function isDocsLike(filename) {
+              if (
+                filename.startsWith('.github/') ||
+                filename.startsWith('components/') ||
+                filename.startsWith('styles/')
+              ) {
+                return false;
+              }
+
+              const extension = filename.includes('.')
+                ? `.${filename.split('.').pop().toLowerCase()}`
+                : '';
+
+              return docsExtensions.has(extension);
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number,
+              per_page: 100,
+            });
+
+            const effectiveFiles = files.filter((file) => !ignoredFiles.has(file.filename));
+            const changedLines = effectiveFiles.reduce(
+              (total, file) => total + file.additions + file.deletions,
+              0,
+            );
+            const docsOnly = effectiveFiles.every((file) => isDocsLike(file.filename));
+            const limit = docsOnly ? 1000 : 400;
+            const scopeLabel = docsOnly ? 'docs-only' : 'repo logic / workflow';
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pull_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) => comment.body && comment.body.includes(marker));
+
+            const summary = [
+              '## PR Size Review',
+              `- Scope: \`${scopeLabel}\``,
+              `- Effective changed lines: \`${changedLines}\``,
+              `- Guideline: \`< ${limit}\` changed lines`,
+            ].join('\n');
+
+            core.summary.addRaw(summary).write();
+
+            if (changedLines <= limit) {
+              if (existing) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: existing.id,
+                });
+              }
+              return;
+            }
+
+            const body = [
+              marker,
+              'This PR is above the review-size guideline.',
+              '',
+              `- Scope: \`${scopeLabel}\``,
+              `- Effective changed lines: \`${changedLines}\``,
+              `- Guideline: \`< ${limit}\` changed lines`,
+              '',
+              'Split the PR if possible, or explain in the PR body why the change must stay large.',
+              'This is advisory only and does not block merge.',
+            ].join('\n');
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pull_number,
+              body,
+            });

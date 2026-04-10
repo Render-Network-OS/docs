@@ -201,6 +201,9 @@ We welcome contributions from the community! Here's how to get involved:
 4. **Submit a Pull Request**
    - Provide a clear description of changes
    - Reference any related issues
+   - Keep docs-only PRs under 1000 changed lines when possible
+   - Keep repo logic, workflow, config, and UI PRs under 400 changed lines
+   - If a PR exceeds the guideline, explain why it could not be split smaller
    - Wait for review and approval
 
 ### 📚 Content Guidelines
