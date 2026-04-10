@@ -14,3 +14,7 @@
 
 ## Reviewer notes
 - What should the reviewer pay special attention to?
+
+## Review state at merge
+- Explicit human review required before merge: `APPROVED` or `CHANGES_REQUESTED`
+- If branch protection is unavailable, add or update the PR review-state comment before merge so the outcome is not silent

@@ -1,0 +1,105 @@
+name: PR Review State Comment
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+      - ready_for_review
+  pull_request_review:
+    types:
+      - submitted
+      - dismissed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  update-review-state-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update review state comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- docs-review-state-comment -->';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner,
+              repo,
+              pull_number,
+              per_page: 100,
+            });
+
+            const latestByReviewer = new Map();
+
+            for (const review of reviews) {
+              if (review.user?.type === 'Bot') {
+                continue;
+              }
+
+              latestByReviewer.set(review.user.login, review);
+            }
+
+            const effectiveReviews = [...latestByReviewer.values()];
+            const approvals = effectiveReviews.filter((review) => review.state === 'APPROVED');
+            const changesRequested = effectiveReviews.filter(
+              (review) => review.state === 'CHANGES_REQUESTED',
+            );
+
+            let stateLine = '- Current state: no explicit human `APPROVED` or `CHANGES_REQUESTED` review yet';
+            let nextAction = '- Merge should wait until a reviewer leaves an explicit review state';
+
+            if (changesRequested.length > 0) {
+              stateLine = `- Current state: \`CHANGES_REQUESTED\` by ${changesRequested
+                .map((review) => `@${review.user.login}`)
+                .join(', ')}`;
+              nextAction =
+                '- Merge should pause until the requested changes are resolved and an approval is recorded';
+            } else if (approvals.length > 0) {
+              stateLine = `- Current state: \`APPROVED\` by ${approvals
+                .map((review) => `@${review.user.login}`)
+                .join(', ')}`;
+              nextAction = '- Merge can proceed if the approval still matches the current diff';
+            }
+
+            const body = [
+              marker,
+              '## PR Review State',
+              '',
+              stateLine,
+              nextAction,
+              '',
+              'This is advisory. It exists so docs PRs do not merge with a silent review state while branch protection is unavailable.',
+            ].join('\n');
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pull_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) => comment.body && comment.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body,
+              });
+            }
