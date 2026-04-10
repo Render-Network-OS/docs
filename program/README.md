@@ -17,6 +17,8 @@ define how documentation work is scoped, written, evidenced, and closed across:
 - `ISSUE_BRIEF_STANDARD.md`
   The canonical GitHub issue body format for documentation and brand-positioning
   tickets.
+- `BRANCH_RULES.md`
+  The canonical pull-request scope and review-size rules for this repo.
 - `OPERATOR_DOC_CONTRACT.md`
   The required shape for operator-facing docs, runbooks, and recovery guides.
 - `PROOF_ASSET_CONTRACT.md`
