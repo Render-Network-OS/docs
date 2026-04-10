@@ -44,6 +44,16 @@ Large one-time migrations are allowed only when the PR body explains:
   diff.
 - If that is not realistic, the PR is too large or the PR body is too weak.
 
+## No silent merges
+
+- Do not merge a PR with only comments or no recorded review state.
+- Reviewer must use an explicit GitHub review state: `APPROVED` or
+  `CHANGES_REQUESTED`.
+- Bot comments do not count as the final review decision.
+- Until branch protection requires reviews automatically, the PR review-state
+  comment must be updated before merge so the current review state is visible on
+  the PR itself.
+
 ## Required PR body fields
 
 Every PR should include:
@@ -53,5 +63,7 @@ Every PR should include:
 - PR size classification
 - validation performed
 - explicit reviewer notes
+- review-state note if the branch is being merged without required-review
+  enforcement
 
 Use the repo PR template as the default shape.

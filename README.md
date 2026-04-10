@@ -204,6 +204,7 @@ We welcome contributions from the community! Here's how to get involved:
    - Keep docs-only PRs under 1000 changed lines when possible
    - Keep repo logic, workflow, config, and UI PRs under 400 changed lines
    - If a PR exceeds the guideline, explain why it could not be split smaller
+   - Do not merge silently; every merge needs an explicit review state
    - Wait for review and approval
 
 ### 📚 Content Guidelines
