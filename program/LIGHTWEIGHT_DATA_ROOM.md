@@ -12,6 +12,7 @@ This is the minimum diligence room for partner and investor conversations.
 | Narrative | partner/VC narrative | `PARTNER_VC_NARRATIVE.md` |
 | One-pager | concise external brief | `PARTNER_VC_ONE_PAGER.md` |
 | Proof | reusable proof asset library | `PROOF_ASSET_LIBRARY.md` |
+| Founder proof folder | fast founder-facing proof index | `founder-proof/INDEX.md` |
 | Comms system | recurring founder/public/partner/investor outputs | `COMMUNICATION_OPERATING_SYSTEM.md` |
 | Launch strategy | launch bar and next-90 plan | `LAUNCH_STRATEGY_AND_NEXT_90.md` |
 | Source register | canonical documentation ownership | `SOURCE_REGISTER.md` |
