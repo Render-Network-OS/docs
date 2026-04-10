@@ -31,6 +31,9 @@ define how documentation work is scoped, written, evidenced, and closed across:
   from.
 - `PROOF_ASSET_LIBRARY.md`
   The index of reusable evidence by audience and claim.
+- `founder-proof/`
+  The fast-retrieval founder-facing proof folder built on top of the proof
+  asset library.
 - `COMMUNICATION_OPERATING_SYSTEM.md`
   The cadence system and the rules for turning finished operator work into
   public, partner, and investor outputs.
