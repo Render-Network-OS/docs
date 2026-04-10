@@ -19,6 +19,8 @@ define how documentation work is scoped, written, evidenced, and closed across:
   tickets.
 - `BRANCH_RULES.md`
   The canonical pull-request scope and review-size rules for this repo.
+- `PR_REVIEW_STATE_AUDIT_2026-04-10.md`
+  The dated baseline audit for explicit reviewer state vs silent merges.
 - `OPERATOR_DOC_CONTRACT.md`
   The required shape for operator-facing docs, runbooks, and recovery guides.
 - `PROOF_ASSET_CONTRACT.md`
