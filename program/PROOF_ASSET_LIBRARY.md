@@ -3,6 +3,10 @@
 This is the reusable evidence index for founder narrative, partner materials,
 public progress, and release-readiness claims.
 
+For the fastest founder-facing reuse path, start with
+`program/founder-proof/INDEX.md` and use this file as the deeper reusable
+library behind it.
+
 ## Seed assets
 
 | Claim | Audience | Artifact type | Source repo/path | Date | Reusability |
