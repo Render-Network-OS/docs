@@ -12,6 +12,16 @@
 ## Validation
 - What did you check locally?
 
+## Success Metric
+- Metric impacted:
+- Expected direction / target:
+- Measurement source:
+
+## Proof Asset
+- Evidence to capture:
+- Storage location or link:
+- Follow-up issue if deferred:
+
 ## Config / Secret Changes
 <!-- REQUIRED: check one. Reviewers use this to know whether to scrutinize auth, env, or infra code. -->
 - [ ] **None** — this PR does not touch env vars, secrets, or config
