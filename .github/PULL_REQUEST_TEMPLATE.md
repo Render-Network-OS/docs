@@ -30,6 +30,12 @@
   - Secrets added/rotated:
   - Config files changed:
 
+## Docs Updated
+<!-- REQUIRED: check one. If this PR changes behavior, docs/runbooks must be updated. -->
+- [ ] Not needed — no behavior change
+- [ ] Updated in this PR
+- [ ] Follow-up issue: #
+
 ## Reviewer notes
 - What should the reviewer pay special attention to?
 
