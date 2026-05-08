@@ -1,0 +1,179 @@
+---
+title: "sw4p Earn"
+icon: "vault"
+description: "The staking and LP layer that pays from real volume, real TVL, real fees"
+---
+
+<Warning>**Status: Implementation complete; not yet deployed.** Mainnet launch is pending NTT deployment, multisig provisioning, and closure of CRITICAL findings on the underlying sw4p settlement rail.</Warning>
+
+# sw4p Earn
+
+**sw4p Earn** is the staking and liquidity layer that sits on top of sw4p. Where sw4p moves USDC across chains, sw4p Earn lets $555 holders and liquidity providers earn from the trading and settlement activity routed through it. Real volume. Real TVL. Real fees. Real rewards — every one of them tagged at source so a participant can see exactly where the money came from.
+
+sw4p Earn is not yield product. It is not a points farm. It is the participation surface for the economic side of the settlement rail — the place where the cascade meets liquidity, where structural demand for $555 expresses itself as locked supply, and where the $555/USDC pair gets the depth it needs to be useful.
+
+## Why This Layer Exists
+
+The RNDRNTWRK cascade routes 20% of platform revenue into buyback-and-burn. That mechanism creates structural demand. sw4p Earn is the matching structural commitment on the supply side: a place where $555 holders can lock alongside the cascade, where LPs provide the depth that real settlement requires, and where the rewards distributed to both come from real fee flow and clearly-labeled incentive budgets — never blended, never disguised.
+
+The layer connects to the broader system in three concrete ways:
+
+- **For $555 holders** — locked $555 earns a share of real trading fees from the $555/USDC Uniswap V3 pool, plus a multiplier on incentive emissions tied to lock duration.
+- **For liquidity providers** — concentrated-liquidity LPs earn pool fees the standard Uniswap way, with an additional incentive layer for liquidity placed inside the active range.
+- **For the protocol** — protocol-owned liquidity (POL) and a market-making reserve build the depth that lets sw4p settle real volume without slippage tax on participants.
+
+## The Five Non-Negotiables
+
+These are quoted verbatim from the sw4p Earn execution plan, §2. They are not aspirations. They are the rules the system is built to enforce.
+
+<AccordionGroup>
+  <Accordion title="No fake volume" icon="ban">
+    Every reward is sourced from real fee flow or an explicitly-labeled incentive budget. Wash trading, self-routing, and synthetic volume are not eligible inputs. Volume that does not survive sanity filters does not enter the reward calculation.
+  </Accordion>
+  <Accordion title="No unbacked cross-chain" icon="link-slash">
+    $555 moves across chains via Wormhole NTT — burn-and-mint, fully backed, no wrapped derivatives, no IOU tokens. If a chain cannot be supported with backed supply, it does not get supported.
+  </Accordion>
+  <Accordion title="No hidden fees" icon="eye-slash">
+    Every fee on every reward path is visible on-chain and on the dashboard. Withdrawal fees, performance fees, and bridge costs are surfaced before participation, not discovered after.
+  </Accordion>
+  <Accordion title="No misleading APY" icon="chart-line-down">
+    Rewards are reported as the split between real fee yield and incentive yield. A single blended APY number is never displayed without its source breakdown next to it. The dashboard refuses to render it any other way.
+  </Accordion>
+  <Accordion title="No fragmentation before depth" icon="layer-group">
+    Phase 1 launches on a single chain (Base) with a single concentrated pool. Additional chains and additional pools are unlocked only after on-chain proof that the existing surface has real depth and real volume. Liquidity is not spread thin to chase a launch narrative.
+  </Accordion>
+  <Accordion title="No market-maker opacity" icon="magnifying-glass">
+    The MM Reserve is a transparent module with on-chain accounting. Any market-maker engagement uses a public mandate with public terms. No off-balance-sheet arrangements.
+  </Accordion>
+  <Accordion title="Public proof before marketing" icon="chart-mixed">
+    Volume, TVL, fees, and reward split are published to a public dashboard before any growth campaign begins. The system proves itself in numbers first.
+  </Accordion>
+</AccordionGroup>
+
+## The Five Modules
+
+sw4p Earn is composed of five modules, each with a distinct economic role. They share a common reward distributor but operate on independent accounting tracks.
+
+| Module | Role | Source of Capital | Source of Rewards |
+| :--- | :--- | :--- | :--- |
+| **Global 555 Lock** | $555 holders lock for time-weighted share of fee flow | Voluntary $555 deposits | Real trading fees + incentive emissions |
+| **LP Vault** | Concentrated $555/USDC liquidity inside active range | LPs supplying $555 + USDC | Uniswap V3 pool fees + incentive emissions |
+| **Matched 555 Vault** | Protocol-matched LP — for every $555 locked, protocol pairs USDC | Locked $555 + protocol USDC | Pool fees + incentive emissions |
+| **POL Vault** | Protocol-owned liquidity, never withdrawn | Treasury allocation | Pool fees route back to treasury / cascade |
+| **MM Reserve** | Transparent market-making reserve for depth and volatility absorption | Treasury allocation | Mandate-defined accounting, fully public |
+
+Each module reports its own TVL, its own fee accrual, and its own reward stream. The dashboard shows them side-by-side, never aggregated into a single number without the split.
+
+## How Rewards Work
+
+Rewards flow through a **merkle distributor** pattern. Every period, the distributor publishes a single merkle root that commits to every participant's earned amount across every module. Participants claim against that root.
+
+What makes the design honest is the source tag. Every reward leaf carries one of two labels:
+
+- **`REAL_FEE`** — the reward came from actual trading fees collected on the $555/USDC pool, or from settlement activity routed through sw4p.
+- **`INCENTIVE`** — the reward came from a protocol incentive budget allocated for bootstrapping depth and participation.
+
+The two are accounted separately, distributed separately, and displayed separately. A participant looking at their claim sees: "this much came from real fees, this much came from incentives." There is no blended yield number. The dashboard does not produce one.
+
+In plain language: every reward you claim is labeled where it came from. The label is structural, not editorial. It is enforced by the contract, not by the marketing copy.
+
+<Note>
+  Incentive budgets are finite and disclosed in advance. When a budget ends, the `INCENTIVE` portion of rewards goes to zero — and the dashboard shows it going to zero, with no rebranding. The `REAL_FEE` portion continues for as long as there is real volume.
+</Note>
+
+## Lock Timelines and Multipliers
+
+The Global 555 Lock and the Matched 555 Vault both use a duration-weighted multiplier. Longer locks earn a larger share of the period's reward pool. The schedule is fixed at deploy time and verifiable on-chain.
+
+| Lock Duration | Reward Multiplier |
+| :--- | :--- |
+| Flexible (no lock) | 0.5x |
+| 30 days | 1.0x |
+| 90 days | 1.5x |
+| 180 days | 2.5x |
+| 365 days | 4.0x |
+
+Multipliers apply to the participant's share of the period's reward pool, not to the absolute reward amount. They concentrate reward weight toward longer-aligned participants without altering the size of the pool itself.
+
+## Public Proof
+
+Before any reward campaign opens, sw4p Earn publishes its operating numbers to a public dashboard. The dashboard is the canonical surface for verifying what the system actually does.
+
+The dashboard reports, per module:
+
+- Total Value Locked
+- Trailing volume routed through the pool
+- Fees collected — separated `REAL_FEE` from `INCENTIVE`
+- Active reward split — never a single blended APY without the source breakdown
+- Lock-duration distribution
+- POL and MM Reserve balances and any active mandates
+
+<Note>
+  The dashboard never shows a single blended APY without showing the split. This is enforced at the UI layer and verifiable on-chain — the same data that the contract emits is what the dashboard renders.
+</Note>
+
+The dashboard surface lives at `earn.sw4p.io` (planned). Until launch, the implementation lives in the worktree and is reproducible from the on-chain test environment.
+
+## Phase 1 Scope — Base Only
+
+sw4p Earn launches on **Base**, with a single $555/USDC concentrated-liquidity pool, a single distributor, and the five modules listed above. Nothing more. The constraint is intentional — depth before fragmentation.
+
+The launch ladder is sequenced and gated:
+
+<Steps>
+  <Step title="Base genesis">
+    Contracts deployed, NTT routes verified, distributor live, all five modules accepting deposits. Dashboard open.
+  </Step>
+  <Step title="Base liquidity proof">
+    Public on-chain evidence of real volume, real fee accrual, and meaningful lock distribution. Numbers visible on the dashboard before any narrative campaign.
+  </Step>
+  <Step title="Arbitrum">
+    Second chain unlocked only after Base liquidity proof is public. Single new pool, no new modules.
+  </Step>
+  <Step title="Polygon">
+    Third chain unlocked only after Arbitrum demonstrates equivalent depth on its own surface.
+  </Step>
+  <Step title="MM-ready">
+    With three chains live and proven depth on each, the MM Reserve mandate moves from passive reserve to active market-making — under public terms only.
+  </Step>
+</Steps>
+
+Each step produces its own verifiable artifact before the next step begins. There is no skipping rungs.
+
+## Audit and Transparency
+
+sw4p Earn inherits the security posture of the underlying sw4p settlement rail. The execution plan §3 acknowledges open findings on sw4p that must close before sw4p Earn touches mainnet — this is a precondition, not a courtesy.
+
+The audit gap analysis is maintained in the implementation tree at `sw4p-earn/docs/skills/audit-gaps-blocking-launch.md`. The launch gate is explicit: every CRITICAL finding on sw4p must be resolved, NTT deployment must be complete, and multisig provisioning must be in place. Any one of those incomplete is a blocker.
+
+| Precondition | Status |
+| :--- | :--- |
+| sw4p CRITICAL findings closed | Pending |
+| NTT deployment complete | Pending |
+| Multisig provisioning in place | Pending |
+| sw4p Earn implementation tests | 99 / 99 passing |
+
+<Warning>
+  sw4p Earn will not deploy to mainnet ahead of the underlying rail. The economic layer cannot be safer than the settlement layer it sits on top of.
+</Warning>
+
+## Status
+
+**Implementation complete; not yet deployed.** Mainnet launch is pending NTT deployment, multisig provisioning, and SW4P CRITICAL audit fixes. The five modules, the merkle distributor, the source-tag separation, and the dashboard surface are all built and tested in the worktree.
+
+When the preconditions close, the launch ladder begins at Base genesis and proceeds in sequence — with public proof at every step before the next one opens.
+
+<CardGroup cols={2}>
+  <Card title="sw4p Settlement Rail" icon="bridge" href="/sw4p">
+    The underlying cross-chain USDC rail. sw4p Earn sits on top of it.
+  </Card>
+  <Card title="$555 Token" icon="coins" href="/tokenomics/555-token">
+    The token coordinated by the Global Lock and the Matched Vault.
+  </Card>
+  <Card title="Economic Model" icon="chart-line" href="/economics">
+    The cascade that sw4p Earn pulls real fees from.
+  </Card>
+  <Card title="Locking and Buybacks" icon="fire" href="/tokenomics/locking-and-buybacks">
+    The structural-demand side of $555. sw4p Earn is the structural-supply side.
+  </Card>
+</CardGroup>
