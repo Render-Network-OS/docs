@@ -69,10 +69,10 @@ secret-scan layer.
 | Category | Count | Key Paths |
 |----------|-------|-----------|
 | Password in URL | 20+ | `.env.example`, `docker-compose.yml`, `k8s/base/*-secrets.yaml`, `.secrets.template.env`, `.circleci/config.yml`[^cci-purged] |
-
-[^cci-purged]: `.circleci/config.yml` was a path scanned at the time of this audit. The file has since been removed from `Render-Network-OS/stream` as part of the org-wide CircleCI purge (companion to `Render-Network-OS/555ID#22`). The historical scan record is preserved here for audit-integrity reasons; the path no longer exists in the live tree.
 | High entropy strings | 27 | `services/control-plane/prisma/schema.prisma` (19), `.env.example` (18), various docs (18 each) |
 | **Total** | **47** | |
+
+[^cci-purged]: `.circleci/config.yml` was a path scanned at the time of this audit. The file has since been removed from `Render-Network-OS/stream` as part of the org-wide CircleCI purge (companion to `Render-Network-OS/555ID#22`). The historical scan record is preserved here for audit-integrity reasons; the path no longer exists in the live tree.
 
 **Assessment:** "Password in URL" hits are from Redis/Postgres connection strings with placeholder passwords in example/template files (e.g., `redis://:password@localhost:6379`). These are intentional placeholders, not leaked credentials. High-entropy hits in `schema.prisma` are Prisma model hashes, not secrets. The SVG files are base64-encoded image data.
 
