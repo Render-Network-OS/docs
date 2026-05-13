@@ -18,6 +18,7 @@ Solidifying the base infrastructure and shipping core products.
 *   **Alice**: Autonomous agent on Milaidy/ElizaOS v2 with 12+ plugins.
 *   **VAP v1**: Heartbeat-based engagement verification, state channels, on-chain settlement.
 *   **Economic Model**: 10% ARP, 50/50 split, weekly USDC settlement, structural burns.
+*   **sw4p Earn — Stage 0 + Stage 1**: every CC-* audit finding closed-on-main, operator preflight complete (branch protection, decimal-verifier production secret, authority-monitor expected values, PagerDuty wiring), and a 7-day testnet canary rehearsal on Base Sepolia + Solana devnet via the canary scripts. Stage 1 sign-off does not depend on sw4p engine mainnet returning — testnet routes only.
 
 ## Phase 1: Ownership Layer
 
@@ -26,6 +27,7 @@ Giving creators and users verifiable ownership of their attention and assets.
 *   **P1-A**: cNFT Audience Inventory — mint verified attention as compressed NFTs via Metaplex Bubblegum.
 *   **P1-B**: Lock verification — on-chain proof of token locks for staking and governance.
 *   **P1-C**: Hyperlink completion — full embedded wallet support, advanced analytics, referral attribution.
+*   **sw4p Earn — Stage 2**: mainnet canary on Base, low-value caps. First real value through the yield surface. Hard prerequisite: sw4p engine mainnet has returned, CC-14 authority monitor live with operator-populated expected values, NTT round-trip canary green for 7+ days.
 
 **Depends on**: Phase 0 completion (stable points/credits, reliable VAP).
 
@@ -37,8 +39,11 @@ Expanding the economic model with new instruments and deeper tokenomics.
 *   **Creator Tokens**: Launch via pump.fun with enforced splits (1% fee, 10% ARP, 20% buybacks).
 *   **Micropayments**: Sub-cent payments for granular content access.
 *   **Value Taxonomy**: Classification system for different types of verified attention.
+*   **sw4p Earn — Stage 3**: open registration and public launch. External smart-contract audit complete with no open high/critical findings. Public dashboard live. Reward epoch publication on schedule.
 
 **Depends on**: Phase 1 (cNFT infrastructure, lock verification).
+
+The public sw4p Earn announcement is gated on three concurrent conditions: `@sw4p/kit` published to npm, sw4p engine mainnet restored and stable, and sw4p Earn at Stage 3. Announcing yield-as-product while the kit is still source-install undersells the agent-native integration story; announcing while engine mainnet is paused contradicts the product surface. All three, or none.
 
 ## Phase 3: Platform Expansion
 
