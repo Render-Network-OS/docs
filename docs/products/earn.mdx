@@ -1,0 +1,107 @@
+---
+title: "sw4p Earn"
+icon: "coins"
+description: "The yield surface of RNDRNTWRK — real-fee yield on settled cross-chain volume, plus locked-$555 boosts."
+---
+
+<Info>**Status:** Stage-0 closed-on-main. Stage-1 testnet rehearsal on Base Sepolia and Solana devnet. Stage-2 mainnet canary on Base ships when the sw4p engine mainnet returns. Stage-3 public launch is gated on the engine, the agent kit, and the earn surface being stable together.</Info>
+
+# sw4p Earn
+
+**sw4p Earn is the yield surface of RNDRNTWRK.** It turns settled cross-chain volume into stake-bearing yield for liquidity providers and locked-$555 holders.
+
+sw4p Earn matters because routed volume that exits the system as one-shot routing fees is value the network captured once and never compounded. sw4p Earn closes that loop: LPs who supply the pools sw4p routes through earn the routing fees back; locked-$555 holders earn a boost on top; protocol-owned liquidity grows on its own depth. The yield surface is what converts cross-chain throughput into network ownership instead of letting it leave as one-time revenue.
+
+## Why a separate product
+
+The [sw4p](/sw4p) settlement engine prices and routes the volume. The [`@sw4p/kit`](/products/kit) agent surface exposes that engine to agent stacks. sw4p Earn is a third surface — economic rather than technical — that distributes the settled volume's fee stream to the participants who supplied the liquidity and the coordination capital. The three are coordinated but independent: each can ship and stabilise on its own cadence.
+
+## Key Facts
+
+| | |
+|---|---|
+| **Category** | Yield surface — real-fee LP rewards plus locked-$555 boosts |
+| **Reward source** | sw4p routing fees and pool fees on routed volume, plus protocol-owned liquidity |
+| **Yield model** | Real-fee yield labelled separately from $555 incentive yield. No headline APY. |
+| **Hub chain** | Solana |
+| **First EVM spoke** | Base |
+| **Cross-chain supply** | Native burn-and-mint on both sides (Solana hub and every EVM spoke); supply invariant is reconstruction, not lock-and-mint custody |
+| **Decimals** | `$555` is 6 decimals canonical across Solana mint, EVM ERC-20, every NTT manager, pools, vaults, and dashboard. Enforced by a runtime decimal verifier in CI. |
+| **Custody** | Non-custodial — users sign from their own wallet. |
+| **Public proof** | Dashboard ships real volume, TVL, fees, rewards, NTT supply invariant, excluded volume before any public marketing. |
+
+## Modules
+
+| Module | Function |
+|---|---|
+| **Global $555 Lock** | Lock $555 on Solana to receive a reward boost across the LP and matched vaults. The lock is the coordination signal that aligns long-term holders with routed volume. |
+| **LP Vault** | Pool liquidity earning routing fees on the volume sw4p routes through it. Real-fee yield baseline. |
+| **Matched $555 Vault** | $555 deposited paired against real LP positions, eligible for $555 incentive yield in addition to the LP fee share. |
+| **Protocol-Owned Liquidity (POL) Vault** | Protocol-supplied liquidity that grows independent of LP behaviour, deepening the routes sw4p priorities. |
+| **MM Reserve** | Market-maker reserve sized against routing depth; published separately so the cascade stays auditable. |
+
+## Fee Model
+
+For sw4p routing fees specifically, the cascade specialises:
+
+- **10% → Audience Reward Pool (ARP)** — the protocol-wide commitment to audience ownership, off the top.
+- **45% → LP-stakers in the pools that routed the volume** — they are the ecosystem participants in this context.
+- **45% → Platform** — distributed under the standard 20% buyback-and-burn / 5% $555 reserve / 5% SOL-USDC reserve / 70% Treasury cascade.
+
+The gross effect is 10/45/45 plus the standard platform sub-allocation. This is a specialisation of the [RNDRNTWRK economic cascade](/economics), not a deviation from it. The split is encoded in `policy.ts:allocateSw4pFee` and covered by the test suite under `services/shared`; no off-policy revenue path exists.
+
+## Reward Model
+
+sw4p Earn labels two reward streams separately, on purpose:
+
+- **Real-fee yield** — paid from actual routing-fee revenue. The headline. The number a participant should evaluate the product on.
+- **$555 incentive yield** — an overlay funded from the protocol's $555 incentive budget, disclosed as incentive, never folded into the real-fee headline.
+
+In addition, **utility boosts**:
+
+- **Global $555 Lock boost** — locking $555 increases the share of routed-fee revenue and incentive yield a participant receives.
+- **Pool-specific multipliers** — certain pools may carry temporary multipliers tied to depth or strategic launch windows; always published in the dashboard before going live.
+
+No "yield farming." No APY headlines. No real-fee yield commingled with incentive yield in any number a participant reads.
+
+## Stage Taxonomy
+
+sw4p Earn ships in four stages. The current state and the gate for each:
+
+| Stage | What it covers | Current state | Gate |
+|---|---|---|---|
+| **Stage 0** | Internal hardening — every CC-* audit finding closed-on-main; operator preflight (branch protection, decimal-verifier production secret, authority-monitor expected values, PagerDuty wiring) | Closed-on-main | — |
+| **Stage 1** | Testnet rehearsal — 7-day canary on Base Sepolia + Solana devnet | In progress | Stage-0 sign-off; sw4p engine testnet stable |
+| **Stage 2** | Mainnet canary — first real value on Base, low-value caps | Blocked | sw4p engine mainnet returned; CC-14 authority monitor live with real expected values; 7-day NTT round-trip canary green |
+| **Stage 3** | Public launch — open registration, public dashboard, scheduled reward epochs | Blocked | External smart-contract audit clean; `@sw4p/kit` published to npm; sw4p engine mainnet stable; coordinated announcement |
+
+Stage gates are defined in the sw4p-earn runbooks (`launch-stage0-readiness.md`, `closure-matrix.md`); the RNDRNTWRK protocol roadmap maps each stage to a Phase under [`/protocol/roadmap`](/protocol/roadmap).
+
+## Public Proof Before Public Marketing
+
+The non-negotiable: the public proof dashboard ships **before** any public marketing for sw4p Earn. Real volume, TVL, fees, rewards, NTT supply invariant, and excluded-volume figures are published continuously; the dashboard is the proof, the announcement follows.
+
+## Reference
+
+- **Source:** [github.com/Render-Network-OS/sw4p-earn](https://github.com/Render-Network-OS/sw4p-earn)
+- **License:** MIT
+- **Settlement backend:** [sw4p](/sw4p) — the engine that prices and routes the volume sw4p Earn distributes
+- **Agent surface:** [`@sw4p/kit`](/products/kit) — the agent-native MCP surface over the same engine
+- **Cascade:** [Economic Cascade](/economics) and [Fee Distribution](/tokenomics/fee-distribution)
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="sw4p" icon="bridge" href="/sw4p">
+    See how the settlement engine prices and routes the volume sw4p Earn distributes.
+  </Card>
+  <Card title="@sw4p/kit" icon="robot" href="/products/kit">
+    See how agents settle cross-chain over the same engine.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See the cascade and the sw4p routing-fee specialisation.
+  </Card>
+  <Card title="Roadmap" icon="map" href="/protocol/roadmap">
+    See where Stages 0–3 map onto Phases 0–4.
+  </Card>
+</CardGroup>
