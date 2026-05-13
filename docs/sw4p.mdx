@@ -114,7 +114,10 @@ Within RNDRNTWRK, sw4p serves as the settlement backend for cross-chain routing 
 
 - **AGG** uses sw4p for cross-chain payment routing
 - **Hyperlink** resolves cross-chain payment links through sw4p
+- **sw4p Earn** distributes real-fee yield to liquidity providers and locked-$555 holders on the volume sw4p routes
 - Broader asset and route support follows the sw4p routing roadmap
+
+Anti-wash enforcement on routed volume (run inside sw4p Earn) is a separate proof system from VAP, which proves engagement. Both are required for trustworthy participation-rewards economics across the network.
 
 ## Interfaces
 
@@ -173,6 +176,9 @@ For complete API reference, integration guides, and SDK documentation, see the [
   </Card>
   <Card title="Hyperlink" icon="link" href="/protocol/hyperlink">
     See how payment links resolve cross-chain.
+  </Card>
+  <Card title="sw4p Earn" icon="coins" href="/products/earn">
+    See how routed volume turns into stake-bearing yield.
   </Card>
   <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
     See how settled value routes through the protocol cascade.
