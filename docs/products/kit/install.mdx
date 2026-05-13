@@ -111,18 +111,28 @@ The kit holds no private keys. User flows remain non-custodial — the sw4p engi
   </Accordion>
 
   <Accordion title="Codex CLI" icon="code-branch">
-    Codex CLI reads `~/.codex/mcp.json` (same shape as Claude Code / Cursor):
+    OpenAI's Codex CLI reads `~/.codex/config.toml` (TOML, not JSON). Add an `[mcp_servers.sw4p]` block:
 
-    ```json
-    {
-      "mcpServers": {
-        "sw4p": {
-          "command": "node",
-          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
-          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
-        }
-      }
-    }
+    ```toml
+    [mcp_servers.sw4p]
+    command = "node"
+    args = ["<abs-path>/sw4p-kit/dist/mcp/bin.js"]
+
+    [mcp_servers.sw4p.env]
+    SW4P_API_KEY = "..."
+    SW4P_NETWORK = "testnet"
+    ```
+
+    Once `@sw4p/kit` publishes on npm, the same block collapses to:
+
+    ```toml
+    [mcp_servers.sw4p]
+    command = "npx"
+    args = ["-y", "@sw4p/kit", "sw4p-mcp"]
+
+    [mcp_servers.sw4p.env]
+    SW4P_API_KEY = "..."
+    SW4P_NETWORK = "testnet"
     ```
   </Accordion>
 
