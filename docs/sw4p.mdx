@@ -1,63 +1,183 @@
 ---
 title: "sw4p"
 icon: "bridge"
-description: "The settlement rail for multi-chain participation"
+description: "Settlement engine for cross-chain execution across EVM and Solana."
 ---
 
-<Info>**Status: Live** — sw4p is operational.</Info>
+<Info>**Status:** Live on testnet (Base Sepolia, etc.) and Solana devnet. Mainnet is paused during a protocol upgrade window and returns with the upgrade.</Info>
 
 # sw4p
 
-**sw4p** is the settlement rail of Render Network Protocol. It gives the system native cross-chain value movement — USDC across chains without custody, excessive fees, or manual bridging friction. Built on Circle's CCTP V2 (Cross-Chain Transfer Protocol).
+**sw4p is the settlement engine of RNDRNTWRK.** It turns fragmented cross-chain value movement into a single settlement layer for routing, gas abstraction, and execution. Instead of exposing bridges directly, sw4p resolves the route, coordinates settlement, and tracks the transaction through completion.
+
+sw4p matters because value gets trapped behind fragmented rails, different fee models, and chain-specific logic. That makes cross-chain settlement operationally heavy, expensive to integrate, and hard to standardize across products. sw4p gives the network a single settlement primitive so cross-chain movement becomes operational rather than exceptional.
 
 ## Key Facts
 
-| Property | Value |
-| :--- | :--- |
-| **Protocol** | Circle CCTP V2 |
-| **Supported Token** | USDC |
-| **Live Chains** | Solana, Base, Polygon |
-| **Security** | 5 independent security audits (EVM, Solana, Tron) |
-| **Custody** | Non-custodial — sw4p never holds your funds |
-| **Gasless** | Yes, via Kora integration |
+| | |
+|---|---|
+| **Category** | Cross-chain USDC settlement engine |
+| **Settlement model** | Native USDC — burn on source chain, mint on destination chain. No wrapped tokens. No liquidity-pool dependency. |
+| **Supported chains** | Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana |
+| **USDT corridor** | Including Tron |
+| **Lifecycle** | 15-state settlement lifecycle (8 instruction states + 7 intent states) with retries, recovery, and checkpointed watcher |
+| **Gas abstraction** | Universal — users pay gas in the asset they're moving (USDC, USDT) on every supported chain. No need to hold chain-native tokens. |
+| **Interfaces** | `@sw4p/sdk` (TypeScript + Rust), `@sw4p/widget`, `@sw4p/kit` (agent-native MCP server), storefronts, bots, agent API |
+| **Custody** | User flows are non-custodial — users sign from their own wallet. |
+| **Fee model** | Transparent 50 bps pricing with path-specific minimums |
 
 ## How It Works
 
-1.  **Burn**: USDC is burned on the source chain.
-2.  **Attest**: Circle's attestation service verifies the burn.
-3.  **Mint**: USDC is minted on the destination chain and delivered to the recipient.
+sw4p starts from the outcome, not the bridge choice.
 
-No wrapped tokens. No liquidity pools. The USDC on the destination chain is native Circle USDC.
+1. A client expresses the settlement intent
+2. sw4p resolves the best available route for the token and corridor
+3. The engine provisions gas where needed and coordinates execution
+4. Settlement is tracked through a persistent 15-state lifecycle until completion
+5. Recovery logic handles retries, stalled transfers, and partial failures
+
+For native USDC corridors, the current production flow is:
+
+**Burn → Attest → Mint**
+
+No wrapped tokens. No liquidity pool dependency. No manual bridge selection for the end user. The USDC on the destination chain is native Circle USDC.
+
+## Routing and Settlement
+
+sw4p is the settlement layer. Callers express the outcome they want — "send X USDC from chain A to recipient on chain B" — and the engine resolves the route, provisions gas, executes the move, and tracks the transaction through completion. Underlying rails are an implementation detail of the engine, not a choice the caller has to make.
+
+The engine is designed around ERC-7683-compatible intents, making competitive solver-based execution a first-class expansion path.
+
+## Supported Chains
+
+| Chain | Asset | Notes |
+|---|---|---|
+| Ethereum | USDC | Native settlement |
+| Base | USDC | Native settlement |
+| Arbitrum | USDC | Native settlement |
+| Polygon | USDC | Native settlement |
+| Optimism | USDC | Native settlement |
+| Avalanche | USDC | Native settlement |
+| Solana | USDC | Native settlement |
+| Tron | USDT | USDT corridor |
+
+## Advanced Capabilities
+
+Beyond basic cross-chain transfers, sw4p includes:
+
+- **DCA (dollar-cost averaging)** — schedule recurring buys with best-execution SPL routing on Solana
+- **Limit orders** — price-triggered fills monitored by a background worker
+- **Agent API** — batch settlement, cross-chain portfolio aggregation, rebalance planning and execution
+- **Solver auction framework** — ERC-7683-compatible intent system with competitive filler execution
+- **Universal storefront** — multi-tenant storefront with per-project config and custom subdomains
+- **Fiat on-ramp** — Transak integration with webhook settlement
+- **Referral system** — referral codes with automatic fee splitting
+- **Telegram and Discord bots** — conversational bridge interface
+
+## Current Status
+
+### Live now (testnet/devnet)
+
+- Native USDC settlement across all supported EVM chains and Solana
+- USDT corridor including Tron
+- Universal gas abstraction across every supported chain — pay gas in the asset you're moving (USDC, USDT). No chain-native tokens required.
+- Native SPL output on Solana (USDC lands as the SPL you actually want, in one settlement)
+- 15-state transaction watcher with checkpointed recovery
+- DCA workers with persistence
+- TypeScript SDK, Rust SDK, embeddable widget, storefronts, bots
+- x402 V2 facilitator (pilot)
+- Observability across the full settlement lifecycle
+
+### On the roadmap
+
+- Mainnet return (ships with the current protocol upgrade)
+- `@sw4p/kit` — agent-native MCP server, AP2 Cart Mandates, x402 V2, A2A handler, ERC-7683 intent builder. Pre-publish; source at [github.com/Render-Network-OS/sw4p-kit](https://github.com/Render-Network-OS/sw4p-kit).
+- ERC-7683 intent-based atomic settlement with an external solver network
+- Multi-hop route planner
+- Agent API for batch settlement and rebalance
 
 ## Security
 
-sw4p has undergone **5 independent security audits**:
+sw4p is hardened as a settlement system.
 
-| Audit Scope | Result |
-| :--- | :--- |
-| EVM Contracts | Passed |
-| Solana Programs | Passed |
-| Tron Contracts | Passed |
-| USDC Integration | Passed |
-| Cross-Chain Flows | Passed |
+The stack includes rate limiting, authentication, circuit breakers, fee audit logs, configurable security policies per route, and observability across the full settlement lifecycle. The gas abstraction layer ships with 1,743+ adversarial tests. Settlement state is checkpointed with explicit recovery actions for every stalled transition.
 
-**Findings**: 0 critical, 0 high severity. All medium and low findings resolved.
-
-## Integration
-
-sw4p is integrated throughout the Render Network Protocol:
-*   **AGG**: Uses sw4p for cross-chain payment routing.
-*   **Hyperlink**: Payment links resolve cross-chain through sw4p.
+End-user flows are non-custodial — users sign from their own wallet. The engine never holds user balances; settlement is native at both endpoints. Internal signing materials used for protocol-side execution are managed by sw4p infrastructure and are not exposed to integrators.
 
 <Note>
-  **Supported Asset:** sw4p bridges USDC only (via CCTP V2). The $555 token is a Solana SPL token and is not bridged by sw4p.
+  **Supported production asset:** USDC. The $555 token is a Solana SPL token and is not bridged by sw4p. Any USDC-to-555 conversion is explicit product policy, not an implied default.
 </Note>
 
-## SDKs
+## Integration Inside RNDRNTWRK
 
-*   **TypeScript**: `@sw4p/bridge` — [npm](https://npmjs.com/package/@sw4p/bridge)
-*   **Rust**: `sw4p-bridge` — [crates.io](https://crates.io/crates/sw4p-bridge)
+Within RNDRNTWRK, sw4p serves as the settlement backend for cross-chain routing and value movement.
+
+- **AGG** uses sw4p for cross-chain payment routing
+- **Hyperlink** resolves cross-chain payment links through sw4p
+- Broader asset and route support follows the sw4p routing roadmap
+
+## Interfaces
+
+### SDK
+
+**TypeScript:** `@sw4p/sdk`
+
+30+ methods covering transfer, estimate, status, portfolio, rebalance, DCA, limit orders, intents, ERC-7683, x402 helpers, and the Solana two-step flow.
+
+### Widget
+
+**React / iframe:** `@sw4p/widget`
+
+Drop-in embeddable component for cross-chain transfers.
+
+### Bots
+
+Telegram and Discord conversational interfaces for bridge operations.
+
+### Storefronts
+
+Multi-tenant storefront surfaces with per-project config, custom subdomains, and token picker.
+
+## Architecture
+
+```
+  Clients (Frontend / SDK / Bots / Agents)
+          |
+  +-------+--------+
+  |   Axum Router   |  rate-limit, CORS, JWT / API-key auth
+  +-------+--------+
+          |
+  +--+----+----+-----+-----+------+
+  Relay  Withdraw  DCA  Limit  Intent  Agent API
+          |
+  +-------+---------+
+  |  Route Selector  |  sw4p engine — native settlement, route resolution, recovery
+  +-------+---------+
+          |
+  +-------+-------+
+  |  Gas Abstract  |  Universal — pay gas in the asset being moved on every supported chain
+  +-------+-------+
+          |
+  EVM + Solana chains
+```
 
 ## Full Documentation
 
-For complete API reference, guides, and SDK documentation, see the [sw4p Documentation Site](https://docs.sw4p.io).
+For complete API reference, integration guides, and SDK documentation, see the [sw4p Documentation Site](https://docs.sw4p.io).
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="AGG" icon="route" href="/protocol/agg">
+    See how AGG routes payments through sw4p.
+  </Card>
+  <Card title="Hyperlink" icon="link" href="/protocol/hyperlink">
+    See how payment links resolve cross-chain.
+  </Card>
+  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
+    See how settled value routes through the protocol cascade.
+  </Card>
+  <Card title="For Developers" icon="code" href="/for-developers">
+    See all developer entry points across the network.
+  </Card>
+</CardGroup>

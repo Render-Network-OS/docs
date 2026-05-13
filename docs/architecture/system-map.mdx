@@ -52,9 +52,9 @@ graph TD
 
     subgraph Blockchain ["Solana"]
         Token["$555 SPL Token"]
-        SW4P_Bridge["sw4p (CCTP V2)"]
-        Jupiter["Jupiter Aggregator"]
-        Kora["Kora (Gasless)"]
+        SW4P_Bridge["sw4p settlement"]
+        SwapRouting["SPL swap routing"]
+        Gasless["sw4p gasless"]
     end
 
     %% Client connections
@@ -85,8 +85,8 @@ graph TD
     %% Blockchain connections
     API -->|Settle| Token
     API -->|Bridge| SW4P_Bridge
-    AGG_Svc -->|Swap| Jupiter
-    AGG_Svc -->|Gasless| Kora
+    AGG_Svc -->|Swap| SwapRouting
+    AGG_Svc -->|Gasless| Gasless
 ```
 
 ## Layer Overview
@@ -95,7 +95,7 @@ graph TD
 User-facing applications that connect to the protocol:
 *   **555 Arcade** — Browser-based game platform with wallet authentication (SIWS). Games run in sandboxed iframes with the VAP SDK for verified engagement.
 *   **555stream Studio** — Browser-based streaming studio with everywhere all at once, scene composition, and guest management via WebRTC.
-*   **sw4p Bridge** — Cross-chain bridge interface for USDC transfers across Solana, Base, and Polygon.
+*   **sw4p Bridge** — Cross-chain settlement interface for native USDC across supported chains.
 
 ### Edge Layer
 Globally distributed infrastructure handling encoding, caching, and real-time sessions:
@@ -126,9 +126,9 @@ Autonomous AI operator with persistent memory and multi-platform capabilities:
 ### Blockchain Layer (Solana)
 On-chain programs and integrations:
 *   **$555 SPL Token** — Protocol token for staking, burns, and participation.
-*   **sw4p (CCTP V2)** — USDC bridge across Solana, Base, and Polygon.
-*   **Jupiter Aggregator** — Optimal swap routing across Solana DEXs.
-*   **Kora** — Gasless transaction sponsorship for frictionless user experience.
+*   **sw4p settlement** — Native USDC settlement across supported chains, USDT corridor including Tron, 15-state lifecycle with checkpointed recovery.
+*   **SPL swap routing** — Best-execution routing for any-token-in / USDC-out on Solana.
+*   **sw4p gasless** — Built-in transaction sponsorship on Solana for frictionless user experience.
 
 ## Data Flow: Play Session
 

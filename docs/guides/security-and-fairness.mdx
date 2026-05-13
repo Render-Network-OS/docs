@@ -68,14 +68,15 @@ Users can independently verify that lottery outcomes were generated fairly using
 - Circuit breakers for abnormal conditions and upgrades
 - Multi-signature controls for sensitive operations
 
-## Audits & Monitoring
+## Monitoring & Recovery
 
-- Independent security reviews (see [sw4p's 5 audit results](https://sw4p.com) for completed assessments)
-- Continuous monitoring and anomaly detection
+- Checkpointed 15-state settlement lifecycle with explicit recovery actions for every stalled transition
+- Continuous monitoring and anomaly detection via Prometheus, Grafana, and OpenTelemetry
+- Circuit breakers, route-specific security policies, and fee audit logs across the full settlement path
 - Public reporting and transparency dashboards
 
 <Warning>
-  Security audits reduce risk but do not eliminate it. Smart contracts may contain undiscovered vulnerabilities. Users should only participate with funds they can afford to lose.
+  Smart contracts may contain undiscovered vulnerabilities. Cross-chain settlement also depends on external infrastructure (RPC providers, attestation services, paymaster nodes) whose availability is not under sw4p's control. Users should only participate with funds they can afford to lose.
 </Warning>
 
 ## Incident Response

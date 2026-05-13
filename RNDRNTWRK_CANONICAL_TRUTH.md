@@ -111,7 +111,7 @@ Value gets stuck. Creators cluster on whichever platform pays better this month.
 
 **How RNDRNTWRK fixes it:**
 
-Settlement rails that work natively across chains today — Solana, Base, Polygon via sw4p using Circle CCTP V2. Non-custodial, gasless, with five independent security audits and zero critical findings.
+sw4p settles natively across chains — currently operational across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum. Native USDC, no wrapped tokens, no liquidity-pool slippage. User flows are non-custodial — users sign from their own wallet. Universal gas abstraction: users pay gas in the asset they're moving (USDC, USDT) on every supported chain — never in the chain's native token. Mainnet is paused during the current protocol upgrade window — testnet/devnet flows remain live and the production return ships with the upgrade.
 
 Expanding to more chains, then to fiat rails — so value never gets stuck between ecosystems, currencies, or financial regimes again.
 
@@ -223,7 +223,7 @@ VAP v1 is live in production. VAP v2 has been validated with 234 passing tests a
 
 **Layer 4: Settlement — sw4p**
 
-The rail that moves value. sw4p is a non-custodial USDC bridge operating across Solana, Base, and Polygon using Circle CCTP V2. Gasless transactions are supported via Kora on Solana. Five independent security audits have been completed with zero critical or high findings.
+The rail that moves value. sw4p is a USDC settlement engine operating across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum, with USDT corridor support including Tron. Native settlement — burn at the source, mint at the destination, no wrapped tokens. User flows are non-custodial; users sign from their own wallet. **Universal gas abstraction**: users pay gas in the asset being moved (USDC, USDT) on every supported chain — they never have to hold a chain's native token. Mainnet is currently paused for a protocol upgrade window; testnet/devnet flows remain live, and the agent surface (`@sw4p/kit`) ships with the mainnet return.
 
 sw4p exists to eliminate liquidity fragmentation. Value that enters the RNDRNTWRK system through any chain can settle on any other supported chain without custody risk, excessive fees, or manual bridging friction. The rail is expanding to additional chains and eventually to fiat — so that value moves wherever it needs to without getting stuck.
 
@@ -445,14 +445,14 @@ sw4p is the settlement rail of the RNDRNTWRK economic system. It moves value acr
 
 ### What It Is
 
-- Cross-chain USDC settlement via Circle CCTP V2
-- Supported chains: Solana, Base, Polygon (expanding)
-- Non-custodial architecture — the protocol never holds user funds
-- Gasless transactions via Kora on Solana
-- Five independent security audits with zero critical or high findings
-- TypeScript SDK (@sw4p/bridge) and Rust SDK (sw4p-bridge)
+- Native cross-chain USDC settlement — burn at the source, mint at the destination, no wrapped tokens
+- Supported chains today: Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana — with USDT corridor support including Tron
+- User flows are non-custodial — users sign from their own wallet
+- **Universal gas abstraction**: pay gas in the asset you're moving on every supported chain. No need to hold ETH on Ethereum, MATIC on Polygon, AVAX on Avalanche, SOL on Solana, or any other chain-native token.
+- 15-state settlement lifecycle with retries, recovery, and checkpointed watcher
+- TypeScript SDK (`@sw4p/sdk`) and Rust SDK (`sw4p-sdk`), plus the agent-native `@sw4p/kit` MCP server
+- Production-grade gasless infrastructure with 1,743+ adversarial tests
 - Solana native program + Anchor program for on-chain operations
-- 1,743 tests in the Kora subsystem alone
 
 ### Canonical Language
 
@@ -816,7 +816,7 @@ Every creator platform assumes the creator is a human, publishing to one place, 
 - "Entity-agnostic design is the structural moat — agents are not a feature, they are the dominant participant type of the next decade."
 - "10% ARP / 20% buyback / 70% treasury — structural economics, not discretionary distribution."
 - "92% public distribution, 8% team locked 5 years."
-- "Five independent security audits on the settlement rail. Zero critical findings."
+- "sw4p as the settlement engine across seven chains, with `@sw4p/kit` as the agent-native MCP surface."
 
 **What to avoid:** Do not pitch the token as an investment vehicle. Frame $555 as the coordination mechanism of a live economic system. Let the structural economics speak for themselves.
 
@@ -909,12 +909,11 @@ The founder's canonical closing: "We solve the problem today and put ourselves o
 | Token contract | CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2 |
 | Total supply | 1,000,000,000 |
 | Distribution | 92% public / 8% team (5-year lock) |
-| Settlement chains | Solana, Base, Polygon (expanding) |
-| Settlement protocol | Circle CCTP V2 |
+| Settlement chains | Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana (+ Tron via USDT corridor) |
+| Settlement engine | sw4p — native USDC, 15-state lifecycle, non-custodial user flow, universal gas abstraction (pay gas in the asset being moved, no native tokens required) |
 | Verification | Ed25519 heartbeats (5-second interval) |
 | Agent framework | Milaidy (ElizaOS v2) |
 | Randomness | Switchboard VRF |
-| Security audits | 5 (sw4p), 0 critical/high findings |
 
 ## D. Document Version History
 
