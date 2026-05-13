@@ -25,12 +25,13 @@ Instead of treating content, attention, and revenue as disconnected layers, RNDR
 
 RNDRNTWRK is a complete economic system for creating and distributing content that does not care if the creator is a human, a team, or a machine. Broadcasting, verification, ads, payments, and distribution are wired together into one system. Every existing platform was built on one assumption: the creator is a human sitting at a desk. That assumption is about to break. RNDRNTWRK is not waiting for it to break — it already built for the world where it does not hold.
 
-The system has five operational layers:
+The system has six operational layers:
 
 - **Distribution** — 555stream: browser-native broadcasting to any destination, everywhere all at once
 - **Participation** — 555 Arcade: 20 browser games generating verified engagement, competition, and economic input
 - **Proof** — VAP (Verifiable Attention Protocol): cryptographic verification that participation is real, not reported
 - **Settlement** — sw4p: cross-chain USDC movement across Solana, Base, Polygon, and expanding
+- **Yield** — sw4p Earn: settled cross-chain volume turned into stake-bearing yield, paid from sw4p routing fees and protocol-owned liquidity
 - **Operations** — Alice: autonomous AI operator that demonstrates the system works without a human in the loop
 
 $555 coordinates the entire network — access, staking, governance, and the structural economics that make the system self-reinforcing.
@@ -193,9 +194,9 @@ The creator economy is where these primitives are forged and tested. The applica
 
 ## 6. System Architecture
 
-### The Five Layers
+### The Six Layers
 
-RNDRNTWRK operates as a unified economic system with five functional layers. Each layer exists to solve a specific part of the value lifecycle: creation, verification, monetization, settlement, and coordination.
+RNDRNTWRK operates as a unified economic system with six functional layers. Each layer exists to solve a specific part of the value lifecycle: creation, verification, monetization, settlement, yield, and coordination.
 
 **Layer 1: Distribution — 555stream**
 
@@ -227,7 +228,13 @@ The rail that moves value. sw4p is a USDC settlement engine operating across Sol
 
 sw4p exists to eliminate liquidity fragmentation. Value that enters the RNDRNTWRK system through any chain can settle on any other supported chain without custody risk, excessive fees, or manual bridging friction. The rail is expanding to additional chains and eventually to fiat — so that value moves wherever it needs to without getting stuck.
 
-**Layer 5: Operations — Alice**
+**Layer 5: Yield — sw4p Earn**
+
+The surface that turns settled cross-chain volume into stake-bearing yield. sw4p Earn pays liquidity providers and locked-$555 holders from sw4p routing fees and protocol-owned liquidity — real-fee yield first, with a separately labelled $555 incentive overlay. Rewards trace to routed flow; nothing synthetic, nothing borrowed from a treasury subsidy curve.
+
+The product runs in stages: testnet-rehearsal on Base Sepolia and Solana devnet today, mainnet canary on Base when the sw4p engine mainnet returns, public launch when the engine, the agent kit, and the earn surface are all stable in production. The Yield layer is what makes settled volume compound back into network ownership instead of leaving as one-shot fee revenue.
+
+**Layer 6: Operations — Alice**
 
 The agent that proves the system is entity-agnostic. Alice is an autonomous AI operator built on Milaidy (ElizaOS v2) with 12+ custom plugins and an 80+ document knowledge corpus. She operates streams, plays games, triggers ads, manages communities, posts to social media, and executes economic actions within the protocol — 24/7, without human intervention.
 
@@ -275,6 +282,10 @@ Platform's 50% allocates as:
 - **20% → Buyback-and-burn** — structural demand creation for $555, permanently deflationary
 - **5% → $555 reserve** — protocol token reserve
 - **5% → SOL/USDC reserve** — operational liquidity
+
+### sw4p Routing-Fee Specialisation
+
+For sw4p routing fees specifically, the ecosystem half of the 50/50 split is allocated entirely to liquidity providers in the pools that routed the volume — they are the ecosystem participants in this context. The platform half follows the standard 20/5/5/70 allocation. The gross effect is 10/45/45 (ARP / LP-stakers / platform) plus the standard platform sub-allocation. This is a specialisation of the cascade, not a deviation from it.
 
 ### Creator-Level Cascade
 
@@ -464,6 +475,31 @@ sw4p ensures that value never gets stuck. Revenue generated on any chain can set
 
 ---
 
+## 12.5 sw4p Earn — The Yield Surface
+
+### Identity
+
+sw4p Earn is the yield surface of the RNDRNTWRK economic system. It turns settled cross-chain volume into stake-bearing yield for liquidity providers and locked-$555 holders.
+
+### What It Is
+
+- Real-fee yield first — rewards trace to actual sw4p routing fees and pool fees on routed volume, not to a treasury subsidy curve
+- Separately labelled $555 incentive yield overlay — disclosed as incentive, never folded into the real-fee headline
+- Modules: Global $555 Lock (lock-and-boost on the coordination token), LP Vault (pool liquidity earning routing fees), Matched $555 Vault (paired stake against real LP positions), Protocol-Owned Liquidity (POL) Vault, MM Reserve
+- Solana hub, Base as the first EVM spoke; native cross-chain supply via burn-and-mint, not lock-and-mint custody
+- Anti-wash enforcement for routed volume — pg-backed worker classifies route events as included or excluded so rewards never compound on synthetic flow
+- Public proof dashboard: real volume, TVL, fees, rewards, NTT supply invariant, excluded volume — published before any public marketing
+
+### Canonical Language
+
+sw4p Earn is **the yield surface**, not a "staking app" or a "DeFi protocol". The system never headlines an APY rate; it labels real-fee yield separately from $555 incentive yield and lets the cascade economics carry the message. "Anti-wash" is always paired with "for routed volume" on first use. $555 lock is `$555 lock`, not "token lock".
+
+### Role in the System
+
+Settled volume that exits the system as one-shot routing fees is value the network captured once and never compounded. sw4p Earn closes that loop: liquidity providers who route volume earn routing fees back; locked-$555 holders earn boosted yield on top; protocol-owned liquidity grows on its own depth. The yield layer is what converts cross-chain throughput into network ownership.
+
+---
+
 ## 13. The Ads Marketplace — The Revenue Engine
 
 ### Identity
@@ -529,7 +565,7 @@ $555 is a **coordination mechanism**, not a selling point. The canonical usage i
 
 ### Role in the System
 
-$555 is the binding agent. Without it, the five operational layers are disconnected services. With it, they form one economic system where access, alignment, governance, and structural demand reinforce each other continuously.
+$555 is the binding agent. Without it, the six operational layers are disconnected services. With it, they form one economic system where access, alignment, governance, and structural demand reinforce each other continuously.
 
 ---
 
@@ -650,7 +686,7 @@ This section exists to prevent every common misidentification. Each entry includ
 
 **Why it happens:** 555stream is the most visible product surface. Observers see live streams and conclude the company is a streaming platform.
 
-**Canonical correction:** 555stream is the distribution layer — one of five operational layers in the economic system. Calling RNDRNTWRK a streaming platform is like calling Stripe a checkout page. The visible surface is not the system.
+**Canonical correction:** 555stream is the distribution layer — one of six operational layers in the economic system. Calling RNDRNTWRK a streaming platform is like calling Stripe a checkout page. The visible surface is not the system.
 
 ### "RNDRNTWRK is a gaming company"
 
