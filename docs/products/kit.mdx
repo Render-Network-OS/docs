@@ -68,11 +68,18 @@ Add to any MCP-aware client (Claude Code, Cursor, Continue, Zed, ElizaOS):
 }
 ```
 
-Once `@sw4p/kit` publishes to npm, this collapses to:
+Once `@sw4p/kit` publishes to npm, this collapses to a single `npx` invocation — `command: "npx"`, `args: ["-y", "@sw4p/kit", "sw4p-mcp"]` — no source clone, no absolute path:
 
-```bash
-npm install @sw4p/kit
-# then args: ["sw4p-mcp"] via npx
+```json
+{
+  "mcpServers": {
+    "sw4p": {
+      "command": "npx",
+      "args": ["-y", "@sw4p/kit", "sw4p-mcp"],
+      "env": { "SW4P_API_KEY": "..." }
+    }
+  }
+}
 ```
 
 ## Standards covered
