@@ -35,7 +35,7 @@ The kit holds no private keys. User flows remain non-custodial — the sw4p engi
 
 <AccordionGroup>
   <Accordion title="Claude Code" icon="terminal">
-    Add to `~/.config/claude-code/mcp.json` (or `~/Library/Application Support/claude-code/mcp.json` on macOS):
+    Claude Code reads MCP server registrations from `~/.claude.json` (the top-level user config dotfile in `$HOME` — not to be confused with `~/.claude/settings.json`). Merge the `sw4p` entry into the top-level `mcpServers` object:
 
     ```json
     {
@@ -53,6 +53,8 @@ The kit holds no private keys. User flows remain non-custodial — the sw4p engi
       }
     }
     ```
+
+    Claude Code also reads a project-local `<cwd>/.mcp.json` (same shape) for team-shared MCP configs — drop the same `mcpServers.sw4p` block there if you want the kit scoped to a single repository instead of every Claude Code session on the machine.
 
     Restart Claude Code; the agent will see the 9 tools by default (11 with `AP2_SIGNING_KEY`).
   </Accordion>
