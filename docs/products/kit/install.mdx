@@ -78,20 +78,20 @@ The kit holds no private keys. User flows remain non-custodial — the sw4p engi
   </Accordion>
 
   <Accordion title="Continue" icon="rotate">
-    Continue reads `~/.continue/config.json`. Add an `mcpServers` block:
+    Continue's modern config is `~/.continue/config.yaml` (YAML, not JSON). Add an `mcpServers` block:
 
-    ```json
-    {
-      "mcpServers": [
-        {
-          "name": "sw4p",
-          "command": "node",
-          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
-          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
-        }
-      ]
-    }
+    ```yaml
+    mcpServers:
+      - name: sw4p
+        command: node
+        args:
+          - <abs-path>/sw4p-kit/dist/mcp/bin.js
+        env:
+          SW4P_API_KEY: "..."
+          SW4P_NETWORK: testnet
     ```
+
+    <Note>The exact key path under which Continue expects MCP servers varies by Continue version — consult the [Continue project docs](https://docs.continue.dev) if `mcpServers:` at the top level isn't picked up by your version. The kit's `init` flow prints the snippet rather than auto-mutating the YAML.</Note>
   </Accordion>
 
   <Accordion title="Goose" icon="feather">
