@@ -1,0 +1,144 @@
+---
+title: "Environment variables"
+sidebarTitle: "Env vars"
+icon: "key"
+description: "Exhaustive env-var reference for the @sw4p/kit MCP server — what each variable does, when it's required, and what to set it to."
+---
+
+The kit reads its configuration entirely from environment variables. No config files, no init step. The MCP entrypoint (`dist/mcp/bin.js`) refuses to start without `SW4P_API_KEY`; everything else has a sensible default.
+
+<Info>**The kit holds no private keys.** None of the variables below are signing keys for blockchain transactions. `AP2_SIGNING_KEY` is an HMAC secret for AP2 Cart Mandate authorization — a separate, off-chain concern.</Info>
+
+## Quick reference
+
+| Var | Required | Default | Purpose |
+|---|---|---|---|
+| `SW4P_API_KEY` | yes | — | Bearer key for the sw4p backend |
+| `SW4P_API_URL` | no | `https://api.sw4p.io` | sw4p backend base URL |
+| `SW4P_NETWORK` | no | `testnet` | `mainnet` or `testnet` — selects environment |
+| `AP2_SIGNING_KEY` | no | — | 32-byte hex secret; unlocks the AP2 Cart Mandate tools |
+| `SW4P_USER_WALLET_BASE` | no | — | Default Base/EVM address for the agent surface |
+| `SW4P_USER_WALLET_SOLANA` | no | — | Default Solana address for the agent surface |
+
+## Variables in detail
+
+### `SW4P_API_KEY`
+
+- **Required:** yes
+- **Default:** none — the kit exits with `SW4P_API_KEY is required` if unset
+- **What it does:** sent as `X-API-Key` on every request to the sw4p backend
+- **Example:**
+
+  ```bash
+  export SW4P_API_KEY=sw4p_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  ```
+
+Request your key from [sw4p.io](https://sw4p.io) or the sw4p backend admin you're integrating with. Testnet keys and mainnet keys are distinct.
+
+### `SW4P_API_URL`
+
+- **Required:** no
+- **Default:** `https://api.sw4p.io`
+- **What it does:** base URL for every backend call (`/sdk/v1/estimate`, `/sdk/v1/transfer`, etc.)
+- **Example:**
+
+  ```bash
+  export SW4P_API_URL=https://staging.api.sw4p.io
+  ```
+
+Override when pointing at a self-hosted sw4p backend or the staging environment.
+
+### `SW4P_NETWORK`
+
+- **Required:** no
+- **Default:** `testnet`
+- **Allowed values:** `mainnet`, `testnet`
+- **What it does:** sent as `X-SW4P-Network` on every backend request. Selects the network the backend operates against.
+- **Example:**
+
+  ```bash
+  export SW4P_NETWORK=testnet
+  ```
+
+If you set an unsupported value (anything other than the two literals), the kit exits with an explicit error. Default is `testnet` to keep accidental mainnet calls behind an opt-in.
+
+<Info>**Mainnet is currently paused** during the protocol upgrade window. Testnet / devnet flows are live. See the [sw4p engine page](/sw4p) for current status.</Info>
+
+### `AP2_SIGNING_KEY`
+
+- **Required:** no (but required for AP2 tools)
+- **Default:** none
+- **What it does:** initializes the kit's `HmacSigner` for AP2 Cart Mandate signing and verification. When set, the MCP server exposes two additional tools: `sw4p.ap2.cart_propose` and `sw4p.ap2.cart_execute`. When unset, the kit exposes 9 tools.
+- **How to generate:**
+
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+
+- **Example:**
+
+  ```bash
+  export AP2_SIGNING_KEY=a3f2e1...
+  ```
+
+The `HmacSigner` is the reference implementation. In production, swap it for a wallet-backed `Signer` that implements `sign(canonical)` and `verify(canonical, signature, user)`. See [Standards covered → AP2](/products/kit/standards#ap2-cart-mandates).
+
+### `SW4P_USER_WALLET_BASE`
+
+- **Required:** no
+- **Default:** none
+- **What it does:** default Base/EVM address used by `sw4p.balance` / `sw4p.send` when the caller doesn't pass `walletAddress` / `fromAddress` explicitly. Aggregated into the kit's `defaultWallets` map at boot.
+- **Format:** `0x` + 40 hex chars
+- **Example:**
+
+  ```bash
+  export SW4P_USER_WALLET_BASE=0x1234567890abcdef1234567890abcdef12345678
+  ```
+
+The kit never holds the private key — only the address. The sw4p engine signs against the user's wallet on-chain.
+
+### `SW4P_USER_WALLET_SOLANA`
+
+- **Required:** no
+- **Default:** none
+- **What it does:** default Solana address used by the agent surface when the caller doesn't pass an address explicitly.
+- **Format:** base58 (32–44 chars)
+- **Example:**
+
+  ```bash
+  export SW4P_USER_WALLET_SOLANA=5xN1234567890abcdefGHJKLMNPQRSTUV
+  ```
+
+## Resolution order (agent surface)
+
+For `sw4p.balance` and `sw4p.send`:
+
+1. **Explicit tool argument wins** — `walletAddress` for `sw4p.balance`, `fromAddress` for `sw4p.send`.
+2. **Otherwise** the server-injected `defaultWallets` map (populated from `SW4P_USER_WALLET_BASE` / `SW4P_USER_WALLET_SOLANA`) is used.
+3. **If neither is available**, the tool throws with a message naming both the argument and the env var, so the caller knows how to fix it.
+
+## Sample `.env`
+
+```bash
+# Required
+SW4P_API_KEY=sw4p_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Recommended
+SW4P_NETWORK=testnet
+SW4P_API_URL=https://api.sw4p.io
+
+# Optional — unlocks AP2 Cart Mandate tools
+AP2_SIGNING_KEY=a3f2e1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional — default wallets for the agent surface
+SW4P_USER_WALLET_BASE=0x1234567890abcdef1234567890abcdef12345678
+SW4P_USER_WALLET_SOLANA=5xN1234567890abcdefGHJKLMNPQRSTUV
+```
+
+## Related
+
+- [Install](/products/kit/install) — how env vars wire into each MCP host config
+- [Tool reference](/products/kit/tools) — which tools depend on which env vars
+- [Standards covered](/products/kit/standards) — what `AP2_SIGNING_KEY` actually signs
+- [Code samples](/products/kit/samples) — programmatic boot patterns
+- [Kit overview](/products/kit) — what the kit is and why

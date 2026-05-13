@@ -1,0 +1,189 @@
+---
+title: "Install"
+sidebarTitle: "Install"
+icon: "download"
+description: "Add @sw4p/kit to any MCP-aware agent — Claude Code, Cursor, Continue, Goose, Codex CLI, Cline, Aider, ElizaOS, or a generic MCP host."
+---
+
+<Info>**Pre-publish.** `@sw4p/kit` is not yet on the public npm registry. Install from source until the v1.0 publish lands. Once published, the per-agent `command` collapses to `npx` and the `args` line becomes `["sw4p-mcp"]`.</Info>
+
+## Source install (one-time)
+
+```bash
+git clone https://github.com/Render-Network-OS/sw4p-kit
+cd sw4p-kit && npm install && npm run build
+```
+
+This produces the MCP entrypoint at `dist/mcp/bin.js`. Every config below references that absolute path — substitute `<abs-path>` for the directory where you cloned the repo.
+
+## Required env vars
+
+Every host below needs `SW4P_API_KEY` at minimum. The full list lives in [Environment variables](/products/kit/env-vars); the relevant defaults are:
+
+| Var | Required | What it does |
+|---|---|---|
+| `SW4P_API_KEY` | yes | Bearer key for the sw4p backend |
+| `SW4P_NETWORK` | no (default `testnet`) | `mainnet` or `testnet` — sent as `X-SW4P-Network` |
+| `SW4P_API_URL` | no (default `https://api.sw4p.io`) | sw4p backend base URL |
+| `AP2_SIGNING_KEY` | no | 32-byte hex secret — unlocks the AP2 Cart Mandate tools |
+| `SW4P_USER_WALLET_BASE` | no | Default Base/EVM address for `sw4p.balance` / `sw4p.send` |
+| `SW4P_USER_WALLET_SOLANA` | no | Default Solana address for `sw4p.balance` / `sw4p.send` |
+
+The kit holds no private keys. User flows remain non-custodial — the sw4p engine signs against the user's wallet on-chain.
+
+## Per-host configs
+
+<AccordionGroup>
+  <Accordion title="Claude Code" icon="terminal">
+    Add to `~/.config/claude-code/mcp.json` (or `~/Library/Application Support/claude-code/mcp.json` on macOS):
+
+    ```json
+    {
+      "mcpServers": {
+        "sw4p": {
+          "command": "node",
+          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
+          "env": {
+            "SW4P_API_KEY": "...",
+            "SW4P_NETWORK": "testnet",
+            "SW4P_USER_WALLET_BASE": "0x...",
+            "SW4P_USER_WALLET_SOLANA": "..."
+          }
+        }
+      }
+    }
+    ```
+
+    Restart Claude Code; the agent will see the 9 tools by default (11 with `AP2_SIGNING_KEY`).
+  </Accordion>
+
+  <Accordion title="Cursor" icon="code">
+    Add to Cursor's MCP config at `~/.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "sw4p": {
+          "command": "node",
+          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
+          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
+        }
+      }
+    }
+    ```
+
+    Reload the Cursor window. Tools surface under the MCP panel.
+  </Accordion>
+
+  <Accordion title="Continue" icon="rotate">
+    Continue reads `~/.continue/config.json`. Add an `mcpServers` block:
+
+    ```json
+    {
+      "mcpServers": [
+        {
+          "name": "sw4p",
+          "command": "node",
+          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
+          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
+        }
+      ]
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Goose" icon="feather">
+    Goose discovers MCP servers from `~/.config/goose/config.yaml`:
+
+    ```yaml
+    extensions:
+      sw4p:
+        type: stdio
+        cmd: node
+        args:
+          - <abs-path>/sw4p-kit/dist/mcp/bin.js
+        envs:
+          SW4P_API_KEY: "..."
+          SW4P_NETWORK: testnet
+    ```
+  </Accordion>
+
+  <Accordion title="Codex CLI" icon="code-branch">
+    Codex CLI reads `~/.codex/mcp.json` (same shape as Claude Code / Cursor):
+
+    ```json
+    {
+      "mcpServers": {
+        "sw4p": {
+          "command": "node",
+          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
+          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
+        }
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Cline" icon="bolt">
+    Cline reads MCP from VS Code settings. Open the command palette → `Cline: Edit MCP Settings` and add:
+
+    ```json
+    {
+      "mcpServers": {
+        "sw4p": {
+          "command": "node",
+          "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
+          "env": { "SW4P_API_KEY": "...", "SW4P_NETWORK": "testnet" }
+        }
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Aider" icon="pen-to-square">
+    Aider supports MCP via `--mcp-servers`. Point it at the binary:
+
+    ```bash
+    aider --mcp-servers \
+      sw4p='{"command":"node","args":["<abs-path>/sw4p-kit/dist/mcp/bin.js"],"env":{"SW4P_API_KEY":"...","SW4P_NETWORK":"testnet"}}'
+    ```
+
+    Or persist the same JSON in `~/.aider.mcp.json` and reference it on the command line.
+  </Accordion>
+
+  <Accordion title="ElizaOS" icon="robot">
+    For ElizaOS agents, the kit can be wired directly via its `core` and `mcp` exports — see [Code samples](/products/kit/samples) for a programmatic boot pattern. A first-class `@sw4p/eliza-plugin` is on the [distribution roadmap](/products/kit#distribution-roadmap).
+  </Accordion>
+
+  <Accordion title="Generic MCP host" icon="plug">
+    Any MCP host that supports the stdio transport can launch the kit directly:
+
+    ```bash
+    SW4P_API_KEY=... SW4P_NETWORK=testnet node <abs-path>/sw4p-kit/dist/mcp/bin.js
+    ```
+
+    The server registers the standard `tools/list` and `tools/call` handlers from `@modelcontextprotocol/sdk`. For remote hosts that need Streamable HTTP, the kit ships an HTTP transport variant — see [Standards covered](/products/kit/standards#mcp).
+  </Accordion>
+</AccordionGroup>
+
+## Verifying the install
+
+After restart, the agent should list the 9 default tools (`sw4p.balance`, `sw4p.send`, `sw4p.estimate`, `sw4p.settle`, `sw4p.status`, `sw4p.portfolio`, `sw4p.rebalance_plan`, `sw4p.rebalance_execute`, `sw4p.task`). With `AP2_SIGNING_KEY` set, two more appear: `sw4p.ap2.cart_propose` and `sw4p.ap2.cart_execute`. See [Tool reference](/products/kit/tools) for shapes and example calls.
+
+## Distribution roadmap
+
+The kit ships in three stages:
+
+1. **Now** — source install from GitHub.
+2. **Next** — `npx @sw4p/kit init` for one-command setup across every host above. Auto-detects each client's MCP config path and writes the right snippet.
+3. **Then** — hosted MCP gateway at `mcp.sw4p.io` for remote agents (claude.ai web, Cursor cloud) — no local install required. Public npm publish, MCP Registry submission, Smithery listing.
+4. **Then** — `@sw4p/eliza-plugin` for first-class ElizaOS integration.
+
+## Related
+
+- [Tool reference](/products/kit/tools) — every tool, with input/output shapes
+- [Standards covered](/products/kit/standards) — MCP, AP2, x402 V2, A2A, ERC-7683
+- [Environment variables](/products/kit/env-vars) — exhaustive env-var reference
+- [Code samples](/products/kit/samples) — programmatic boot and end-to-end flows
+- [Kit overview](/products/kit) — what the kit is and why
+- [sw4p engine](/sw4p) — the settlement engine the kit wraps

@@ -80,7 +80,17 @@
               "alice/intelligence",
               "alice/possession",
               "sw4p",
-              "products/kit"
+              {
+                "group": "@sw4p/kit",
+                "pages": [
+                  "products/kit",
+                  "products/kit/install",
+                  "products/kit/tools",
+                  "products/kit/standards",
+                  "products/kit/samples",
+                  "products/kit/env-vars"
+                ]
+              }
             ]
           },
           {

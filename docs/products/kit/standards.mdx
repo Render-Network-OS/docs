@@ -1,0 +1,175 @@
+---
+title: "Standards covered"
+sidebarTitle: "Standards"
+icon: "diagram-project"
+description: "How @sw4p/kit speaks each open agent-payment standard — MCP, AP2 Cart Mandates, x402 V2, A2A, and ERC-7683 intents."
+---
+
+The kit's job is to make the [sw4p settlement engine](/sw4p) reachable from every standard an agent might speak. One thin client, every open standard, one backend.
+
+```
+  Any agent (Claude / Cursor / Eliza / Continue / your stack)
+                  │
+        MCP · x402 · A2A · AP2 · ERC-7683 intents
+                  │
+              @sw4p/kit
+                  │
+            sw4p settlement engine
+                  │
+   native USDC · USDT corridor · universal gas abstraction · intent-based
+```
+
+| Standard | Where in the kit | Module |
+|---|---|---|
+| **MCP 2025-11-25** | Tools + async Tasks primitive | `@sw4p/kit/mcp` |
+| **AP2 Cart Mandates** | HMAC-signed cart authorization with canonical JSON | `@sw4p/kit/ap2` |
+| **x402 V2** | Framework-agnostic 402 middleware + client + Discovery | `@sw4p/kit/x402` |
+| **A2A (Agent-to-Agent)** | Zod-validated `PayRequest` / `PaySettled` / `PayFailed` handler | `@sw4p/kit/a2a` |
+| **ERC-7683 intents** | On-chain intent struct builder | `@sw4p/kit/intents` |
+
+## MCP
+
+**Spec:** Model Context Protocol 2025-11-25.
+
+**Transports**
+
+- **stdio** — primary. Every host config in [Install](/products/kit/install) launches the kit over stdio via `node dist/mcp/bin.js`.
+- **Streamable HTTP** — for remote agents that cannot spawn a local process (e.g. cloud-hosted models).
+
+**What's exposed** — see [Tool reference](/products/kit/tools) for the complete surface. Two highlights:
+
+1. **Frontier agent surface** — `sw4p.balance` and `sw4p.send`. Two tools that cover ~90% of agent intent. The agent never sees chains, rails, attestation polling, or settlement mechanics.
+2. **Tasks primitive** — `sw4p.settle` and `sw4p.rebalance_execute` accept `async=true` and return a `taskId`. Agents poll `sw4p.task` instead of timing out on a single tool call. This is the MCP 2025-11-25 async-task primitive applied to long-running cross-chain settlement.
+
+## AP2 Cart Mandates
+
+**Spec:** Agent Payments Protocol (AP2), Google + 60+ partners.
+
+**Status:** No official TypeScript SDK exists ([AP2 issue #67](https://github.com/google-agentic-commerce/AP2/issues/67)). `@sw4p/kit/ap2` is the open-source reference implementation.
+
+**What the kit provides**
+
+- `IntentMandate` and `CartMandate` Zod schemas
+- Deep-canonical JSON serialization (`canonicalize`) — keys sorted recursively, signature stripped before signing
+- `HmacSigner` reference implementation (SHA-256 HMAC, timing-safe verify)
+- `proposeIntentMandate`, `proposeCartMandate`, `signMandate`, `verifyMandate`, `isCartExpired`
+- Budget guard utilities for caps on mandate execution
+
+**Flow**
+
+1. Agent calls `sw4p.ap2.cart_propose` with `from` / `to` / `amount` / `ttlSeconds`. The kit calls `sw4p.estimate` to compute the route + output and returns an unsigned `CartMandate` with `cart.deadline = now + ttlSeconds`.
+2. User signs the canonical JSON with their wallet (or `HmacSigner` for demos).
+3. Agent calls `sw4p.ap2.cart_execute` with the signed mandate. The kit verifies the signature, checks the deadline, and submits the settlement intent against the sw4p engine.
+
+**Why HMAC for the reference impl** — AP2 is signer-agnostic; the kit's `Signer` interface is small (`sign(canonical)` + `verify(canonical, signature, user)`), so any wallet adapter or KMS-backed signer drops in by implementing two methods.
+
+## x402 V2
+
+**Spec:** x402 V2, Linux Foundation (April 2026).
+
+**Module shape**
+
+- **`withSw4p402`** — framework-agnostic middleware over the Web `Request` / `Response` API. Works in any runtime that speaks Fetch (Bun, Deno, Cloudflare Workers, Node 18+, Hono, Express via adapter).
+- **`fetchWithPayment`** — client that catches a 402, calls back into a `pay()` function to obtain a payment ref, and retries with `X-Sw4p-Payment`.
+- **`createDiscoveryHandler`** — emits a `DiscoveryCatalog` for crawlers (Bazaar, x402scan).
+
+**What's frontier**
+
+- **Multi-network `accepts`** — a single 402 response advertises payment options across Base, Arbitrum, Polygon, Avalanche, Solana, Stellar in one body.
+- **Correlation header** — successful responses carry `X-Sw4p-Settlement: <intentId>` so callers can audit the settlement that paid for the response.
+- **Native Discovery** — the catalog handler is one function call; no separate manifest server needed.
+
+**402 body shape**
+
+```json
+{
+  "scheme": "sw4p-x402",
+  "version": "0.2",
+  "resource": "/api/protected",
+  "description": "Premium endpoint",
+  "accepts": [
+    {
+      "scheme": "exact",
+      "network": "base",
+      "asset": "USDC",
+      "amount": "0.10",
+      "recipient": "0x..."
+    },
+    {
+      "scheme": "exact",
+      "network": "solana",
+      "asset": "USDC",
+      "amount": "0.10",
+      "recipient": "5xN..."
+    }
+  ]
+}
+```
+
+## A2A (Agent-to-Agent)
+
+**Spec:** A2A, Linux Foundation. v1.0 SDKs shipped April 2026.
+
+The kit ships a drop-in payment-request handler:
+
+- `PayRequestSchema`, `PaySettledSchema`, `PayFailedSchema` — Zod schemas for the three message shapes
+- `createA2AHandler({ client })` — takes a `PayRequest`, validates it, calls `client.settle()`, returns `PaySettled` on success or `PayFailed` (with the `KitError` code) on failure
+
+This lets one agent ask another to pay, get back a verifiable intent ID, and audit settlement — without either side hand-rolling JSON envelopes or error taxonomies.
+
+**Message shape**
+
+```ts
+// Request
+{
+  type: "PayRequest",
+  from: { chain, asset, address },
+  to:   { chain, asset, address },
+  amount: string,
+  ttlSeconds: number,
+  memo?: string
+}
+
+// Success
+{ type: "PaySettled", intentId: string, state: string }
+
+// Failure
+{ type: "PayFailed", code: string, message: string }
+```
+
+## ERC-7683 intents
+
+**Spec:** EIP-7683 — cross-chain intent standard.
+
+`@sw4p/kit/intents` provides `buildErc7683Intent({ user, from, to, ttlSeconds, nonce? })`. It produces the on-chain struct:
+
+```ts
+{
+  user: string,
+  nonce: string,            // 0x... 16-byte random by default
+  deadline: number,         // now + ttlSeconds
+  orderData: {
+    from: { chain, asset, amount },
+    to:   { chain, asset, recipient }
+  }
+}
+```
+
+The sw4p engine is designed around ERC-7683-compatible intents, making solver-based execution a first-class expansion path. The kit's builder is the canonical client-side helper for producing those structs.
+
+## Universal gas abstraction
+
+The standards above describe **what** an agent asks for. The sw4p engine determines **how** it gets paid for. The relevant property here:
+
+> **Pay gas in the asset you're moving — on every supported chain. No chain-native tokens required.**
+
+A `sw4p.send` of USDC from Base to Solana does not require the user to hold ETH on Base or SOL on Solana. The engine handles gas in-protocol against the moved asset.
+
+## Related
+
+- [Tool reference](/products/kit/tools) — every tool, with input/output shapes
+- [Code samples](/products/kit/samples) — minimal MCP boot, AP2 Cart Mandate flow, x402 middleware example
+- [Install](/products/kit/install) — per-host setup
+- [Environment variables](/products/kit/env-vars) — env-var reference
+- [sw4p engine](/sw4p) — the settlement engine the kit wraps
+- [Protocol overview](/protocol/overview) — the wider RNDRNTWRK protocol surface

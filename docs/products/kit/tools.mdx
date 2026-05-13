@@ -1,0 +1,340 @@
+---
+title: "Tool reference"
+sidebarTitle: "Tools"
+icon: "screwdriver-wrench"
+description: "Every tool the @sw4p/kit MCP server exposes — agent surface, protocol surface, and AP2 Cart Mandate tools."
+---
+
+The kit exposes a deliberately small set of MCP tools. **9 tools by default**, **11 with `AP2_SIGNING_KEY`** configured. The agent surface (`sw4p.balance`, `sw4p.send`) covers ~90% of agent intent; the protocol surface gives lower-level access for orchestration.
+
+<Info>Wallet-address resolution: every tool that needs an address checks the explicit argument first, falls back to the server-injected `defaultWallets` map (`SW4P_USER_WALLET_BASE` / `SW4P_USER_WALLET_SOLANA`), and throws with a clear message if neither is available.</Info>
+
+## Agent surface
+
+The two tools an agent reaches for first. Everything else — rail selection, attestation, gas abstraction, recovery — happens server-side in the [sw4p settlement engine](/sw4p).
+
+### `sw4p.balance`
+
+> Show the user's USDC balance across every supported chain. Use this when the user asks about funds, wallet, or available USDC.
+
+**Input**
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `walletAddress` | string | no | Specific wallet to query. If omitted, aggregates across configured default wallets. |
+
+**Output**
+
+```ts
+{
+  asset: "USDC",
+  totalUsdc: string,           // decimal string, e.g. "12.345678"
+  byChain: {
+    [chain: string]: {
+      balance: string,         // decimal string per chain
+      address: string
+    }
+  }
+}
+```
+
+**Example call**
+
+```json
+{ "name": "sw4p.balance", "arguments": { "walletAddress": "0xAlice..." } }
+```
+
+**Example response**
+
+```json
+{
+  "asset": "USDC",
+  "totalUsdc": "12.500000",
+  "byChain": {
+    "base":   { "balance": "10.000000", "address": "0xAlice..." },
+    "solana": { "balance": "2.500000",  "address": "5xN..."     }
+  }
+}
+```
+
+### `sw4p.send`
+
+> Send USDC to any supported address (EVM or Solana). The protocol picks the route, signs, settles, and reports when funds arrive on the destination chain.
+
+One call: submit → settle. The tool polls the engine and returns when the intent reaches a terminal `completed` / `settled` state, or throws on `failed` / timeout.
+
+**Input**
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `amount` | string | yes | Positive decimal, e.g. `"0.5"` |
+| `recipient` | string | yes | EVM or Solana address |
+| `sourceChain` | `"base"` \| `"solana"` | no | Inferred from `fromAddress` or destination if omitted |
+| `fromAddress` | string | no | Source wallet; falls back to `SW4P_USER_WALLET_*` |
+| `note` | string (≤200 chars) | no | Recipient memo (where supported on the destination chain) |
+
+**Output**
+
+```ts
+{
+  status: "settled",
+  amount: string,
+  recipient: string,
+  asset: "USDC",
+  route: string,
+  intentId: string,
+  steps: Array<{
+    chain: "base" | "solana",
+    action: "submit" | "settle",
+    state: string,
+    intentId: string,
+    elapsedMs: number
+  }>,
+  totalElapsedMs: number
+}
+```
+
+**Example call**
+
+```json
+{
+  "name": "sw4p.send",
+  "arguments": {
+    "amount": "0.50",
+    "recipient": "5xN...",
+    "note": "thanks"
+  }
+}
+```
+
+## Protocol surface
+
+Lower-level tools for orchestration, status polling, and rebalancing. Most agents do not need these — they exist for power users and for flows the agent surface intentionally hides.
+
+### `sw4p.estimate`
+
+> Estimate fee and output amount for a cross-chain settlement.
+
+**Input**
+
+```ts
+{
+  from: { chain: string, asset: string, address: string },
+  to:   { chain: string, asset: string, address: string },
+  amount: string,
+  ttlSeconds: number
+}
+```
+
+**Output**
+
+```ts
+{ feeBps: number, route: string, outputAmount: string }
+```
+
+### `sw4p.settle`
+
+> Submit a cross-chain settlement. Returns an intentId you can track with `sw4p.status`. Pass `async=true` to get a task handle instead (long-running settlements).
+
+**Input** — same shape as `sw4p.estimate`, plus:
+
+| Field | Type | Notes |
+|---|---|---|
+| `recipientMemo` | string (optional) | Where the destination chain supports it |
+| `async` | boolean (optional) | When `true`, returns a task handle for `sw4p.task` |
+
+**Output** (sync)
+
+```ts
+{ intentId: string, status: string }
+```
+
+**Output** (async)
+
+```ts
+{ taskId: string, status: "pending" }
+```
+
+### `sw4p.status`
+
+> Get the current state of a settlement intent.
+
+**Input**
+
+```ts
+{ intentId: string }
+```
+
+**Output**
+
+```ts
+{ intentId: string, state: string }
+```
+
+The engine drives intents through a 15-state lifecycle (8 instruction + 7 intent). Terminal states are `completed` / `settled` (success) and `failed`.
+
+### `sw4p.portfolio`
+
+> Aggregate cross-chain USDC balances for a wallet address.
+
+**Input**
+
+```ts
+{ walletAddress: string }
+```
+
+**Output**
+
+```ts
+{
+  chains: Array<{
+    chain: string,
+    asset: string,
+    balance: string,
+    address?: string
+  }>
+}
+```
+
+### `sw4p.rebalance_plan`
+
+> Plan cross-chain USDC moves to reach a target allocation. Returns a plan you can pass to `sw4p.rebalance_execute`.
+
+**Input**
+
+```ts
+{
+  walletAddress: string,
+  target: { [chain: string]: string }   // decimal string per chain
+}
+```
+
+**Output**
+
+```ts
+{ moves: unknown[] }   // engine-specific move descriptors
+```
+
+### `sw4p.rebalance_execute`
+
+> Execute a rebalance plan. Returns intent IDs synchronously, or a task handle when `async=true` (recommended for multi-leg plans).
+
+**Input**
+
+```ts
+{
+  plan: { moves: unknown[] },
+  async?: boolean
+}
+```
+
+**Output** (sync)
+
+```ts
+{ intentIds: string[] }
+```
+
+**Output** (async)
+
+```ts
+{ taskId: string, status: "pending" }
+```
+
+### `sw4p.task`
+
+> Get the state of an async task (returned by `sw4p.settle` or `sw4p.rebalance_execute` when called with `async=true`).
+
+The MCP 2025-11-25 async-task primitive. Agents poll long-running settlements instead of timing out on a single tool call.
+
+**Input**
+
+```ts
+{ taskId: string }
+```
+
+**Output**
+
+```ts
+{
+  taskId: string,
+  tool: string,
+  status: "pending" | "running" | "completed" | "failed",
+  result?: unknown,
+  error?: { code: string, message: string },
+  progress?: { current: number, total: number, message?: string },
+  createdAt: number,
+  updatedAt: number
+}
+```
+
+## AP2 surface
+
+Unlocked when `AP2_SIGNING_KEY` is set. These wrap the [AP2 Cart Mandate](/products/kit/standards#ap2-cart-mandates) flow — propose, user signs, execute.
+
+### `sw4p.ap2.cart_propose`
+
+> Quote a settlement and return an AP2 Cart Mandate (unsigned). The user signs to authorize the exact amounts and route before `sw4p.ap2.cart_execute` is called.
+
+**Input**
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `user` | string | yes | User identifier (matched on verify) |
+| `intentMandateId` | string | no | Links the cart to a prior Intent Mandate |
+| `from` | `{ chain, asset, address }` | yes | Source endpoint |
+| `to` | `{ chain, asset, address }` | yes | Destination endpoint |
+| `amount` | string | yes | Decimal string |
+| `ttlSeconds` | int | yes | Cart deadline = now + ttlSeconds |
+
+**Output** — an unsigned `CartMandate`:
+
+```ts
+{
+  type: "CartMandate",
+  id: string,
+  intentMandateId?: string,
+  user: string,
+  cart: {
+    from: { chain, asset, amount, address },
+    to:   { chain, asset, amount, address },
+    route: string,
+    feeBps: number,
+    deadline: number          // unix seconds
+  },
+  issuedAt: number,
+  signature?: string          // populated after sign
+}
+```
+
+### `sw4p.ap2.cart_execute`
+
+> Settle a signed AP2 Cart Mandate. Verifies the signature, checks the deadline, and submits the settlement intent.
+
+**Input**
+
+```ts
+{ mandate: CartMandate }   // must include `signature`
+```
+
+**Output**
+
+```ts
+{ intentId: string, status: string }
+```
+
+On invalid signature or expired deadline, the tool throws with an explanatory message.
+
+## Tool count by configuration
+
+| Config | Tools | Names |
+|---|---|---|
+| Default (no signer) | **9** | `sw4p.balance`, `sw4p.send`, `sw4p.estimate`, `sw4p.settle`, `sw4p.status`, `sw4p.portfolio`, `sw4p.rebalance_plan`, `sw4p.rebalance_execute`, `sw4p.task` |
+| With `AP2_SIGNING_KEY` | **11** | All of the above + `sw4p.ap2.cart_propose`, `sw4p.ap2.cart_execute` |
+
+## Related
+
+- [Standards covered](/products/kit/standards) — how the kit speaks MCP, AP2, x402 V2, A2A, ERC-7683
+- [Code samples](/products/kit/samples) — end-to-end flows
+- [Environment variables](/products/kit/env-vars) — env-var reference
+- [Install](/products/kit/install) — per-host setup
+- [sw4p engine](/sw4p) — the settlement engine the kit wraps

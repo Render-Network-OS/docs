@@ -1,0 +1,232 @@
+---
+title: "Code samples"
+sidebarTitle: "Samples"
+icon: "code"
+description: "Programmatic boot, end-to-end sw4p.send, AP2 Cart Mandate flow, x402 middleware — copy-paste examples for @sw4p/kit."
+---
+
+These samples are framework-agnostic TypeScript. Each one runs against the kit's public API surface — same imports, same shapes you'd use in production.
+
+<Info>The kit holds no private keys. In production, swap the demo `HmacSigner` for a wallet-backed signer that implements the two-method `Signer` interface (`sign(canonical) → string`, `verify(canonical, signature, user) → boolean`).</Info>
+
+## 1. Minimal MCP server boot
+
+The simplest agent-facing boot. Wires the `SettlementClient` to an SDK adapter, registers the default 9-tool surface, and serves over stdio.
+
+```ts
+import { core, mcp } from "@sw4p/kit";
+
+// Replace this with the real fetch wrapper pointing at your sw4p backend.
+// The shape mirrors the kit's SdkLike interface.
+const sdk = {
+  estimate:        async () => ({ feeBps: 50, route: "sw4p_settle", outputAmount: "1.99" }),
+  transfer:        async () => ({ intentId: "intent_demo", status: "submitted" }),
+  status:          async (id: string) => ({ intentId: id, state: "settled" }),
+  getPortfolio:    async () => ({ chains: [] }),
+  planRebalance:   async () => ({ moves: [] }),
+  executeRebalance: async () => ({ intentIds: [] }),
+};
+
+const client = new core.SettlementClient({ sdk: sdk as never });
+const server = mcp.createServer({ client });
+
+console.log("tools:", server.listTools().map((t) => t.name));
+// → ["sw4p.balance", "sw4p.send", "sw4p.estimate", "sw4p.settle",
+//    "sw4p.status", "sw4p.portfolio", "sw4p.rebalance_plan",
+//    "sw4p.rebalance_execute", "sw4p.task"]
+```
+
+For the production binary that ships in `dist/mcp/bin.js`, see `src/mcp/bin.ts` in the kit repo — it wires `SettlementClient` to real HTTP calls against `SW4P_API_URL` with `X-API-Key` and `X-SW4P-Network` headers.
+
+## 2. End-to-end `sw4p.send`
+
+Programmatic equivalent of what the agent does when a user says "send 0.50 USDC to `5xN...`".
+
+```ts
+import { core, mcp } from "@sw4p/kit";
+
+const client = new core.SettlementClient({ sdk: yourSwap4Sdk });
+const server = mcp.createServer({
+  client,
+  defaultWallets: {
+    base:   process.env.SW4P_USER_WALLET_BASE,
+    solana: process.env.SW4P_USER_WALLET_SOLANA,
+  },
+});
+
+const result = await server.callTool("sw4p.send", {
+  amount: "0.50",
+  recipient: "5xN...",
+  note: "thanks",
+});
+
+// result.status === "settled"
+// result.intentId === "intent_..."
+// result.route, result.totalElapsedMs, result.steps[] are populated
+console.log(result.intentId, "settled in", result.totalElapsedMs, "ms");
+```
+
+The kit polls the engine internally (default: every 1s, 60s timeout) and resolves when the intent reaches `completed` / `settled`. On `failed` or timeout the call throws with an explanatory message that includes the `intentId` so the caller can re-check with `sw4p.status`.
+
+## 3. AP2 Cart Mandate flow
+
+The canonical agent-payment path: agent proposes an unsigned mandate, the user signs it, the agent submits the signed mandate, the kit verifies + settles.
+
+```ts
+import { core, mcp, ap2 } from "@sw4p/kit";
+
+const client = new core.SettlementClient({ sdk: yourSwap4Sdk });
+const signer = new ap2.HmacSigner(process.env.AP2_SIGNING_KEY!);
+const server = mcp.createServer({ client, signer });
+
+// [1] Agent proposes an unsigned Cart Mandate
+const cart = (await server.callTool("sw4p.ap2.cart_propose", {
+  user: "alice",
+  from: { chain: "base",   asset: "USDC", address: "0xAliceBase" },
+  to:   { chain: "solana", asset: "USDC", address: "creator_solana_1" },
+  amount: "2.00",
+  ttlSeconds: 600,
+})) as ap2.CartMandate;
+
+console.log("route:", cart.cart.route, cart.cart.feeBps, "bps");
+console.log("deadline:", new Date(cart.cart.deadline * 1000).toISOString());
+
+// [2] User signs (in production: their wallet signs the canonical bytes)
+const signed = await ap2.signMandate(cart, signer);
+
+// [3] Verification + settlement
+const result = (await server.callTool("sw4p.ap2.cart_execute", {
+  mandate: signed,
+})) as { intentId: string };
+
+console.log("intent:", result.intentId);
+
+// [4] Status check (optional — execute is sync to the engine's submit step)
+const status = (await server.callTool("sw4p.status", {
+  intentId: result.intentId,
+})) as { state: string };
+
+console.log("state:", status.state);
+```
+
+This mirrors `sw4p-kit/examples/cart-mandate-flow.ts`. `cart_execute` rejects an unsigned mandate, a tampered mandate, or one whose `cart.deadline` is in the past.
+
+## 4. x402 V2 middleware (any Fetch runtime)
+
+Protect a route with a paid 402 response advertising multi-network payment options. Works in any runtime that speaks Web `Request` / `Response` — Bun, Deno, Cloudflare Workers, Node 18+ via undici, Hono, etc.
+
+```ts
+import { x402 } from "@sw4p/kit";
+
+const paywall = x402.withSw4p402({
+  resource: "/api/premium",
+  description: "Premium analytics feed",
+  accepts: [
+    { scheme: "exact", network: "base",   asset: "USDC", amount: "0.10", recipient: "0xRecv..." },
+    { scheme: "exact", network: "solana", asset: "USDC", amount: "0.10", recipient: "5xRecv..." },
+  ],
+  // Verify the payment ref against the sw4p engine (or your own ledger)
+  async verify(paymentRef, accepts) {
+    // ...look up paymentRef, confirm settlement, match one of `accepts`...
+    return { ok: true, intentId: "intent_...", payer: "0xAlice...", matchedAccept: accepts[0] };
+  },
+});
+
+// Hand `paywall` your route handler — works as middleware over Fetch.
+async function handle(req: Request): Promise<Response> {
+  return paywall(req, async () => {
+    return Response.json({ data: "premium payload" });
+  });
+}
+```
+
+Successful responses carry `X-Sw4p-Settlement: <intentId>` and `X-Sw4p-Payer: <address>` for audit/correlation.
+
+### Client side — pay then retry
+
+```ts
+import { x402 } from "@sw4p/kit";
+
+const res = await x402.fetchWithPayment("https://api.example.com/api/premium", {
+  async pay({ accepts, resource }) {
+    // Pick an accept, settle through sw4p, return the payment ref the server will verify
+    const chosen = accepts[0];
+    const ref = await yourPaymentFlow(chosen, resource);
+    return { ref, chosen };
+  },
+});
+console.log(await res.json());
+```
+
+### Discovery (Bazaar / x402scan)
+
+```ts
+import { x402 } from "@sw4p/kit";
+
+const discovery = x402.createDiscoveryHandler({
+  server: { name: "my-x402-api", version: "1.0.0" },
+  resources: [
+    {
+      url: "https://api.example.com/api/premium",
+      description: "Premium analytics feed",
+      accepts: [
+        { scheme: "exact", network: "base", asset: "USDC", amount: "0.10", recipient: "0xRecv..." },
+      ],
+    },
+  ],
+});
+
+// Wire `discovery` at /.well-known/x402 (or wherever your crawler expects it)
+```
+
+## 5. A2A payment-request handler
+
+Receive a `PayRequest` from another agent, settle, respond.
+
+```ts
+import { core, a2a } from "@sw4p/kit";
+
+const client = new core.SettlementClient({ sdk: yourSwap4Sdk });
+const handle = a2a.createA2AHandler({ client });
+
+const response = await handle({
+  type: "PayRequest",
+  from: { chain: "base",   asset: "USDC", address: "0xAlice..." },
+  to:   { chain: "solana", asset: "USDC", address: "5xN..." },
+  amount: "1.00",
+  ttlSeconds: 600,
+  memo: "invoice-1234",
+});
+
+if (response.type === "PaySettled") {
+  console.log("settled:", response.intentId, response.state);
+} else {
+  console.error("failed:", response.code, response.message);
+}
+```
+
+## 6. ERC-7683 intent builder
+
+```ts
+import { intents } from "@sw4p/kit";
+
+const intent = intents.buildErc7683Intent({
+  user: "0xAlice...",
+  from: { chain: "base",   asset: "USDC", amount: "1.00" },
+  to:   { chain: "solana", asset: "USDC", recipient: "5xN..." },
+  ttlSeconds: 600,
+});
+
+// intent = { user, nonce: "0x...", deadline, orderData: { from, to } }
+```
+
+The resulting struct is intentionally compatible with the sw4p engine's intent surface and any ERC-7683 solver network.
+
+## Related
+
+- [Tool reference](/products/kit/tools) — every tool, with input/output shapes
+- [Standards covered](/products/kit/standards) — MCP, AP2, x402 V2, A2A, ERC-7683
+- [Install](/products/kit/install) — per-host setup
+- [Environment variables](/products/kit/env-vars) — env-var reference
+- [Kit overview](/products/kit) — what the kit is and why
+- [sw4p engine](/sw4p) — the settlement engine the kit wraps
