@@ -1,7 +1,7 @@
 # sw4p Ecosystem Unified Design
 
-**Status:** spec, ready for review.
-**Date:** 2026-05-13.
+**Status:** spec, partially fulfilled — the sw4p engine + kit doctrine-alignment stream is complete (see Update Log at the bottom of this document for merge SHAs).
+**Date:** 2026-05-13 (original), 2026-05-14 (status update).
 **Author:** brainstorming agent under user direction ("use superpowers").
 **Spec format:** superpowers `brainstorming` skill terminal artifact. Companion `writing-plans` output (implementation plan) is the next deliverable after spec approval; it is **not** included in this document.
 
@@ -31,7 +31,7 @@ The implementation surface for THIS spec is intentionally narrow: docs and coord
 | Stream | Repo | State at 2026-05-13 |
 |---|---|---|
 | **sw4p-earn launch-readiness train** | `Render-Network-OS/sw4p-earn` | 30/30 PRs merged on main. Closure-matrix marks 13 of 14 CC-* findings closed-on-branch; CC-14 in-flight as Wave F1. Stage-0 ready; Stage-1/2/3 promotion blocked on operator items (branch protection, decimal-verifier secret, multisig rehearsal, sw4p engine mainnet, external audit). |
-| **sw4p engine + kit doctrine alignment** | `Render-Network-OS/sw4p-pro`, `Render-Network-OS/sw4p-kit` | "Engine" + "agent-native SDK" framing landed. Vendor names stripped from public copy. Universal gas abstraction framing applied uniformly. Kit appears in public docs for the first time. Testnet/devnet live; mainnet paused; npm publish pending. |
+| **sw4p engine + kit doctrine alignment** | `Render-Network-OS/sw4p-pro`, `Render-Network-OS/sw4p-kit` | **DONE 2026-05-14** — six tracks (A1, A2/A3, A4, A5-A8, B7, C1/C2) merged after three review passes. Engine: Registry-driven chains + CCTP V2 testnet MT correction (`d98e3ee`), Hyperlane+Wormhole NTT removal + `route_security` rename (`6a38db7`), solver-auction persistence with 3-phase atomic closer (`b31f2bc`), deploy-contracts cleanup + smart_account hardening (`e93a8a3`). Kit: Streamable HTTP transport (`c9ec65f`), `sw4p-kit-init`/`sw4p-kit-doctor` CLIs (`6d30abe`). See Update Log at the bottom of this document for the full audit trail. Testnet/devnet live; mainnet paused; npm publish pending. |
 | **Parent 555 monorepo canonical alignment** | (local-only monorepo at `Work/555/`) | `RNDRNTWRK_CANONICAL_TRUTH.md` 1.0 published. `docs/sw4p.mdx`, `docs/products/kit.mdx`, `docs/protocol/roadmap.mdx` updated to match engine/kit doctrine. **sw4p-earn is not mentioned in any of these files.** |
 
 ### 1.2 The problem in one sentence
@@ -403,3 +403,49 @@ This spec is the terminal artifact of the brainstorming skill. Per the skill's p
 ---
 
 *Spec author note:* the user's system-reminder explicitly waived clarifying questions for this run, so the four design choices in §8 are made as reasonable defaults rather than user-confirmed inputs. Any of them is reversible at review.
+
+---
+
+# Update Log
+
+## 2026-05-14 — sw4p engine + kit doctrine-alignment stream: DONE
+
+The middle row of the §1.1 stream-status table has flipped from "Testnet/devnet live; mainnet paused; npm publish pending" partial state to **DONE**. Six tracks merged across two repos via three independent review passes, resolving **35 confidence-≥75 hack findings** (8 CRITICAL + 26 IMPORTANT + 1 MINOR). The full per-PR audit trail (commit-by-commit with what each pass caught and fixed) is in the companion plan [`docs/superpowers/plans/2026-05-13-sw4p-pr-hack-fixes.md`](../plans/2026-05-13-sw4p-pr-hack-fixes.md) — see its **Completion Report** section.
+
+### Merge SHAs by track
+
+| Track | PR | Repo | Merge SHA |
+|---|---|---|---|
+| A1 — Networks Registry + V1/V2 testnet MT correction | [#178](https://github.com/Render-Network-OS/sw4p-pro/pull/178) | sw4p-pro | `d98e3ee` |
+| A2/A3 — Hyperlane + Wormhole NTT removal + unified Starknet gate | [#179](https://github.com/Render-Network-OS/sw4p-pro/pull/179) | sw4p-pro | `6a38db7` |
+| A4 — Solver-auction persistence + 3-phase atomic closer | [#180](https://github.com/Render-Network-OS/sw4p-pro/pull/180) | sw4p-pro | `b31f2bc` |
+| A5-A8 — Deploy-contracts cleanup + smart_account hardening | [#181](https://github.com/Render-Network-OS/sw4p-pro/pull/181) | sw4p-pro | `e93a8a3` |
+| B7 — Streamable HTTP transport | [#1](https://github.com/Render-Network-OS/sw4p-kit/pull/1) | sw4p-kit | `c9ec65f` |
+| C1/C2 — sw4p-kit-init + sw4p-kit-doctor CLIs | [#2](https://github.com/Render-Network-OS/sw4p-kit/pull/2) | sw4p-kit | `6d30abe` |
+
+### Seams to other streams — impact
+
+- **Seam #1 (Doctrine vocabulary)** — A2/A3's `route_security.rs` rename + Hyperlane/Wormhole NTT stripping + Starknet unified-gate doc updates honor the canonical-truth "no vendor names in public copy" rule end-to-end. The §1.1 row is now consistent with canonical truth.
+- **Seam #2 (sw4p-earn → sw4p engine routing-fee revenue)** — A4's solver-auction persistence is the first piece of the auction infrastructure that sw4p-earn's Stage-2 economics route fees through. The 3-phase atomic-close design eliminates the recovery edge cases that would have created revenue desync between sw4p-earn's books and sw4p's auction DB.
+- **Seam #3 (npm publish blockers)** — B7 + C1/C2 round out the kit's external surface: the streamable-HTTP entrypoint + the init/doctor CLIs are the last items blocking the `npm publish` step. The kit is now publish-ready from a code standpoint; remaining blockers are npm-tier organizational items (scope ownership, README polish, version bump) outside this spec.
+
+### Items still NOT done (out of scope for this update, per the original spec)
+
+- sw4p engine mainnet return (separate spec, separate PR train)
+- `@sw4p/kit` slim-down + npm publish (kit-side organizational steps)
+- Stage-1/2/3 promotion of sw4p-earn (operator items: branch protection, decimal-verifier secret, multisig rehearsal, external audit)
+- The 30-PR sw4p-earn launch-readiness train (separate stream; closure-matrix at CC-13 of 14)
+- The 555 parent-monorepo canonical-corpus alignment (separate work in `docs/sw4p.mdx`, `docs/products/kit.mdx`, etc.)
+
+### Verifiable proof
+
+```bash
+# Engine + kit doctrine-alignment stream — all 6 merge SHAs
+gh pr view 178 --repo Render-Network-OS/sw4p-pro --json state,mergeCommit,mergedAt
+gh pr view 179 --repo Render-Network-OS/sw4p-pro --json state,mergeCommit,mergedAt
+gh pr view 180 --repo Render-Network-OS/sw4p-pro --json state,mergeCommit,mergedAt
+gh pr view 181 --repo Render-Network-OS/sw4p-pro --json state,mergeCommit,mergedAt
+gh pr view 1   --repo Render-Network-OS/sw4p-kit --json state,mergeCommit,mergedAt
+gh pr view 2   --repo Render-Network-OS/sw4p-kit --json state,mergeCommit,mergedAt
+# Expected: all six show state=MERGED with the SHA above.
+```
