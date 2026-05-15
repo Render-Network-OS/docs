@@ -124,7 +124,7 @@ The frontier engine has five layers, top to bottom:
 2. **The orchestration layer** — `sw4p-backend`, in its **reduced role**. It does route selection, fee quoting, the solver auction, chain-watching, attestation polling, and relay. It does **not** custody value-movement atomicity — that is on-chain. Its job is to *decide and observe*, not to *hold*.
 3. **The canonical contract set** — one Solana program, one EVM contract (Decision 1). This is where atomic state transitions and value movement happen. Swap-then-bridge is one transaction; fee-take, pause, limits, and timelock are enforced here.
 4. **The rail layer** — the execution primitives the contracts and orchestration use to actually cross chains: **CCTP V2** (the 7 CCTP chains), **Allbridge Core** (Tron), and **Circle Gateway** (Approach B — unified USDC liquidity). The rail layer is *interchangeable underneath the interface*: an ERC-7683 intent does not name a rail; the engine picks one.
-5. **The supporting services** — **Kora** (the Solana gas-sponsor / fee-payer service) and the **per-chain address registry** (the canonical mapping of chain → contract addresses, Universal Router address, USDC mint/token address, CCTP domain, rail config).
+5. **The supporting services** — the **Solana gas-sponsor adapter** (Circle primary for Approach A; Kora is a legacy/fallback provider only when explicitly selected and capability-gated) and the **per-chain address registry** (the canonical mapping of chain → contract addresses, Universal Router address, USDC mint/token address, CCTP domain, rail config).
 
 ### 3.2 The canonical contract set
 
@@ -230,7 +230,7 @@ graph TB
   end
 
   subgraph Support["Supporting Services"]
-    KORA["Kora (Solana fee-payer / gas sponsor)"]
+    SPONSOR["Solana Gas Sponsor<br/>(Circle primary; Kora fallback)"]
   end
 
   subgraph Chains["Day-One Chains (8)"]
@@ -282,7 +282,7 @@ graph TB
   WATCH -.polls proof.-> ALLBRIDGE
 
   SOL --> SOLANA
-  KORA --> SOLANA
+  SPONSOR --> SOLANA
   EVM --> ETH
   EVM --> BASE
   EVM --> ARB
@@ -291,7 +291,7 @@ graph TB
   EVM --> POLY
   ALLB --> TRON
 
-  RELAY --> KORA
+  RELAY --> SPONSOR
 ```
 
 ---
@@ -557,7 +557,7 @@ The two halves of the canonical set are **symmetric in role, asymmetric in primi
 | Fee-take | Signature-gated, on-chain | In-contract, on-chain |
 | Safety controls | Pause, 24h timelock, daily limits, Squads multisig | Equivalent controls on the EVM side (an open item — §13 — is confirming the EVM contract carries an equivalent surface) |
 | Token-program base | Pinocchio + P-Token | Permit2 + ERC-20 |
-| Gas / fee-payer | Kora sponsors the fee-payer | Native gas; relay-paid |
+| Gas / fee-payer | Circle Gas Station / Circle-managed Solana is the Approach A primary sponsor; Kora only if explicitly selected as fallback | Native gas; relay-paid |
 
 Both halves expose the *same lifecycle* to the orchestration layer — `Created → Routed → SwapInDone → BridgeInitiated → Attested → Settled` — so the state machine does not care which chain a leg is on.
 
@@ -766,7 +766,7 @@ The two chains of dependency are independent of each other: the EVM sunset chain
 ### 12.3 What does *not* get retired
 
 - **`sw4p-backend`** — it is reduced in role (§3.5), not retired. The orchestration layer is permanent.
-- **Kora** — the Solana fee-payer service is permanent supporting infrastructure.
+- **The Solana gas-sponsor abstraction** — it is permanent, but **Kora is not**. Approach A treats Circle as the primary Solana gas sponsor, keeps Kora only as an explicit fallback while local/devnet/testnet evidence is gathered, and makes any Kora sunset depend on proving Circle covers the exact Solana operations in scope.
 - **`sw4p-native`'s security lineage** — it is *carried* onto Pinocchio, not retired. The fuzz tests, the audit-fix history, the timelock/pause/limits design — all preserved in the canonical program.
 
 ---

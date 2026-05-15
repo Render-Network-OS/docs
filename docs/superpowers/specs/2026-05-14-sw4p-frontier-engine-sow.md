@@ -42,13 +42,13 @@ Per design spec §15, this SOW explicitly excludes:
 
 ## 2. Work breakdown structure
 
-The heart of this SOW. Approach A (design spec §11.2's 12-item day-one list) is decomposed into **ten workstreams (WS0–WS9)**, each into **work packages (WP)** — WS0 is the audit workstream (the Solana deployment-status audit, the EVM deployment / live-path audit, the EVM safety-control gap scoping, the P-Token activation-status check, and the `ZapNative` deletion that now gates on the EVM live-path audit), WS1–WS9 are the build, validation, audit, and promotion workstreams. Every work package states a **deliverable**, its **dependencies** (which work packages must finish first), and a **rough effort size** (S / M / L / XL — relative sizing, not an hours commitment).
+The heart of this SOW. Approach A (design spec §11.2's 12-item day-one list) is decomposed into **ten workstreams (WS0–WS9)**, each into **work packages (WP)** — WS0 is the audit workstream (the Solana deployment-status audit, the EVM deployment / live-path audit, the EVM safety-control gap scoping, the P-Token activation-status check, the Circle-vs-Kora Solana gas-sponsor capability gate, and the `ZapNative` deletion that now gates on the EVM live-path audit), WS1–WS9 are the build, validation, audit, and promotion workstreams. Every work package states a **deliverable**, its **dependencies** (which work packages must finish first), and a **rough effort size** (S / M / L / XL — relative sizing, not an hours commitment).
 
 Effort-size legend: **S** = a focused change, days. **M** = a contained sub-system, ~1–2 weeks. **L** = a substantial build or migration, multiple weeks. **XL** = a major rebuild or a cross-chain deployment fan-out.
 
-### WS0 — Audit workstream: Solana deployment-status, EVM live-path, P-Token activation, ZapNative deletion
+### WS0 — Audit workstream: Solana deployment-status, EVM live-path, P-Token activation, gas-sponsor gate, ZapNative deletion
 
-The audit-and-establish-ground-truth opener. Design spec §13.1 Q4 makes the **Solana deployment-status audit the plan's first task**. The design review added an **EVM deployment / live-path audit** (design spec §13.2 R8a): the repo still carries an active `sw4p-backend` deploy path and a frontend ABI that reference `ZapNative`, and local audit notes have V3 "dormant by default" rather than confirmed-live — so the EVM live-state must be *established*, not assumed. WS0 groups the audits that establish ground truth, the P-Token activation-status check, and the `ZapNative` deletion (which now *gates on* the EVM live-path audit, not on nothing).
+The audit-and-establish-ground-truth opener. Design spec §13.1 Q4 makes the **Solana deployment-status audit the plan's first task**. The design review added an **EVM deployment / live-path audit** (design spec §13.2 R8a): the repo still carries an active `sw4p-backend` deploy path and a frontend ABI that reference `ZapNative`, and local audit notes have V3 "dormant by default" rather than confirmed-live — so the EVM live-state must be *established*, not assumed. WS0 groups the audits that establish ground truth, the P-Token activation-status check, the Solana gas-sponsor capability gate, and the `ZapNative` deletion (which now *gates on* the EVM live-path audit, not on nothing).
 
 | WP | Deliverable | Dependencies | Size |
 |---|---|---|---|
@@ -57,6 +57,7 @@ The audit-and-establish-ground-truth opener. Design spec §13.1 Q4 makes the **S
 | **WP0.3 Delete `ZapNative.sol`** | `ZapNative.sol` removed from the tree — but **only after WP0.4 confirms no live path references it**. `ZapNative` was thought to be never-deployed dead code; the repo in fact still carries an active `sw4p-backend` deploy path (`sw4p-backend/src/main.rs`) and a frontend ABI (`BridgeApp.tsx`) that reference it (design spec §12.1 #1, §13.2 R8a). The deletion is therefore **no longer zero-risk / first / free** — it is gated on the EVM live-path audit. Still small and still early once that audit clears it. | WP0.4. | S |
 | **WP0.4 EVM deployment / live-path audit** | A written audit resolving design spec §13.2 R8a: across all 6 EVM chains, what is **actually deployed** where, what **references** each EVM contract generation — the `sw4p-backend` deploy path for `ZapNative` (`sw4p-backend/src/main.rs`), the frontend `ZapNative` ABI (`BridgeApp.tsx`), every `ZapAndBridgeV4` / V3 reference — and **V3's real live status** (local audit notes have it "dormant by default," used only on explicit per-chain opt-in, not plainly the only live Ethereum path). This audit gates the `ZapNative` deletion (WP0.3) and gates V3 retirement (WP2.5) alongside WP2.5's existing V4-to-Ethereum gate. | None — can run parallel to WP0.1 / WP0.2. | S |
 | **WP0.5 P-Token activation-status check** | A written check confirming P-Token's **actual activation status on the target cluster** before the canonical Solana program is built to rely on it. The official Solana upgrade page says devnet activation is complete and mainnet activation targets May 2026, while the current Anza feature-gate tracker should also be checked; this SOW therefore treats activation as a fact to verify, not an unconditional assumption. The finding feeds WP1.2: the `batch`-instruction adoption is feature-gated on P-Token activation, with a fallback to individual token CPIs when P-Token is not active on the target cluster. | None — can run parallel to WP0.1 / WP0.2 / WP0.4. | S |
+| **WP0.6 Solana gas-sponsor capability gate (Circle primary, Kora fallback)** | A written local/devnet/testnet finding proving whether Circle's Solana gas sponsorship covers the exact Approach A operations: CCTP burn/mint/receive, SPL token movement, canonical-program invocation, and any required transaction assembly/signing semantics. The default target is `SW4P_SOLANA_GAS_SPONSOR=circle`; Kora remains available only as an explicit fallback for operations Circle cannot sponsor. Kora cannot be declared permanent or sunset until this gate closes. | WP0.1 (live Solana programs known); can run parallel to WP0.5. | S |
 
 ### WS1 — Solana canonical program: consolidation, Pinocchio rebuild, consumer migration
 
@@ -176,6 +177,7 @@ graph TD
     WP03["WP0.3 Delete ZapNative<br/>(gates on WP0.4)"]
     WP04["WP0.4 EVM deployment / live-path audit"]
     WP05["WP0.5 P-Token activation-status check"]
+    WP06["WP0.6 Solana gas-sponsor capability gate<br/>(Circle primary; Kora fallback)"]
 
     %% WS1 - Solana
     WP11["WP1.1 Pinocchio rebuild<br/>canonical Solana program"]
@@ -238,6 +240,7 @@ graph TD
     WP04 --> WP03
     WP04 --> WP25
     WP05 --> WP12
+    WP01 --> WP06
 
     %% WS1 edges
     WP11 --> WP12
@@ -286,6 +289,7 @@ graph TD
     WP24 --> WP72
     WP33 --> WP72
     WP61 --> WP72
+    WP06 --> WP72
     WP44 --> WP73
     WP72 --> WP73
     WP72 --> WP74
@@ -305,6 +309,7 @@ graph TD
 
     %% WS9 edges
     WP82 --> WP91
+    WP06 --> WP91
     WP91 --> WP25
     WP91 --> WP35
     WP91 --> WP92
@@ -323,7 +328,7 @@ The longest dependency chain through the work packages — the sequence that det
 
 (Solana deployment-status audit → Pinocchio rebuild of the canonical program → watcher migration → 3-phase rule applied to the watcher → devnet/testnet deploy → injected-failure atomicity testing → iterate to convergence → external audit → remediate to clean → mainnet promotion → post-promotion sunset completion.)
 
-The critical path runs through the **Solana migration and atomicity** thread rather than the EVM thread because the watcher migration (WP1.4) is a prerequisite both for the WP1.5 consumer-migration *and* for bringing the watcher under the 3-phase rule (WP4.2), and WP4.2 is in turn a prerequisite for the injected-failure testing (WP7.4). The EVM thread (WP0.2 → WP2.1 → WP2.4) and the rail thread (WP3.1 → WP3.2 → WP3.3) are heavy but converge into WP7.2 with slack relative to the Solana/atomicity chain. WP1.1 (the Pinocchio rebuild, sized XL) and WP9.1 (mainnet promotion, sized XL) are the two single largest items on the path.
+The critical path runs through the **Solana migration and atomicity** thread rather than the EVM thread because the watcher migration (WP1.4) is a prerequisite both for the WP1.5 consumer-migration *and* for bringing the watcher under the 3-phase rule (WP4.2), and WP4.2 is in turn a prerequisite for the injected-failure testing (WP7.4). The EVM thread (WP0.2 → WP2.1 → WP2.4), the rail thread (WP3.1 → WP3.2 → WP3.3), and the gas-sponsor gate (WP0.6 → WP7.2 → WP9.1) converge into the same validation and promotion gates. WP1.1 (the Pinocchio rebuild, sized XL) and WP9.1 (mainnet promotion, sized XL) are the two single largest items on the path.
 
 The actual Anchor-program retirement (WP9.3) is a distinct late work package, **not** on the critical path: it gates on WP7.5 (the migration cutover validated on testnet) and WP1.5 (consumers migrated + references stripped), and joins the graph at WP9.2 with slack relative to the WP9.1 promotion chain. The split — WP1.5 migrates and strips references, WP9.3 decommissions after testnet validation — is what keeps the SOW consistent with design spec §14.4 / TRD NFR-MIG-002, which require the cutover testnet-validated before the corresponding mainnet sunset.
 
@@ -337,9 +342,9 @@ Work packages grouped into seven named milestones. Each milestone states what is
 
 ### M0 — Audit workstream: ground truth established + ZapNative gate resolved
 
-- **Contains:** WP0.1, WP0.2, WP0.3, WP0.4, WP0.5.
-- **Done at M0:** the Solana deployment-status question (§13.1 Q4) is resolved in writing; the EVM deployment / live-path state is established in writing (§13.2 R8a) — what is actually deployed on each EVM chain, what references `ZapNative` and V3, and V3's real live status; the EVM safety-control gap (§13.2 R8) is scoped; P-Token's actual activation status on the target cluster is checked; the `ZapNative` deletion gate is resolved. If the EVM live-path audit confirms no live path references `ZapNative`, `ZapNative.sol` is deleted in WP0.3. If the audit finds a live dependency, M0 records the blocker and the deletion moves behind the dependency's migration; it is not forced through on assumed state.
-- **Gates:** the WS1 Solana rebuild (needs WP0.1), the WP1.2 feature-gated `batch` adoption (needs WP0.5), the WS2 EVM build (needs WP0.2), WP2.5 V3 retirement (needs WP0.4 for V3's live state), the WS3 rail consolidation (needs WP0.1), the WS4 rule formalization (needs WP0.1). Nothing material starts before M0.
+- **Contains:** WP0.1, WP0.2, WP0.3, WP0.4, WP0.5, WP0.6.
+- **Done at M0:** the Solana deployment-status question (§13.1 Q4) is resolved in writing; the EVM deployment / live-path state is established in writing (§13.2 R8a) — what is actually deployed on each EVM chain, what references `ZapNative` and V3, and V3's real live status; the EVM safety-control gap (§13.2 R8) is scoped; P-Token's actual activation status on the target cluster is checked; the Circle-vs-Kora Solana gas-sponsor gate is defined with local/devnet/testnet proof criteria; the `ZapNative` deletion gate is resolved. If the EVM live-path audit confirms no live path references `ZapNative`, `ZapNative.sol` is deleted in WP0.3. If the audit finds a live dependency, M0 records the blocker and the deletion moves behind the dependency's migration; it is not forced through on assumed state.
+- **Gates:** the WS1 Solana rebuild (needs WP0.1), the WP1.2 feature-gated `batch` adoption (needs WP0.5), the WS2 EVM build (needs WP0.2), WP2.5 V3 retirement (needs WP0.4 for V3's live state), the WS3 rail consolidation (needs WP0.1), the WS4 rule formalization (needs WP0.1), and the WS7 local/devnet/testnet sponsor proof (needs WP0.6). Nothing material starts before M0.
 
 ### M1 — Solana canonical program on devnet; Anchor consumers migrated
 
@@ -362,7 +367,7 @@ Work packages grouped into seven named milestones. Each milestone states what is
 ### M4 — Atomicity discipline engine-wide; validation loop converged
 
 - **Contains:** WP4.1, WP4.2, WP4.3, WP4.4, WP7.1, WP7.2, WP7.3, WP7.4, WP7.5, WP7.6.
-- **Done at M4:** the §8 3-phase pattern is formalized as the engine-wide rule and applied to the watcher, the relay, and the intent-lifecycle state machine; the canonical set is simulated clean, deployed to devnet/testnet with the registry populated; the full §6 state machine including the recovery paths is tested; the §8 discipline is proven under injected failure; the migration cutover is validated on testnet; the §14 loop has converged with no new findings.
+- **Done at M4:** the §8 3-phase pattern is formalized as the engine-wide rule and applied to the watcher, the relay, and the intent-lifecycle state machine; the canonical set is simulated clean, deployed to devnet/testnet with the registry populated; Circle Solana gas sponsorship is proven for the exact Approach A operations or Kora remains explicitly configured as fallback; the full §6 state machine including the recovery paths is tested; the §8 discipline is proven under injected failure; the migration cutover is validated on testnet; the §14 loop has converged with no new findings.
 - **Gates:** the audit (M5) — the audit only starts on a converged, testnet-stable consolidation.
 
 ### M5 — Audit clean
@@ -475,7 +480,7 @@ This SOW's work breakdown is built on the following assumptions. The four open q
 
 - **A5 — The proven Circle base carries forward.** Design spec §14.1 states Circle SCA + paymaster on Base Sepolia and Circle-managed Solana are already proven. This SOW assumes the WS7 validation builds on that proven base and does not re-budget for it as an unknown.
 - **A6 — PRs #113 and #123 are well-targeted and finishable.** This SOW assumes the in-flight Allbridge PRs are extended/finished (WP3.2, WP3.3), not restarted — consistent with design spec §10 and §11.2 item 4.
-- **A7 — `sw4p-backend`, Kora, and the `sw4p-native` security lineage are not retired.** Per design spec §12.3 — the backend is reduced in role, not removed; Kora is permanent supporting infrastructure; the security lineage is *carried* onto Pinocchio. No work package retires any of them.
+- **A7 — `sw4p-backend` and the `sw4p-native` security lineage are not retired; Kora is fallback-only.** Per design spec §12.3 — the backend is reduced in role, not removed; the gas-sponsor abstraction remains, but Approach A treats Circle as the primary Solana gas sponsor and keeps Kora only as an explicit fallback until local/devnet/testnet evidence proves whether it can be sunset. The security lineage is *carried* onto Pinocchio.
 - **A8 — Effort sizes are relative, not an hours commitment.** The S/M/L/XL sizing in §2 is for sequencing and relative-weight judgment only; this SOW does not commit a schedule in time units.
 - **A9 — Two rails, eight chains, no more, for Approach A.** Per design spec §11.1 / Decision 2. No work package in this SOW adds a third rail or a ninth chain; anything Gateway-shaped is B, anything ERC-7683-shaped is C (design spec §13.2 R7).
 

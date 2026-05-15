@@ -291,7 +291,8 @@ The migration and retirement ordering constraints as testable gates (design spec
 | **NFR-MIG-006** | MUST | The EVM live-path audit is completed before `ZapNative.sol` deletion; `ZapNative.sol` is deleted only if the audit confirms no deployed or consumer path depends on it, and the deletion is followed by a grep confirming no remaining references. | §12.1 #1, §13.2 R8a, SOW WP0.3/WP0.4 | INSP |
 | **NFR-MIG-007** | MUST | The Solana deployment-status audit (resolving §13.1 Q4: clusters, the live mainnet program, on-chain version, and a verified consumer-reference inventory for both program IDs) is completed as the plan's first task, before the WS1 migration is sequenced. | §13.1 Q4, §13.2 R1 | INSP |
 | **NFR-MIG-008** | MUST | The canonical interface (the typed API for Approach A) is and remains stable enough for `@sw4p/kit` and the in-repo SDKs to target it directly. | §3.6, §15 | INSP |
-| **NFR-MIG-009** | MUST | `sw4p-backend`, Kora, and the `sw4p-native` security lineage are not retired — the backend is reduced in role, Kora is permanent supporting infrastructure, and the security lineage is carried onto Pinocchio. | §12.3 | INSP |
+| **NFR-MIG-009** | MUST | `sw4p-backend` and the `sw4p-native` security lineage are not retired — the backend is reduced in role, and the security lineage is carried onto Pinocchio. The Solana gas-sponsor abstraction remains, but Kora is fallback-only unless explicitly selected. | §12.3 | INSP |
+| **NFR-MIG-010** | MUST | Approach A environments select Circle as the primary Solana gas sponsor only after local/devnet/testnet validation proves Circle covers the exact canonical-program, CCTP, and SPL operations in scope; Kora remains an explicit fallback until that proof closes. | §12.3, SOW WP0.6 | TEST, INSP |
 
 ### 5.6 Multi-chain (`NFR-MC`)
 
