@@ -783,7 +783,7 @@ git commit -m "feat(sw4p): unify bridge protocol enum for frontier rails"
 - Modify: `sw4p/localnet/mock-services/src/allbridge.ts`
 - Modify: `sw4p/localnet/tests/test-bridge.sh`
 
-- [ ] **Step 1: Add explicit-routing tests**
+- [x] **Step 1: Add explicit-routing tests**
 
 Required behavior:
 
@@ -793,7 +793,7 @@ CCTP-supported destination -> CctpV2 selected and logged.
 Unsupported rail change -> visible failure, not silent fallback.
 ```
 
-- [ ] **Step 2: Finish Allbridge lifecycle states**
+- [x] **Step 2: Finish Allbridge lifecycle states**
 
 Allbridge must flow through the canonical state machine: `Created -> Routed -> SwapInDone -> BridgeInitiated -> Attested -> Settled`, with `Stuck`, `SettleRetry`, and `Refunded` recovery paths.
 
@@ -806,7 +806,28 @@ cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p"
 
 Expected: Allbridge mock path passes and logs chosen rail explicitly.
 
-- [ ] **Step 4: Commit Allbridge rail work**
+2026-05-15 verification notes:
+- Red checks:
+  - `cargo test frontier_allbridge_lifecycle_enforces_value_movement_boundary -- --nocapture` failed before implementation because `AllbridgeLifecycle` / `AllbridgeLifecycleState` did not exist.
+  - `cargo test allbridge_core_requires_execution_context_instead_of_cctp_fallback -- --nocapture` initially failed behind the same missing lifecycle compile errors. After lifecycle implementation, a direct `CircleScpClient` test hit the sandbox's macOS `system-configuration` dynamic-store panic, so the no-fallback assertion was refactored to test the Allbridge execution-context guard without constructing unrelated network clients.
+- Implemented:
+  - `AllbridgeLifecycleState` / `AllbridgeLifecycle` in `sw4p-backend/src/allbridge.rs`, covering `Created -> Routed -> SwapInDone -> BridgeInitiated -> Attested -> Settled` plus `Stuck`, `SettleRetry`, `Refunded`, and `Failed` only before value leaves the source chain.
+  - Explicit Allbridge execution errors in `native_bridge.rs`; selected `AllbridgeCore` no longer falls back to CCTP on missing `AppState`, client init failure, execution failure, or unsupported chain mapping.
+  - Pure route-selection helper in `route_selector.rs` so explicit route-selection tests do not construct unrelated client state.
+  - Allbridge localnet mock rail/lifecycle markers and `test-bridge.sh` checks for `AllbridgeCore`, `CCTP_V2`, and visible unsupported-route failure.
+- Passing verification:
+  - `cargo test frontier_ -- --nocapture`: 15 passed, 0 failed.
+  - `cargo test route_selector -- --nocapture`: 25 passed, 0 failed.
+  - `cargo test native_bridge -- --nocapture`: 14 passed, 0 failed.
+  - `cargo test allbridge -- --nocapture`: sandbox run failed in five client-construction tests due macOS `system-configuration`; escalated rerun passed with 33 passed, 0 failed.
+  - `bash -n localnet/tests/test-bridge.sh`: passed.
+- Localnet blocker:
+  - `./localnet/tests/test-bridge.sh` failed immediately with curl exit 7 at `Testing fee estimate endpoint (expect 401)...` because `localhost:3000` was not serving.
+  - Escalated `docker compose -f localnet/docker-compose.localnet.yml ps` showed no localnet containers.
+  - Escalated `./localnet/run.sh --up` stalled at image pull (`anvil-base Pulling`, `solana-validator Pulling`, `anvil-eth Pulling`) and still showed no containers after several minutes; the stalled startup processes were killed.
+  - Do not proceed to devnet/testnet/mainnet promotion until localnet services start and `./localnet/tests/test-bridge.sh` passes.
+
+- [x] **Step 4: Commit Allbridge rail work**
 
 ```bash
 git add sw4p/sw4p-backend/src sw4p/localnet/mock-services/src/allbridge.ts sw4p/localnet/tests/test-bridge.sh
