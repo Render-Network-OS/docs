@@ -720,15 +720,20 @@ git commit -m "chore(sw4p): prepare frontier evm testnet deployments"
 ### Task 3.1: Unify BridgeProtocol enum and CCTP V2 rail definitions
 
 **Files:**
+- Create: `sw4p/sw4p-backend/src/bridge_protocol.rs`
+- Modify: `sw4p/sw4p-backend/src/lib.rs`
 - Modify: `sw4p/sw4p-backend/src/route_selector.rs`
-- Modify: `sw4p/sw4p-backend/src/sdk_bridge.rs`
-- Modify: `sw4p/sw4p-backend/src/cctp_burn.rs`
-- Modify: `sw4p/sw4p-backend/src/cctp_mint.rs`
-- Modify: `sw4p/sw4p-backend/src/cctp_attestation.rs`
-- Modify: `sw4p/sw4p-backend/src/chains.rs`
-- Modify: `sw4p/sw4p-backend/src/chains_tests.rs`
+- Modify: `sw4p/sw4p-backend/src/native_bridge.rs`
+- Modify: `sw4p/sw4p-backend/src/multi_hop.rs`
+- Modify: `sw4p/sw4p-backend/src/metrics.rs`
+- Verify/read: `sw4p/sw4p-backend/src/sdk_bridge.rs`
+- Verify/read: `sw4p/sw4p-backend/src/cctp_burn.rs`
+- Verify/read: `sw4p/sw4p-backend/src/cctp_mint.rs`
+- Verify/read: `sw4p/sw4p-backend/src/cctp_attestation.rs`
+- Verify/read: `sw4p/sw4p-backend/src/chains.rs`
+- Verify/read: `sw4p/sw4p-backend/src/chains_tests.rs`
 
-- [ ] **Step 1: Prove duplicate enum state**
+- [x] **Step 1: Prove duplicate enum state**
 
 ```bash
 rg -n 'enum BridgeProtocol|BridgeProtocol::|bridge_protocol' sw4p/sw4p-backend/src sw4p/sdk sw4p/packages -g '!target' -g '!node_modules'
@@ -736,15 +741,15 @@ rg -n 'enum BridgeProtocol|BridgeProtocol::|bridge_protocol' sw4p/sw4p-backend/s
 
 Expected: all enum definitions and consumers are listed.
 
-- [ ] **Step 2: Create one canonical enum module**
+- [x] **Step 2: Create one canonical enum module**
 
 The canonical enum must include only Approach-A rails: `CctpV2` and `AllbridgeCore`. Gateway and ERC-7683 are not enum variants for Approach A.
 
-- [ ] **Step 3: Remove CCTP V1 routing from new flows**
+- [x] **Step 3: Remove CCTP V1 routing from new flows**
 
 Leave V1 decode code only where needed for drain-window support until Task 8.2. New routes must use V2.
 
-- [ ] **Step 4: Run backend rail tests**
+- [x] **Step 4: Run backend rail tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend"
@@ -755,7 +760,13 @@ cargo test route_selector -- --nocapture
 
 Expected: one enum, CCTP V2 routes for CCTP chains, Allbridge only for Tron.
 
-- [ ] **Step 5: Commit rail enum work**
+2026-05-15 verification notes:
+- Red check: `cargo test frontier_approach_a_excludes_deferred_bitcoin_adapter -- --nocapture` failed before implementation because `BridgeProtocol::Bitcoin` was still eligible.
+- `cargo test chains -- --nocapture`: 38 passed, 0 failed. A sandboxed rerun later hit an `os error 35` process-launch failure after the 38 target tests passed; escalated rerun exited 0.
+- `cargo test cctp -- --nocapture`: sandboxed run hit macOS `system-configuration` dynamic-store panic in eight registry-backed client tests; escalated rerun passed with 78 passed, 0 failed, 8 ignored.
+- `cargo test route_selector -- --nocapture`: 23 passed, 0 failed.
+
+- [x] **Step 5: Commit rail enum work**
 
 ```bash
 git add sw4p/sw4p-backend/src sw4p/sdk sw4p/packages
