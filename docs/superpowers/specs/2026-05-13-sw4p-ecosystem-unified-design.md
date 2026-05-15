@@ -209,7 +209,7 @@ The five coordination items below are inputs/outputs across `sw4p-earn`, `sw4p-p
 | C-4 | Wave G public-corpus PR (this spec's only implementation surface) | Public visibility of sw4p Earn | Docs lead (parent 555 monorepo) |
 | C-5 | npm publish + public announcement triple-gate (kit, engine, earn) | First public "powered by sw4p" announcement | All three teams + comms |
 
-C-1 (sw4p engine mainnet return) is no longer just a dependency line — the sw4p engine's forward architecture is now specified in full in the **Frontier Engine design suite** (`docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` plus its SOW and TRD). That suite's Approach A is the day-one consolidation-and-mainnet-promotion plan; C-1 here is the seam that sw4p-earn's Stage-2 economics ultimately wait on.
+C-1 (sw4p engine mainnet return) is no longer just a dependency line — the sw4p engine's forward architecture is now specified in full in the **Frontier Engine design suite** (`docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` plus its SOW and TRD) and its Approach-A implementation plan (`docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`). That suite's Approach A is the day-one consolidation-and-mainnet-promotion plan; C-1 here is the seam that sw4p-earn's Stage-2 economics ultimately wait on.
 
 This table is the design hand-off for the writing-plans phase. The plan should produce ONE implementation plan for Wave G (C-4) and an OPTIONAL coordination runbook update for C-1/C-2/C-3/C-5.
 
@@ -399,7 +399,7 @@ This spec is the terminal artifact of the brainstorming skill. Per the skill's p
 - `runbooks/sw4p-ecosystem-unified-plan.md` (sw4p-earn) — prior rushed synthesis, retained as sw4p-earn-side narrative per Decision 6
 - `docs/skills/fee-allocation-canon.md` (sw4p-earn) — fee allocation canon
 - `sw4p/README.md`, `sw4p/docs/ARCHITECTURE.md` (parent local) — engine framing post-doctrine-alignment
-- `docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` (+ its `-sow.md` and `-trd.md`) — the sw4p engine's forward architecture: the Frontier Engine rebuild design suite. Approach A is the consolidation-and-mainnet-promotion plan that the C-1 coordination item (sw4p engine mainnet return) resolves into.
+- `docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` (+ its `-sow.md` and `-trd.md`) and `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md` — the sw4p engine's forward architecture and execution plan: the Frontier Engine rebuild suite. Approach A is the consolidation-and-mainnet-promotion plan that the C-1 coordination item (sw4p engine mainnet return) resolves into.
 - `sw4p-kit/README.md`, `sw4p-kit/PLANNING_LOCAL.md` (parent local) — kit pre-publish state + brand/disclosure doctrine
 - `sw4p_earn_execution_plan/SW4P_Earn_Execution_Plan_TRD_SOW_v0_1.md` (parent local) — original sw4p-earn TRD/SOW
 

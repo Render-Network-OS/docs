@@ -8,7 +8,7 @@
 
 ## Summary in one paragraph
 
-This Statement of Work breaks the sw4p Frontier Engine rebuild into a delivery contract: the workstreams, work packages, dependency ordering, milestones, and acceptance criteria for **Approach A** — the day-one consolidation onto one canonical Solana program, one canonical EVM contract deployed to all 6 EVM chains, two rails (CCTP V2 + Allbridge Core), the engine-wide 3-phase atomicity discipline, the off-chain→on-chain confirmation pass, a clean physical layout, a full audit of the consolidated set, and mainnet promotion across the 8 day-one chains. The design spec's §11.2 lists 12 day-one items; this SOW decomposes them into ten workstreams (WS0–WS9) and their work packages, sequences them against the design spec's hard ordering constraints (§12), and ties each milestone's acceptance criteria to the design spec's testing strategy (§14). **Approach B** (Circle Gateway) and **Approach C** (the ERC-7683 canonical interface) are named and bounded here but are explicitly *not* decomposed — each is its own SOW after A lands, per the design spec's §11.3 / §11.4 boundary. This document is a planning artifact: it contains no code and is not the task-by-task implementation plan (that is the downstream `writing-plans` output).
+This Statement of Work breaks the sw4p Frontier Engine rebuild into a delivery contract: the workstreams, work packages, dependency ordering, milestones, and acceptance criteria for **Approach A** — the day-one consolidation onto one canonical Solana program, one canonical EVM contract deployed to all 6 EVM chains, two rails (CCTP V2 + Allbridge Core), the engine-wide 3-phase atomicity discipline, the off-chain→on-chain confirmation pass, a clean physical layout, a full audit of the consolidated set, and mainnet promotion across the 8 day-one chains. The design spec's §11.2 lists 12 day-one items; this SOW decomposes them into ten workstreams (WS0–WS9) and their work packages, sequences them against the design spec's hard ordering constraints (§12), and ties each milestone's acceptance criteria to the design spec's testing strategy (§14). **Approach B** (Circle Gateway) and **Approach C** (the ERC-7683 canonical interface) are named and bounded here but are explicitly *not* decomposed — each is its own SOW after A lands, per the design spec's §11.3 / §11.4 boundary. This document is a planning artifact: it contains no code and is not the task-by-task implementation plan; that companion plan now lives at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`.
 
 ---
 
@@ -18,8 +18,8 @@ This Statement of Work breaks the sw4p Frontier Engine rebuild into a delivery c
 
 This SOW covers the **Frontier Engine rebuild — Approach A**, as scoped by design spec §11.2:
 
-- **Solana consolidation** — one canonical program (consolidation of `programs/sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware), with the frontend `koraBridge.ts` and the backend `watcher` migrated onto it before the Anchor program (`programs/sw4p`) retires.
-- **EVM consolidation** — one canonical V4-derived contract deployed to all 6 EVM chains (including Ethereum), routing swap-in through the Universal Router, reading a per-chain address registry; V3 retired and `ZapNative` deleted.
+- **Solana consolidation** — one canonical program (consolidation of `programs/sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware behind a target-cluster activation gate), with the frontend `koraBridge.ts` and the backend `watcher` migrated onto it and testnet-validated before the Anchor program (`programs/sw4p`) retires.
+- **EVM consolidation** — one canonical V4-derived contract deployed to all 6 EVM chains (including Ethereum), routing swap-in through the Universal Router, reading a per-chain address registry; V3 retired after the V4-to-Ethereum cutover, and `ZapNative` deleted only after the EVM live-path audit confirms no live path depends on it.
 - **Rail consolidation** — CCTP V2 as the canonical rail for the 7 CCTP chains, Allbridge Core made a first-class rail for Tron (finishing PRs #113 and #123), all CCTP V1 paths dropped.
 - **Atomicity discipline** — the §8 3-phase pattern generalized engine-wide across the watcher, the relay, the Allbridge lifecycle, and the intent-lifecycle state machine.
 - **Off-chain→on-chain pass** — the §9 confirmation-and-discipline pass, including closing the EVM safety-control gap (§9.6 / §13.2 R8).
@@ -42,19 +42,21 @@ Per design spec §15, this SOW explicitly excludes:
 
 ## 2. Work breakdown structure
 
-The heart of this SOW. Approach A (design spec §11.2's 12-item day-one list) is decomposed into **ten workstreams (WS0–WS9)**, each into **work packages (WP)** — WS0 is the zero-risk opener (the deployment-status audit and the `ZapNative` deletion), WS1–WS9 are the build, validation, audit, and promotion workstreams. Every work package states a **deliverable**, its **dependencies** (which work packages must finish first), and a **rough effort size** (S / M / L / XL — relative sizing, not an hours commitment).
+The heart of this SOW. Approach A (design spec §11.2's 12-item day-one list) is decomposed into **ten workstreams (WS0–WS9)**, each into **work packages (WP)** — WS0 is the audit workstream (the Solana deployment-status audit, the EVM deployment / live-path audit, the EVM safety-control gap scoping, the P-Token activation-status check, and the `ZapNative` deletion that now gates on the EVM live-path audit), WS1–WS9 are the build, validation, audit, and promotion workstreams. Every work package states a **deliverable**, its **dependencies** (which work packages must finish first), and a **rough effort size** (S / M / L / XL — relative sizing, not an hours commitment).
 
 Effort-size legend: **S** = a focused change, days. **M** = a contained sub-system, ~1–2 weeks. **L** = a substantial build or migration, multiple weeks. **XL** = a major rebuild or a cross-chain deployment fan-out.
 
-### WS0 — Deployment-status audit + ZapNative deletion (the zero-risk opener)
+### WS0 — Audit workstream: Solana deployment-status, EVM live-path, P-Token activation, ZapNative deletion
 
-Design spec §13.1 Q4 makes the **Solana deployment-status audit the plan's first task**; design spec §12.1 #1 makes the `ZapNative` deletion the first and cleanest sunset (gates on nothing). WS0 groups both: the two things that can start immediately and unblock the rest.
+The audit-and-establish-ground-truth opener. Design spec §13.1 Q4 makes the **Solana deployment-status audit the plan's first task**. The design review added an **EVM deployment / live-path audit** (design spec §13.2 R8a): the repo still carries an active `sw4p-backend` deploy path and a frontend ABI that reference `ZapNative`, and local audit notes have V3 "dormant by default" rather than confirmed-live — so the EVM live-state must be *established*, not assumed. WS0 groups the audits that establish ground truth, the P-Token activation-status check, and the `ZapNative` deletion (which now *gates on* the EVM live-path audit, not on nothing).
 
 | WP | Deliverable | Dependencies | Size |
 |---|---|---|---|
 | **WP0.1 Solana deployment-status audit** | A written audit resolving design spec §13.1 Q4: for both program IDs (`555nber4ezpjLqiAiY5GnjkGEbWWcgShUcFLtUPf39PG` native, `555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3` Anchor) — which clusters each is deployed to, which is the live mainnet program, the on-chain version, and a verified inventory of every consumer reference. This is the input the WS1 migration cannot be safely sequenced without (§13.2 R1). | None — first task. | S |
 | **WP0.2 EVM safety-control gap scoping** | A written finding resolving design spec §13.2 R8 / §9.6: what safety-control surface `ZapAndBridgeV4` currently carries (pause / limits / timelock), and the specified equivalent surface for the canonical EVM contract. Feeds WS2 and WS5. | None — can run parallel to WP0.1. | S |
-| **WP0.3 Delete `ZapNative.sol`** | `ZapNative.sol` removed from the tree (never deployed — pure deletion, design spec §12.1 #1). The trivial early win that proves the sunset chain has started. | None. | S |
+| **WP0.3 Delete `ZapNative.sol`** | `ZapNative.sol` removed from the tree — but **only after WP0.4 confirms no live path references it**. `ZapNative` was thought to be never-deployed dead code; the repo in fact still carries an active `sw4p-backend` deploy path (`sw4p-backend/src/main.rs`) and a frontend ABI (`BridgeApp.tsx`) that reference it (design spec §12.1 #1, §13.2 R8a). The deletion is therefore **no longer zero-risk / first / free** — it is gated on the EVM live-path audit. Still small and still early once that audit clears it. | WP0.4. | S |
+| **WP0.4 EVM deployment / live-path audit** | A written audit resolving design spec §13.2 R8a: across all 6 EVM chains, what is **actually deployed** where, what **references** each EVM contract generation — the `sw4p-backend` deploy path for `ZapNative` (`sw4p-backend/src/main.rs`), the frontend `ZapNative` ABI (`BridgeApp.tsx`), every `ZapAndBridgeV4` / V3 reference — and **V3's real live status** (local audit notes have it "dormant by default," used only on explicit per-chain opt-in, not plainly the only live Ethereum path). This audit gates the `ZapNative` deletion (WP0.3) and gates V3 retirement (WP2.5) alongside WP2.5's existing V4-to-Ethereum gate. | None — can run parallel to WP0.1 / WP0.2. | S |
+| **WP0.5 P-Token activation-status check** | A written check confirming P-Token's **actual activation status on the target cluster** before the canonical Solana program is built to rely on it. The official Solana upgrade page says devnet activation is complete and mainnet activation targets May 2026, while the current Anza feature-gate tracker should also be checked; this SOW therefore treats activation as a fact to verify, not an unconditional assumption. The finding feeds WP1.2: the `batch`-instruction adoption is feature-gated on P-Token activation, with a fallback to individual token CPIs when P-Token is not active on the target cluster. | None — can run parallel to WP0.1 / WP0.2 / WP0.4. | S |
 
 ### WS1 — Solana canonical program: consolidation, Pinocchio rebuild, consumer migration
 
@@ -63,10 +65,10 @@ Covers design spec §11.2 items 1 and 7. The Solana half of Decision 1, reached 
 | WP | Deliverable | Dependencies | Size |
 |---|---|---|---|
 | **WP1.1 Pinocchio rebuild of the canonical Solana program** | One canonical Solana program: the consolidation of `sw4p-native`, rebuilt on Pinocchio, carrying forward the full audited security surface (signature-gated fee, pause, 24h timelock, daily limits, Squads-multisig admin — design spec §7.1 table). Every carried control has a test proving it survived the rebuild (§13.2 R6). | WP0.1 (deployment status known). | XL |
-| **WP1.2 P-Token `batch` adoption** | The settlement path uses the P-Token `batch` instruction for multi-token-op settlements (pays the 1,000-CU floor once, not per-CPI — design spec §7.1, §11.2 item 7). SPL CPIs get the SIMD-0266 compute win for free (same program ID, no code change). | WP1.1. | S |
+| **WP1.2 P-Token `batch` adoption (feature-gated)** | The settlement path uses the P-Token `batch` instruction for multi-token-op settlements (pays the 1,000-CU floor once, not per-CPI — design spec §7.1, §11.2 item 7), **feature-gated on P-Token activation** per the WP0.5 finding: when P-Token is active on the target cluster the program uses `batch`; when it is not, the program **falls back to individual token CPIs**. The canonical Solana program MUST function whether or not P-Token is active — `batch` is an optimization gated on activation, not a hard dependency. SPL CPIs get the SIMD-0266 compute win for free *when P-Token is active* (same program ID, no code change). | WP1.1, WP0.5 (P-Token activation status known). | S |
 | **WP1.3 Migrate `koraBridge.ts` onto the canonical program** | The frontend `koraBridge.ts` service references the canonical Solana program instead of the Anchor program (`programs/sw4p`). One of the two consumers that gate the Anchor retirement (§12.1 #4). | WP1.1. | M |
 | **WP1.4 Migrate the backend `watcher` onto the canonical program** | The backend `watcher` observes the canonical Solana program instead of the Anchor program. The second of the two gating consumers (§12.1 #4, §9.4). | WP1.1. | M |
-| **WP1.5 Retire the Anchor program (`programs/sw4p`)** | The Anchor program is retired after a verified grep-pass confirms no remaining consumer references (§13.2 R1) — the last step of the Solana sunset chain (§12.1 #4). | WP1.3, WP1.4. | S |
+| **WP1.5 Migrate consumers off the Anchor program + strip references** | Both consumers (`koraBridge.ts`, the `watcher`) are on the canonical Solana program (WP1.3, WP1.4), and **all** Anchor program-ID references are stripped from consumers — confirmed by a verified grep-pass (§13.2 R1). This is the **migration**, not the retirement: it removes every consumer reference but does not itself decommission the Anchor program. The actual retirement is WP9.3, which gates on testnet validation (WP7.5). | WP1.3, WP1.4. | S |
 
 ### WS2 — EVM canonical contract: build, Universal Router routing, per-chain registry, deploy to 6 chains
 
@@ -75,10 +77,10 @@ Covers design spec §11.2 items 2, 8, 9 (the registry's EVM-contract-read side).
 | WP | Deliverable | Dependencies | Size |
 |---|---|---|---|
 | **WP2.1 Build the canonical EVM contract (V4-derived)** | One canonical EVM contract, V4-derived (`ZapAndBridgeV4` is the basis): Permit2 token pulls, CCTP V2 burn/mint/settle, in-contract fee-take, **plus the equivalent safety-control surface** specified in WP0.2 (design spec §7.2, §9.6). | WP0.2 (safety-control surface specified). | L |
-| **WP2.2 Universal Router routing** | The canonical EVM contract routes swap-in through the Universal Router (v3 + v4 best-execution) — not a hard-pinned v3 router (design spec §7.2, §11.2 item 8). | WP2.1; WP3.1 (per-chain registry — see WS3 cross-reference below). | M |
+| **WP2.2 Universal Router routing** | The canonical EVM contract routes swap-in through the Universal Router (v3 + v4 best-execution) — not a hard-pinned v3 router (design spec §7.2, §11.2 item 8). | WP2.1; WP2.3 (per-chain registry — see WS2/WS3 cross-reference below). | M |
 | **WP2.3 Per-chain address registry — build** | The per-chain address registry: the canonical chain → {Universal Router address, USDC address, CCTP domain, rail config} mapping, maintained off-chain, read by the EVM contract; also serves the orchestration layer and the watcher (design spec §7.2, §11.2 item 9). Includes a defined ownership + update-and-verify process (§13.2 R5). | WP0.2. | M |
 | **WP2.4 Deploy the canonical EVM contract to 6 EVM testnets** | The canonical contract deployed to all 6 EVM testnets (Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon), with the registry populated for the testnet set. Builds on the proven Base Sepolia + Circle SCA/paymaster base (design spec §14.1, §14.3). | WP2.1, WP2.2, WP2.3. | L |
-| **WP2.5 Retire `ZapAndBridge.sol` ("V3")** | V3 retired after the canonical contract reaches Ethereum (mainnet) and the Ethereum inbound path is migrated to it — the **hard constraint** from design spec §12.1 #3 / §13.1 Q1. (Sequenced into M6; listed here for workstream completeness.) | WP9.1 (mainnet promotion includes Ethereum). | S |
+| **WP2.5 Retire `ZapAndBridge.sol` ("V3")** | V3 retired after the canonical contract reaches Ethereum (mainnet) and the Ethereum inbound path is migrated to it — the **hard constraint** from design spec §12.1 #3 / §13.1 Q1 — **and** after the WP0.4 EVM live-path audit has established V3's actual live state (design spec §13.2 R8a). (Sequenced into M6; listed here for workstream completeness.) | WP0.4 (V3 live state established); WP9.1 (mainnet promotion includes Ethereum). | S |
 
 > **WS2/WS3 cross-reference:** WP2.3 (registry build) is listed under WS2 because the EVM contract is its primary on-chain reader, but it is also a WS3 (rail layer) and orchestration-layer input. WP2.2's dependency on WP2.3 is a within-SOW build dependency, not a workstream-boundary contradiction.
 
@@ -157,27 +159,30 @@ Covers design spec §11.2 item 12 (the mainnet-promotion tail) and §14.3's fina
 | WP | Deliverable | Dependencies | Size |
 |---|---|---|---|
 | **WP9.1 Mainnet promotion across the 8 day-one chains** | The canonical Solana program and the canonical EVM contract promoted to mainnet across all 8 day-one chains: Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon (CCTP V2), Solana (CCTP V2), Tron (Allbridge Core). The per-chain registry populated for mainnet. This is the deploy that makes V3 retirement (WP2.5) and the CCTP V1 drop (WP3.5) safe. | WP8.2 (audit clean). | XL |
-| **WP9.2 Post-promotion sunset completion** | After mainnet promotion: V3 retired (WP2.5) and the CCTP V1 decode paths dropped (WP3.5, after the drain window). The sunset chains close; Approach A is live (design spec §12). | WP9.1, WP2.5, WP3.5, WP1.5. | M |
+| **WP9.3 Retire / decommission the Anchor program (`programs/sw4p`)** | The actual retirement of the Anchor program — the decommission step, distinct from the WP1.5 consumer-migration. It gates on **WP7.5** (the migration cutover validated on testnet) because §14.4 requires testnet validation of the cutover *before* the corresponding mainnet sunset, and the Anchor program is a Solana mainnet program. Retiring it before testnet validation would sunset a live mainnet program on an unproven cutover. | WP7.5 (cutover testnet-validated), WP1.5 (consumers migrated + references stripped). | S |
+| **WP9.2 Post-promotion sunset completion** | After mainnet promotion: V3 retired (WP2.5), the CCTP V1 decode paths dropped (WP3.5, after the drain window), and the Anchor program retired (WP9.3). The sunset chains close; Approach A is live (design spec §12). | WP9.1, WP2.5, WP3.5, WP9.3. | M |
 
 ---
 
 ## 3. Dependency graph + sequencing
 
-The work-package dependency graph. It honors the design spec's hard ordering constraints: **WP0.3 (`ZapNative` delete) gates on nothing and goes first** (§12.1 #1); **V3 retires only after the canonical contract reaches Ethereum** (§12.1 #3, §13.1 Q1); **the Anchor program retires only after `koraBridge.ts` + `watcher` migrate** (§12.1 #4); **CCTP V1 drops only after CCTP V2 is everywhere** (§12.1 #2); and the plan's **first task is the Solana deployment-status audit** (§13.1 Q4).
+The work-package dependency graph. It honors the design spec's hard ordering constraints: the plan's **first task is the Solana deployment-status audit** (§13.1 Q4); **WP0.3 (`ZapNative` delete) gates on the WP0.4 EVM live-path audit** — it is no longer zero-risk / first / free, because an active `sw4p-backend` deploy path and a frontend ABI still reference `ZapNative` (§12.1 #1, §13.2 R8a); **V3 retires only after the canonical contract reaches Ethereum *and* the WP0.4 EVM live-path audit establishes V3's actual live state** (§12.1 #3, §13.1 Q1, §13.2 R8a); **the Anchor program retires only after `koraBridge.ts` + `watcher` migrate *and* the cutover is testnet-validated** (§12.1 #4, §14.4); and **CCTP V1 drops only after CCTP V2 is everywhere** (§12.1 #2).
 
 ```mermaid
 graph TD
-    %% WS0 - opener
+    %% WS0 - audit workstream
     WP01["WP0.1 Solana deployment-status audit<br/>(FIRST TASK)"]
     WP02["WP0.2 EVM safety-control gap scoping"]
-    WP03["WP0.3 Delete ZapNative<br/>(gates on nothing)"]
+    WP03["WP0.3 Delete ZapNative<br/>(gates on WP0.4)"]
+    WP04["WP0.4 EVM deployment / live-path audit"]
+    WP05["WP0.5 P-Token activation-status check"]
 
     %% WS1 - Solana
     WP11["WP1.1 Pinocchio rebuild<br/>canonical Solana program"]
-    WP12["WP1.2 P-Token batch adoption"]
+    WP12["WP1.2 P-Token batch adoption<br/>(feature-gated)"]
     WP13["WP1.3 Migrate koraBridge.ts"]
     WP14["WP1.4 Migrate backend watcher"]
-    WP15["WP1.5 Retire Anchor program"]
+    WP15["WP1.5 Migrate consumers off Anchor<br/>+ strip references"]
 
     %% WS2 - EVM
     WP21["WP2.1 Build canonical EVM contract"]
@@ -220,6 +225,7 @@ graph TD
 
     %% WS9 - mainnet
     WP91["WP9.1 Mainnet promotion (8 chains)"]
+    WP93["WP9.3 Retire Anchor program<br/>(gates on WP7.5 testnet validation)"]
     WP92["WP9.2 Post-promotion sunset completion"]
 
     %% WS0 edges
@@ -229,6 +235,9 @@ graph TD
     WP02 --> WP21
     WP02 --> WP23
     WP02 --> WP52
+    WP04 --> WP03
+    WP04 --> WP25
+    WP05 --> WP12
 
     %% WS1 edges
     WP11 --> WP12
@@ -301,7 +310,9 @@ graph TD
     WP91 --> WP92
     WP25 --> WP92
     WP35 --> WP92
-    WP15 --> WP92
+    WP75 --> WP93
+    WP15 --> WP93
+    WP93 --> WP92
 ```
 
 ### 3.1 The critical path
@@ -312,7 +323,9 @@ The longest dependency chain through the work packages — the sequence that det
 
 (Solana deployment-status audit → Pinocchio rebuild of the canonical program → watcher migration → 3-phase rule applied to the watcher → devnet/testnet deploy → injected-failure atomicity testing → iterate to convergence → external audit → remediate to clean → mainnet promotion → post-promotion sunset completion.)
 
-The critical path runs through the **Solana migration and atomicity** thread rather than the EVM thread because the watcher migration (WP1.4) is a prerequisite both for the Anchor retirement *and* for bringing the watcher under the 3-phase rule (WP4.2), and WP4.2 is in turn a prerequisite for the injected-failure testing (WP7.4). The EVM thread (WP0.2 → WP2.1 → WP2.4) and the rail thread (WP3.1 → WP3.2 → WP3.3) are heavy but converge into WP7.2 with slack relative to the Solana/atomicity chain. WP1.1 (the Pinocchio rebuild, sized XL) and WP9.1 (mainnet promotion, sized XL) are the two single largest items on the path.
+The critical path runs through the **Solana migration and atomicity** thread rather than the EVM thread because the watcher migration (WP1.4) is a prerequisite both for the WP1.5 consumer-migration *and* for bringing the watcher under the 3-phase rule (WP4.2), and WP4.2 is in turn a prerequisite for the injected-failure testing (WP7.4). The EVM thread (WP0.2 → WP2.1 → WP2.4) and the rail thread (WP3.1 → WP3.2 → WP3.3) are heavy but converge into WP7.2 with slack relative to the Solana/atomicity chain. WP1.1 (the Pinocchio rebuild, sized XL) and WP9.1 (mainnet promotion, sized XL) are the two single largest items on the path.
+
+The actual Anchor-program retirement (WP9.3) is a distinct late work package, **not** on the critical path: it gates on WP7.5 (the migration cutover validated on testnet) and WP1.5 (consumers migrated + references stripped), and joins the graph at WP9.2 with slack relative to the WP9.1 promotion chain. The split — WP1.5 migrates and strips references, WP9.3 decommissions after testnet validation — is what keeps the SOW consistent with design spec §14.4 / TRD NFR-MIG-002, which require the cutover testnet-validated before the corresponding mainnet sunset.
 
 Per design spec §12.2, the EVM sunset chain and the Solana sunset chain are independent and can proceed in parallel; the dependency graph reflects that — the WP2.x / WP3.x packages do not block the WP1.x migration chain except where they share the WS7 convergence gate.
 
@@ -322,17 +335,17 @@ Per design spec §12.2, the EVM sunset chain and the Solana sunset chain are ind
 
 Work packages grouped into seven named milestones. Each milestone states what is done at it and what it gates.
 
-### M0 — Deployment-status audit + ZapNative deletion
+### M0 — Audit workstream: ground truth established + ZapNative gate resolved
 
-- **Contains:** WP0.1, WP0.2, WP0.3.
-- **Done at M0:** the Solana deployment-status question (§13.1 Q4) is resolved in writing; the EVM safety-control gap (§13.2 R8) is scoped; `ZapNative.sol` is deleted (the first sunset, §12.1 #1).
-- **Gates:** the WS1 Solana rebuild (needs WP0.1), the WS2 EVM build (needs WP0.2), the WS3 rail consolidation (needs WP0.1), the WS4 rule formalization (needs WP0.1). Nothing material starts before M0.
+- **Contains:** WP0.1, WP0.2, WP0.3, WP0.4, WP0.5.
+- **Done at M0:** the Solana deployment-status question (§13.1 Q4) is resolved in writing; the EVM deployment / live-path state is established in writing (§13.2 R8a) — what is actually deployed on each EVM chain, what references `ZapNative` and V3, and V3's real live status; the EVM safety-control gap (§13.2 R8) is scoped; P-Token's actual activation status on the target cluster is checked; the `ZapNative` deletion gate is resolved. If the EVM live-path audit confirms no live path references `ZapNative`, `ZapNative.sol` is deleted in WP0.3. If the audit finds a live dependency, M0 records the blocker and the deletion moves behind the dependency's migration; it is not forced through on assumed state.
+- **Gates:** the WS1 Solana rebuild (needs WP0.1), the WP1.2 feature-gated `batch` adoption (needs WP0.5), the WS2 EVM build (needs WP0.2), WP2.5 V3 retirement (needs WP0.4 for V3's live state), the WS3 rail consolidation (needs WP0.1), the WS4 rule formalization (needs WP0.1). Nothing material starts before M0.
 
-### M1 — Solana canonical program on devnet
+### M1 — Solana canonical program on devnet; Anchor consumers migrated
 
 - **Contains:** WP1.1, WP1.2, WP1.3, WP1.4, WP1.5.
-- **Done at M1:** one canonical Solana program exists (Pinocchio, P-Token `batch`-aware) with the audited security surface carried forward and tested; `koraBridge.ts` and the `watcher` are migrated onto it; the Anchor program is retired. The Solana sunset chain (§12.1 #4) is closed.
-- **Gates:** the WS4 watcher work package (WP4.2 needs WP1.4), the WS7 simulation + migration-cutover validation (needs WP1.1, WP1.3, WP1.4), the WS6 reorg (needs WP1.1).
+- **Done at M1:** one canonical Solana program exists (Pinocchio; P-Token `batch`-aware *when P-Token is active*, with the individual-CPI fallback otherwise) with the audited security surface carried forward and tested; `koraBridge.ts` and the `watcher` are migrated onto it; **all Anchor program-ID references are stripped from consumers** (WP1.5). The Anchor program itself is **not** retired at M1 — its actual retirement (WP9.3) gates on the migration cutover being validated on testnet (WP7.5, in M4) per design spec §14.4, and lands at M6. M1 closes the *consumer-migration* half of the Solana sunset chain (§12.1 #4); the retirement half closes at M6.
+- **Gates:** the WS4 watcher work package (WP4.2 needs WP1.4), the WS7 simulation + migration-cutover validation (needs WP1.1, WP1.3, WP1.4), the WS6 reorg (needs WP1.1), the WP9.3 Anchor retirement (needs WP1.5).
 
 ### M2 — EVM canonical contract on 6 testnets
 
@@ -360,8 +373,8 @@ Work packages grouped into seven named milestones. Each milestone states what is
 
 ### M6 — Mainnet: Approach A live
 
-- **Contains:** WP9.1, WP2.5, WP3.5, WP9.2.
-- **Done at M6:** the canonical contract set is promoted to mainnet across all 8 day-one chains (including Ethereum, per the Decision-1 invariant); V3 is retired (now safe — the canonical contract is on Ethereum); the CCTP V1 decode paths are dropped (now safe — the canonical contract is on V2 everywhere — after the drain window). Both sunset chains are closed. **Approach A is live.**
+- **Contains:** WP9.1, WP2.5, WP9.3, WP3.5, WP9.2.
+- **Done at M6:** the canonical contract set is promoted to mainnet across all 8 day-one chains (including Ethereum, per the Decision-1 invariant); V3 is retired (now safe — the canonical contract is on Ethereum, and the WP0.4 EVM live-path audit established V3's actual live state); the Anchor program is retired (WP9.3 — now safe: consumers migrated at M1, cutover testnet-validated at M4 per §14.4); the CCTP V1 decode paths are dropped (now safe — the canonical contract is on V2 everywhere — after the drain window). Both sunset chains are closed. **Approach A is live.**
 - **Gates:** nothing in this SOW — M6 is terminal for Approach A. It is the stable, audited foundation Approach B and Approach C build on.
 
 ---
@@ -372,16 +385,18 @@ Per-milestone concrete, checkable conditions for "done." Tied to the design spec
 
 ### M0 acceptance
 
-- A written deployment-status audit exists covering both Solana program IDs: clusters, the live mainnet program, on-chain version, and a verified consumer-reference inventory (resolves §13.1 Q4).
+- A written Solana deployment-status audit exists covering both Solana program IDs: clusters, the live mainnet program, on-chain version, and a verified consumer-reference inventory (resolves §13.1 Q4).
+- A written EVM deployment / live-path audit exists: for all 6 EVM chains, what is actually deployed where, every reference to `ZapNative` (including the `sw4p-backend` deploy path and the frontend ABI) and to `ZapAndBridgeV4` / V3, and V3's real live status (resolves §13.2 R8a).
 - A written finding documents `ZapAndBridgeV4`'s current safety-control surface and the specified equivalent surface for the canonical EVM contract (resolves the scoping side of §13.2 R8).
-- `ZapNative.sol` is absent from the tree; a grep confirms no remaining references.
+- A written P-Token activation-status check confirms P-Token's actual activation status on the target cluster (feeds the WP1.2 feature-gate decision).
+- The `ZapNative` deletion gate is resolved with evidence: either `ZapNative.sol` is absent from the tree and a grep confirms no remaining references because the EVM live-path audit confirmed no live path referenced it, or the audit records the live dependency that blocks deletion and the migration requirement needed before deletion can proceed.
 
 ### M1 acceptance
 
-- Exactly one canonical Solana program exists; it is built on Pinocchio and uses the P-Token `batch` instruction in the multi-op settlement path.
+- Exactly one canonical Solana program exists; it is built on Pinocchio. Its multi-op settlement path uses the P-Token `batch` instruction **when P-Token is active on the target cluster** and falls back to individual token CPIs otherwise; the program functions correctly in both modes (the WP0.5 activation check determines which mode applies).
 - Every security control carried from `sw4p-native` (signature-gated fee, pause, 24h timelock, daily limits, Squads-multisig admin) has a passing test proving it survived the rebuild (per §13.2 R6).
 - `koraBridge.ts` and the backend `watcher` reference the canonical program; a grep confirms no remaining references to the Anchor program ID (per §13.2 R1).
-- The Anchor program (`programs/sw4p`) is retired.
+- The Anchor program (`programs/sw4p`) is **not** retired at M1 — only its consumers are migrated and its references stripped. Its retirement (WP9.3) is an M6 acceptance item, gated on the migration cutover being testnet-validated (WP7.5) per design spec §14.4.
 
 ### M2 acceptance
 
@@ -477,7 +492,7 @@ Derived from design spec §13.2, reframed as **delivery** risks — schedule and
 
 | # | Delivery risk | Source | Likelihood | Mitigation in this SOW |
 |---|---|---|---|---|
-| **D1** | **The Anchor-program retirement (WP1.5) slips or breaks consumers** because a reference was missed — blocking M1 and the critical path. | §13.2 R1 | Medium | WP1.5 is explicitly gated on WP1.3 + WP1.4 and on a verified grep-pass; WP0.1 produces the consumer-reference inventory up front so nothing is discovered late. |
+| **D1** | **The Anchor-program consumer migration (WP1.5) slips or misses a reference** because a frontend/watcher consumer still targets the old program — blocking M1 and threatening the later WP9.3 retirement. | §13.2 R1 | Medium | WP1.5 is explicitly gated on WP1.3 + WP1.4 and on a verified grep-pass; WP0.1 produces the consumer-reference inventory up front so nothing is discovered late. The actual Anchor retirement is WP9.3 and still gates on WP7.5 testnet validation. |
 | **D2** | **V4-to-Ethereum (WP9.1's Ethereum leg) slips and Ethereum becomes a permanent V3 exception** — leaving Decision 1 unmet and M6 incomplete. | §13.2 R2 | Medium | Assumption A1 makes Ethereum a committed WP9.1 deliverable; WP2.5 (V3 retirement) *explicitly* depends on WP9.1 so the dependency is visible in the graph and cannot be quietly dropped. |
 | **D3** | **The 3-phase discipline is applied unevenly** — WP4.2/WP4.3/WP4.4 are claimed but not all genuinely done — and a desync bug surfaces in M4 testing or later, forcing rework. | §13.2 R3 | Medium-High if not enforced | Each "apply §8 to component X" is a separate, reviewable work package (WP4.2, WP4.3, WP4.4), not a blanket claim; WP3.2 (Allbridge lifecycle) is *built* to the rule, not retrofitted; WP7.4's injected-failure tests are the M4 acceptance gate that proves it. |
 | **D4** | **Dropping CCTP V1 (WP3.5) strands an in-flight V1 transfer**, causing a production incident during M6. | §13.2 R4 | Low-Medium | WP3.5 gates on WP9.1 (canonical contract on V2 everywhere) and includes a defined drain window — no new V1 transfers, existing ones allowed to complete — as part of its M3-prepared / M6-executed split. |
@@ -485,7 +500,8 @@ Derived from design spec §13.2, reframed as **delivery** risks — schedule and
 | **D6** | **The Pinocchio rebuild (WP1.1) loses a piece of `sw4p-native`'s audited security surface** in translation — discovered late, at M5 audit, forcing rework back through the §14 loop. | §13.2 R6 | Medium | WP1.1's deliverable requires a passing test per carried control; WP8.1 explicitly diffs the rebuild against `sw4p-native`'s fuzz tests and audit-fix lineage — the security surface is *carried*, and every carried control is proven to have survived. |
 | **D7** | **Approach B or C creep into the A scope** and dilute the day-one consolidation, expanding the work breakdown past what M6 needs. | §13.2 R7 | Medium | §1.2 and §7 of this SOW are the authoritative boundary; the work breakdown (§2) derives from design spec §11.2 *only*; assumption A9 restates "two rails, eight chains, no more." |
 | **D8** | **The EVM safety-control gap turns out larger than scoped** at WP0.2 — `ZapAndBridgeV4` carries less than expected — expanding WP2.1 / WP5.2 and pushing M2. | §13.2 R8 | Unknown until WP0.2 | WP0.2 is an M0 work package — the gap is scoped *before* WS2 starts, so any surprise surfaces at the earliest possible point rather than mid-build; the scoping finding sizes WP2.1/WP5.2 with real information. |
-| **D9** | **The §14 iterate loop (WP7.6) does not converge quickly** — repeated coverage gaps route back to simulate/fix — pushing M4 and everything downstream on the critical path. | §14.3 (the loop is explicitly iterative) | Medium | WP7.1's simulation harness catches the cheap failures *before* deploy; the loop is run on devnet/testnet where iteration is cheap by design; WP7.6's deliverable is explicitly "a full pass with no new findings" so the convergence bar is concrete, not vibes-based. |
+| **D9** | **The EVM live-path audit finds `ZapNative` is still depended on by a live path**, making early deletion unsafe and expanding the EVM migration. | §13.2 R8a | Medium until WP0.4 | WP0.4 is an M0 work package and gates WP0.3. If a live dependency exists, the deletion does not proceed; the audit records the dependent path and the migration requirement before deletion. |
+| **D10** | **The §14 iterate loop (WP7.6) does not converge quickly** — repeated coverage gaps route back to simulate/fix — pushing M4 and everything downstream on the critical path. | §14.3 (the loop is explicitly iterative) | Medium | WP7.1's simulation harness catches the cheap failures *before* deploy; the loop is run on devnet/testnet where iteration is cheap by design; WP7.6's deliverable is explicitly "a full pass with no new findings" so the convergence bar is concrete, not vibes-based. |
 
 ---
 
@@ -499,7 +515,7 @@ Stated explicitly and finally — this SOW does **not** cover:
 - **Approach B (Circle Gateway)** at work-breakdown depth — named and bounded in §7; its own SOW after A.
 - **Approach C (ERC-7683 canonical interface)** at work-breakdown depth — named and bounded in §7; its own SOW after B.
 - **Re-adding any rejected rail** — Wormhole NTT, Hyperlane, zkSync/Starknet, LayerZero are rejected in design spec §10 and stay rejected; no work package re-introduces them. Chainlink CCIP is the conditional-future pick and is not day-one.
-- **The task-by-task implementation plan** — the `writing-plans` artifact derives commit-granular steps from the design spec and this SOW; it is the next, separate deliverable.
+- **The task-by-task implementation plan** — the `writing-plans` artifact derives commit-granular steps from the design spec, this SOW, and the TRD; it is a separate companion artifact at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`.
 - **Any code** — this is a planning document.
 
 ---

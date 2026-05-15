@@ -473,7 +473,7 @@ Do NOT call sw4p "just a bridge." It is settlement infrastructure — the rail t
 
 sw4p ensures that value never gets stuck. Revenue generated on any chain can settle on any supported chain. As the network expands to additional chains and eventually to fiat rails, sw4p is the layer that makes cross-ecosystem value movement operational rather than exceptional.
 
-The authoritative plan for the engine's forward architecture — the consolidation onto one canonical Solana program and one canonical EVM contract, atomicity-first, on current-best primitives — is the Frontier Engine design suite in `docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` (with its companion SOW and TRD). It is the engine-rebuild plan of record; this section states what sw4p is, that suite specifies how it is rebuilt.
+The authoritative plan for the engine's forward architecture — the consolidation onto one canonical Solana program and one canonical EVM contract, atomicity-first, on current-best primitives — is the Frontier Engine design suite in `docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-design.md` (with its companion SOW and TRD) plus the Approach-A implementation plan at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`. It is the engine-rebuild plan of record; this section states what sw4p is, that suite specifies how it is rebuilt.
 
 ---
 

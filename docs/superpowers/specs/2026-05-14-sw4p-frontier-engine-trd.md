@@ -8,7 +8,7 @@
 
 ## Summary in one paragraph
 
-This Technical Requirements Document enumerates the discrete, testable requirements for the **sw4p Frontier Engine — Approach A**: the day-one consolidation onto one canonical Pinocchio-based Solana program, one V4-derived EVM contract deployed across all 6 EVM chains, two rails (CCTP V2 + Allbridge Core), the engine-wide 3-phase atomicity discipline, the off-chain→on-chain confirmation pass, a clean physical layout, a full external audit of the consolidated set, and mainnet promotion across the 8 day-one chains. Every requirement carries an ID, a priority (MUST / SHOULD / MAY), a single checkable statement, a rationale tied to a design-spec section, and a verification method tied to the design spec's §14 testing stages and the SOW's acceptance criteria. **Approach B** (Circle Gateway) and **Approach C** (the ERC-7683 canonical interface) requirement *areas* are named in §8 and explicitly marked not-required-for-A; no MUST-level requirement in this document is outside Approach-A scope. This is a requirements artifact: it contains no code and no work breakdown — it states *what the system must do and how well, and how each will be verified*.
+This Technical Requirements Document enumerates the discrete, testable requirements for the **sw4p Frontier Engine — Approach A**: the day-one consolidation onto one canonical Pinocchio-based Solana program, one V4-derived EVM contract deployed across all 6 EVM chains, two rails (CCTP V2 + Allbridge Core), the engine-wide 3-phase atomicity discipline, the off-chain→on-chain confirmation pass, a clean physical layout, a full external audit of the consolidated set, and mainnet promotion across the 8 day-one chains. Every requirement carries an ID, a priority (MUST / SHOULD / MAY), a single checkable statement, a rationale tied to a design-spec section, and a verification method tied to the design spec's §14 testing stages and the SOW's acceptance criteria. **Approach B** (Circle Gateway) and **Approach C** (the ERC-7683 canonical interface) requirement *areas* are named in §8 and explicitly marked not-required-for-A; no MUST-level requirement in this document is outside Approach-A scope. This is a requirements artifact: it contains no code and no work breakdown — it states *what the system must do and how well, and how each will be verified*. The companion implementation plan lives at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`.
 
 ---
 
@@ -105,13 +105,13 @@ Grouped by component. Each requirement is a single checkable statement. Rational
 
 ### 4.1 The canonical Solana program (`FR-SOL`)
 
-Basis: the consolidation of `programs/sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware (design spec §7.1, Decision 1). SOW workstream WS1.
+Basis: the consolidation of `programs/sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware behind a target-cluster activation gate (design spec §7.1, Decision 1). SOW workstream WS1.
 
 | ID | Priority | Requirement | Rationale | Verify |
 |---|---|---|---|---|
 | **FR-SOL-001** | MUST | Exactly one canonical Solana program exists; the Anchor program `programs/sw4p` (ID `555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3`) is retired after migration, not before. | §7.1, Decision 1, §12.1 #4 | INSP |
 | **FR-SOL-002** | MUST | The canonical Solana program is built on Pinocchio (the zero-copy base P-Token is built on). | §7.1 "Why Pinocchio" | INSP |
-| **FR-SOL-003** | MUST | The canonical Solana program's multi-token-op settlement path uses the P-Token `batch` instruction (one CPI paying the 1,000-CU floor once, not N CPIs). | §7.1 "P-Token awareness", §11.2 #7 | INSP, SIM |
+| **FR-SOL-003** | MUST | The canonical Solana program's multi-token-op settlement path uses the P-Token `batch` instruction only on clusters where P-Token is active; on clusters where it is not active, the same settlement path falls back to individual token CPIs. | §7.1 "P-Token awareness", §11.2 #7, SOW WP0.5/WP1.2 | INSP, SIM |
 | **FR-SOL-004** | MUST | The program performs swap-in on the Solana side via CPI into the swap venue, then into the CCTP path. | §7.1 "What the Solana program owns" | TEST |
 | **FR-SOL-005** | MUST | The program performs the CCTP V2 burn and mint interaction on the Solana side. | §7.1, §3.2 | TEST |
 | **FR-SOL-006** | MUST | The program enforces a signature-gated fee take. | §7.1 (carried from `sw4p-native`) | TEST, AUDIT |
@@ -121,7 +121,7 @@ Basis: the consolidation of `programs/sw4p-native`, rebuilt on Pinocchio, P-Toke
 | **FR-SOL-010** | MUST | Admin authority on the program is a Squads multisig. | §7.1 (carried) | INSP, AUDIT |
 | **FR-SOL-011** | MUST | Every security control carried from `sw4p-native` (FR-SOL-006 through FR-SOL-010) has a passing test proving it survived the Pinocchio rebuild. | §13.2 R6 | TEST |
 | **FR-SOL-012** | MUST | The program exposes the canonical intent lifecycle (`Created → Routed → SwapInDone → BridgeInitiated → Attested → Settled`) to the orchestration layer for any leg it owns. | §7.3 | TEST |
-| **FR-SOL-013** | SHOULD | The program's existing SPL Token CPIs obtain the SIMD-0266 compute reduction with no code change (same program ID under P-Token). | §7.1, §1.1 Pressure 4 | INSP, SIM |
+| **FR-SOL-013** | SHOULD | The program's existing SPL Token CPIs obtain the SIMD-0266 compute reduction on clusters where P-Token is active; when it is not active, the program records the activation status and makes no mainnet compute-savings claim. | §7.1, §1.1 Pressure 4, SOW WP0.5 | INSP, SIM |
 
 ### 4.2 The canonical EVM contract (`FR-EVM`)
 
@@ -129,7 +129,7 @@ Basis: V4-derived (`ZapAndBridgeV4.sol`), deployed to all 6 EVM chains (design s
 
 | ID | Priority | Requirement | Rationale | Verify |
 |---|---|---|---|---|
-| **FR-EVM-001** | MUST | Exactly one canonical EVM contract exists, V4-derived; `ZapNative.sol` is deleted and `ZapAndBridge.sol` ("V3") is retired per the §12.1 ordering. | §7.2, Decision 1, §12.1 #1/#3 | INSP |
+| **FR-EVM-001** | MUST | Exactly one canonical EVM contract exists, V4-derived; `ZapNative.sol` deletion and `ZapAndBridge.sol` ("V3") retirement follow the §12.1 ordering and the WS0 EVM live-path audit gates. | §7.2, Decision 1, §12.1 #1/#3, §13.2 R8a | INSP |
 | **FR-EVM-002** | MUST | The canonical EVM contract is deployed to all 6 EVM chains: Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon. | §7.2, §11.1, §13.1 Q1 | INSP, TEST |
 | **FR-EVM-003** | MUST | The contract routes swap-in through the Universal Router (v3 + v4 best-execution); it does not hard-pin a v3 router. | §7.2, §11.2 #8 | TEST, SIM |
 | **FR-EVM-004** | MUST | The contract performs the CCTP V2 burn on the source side (burns USDC, emits the CCTP message). | §7.2 | TEST |
@@ -196,7 +196,7 @@ Every state and transition in design spec §6, including the recovery transition
 | **FR-SM-012** | MUST | From `Stuck`, an operator can re-drive to `Attested` or to `SettleRetry`, or route to `Refunded` when the situation is unrecoverable. | §6 | TEST |
 | **FR-SM-013** | MUST | After `BridgeInitiated`, the only reachable terminal states are `Settled` and `Refunded`; `Failed` is unreachable once value has left the source chain. | §6 ("Why the failure split matters") | TEST, INJ |
 | **FR-SM-014** | MUST | `Refunded` and `Settled` are terminal; `Refunded` returns value to the source, `Settled` delivers value, `Failed` is terminal with nothing moved. | §6 | TEST |
-| **FR-SM-015** | MUST | The state machine is interface-agnostic: an intent flows through the identical states whether it arrived via the typed API or (in C) via an ERC-7683 order. | §6, §3.4, Decision 5 | INSP, TEST |
+| **FR-SM-015** | MUST | The state-machine model is interface-agnostic: its state enum, persistence schema, transition guards, and recovery logic do not hard-code the typed API as the only possible origin. Runtime ERC-7683 order ingestion and fill verification are deferred to Approach C. | §6, §3.4, Decision 5, §11.5 | INSP |
 | **FR-SM-016** | MUST | The state machine is rail-agnostic: `Attested` means "the rail's proof is ready" for any rail; CCTP V2 and Allbridge both flow through the same states. | §6 | TEST |
 | **FR-SM-017** | MUST | Every transition in the §6 diagram, including the recovery transitions `Stuck`, `SettleRetry`, and `Refunded`, is exercised and passes on devnet/testnet — not just the happy path. | §6, §14.3, §14.4 | TEST |
 
@@ -260,8 +260,8 @@ The compute and latency wins the consolidation captures (design spec §1.1 Press
 
 | ID | Priority | Requirement | Rationale | Verify |
 |---|---|---|---|---|
-| **NFR-PERF-001** | MUST | The canonical Solana program captures the P-Token (SIMD-0266) compute reduction for its SPL Token CPIs (achieved for free via the same program ID — no code change). | §1.1 Pressure 4, §7.1 | INSP, SIM |
-| **NFR-PERF-002** | MUST | A multi-token-op settlement on Solana pays the P-Token 1,000-CU floor once via the `batch` instruction, not once per CPI. | §7.1, §11.2 #7 | SIM, INSP |
+| **NFR-PERF-001** | MUST | The canonical Solana program captures the P-Token (SIMD-0266) compute reduction for its SPL Token CPIs on clusters where P-Token is active; on clusters where it is not active, activation status is recorded and no compute-savings claim is made. | §1.1 Pressure 4, §7.1, SOW WP0.5 | INSP, SIM |
+| **NFR-PERF-002** | MUST | A multi-token-op settlement on Solana pays the P-Token 1,000-CU floor once via the `batch` instruction only where P-Token is active; otherwise the settlement uses the individual-CPI fallback and remains correct. | §7.1, §11.2 #7, SOW WP1.2 | SIM, INSP |
 | **NFR-PERF-003** | SHOULD | CCTP V2 Fast Transfer (8–20s settlement) is used on routes where it is available, rather than standard finality (13+ minutes). | §3.3, §10 | TEST, SIM |
 | **NFR-PERF-004** | MAY | Simulation records the compute/latency profile of the day-one flows so regressions against the captured wins are detectable. | §14.3 "Simulate" | SIM |
 
@@ -288,7 +288,7 @@ The migration and retirement ordering constraints as testable gates (design spec
 | **NFR-MIG-003** | MUST | The V4-derived canonical contract reaches Ethereum mainnet with the Ethereum inbound path migrated to it *before* `ZapAndBridge.sol` ("V3") is retired. | §12.1 #3, §13.1 Q1, §13.2 R2 | INSP, TEST |
 | **NFR-MIG-004** | MUST | The V4-to-Ethereum deploy is validated on testnet *before* the V3 mainnet sunset. | §14.4 | TEST |
 | **NFR-MIG-005** | MUST | CCTP V1 paths are removed only after the canonical EVM contract is on CCTP V2 on every mainnet chain and after the drain window has completed (see FR-RAIL-005). | §12.1 #2, §13.2 R4 | INSP |
-| **NFR-MIG-006** | MUST | `ZapNative.sol` is deleted from the tree; a grep confirms no remaining references. | §12.1 #1, SOW WP0.3 | INSP |
+| **NFR-MIG-006** | MUST | The EVM live-path audit is completed before `ZapNative.sol` deletion; `ZapNative.sol` is deleted only if the audit confirms no deployed or consumer path depends on it, and the deletion is followed by a grep confirming no remaining references. | §12.1 #1, §13.2 R8a, SOW WP0.3/WP0.4 | INSP |
 | **NFR-MIG-007** | MUST | The Solana deployment-status audit (resolving §13.1 Q4: clusters, the live mainnet program, on-chain version, and a verified consumer-reference inventory for both program IDs) is completed as the plan's first task, before the WS1 migration is sequenced. | §13.1 Q4, §13.2 R1 | INSP |
 | **NFR-MIG-008** | MUST | The canonical interface (the typed API for Approach A) is and remains stable enough for `@sw4p/kit` and the in-repo SDKs to target it directly. | §3.6, §15 | INSP |
 | **NFR-MIG-009** | MUST | `sw4p-backend`, Kora, and the `sw4p-native` security lineage are not retired — the backend is reduced in role, Kora is permanent supporting infrastructure, and the security lineage is carried onto Pinocchio. | §12.3 | INSP |
@@ -334,7 +334,7 @@ Maps each requirement ID to its primary verification method and the design-spec 
 | FR-SM-001, FR-SM-010, FR-SM-011, FR-SM-013 | TEST | INJ | M4 (recovery + injected-failure) |
 | FR-SM-002, FR-SM-003, FR-SM-004, FR-SM-006 … FR-SM-009, FR-SM-012, FR-SM-014, FR-SM-016, FR-SM-017 | TEST | — | M4 acceptance (full state machine incl. recovery) |
 | FR-SM-005 | TEST | SIM | Simulate + Test; M4 |
-| FR-SM-015 | INSP | TEST | M4 (interface-agnostic by construction) |
+| FR-SM-015 | INSP | — | M4 (interface-agnostic model; ERC-7683 runtime deferred to C) |
 | FR-REG-001 … FR-REG-004 | INSP | — | M2 acceptance |
 | FR-REG-005 | INSP | TEST | M2 (testnet set) / M6 (mainnet set) |
 | FR-REG-006 | TEST | — | M4 |
@@ -349,15 +349,15 @@ Maps each requirement ID to its primary verification method and the design-spec 
 | NFR-SEC-004, NFR-SEC-005 | AUDIT | — | M5 acceptance (gate to promote) |
 | NFR-SEC-006 | AUDIT | TEST | M5 |
 | NFR-SEC-007 | AUDIT | TEST | M5 / M4 |
-| NFR-PERF-001 | INSP | SIM | Simulate; M1 |
-| NFR-PERF-002 | SIM | INSP | Simulate; M1 / M4 |
+| NFR-PERF-001 | INSP | SIM | M0 activation check; simulate where active; M1 |
+| NFR-PERF-002 | SIM | INSP | M0 activation check; simulate active path and fallback; M1 / M4 |
 | NFR-PERF-003 | TEST | SIM | M3 / M4 |
 | NFR-PERF-004 | SIM | — | Simulate |
 | NFR-OBS-001 | INSP | TEST | M3 |
 | NFR-OBS-002, NFR-OBS-003 | TEST | — | M3 / M4 |
 | NFR-OBS-004 | TEST | INJ | M4 |
 | NFR-OBS-005 | INSP | TEST | M3 / M4 |
-| NFR-MIG-001, NFR-MIG-006, NFR-MIG-007, NFR-MIG-009 | INSP | — | M0 (007) / M1 (001, 009) / M6 (006) |
+| NFR-MIG-001, NFR-MIG-006, NFR-MIG-007, NFR-MIG-009 | INSP | — | M0 (006 gate, 007) / M1 (001, 009) / M6 (006 if deletion is blocked by live dependency) |
 | NFR-MIG-002, NFR-MIG-004 | TEST | — | M4 (cutover validation before sunset) |
 | NFR-MIG-003, NFR-MIG-005 | INSP | TEST (003) | M6 acceptance (hard-constraint gates) |
 | NFR-MIG-008 | INSP | — | Ongoing; M6 |
@@ -365,7 +365,7 @@ Maps each requirement ID to its primary verification method and the design-spec 
 | NFR-MC-003 | INSP | TEST | M6 acceptance |
 | NFR-MC-004, NFR-MC-005 | TEST | — | M4 (both halves exercised) |
 
-> **Stage legend (design spec §14.3):** Simulate → Deploy devnet/testnet → Test → Iterate → Audit → Promote mainnet. **Milestone legend (SOW §4):** M0 audit+ZapNative-delete, M1 Solana program on devnet, M2 EVM contract on 6 testnets, M3 rails consolidated, M4 atomicity + validation-loop converged, M5 audit clean, M6 mainnet (Approach A live). A requirement's gate is the earliest milestone whose acceptance criteria (SOW §5) it must satisfy; many are re-checked at M4 (the converged loop) and again implicitly at M6.
+> **Stage legend (design spec §14.3):** Simulate → Deploy devnet/testnet → Test → Iterate → Audit → Promote mainnet. **Milestone legend (SOW §4):** M0 audit + ZapNative gate resolved, M1 Solana program on devnet, M2 EVM contract on 6 testnets, M3 rails consolidated, M4 atomicity + validation-loop converged, M5 audit clean, M6 mainnet (Approach A live). A requirement's gate is the earliest milestone whose acceptance criteria (SOW §5) it must satisfy; many are re-checked at M4 (the converged loop) and again implicitly at M6.
 
 ---
 
@@ -411,7 +411,7 @@ C exposes ERC-7683 as sw4p's canonical external intent interface; the rails (CCT
 
 - **Interface-layer requirements** — a new `FR-7683` group: accept an ERC-7683 `CrossChainOrder`, act as filler/settler, emit the ERC-7683 settlement receipt.
 - **Listener requirements** — `erc7683.rs` / `erc7683_listener.rs` built into the canonical front door (order-opened event → intent created in the existing state machine).
-- **Interface-agnostic reuse** — `FR-SM-015` already requires the state machine to be interface-agnostic; C exercises that property rather than adding new state-machine requirements.
+- **Interface-agnostic reuse** — `FR-SM-015` requires the Approach-A model not to hard-code the typed API as the only origin. C exercises that property and adds the ERC-7683 runtime ingestion/fill-verification requirements in its own TRD.
 - **Compatibility requirement** — `@sw4p/kit` gains an ERC-7683 path (kit-side, tracked in the kit's own corpus — not a sw4p-engine TRD requirement).
 
 ---
@@ -422,7 +422,7 @@ The four open questions from design spec §13.1, framed as **requirements-affect
 
 | # | Decision | Design spec's reasoned default | Requirements affected if reversed |
 |---|---|---|---|
-| **OQ1** | Does the V4-derived canonical contract go to Ethereum mainnet? | **Yes — forced.** "One canonical contract set" is a Decision-1 invariant, and V3 (the only live contract on Ethereum) cannot retire until its replacement is live there (§12.1 #3). | If reversed, **FR-EVM-002**, **NFR-MC-003**, **NFR-MIG-003**, and **NFR-MIG-004** lose their Ethereum scope and **FR-EVM-001**'s V3-retirement clause is removed — but Decision 1 ("one canonical contract set") is broken, so this TRD's premise would change. The cost the user is confirming acceptance of is Ethereum gas + Ethereum-specific deploy/audit care. |
+| **OQ1** | Does the V4-derived canonical contract go to Ethereum mainnet? | **Yes — forced.** "One canonical contract set" is a Decision-1 invariant, and V3 is the legacy Ethereum path whose retirement cannot happen until its replacement is live there (§12.1 #3). V3's actual live status is established by the WS0 EVM live-path audit, but that uncertainty does not change the Ethereum deploy requirement. | If reversed, **FR-EVM-002**, **NFR-MC-003**, **NFR-MIG-003**, and **NFR-MIG-004** lose their Ethereum scope and **FR-EVM-001**'s V3-retirement clause is removed — but Decision 1 ("one canonical contract set") is broken, so this TRD's premise would change. The cost the user is confirming acceptance of is Ethereum gas + Ethereum-specific deploy/audit care. |
 | **OQ2** | Are the two separate `BridgeProtocol` enums unified into one? | **Yes — unify.** Two enums for the same concept is exactly the latent inconsistency the consolidation exists to remove. | If reversed, **FR-RAIL-006** is dropped; the latent inconsistency the consolidation exists to remove persists, and `FR-RAIL-009` (explicit routing) becomes harder to verify cleanly because routing logic spans two enums. |
 | **OQ3** | Does the silent Allbridge↔CCTP fallback become explicit? | **Yes — make it explicit.** A silent fallback hides which rail moved value — the opposite of the atomicity-and-observability posture. | If reversed, **FR-RAIL-009**, **NFR-OBS-001**, and **NFR-OBS-002** change shape: a request that would silently fall back would no longer be required to visibly route or visibly fail. The §5.2 sequence diagram assumes the explicit version. |
 | **OQ4** | Is the Solana deployment-status audit the plan's first task? | **Yes — resolve by inspection before the plan.** The program IDs and the fact both are wired into consumers are established; the live deployment status (clusters, the live mainnet program, on-chain version) is a genuine unknown research cannot close. | This is acknowledged, not reversed: **NFR-MIG-007** encodes it as a MUST. It is flagged as the one item that is a genuine unknown rather than a reasoned default — if the audit surfaces an unexpected deployment topology, the WS1 migration requirements (`NFR-MIG-001`, `NFR-MIG-002`) may need re-sequencing, but the requirements themselves stand. |

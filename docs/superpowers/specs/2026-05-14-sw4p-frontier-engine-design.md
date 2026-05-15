@@ -3,7 +3,7 @@
 **Status:** DESIGN — for review.
 **Date:** 2026-05-14.
 **Author:** design agent under user direction ("use superpowers"), synthesizing four prior research passes.
-**Spec format:** superpowers `brainstorming` skill terminal artifact. The companion `writing-plans` output (implementation plan) and the downstream SOW/TRD are the next deliverables after this spec is approved; they are **not** included in this document.
+**Spec format:** superpowers `brainstorming` skill terminal artifact. The companion SOW and TRD already exist alongside this spec (the user directed they be written before the plan). The `writing-plans` output now exists at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`; it derives from all three documents and is scoped to Approach A.
 
 ---
 
@@ -20,8 +20,8 @@ This spec does NOT cover:
 - **`sw4p-earn`** (the separate staking/rewards product, `Render-Network-OS/sw4p-earn`). It is referenced only as a *downstream consumer* of settlement-fee revenue. Its launch readiness, stages, and economics are owned by its own corpus.
 - **The `@sw4p/kit` SDK slim-down + npm publish** — owned by `Render-Network-OS/sw4p-kit`. This spec references the kit as a consumer of the canonical interface, nothing more.
 - **The parent 555 monorepo canonical-corpus alignment** — separate docs work.
-- **The implementation plan itself** — the `writing-plans` output derives task-level steps from this spec; it is a separate artifact.
-- **The SOW/TRD** — derived after the plan; separate artifact.
+- **The implementation plan itself** — the `writing-plans` output derives task-level steps from this spec, the SOW, and the TRD; it is a separate artifact at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`.
+- **The SOW/TRD** — already written (the user directed they precede the plan); they are separate artifacts from this spec.
 
 The implementation surface for the *eventual* plan is large (it touches contracts, programs, and the backend across two languages and eight chains), but it is a single coherent program of work with one architectural thesis, which is what makes it appropriate for one spec.
 
@@ -38,7 +38,7 @@ Four research passes (current contract reality; cross-chain tooling verdict; ahe
 | Surface | Generations present | Live reality |
 |---|---|---|
 | Solana program | `programs/sw4p-native` (native non-Anchor Rust — signature-gated fees, pause, 24h timelock, daily limits, Squads-multisig admin, fuzz tests, audit-fix lineage; program ID `555nber4ezpjLqiAiY5GnjkGEbWWcgShUcFLtUPf39PG`) **and** `programs/sw4p` (older Anchor prototype, a strict subset; program ID `555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3`) | **Both wired in.** The frontend `koraBridge.ts` service and the backend `watcher` reference the *Anchor* program; only `update_native_config.ts` uses the native one. Consolidating to one Solana program is therefore a real **migration**, not a deletion. |
-| EVM contract | `ZapAndBridgeV4.sol` (Permit2 + Universal Router + CCTP **V2**) ⊃ `ZapAndBridge.sol` "V3" (CCTP **V1** decode) ⊃ `ZapNative.sol` (outbound-only, never deployed) | V4 is the keeper. `ZapNative` is dead code. V3 is **the only live contract on Ethereum and the only inbound path there** — it cannot retire until V4 ships to Ethereum. |
+| EVM contract | `ZapAndBridgeV4.sol` (Permit2 + Universal Router + CCTP **V2**) ⊃ `ZapAndBridge.sol` "V3" (CCTP **V1** decode) ⊃ `ZapNative.sol` (outbound-only legacy contract, with deployment/consumer status to audit) | V4 is the keeper. `ZapNative` looked like dead code, but repo references prove its live-path status must be audited. V3 is the **legacy Ethereum path** — local audit notes have it "dormant by default" (used only on explicit opt-in), not confirmed-live; its actual live state is one of the things the WS0 EVM live-path audit must establish (§13.2 R8a). Either way, V3 cannot retire until V4 ships to Ethereum. |
 | CCTP version | V1 *and* V2 decode paths coexist in the backend (`cctp_burn.rs`, `cctp_mint.rs`, `cctp_attestation.rs`) | V1 is now Legacy (see Pressure 2). Every V1 path is debt to remove. |
 
 A version-ladder is not free: every consumer has to know which generation it talks to, every audit has to cover all of them, and every change risks a cross-generation desync.
@@ -54,7 +54,7 @@ A version-ladder is not free: every consumer has to know which generation it tal
 
 **Pressure 4 — ahead-of-the-curve primitives.** New primitives offer real wins that a consolidation rewrite can capture nearly for free:
 
-- **P-Token (SIMD-0266)** — an optimized SPL Token program, ~96% less compute, **same program ID**. `sw4p-native`'s existing SPL CPIs get the compute win with **zero code change**. P-Token's new **`batch` instruction** lets a multi-token-op settlement collapse into one CPI (paying the 1,000-CU floor once) — a small, worthwhile code change.
+- **P-Token (SIMD-0266)** — an optimized SPL Token program, ~95-98% less compute, **same program ID**. The official Solana upgrade page still frames mainnet as a May 2026 target while Anza's current feature-gate tracker no longer lists SIMD-0266 as pending mainnet activation, so Approach A treats P-Token as **activation-gated**: verify the target cluster first, use `batch` where active, and keep the individual-CPI fallback where it is not. Existing SPL CPIs get the compute win when the cluster has activated P-Token.
 - **Pinocchio** — the zero-copy base P-Token is built on. Since the consolidation is rewriting `sw4p-native` anyway, it should be rebuilt **on Pinocchio**.
 - **Uniswap v4** — live on all 6 sw4p EVM chains. The canonical EVM contract should route swap-in through the **Universal Router** (v3 + v4 best-execution), not hard-pin v3. v4 addresses differ per chain, which forces a **per-chain address registry** — "same address everywhere" is dead.
 
@@ -76,8 +76,8 @@ These are the load-bearing claims of the spec. Each is locked here; the implemen
 
 The frontier engine has exactly **one Solana program** and **one EVM contract**.
 
-- **Solana:** a single program, the consolidation of `sw4p-native`, rebuilt on **Pinocchio**, P-Token `batch`-aware. Reaching one program is a **migration**: move the frontend (`koraBridge.ts`) and the backend `watcher` off the Anchor program (`programs/sw4p`) and onto the native program, *then* retire the Anchor program. The native program already carries the security lineage (timelock, pause, daily limits, Squads admin, fuzz tests, audit fixes) — it is the survivor.
-- **EVM:** a single contract, **V4-derived** (`ZapAndBridgeV4` is the basis), deployed to **all 6 EVM chains**, routing swap-in through the Universal Router, reading a per-chain address registry. Reaching one contract means **shipping V4 to Ethereum** (today only V3 lives there), *then* retiring V3, and deleting `ZapNative` (never deployed — pure deletion).
+- **Solana:** a single program, the consolidation of `sw4p-native`, rebuilt on **Pinocchio**, P-Token `batch`-aware when P-Token is active and individual-CPI compatible when it is not. Reaching one program is a **migration**: move the frontend (`koraBridge.ts`) and the backend `watcher` off the Anchor program (`programs/sw4p`) and onto the native program, validate the cutover on testnet, *then* retire the Anchor program. The native program already carries the security lineage (timelock, pause, daily limits, Squads admin, fuzz tests, audit fixes) — it is the survivor.
+- **EVM:** a single contract, **V4-derived** (`ZapAndBridgeV4` is the basis), deployed to **all 6 EVM chains**, routing swap-in through the Universal Router, reading a per-chain address registry. Reaching one contract means **shipping V4 to Ethereum**, *then* retiring V3 after the Ethereum inbound path migrates and the WS0 EVM live-path audit has established V3's actual live state; `ZapNative` is deleted only after that same audit proves no live path references it.
 
 This is Decision 1 because every other decision assumes a single canonical set as the target.
 
@@ -128,9 +128,9 @@ The frontier engine has five layers, top to bottom:
 
 ### 3.2 The canonical contract set
 
-**One Solana program** (consolidation of `sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware). It owns, on Solana:
+**One Solana program** (consolidation of `sw4p-native`, rebuilt on Pinocchio, P-Token `batch`-aware when active with an individual-CPI fallback). It owns, on Solana:
 
-- Swap-in via CPI (P-Token CPIs get the SIMD-0266 compute win for free; multi-token-op settlements use the `batch` instruction).
+- Swap-in via CPI (P-Token CPIs get the SIMD-0266 compute win where active; multi-token-op settlements use the `batch` instruction only where active).
 - The CCTP V2 burn/mint interaction on the Solana side.
 - Signature-gated fee enforcement, pause, the 24h timelock, daily limits — the existing security surface, preserved.
 - Squads-multisig admin.
@@ -509,14 +509,15 @@ stateDiagram-v2
 **Why Pinocchio:** the consolidation is rewriting this program regardless (P-Token `batch` adoption, the migration of consumers onto it). Pinocchio is the zero-copy base P-Token itself is built on; building the canonical program on it gets the engine onto the same modern foundation as the token program it CPIs into. This is not "rewrite for novelty" — it is "since we are rewriting, rewrite onto the right base."
 
 **P-Token awareness:**
-- The program's existing SPL Token CPIs get the SIMD-0266 **~96% compute reduction for free** — P-Token has the *same program ID*, so the CPIs do not change.
-- The new **`batch` instruction** is adopted where a settlement does multiple token operations: instead of N CPIs each paying the 1,000-CU floor, one `batch` CPI pays the floor once. This is a small, deliberate code change in the settlement path.
+- P-Token is activation-gated per target cluster. The plan verifies activation before claiming a mainnet compute win or relying on `batch`.
+- When P-Token is active, the program's existing SPL Token CPIs get the SIMD-0266 **~95-98% compute reduction** through the same program ID, so those CPIs do not change.
+- When P-Token is active, the new **`batch` instruction** is adopted where a settlement does multiple token operations: instead of N CPIs each paying the 1,000-CU floor, one `batch` CPI pays the floor once. When it is not active, the settlement path falls back to individual token CPIs. This is a small, deliberate code change in the settlement path, not a hard mainnet dependency.
 
 **What the Solana program owns:**
 
 | Responsibility | Detail |
 |---|---|
-| Swap-in (Solana side) | CPI into the swap venue, then into the CCTP path. Multi-op settlements use P-Token `batch`. |
+| Swap-in (Solana side) | CPI into the swap venue, then into the CCTP path. Multi-op settlements use P-Token `batch` only when the target cluster has activated it; otherwise they use the individual-CPI fallback. |
 | CCTP V2 burn / mint (Solana side) | The Solana half of a CCTP V2 cross-chain move. |
 | Signature-gated fee enforcement | The fee take is gated by signature — preserved from `sw4p-native`. |
 | Pause | The program can be paused. Preserved. |
@@ -551,7 +552,7 @@ The two halves of the canonical set are **symmetric in role, asymmetric in primi
 
 | Concern | Solana program | EVM contract |
 |---|---|---|
-| Swap-in | CPI into swap venue; P-Token `batch` for multi-op | Universal Router (v3 + v4 best-execution) |
+| Swap-in | CPI into swap venue; P-Token `batch` for multi-op where active, individual-CPI fallback otherwise | Universal Router (v3 + v4 best-execution) |
 | Bridge primitive | CCTP V2 (Solana domain); Gateway in B | CCTP V2 (EVM domains); Allbridge for Tron-bound; Gateway in B |
 | Fee-take | Signature-gated, on-chain | In-contract, on-chain |
 | Safety controls | Pause, 24h timelock, daily limits, Squads multisig | Equivalent controls on the EVM side (an open item — §13 — is confirming the EVM contract carries an equivalent surface) |
@@ -664,7 +665,7 @@ The explicit keep / add / reject / adopt / watch table. This is ground truth fro
 | **zkSync / Starknet** | **REJECT — do not re-add** | — | Had fabricated / absent CCTP domains. Correctly removed. |
 | **LayerZero** | **REJECT — do not adopt** | — | $292M Kelp exploit, Apr 2026. Wrong trust model for a settlement engine. |
 | **Chainlink CCIP** | **REJECT for now — conditional future** | Not day-one | The pick *if* a generic message rail is ever needed. Not needed day-one; documented as the conditional choice. |
-| **P-Token (SIMD-0266)** | **ADOPT** | Day-one (A) | ~96% less compute, *same program ID* — existing SPL CPIs win for free. The `batch` instruction is a small, worthwhile code change. |
+| **P-Token (SIMD-0266)** | **ADOPT behind activation gate** | Day-one (A) | Official Solana docs still require a target-cluster activation check. Existing SPL CPIs get the compute win where P-Token is active; the `batch` instruction is used where active and falls back to individual CPIs otherwise. |
 | **Pinocchio** | **ADOPT — rebuild on it** | Day-one (A) | Zero-copy base P-Token is built on. Since the Solana program is being rewritten anyway, rebuild it on the right base. |
 | **Uniswap v4 (via Universal Router)** | **ADOPT** | Day-one (A) | Live on all 6 EVM chains. Route swap-in through the Universal Router (v3 + v4 best-execution), not a hard-pinned v3 router. Forces the per-chain address registry. |
 | **Uniswap v4 hooks** | **REJECT for the cross-chain flow** | — | A hook cannot do the CCTP burn; sw4p already has swap-then-bridge atomicity in one tx. Hooks add a layer without adding the property sw4p already has. |
@@ -680,7 +681,7 @@ This section is the one the user explicitly asked to be "aligned with A." It is 
 
 | Chain | Rail | Notes |
 |---|---|---|
-| Ethereum | CCTP V2 | V4 contract must ship here (today only V3 is live) |
+| Ethereum | CCTP V2 | V4 contract must ship here; V3's actual live status is established by WS0 before retirement |
 | Base | CCTP V2 | |
 | Arbitrum | CCTP V2 | |
 | Optimism | CCTP V2 | |
@@ -695,13 +696,13 @@ This section is the one the user explicitly asked to be "aligned with A." It is 
 
 Everything in this list is **day-one**:
 
-1. **One canonical Solana program** — consolidate `sw4p-native`, rebuild on **Pinocchio**, make it P-Token `batch`-aware. **Migrate the frontend (`koraBridge.ts`) and the backend `watcher`** off the Anchor program and onto it. *Then* retire the Anchor program.
-2. **One canonical EVM contract** — V4-derived, deployed to **all 6 EVM chains**. Retire V3 (after V4 reaches Ethereum) and delete `ZapNative`.
+1. **One canonical Solana program** — consolidate `sw4p-native`, rebuild on **Pinocchio**, make it P-Token `batch`-aware behind an activation gate. **Migrate the frontend (`koraBridge.ts`) and the backend `watcher`** off the Anchor program and onto it. Validate the cutover on testnet, *then* retire the Anchor program.
+2. **One canonical EVM contract** — V4-derived, deployed to **all 6 EVM chains**. Retire V3 after V4 reaches Ethereum and the inbound path migrates; delete `ZapNative` only after WS0 proves no live path depends on it.
 3. **Drop all CCTP V1** — remove every V1 decode path from the backend.
 4. **Two rails for the 8 chains** — CCTP V2 (the 7 CCTP chains) + Allbridge Core (Tron). Finish PRs #113 + #123; make Allbridge a first-class rail.
 5. **Generalize the 3-phase atomicity discipline engine-wide** — apply §8 to the watcher, the relay, the Allbridge lifecycle, and the state machine.
 6. **Off-chain → on-chain migration pass** — the §9 confirmation-and-discipline pass: confirm every value-custody / atomicity concern is on-chain on both halves; close the EVM safety-control gap.
-7. **P-Token `batch` adoption** — the small Solana-side code change for multi-op settlements.
+7. **P-Token `batch` adoption** — the small Solana-side code change for multi-op settlements, gated by target-cluster activation with an individual-CPI fallback.
 8. **Universal Router v3/v4 routing** — the EVM contract routes swap-in through the Universal Router, not a hard-pinned v3 router.
 9. **Per-chain address registry** — build it; the EVM contract reads it; the orchestration layer and watcher use it.
 10. **One physical layout** — `sw4p/contracts/` and `sw4p/programs/` as peers of the backend (Decision 6).
@@ -734,22 +735,25 @@ What gets retired, and the **safe order**. The ordering constraints are real —
 
 | # | What retires | Safe to retire when | Order constraint |
 |---|---|---|---|
-| 1 | **`ZapNative.sol`** | Immediately — it was **never deployed**. | No constraint. Pure deletion. This is the first and cleanest sunset. |
+| 1 | **`ZapNative.sol`** | Once the WS0 EVM live-path audit (§13.2 R8a) confirms `ZapNative` is not referenced by any live path. | **Depends on the WS0 EVM live-path audit.** `ZapNative` was thought to be never-deployed dead code, but the repo still carries an active `sw4p-backend` deploy path and a frontend ABI that reference it — so the deletion is *not* zero-risk / first / free. It is the cleanest sunset *if* the audit confirms nothing live depends on it, and the audit is small, so this can still be early — but it is gated, not unconstrained. If the audit finds a live dependency, deletion waits for that dependency to migrate. |
 | 2 | **CCTP V1 decode paths** (backend) | Once the canonical contracts + backend are fully on CCTP V2 for all 8 chains. | Must come *after* the canonical EVM contract (CCTP V2) is deployed everywhere — you cannot drop V1 while a live contract still speaks it. |
-| 3 | **`ZapAndBridge.sol` ("V3")** | Once the V4-derived canonical contract is **deployed to Ethereum** and the inbound path on Ethereum is migrated to it. | **Hard constraint:** V3 is the *only live contract on Ethereum* and the *only inbound path there*. It retires *only after* V4 reaches Ethereum. This is also why "does V4 go to Ethereum" is forced to yes (§13). |
-| 4 | **Anchor `programs/sw4p`** | Once the frontend (`koraBridge.ts`) and the backend `watcher` are migrated onto the canonical Solana program. | **Hard constraint:** both consumers must be migrated *first*. Retiring the Anchor program before the migration breaks the frontend and the watcher. The migration is the gating work; the retirement is the last step. |
+| 3 | **`ZapAndBridge.sol` ("V3")** | Once the V4-derived canonical contract is **deployed to Ethereum**, the inbound path on Ethereum is migrated to it, **and** the WS0 EVM live-path audit (§13.2 R8a) has established V3's actual live state. | **Hard constraint:** V3 is the legacy Ethereum path — local audit notes have it "dormant by default" rather than confirmed-live, so its true status is to be verified by the WS0 EVM live-path audit. Whatever that audit finds, V3 retires *only after* V4 reaches Ethereum. This is also why "does V4 go to Ethereum" is forced to yes (§13). |
+| 4 | **Anchor `programs/sw4p`** | Once the frontend (`koraBridge.ts`) and the backend `watcher` are migrated onto the canonical Solana program **and** that migration cutover has been validated on testnet (per §14.4). | **Hard constraint:** both consumers must be migrated *and the cutover testnet-validated* before the Anchor program retires. Retiring it before the migration breaks the frontend and the watcher; retiring it before testnet validation sunsets a mainnet program on an unproven cutover, which §14.4 forbids. The migration plus its testnet validation is the gating work; the retirement is the last step. |
 
 ### 12.2 The safe order, sequenced
 
 ```mermaid
 graph LR
-    S1["1. Delete ZapNative<br/>(never deployed —<br/>do immediately)"]
+    EVMAUD["0. EVM live-path audit<br/>(what is actually deployed;<br/>what references ZapNative + V3)"]
+    S1["1. Delete ZapNative<br/>(after audit confirms<br/>no live path references it)"]
     M["Build & deploy<br/>canonical EVM contract<br/>to all 6 EVM chains<br/>(incl. Ethereum)"]
-    S3["3. Retire V3<br/>(after V4 on Ethereum<br/>+ inbound migrated)"]
+    S3["3. Retire V3<br/>(after V4 on Ethereum<br/>+ inbound migrated<br/>+ audit establishes V3 live state)"]
     S2["2. Drop CCTP V1 paths<br/>(after canonical contract<br/>on V2 everywhere)"]
     MIG["Migrate koraBridge.ts<br/>+ watcher onto<br/>canonical Solana program"]
-    S4["4. Retire Anchor sw4p<br/>(after both consumers<br/>migrated)"]
+    S4["4. Retire Anchor sw4p<br/>(after both consumers<br/>migrated + testnet-validated)"]
 
+    EVMAUD --> S1
+    EVMAUD --> S3
     S1 --> M
     M --> S3
     M --> S2
@@ -757,7 +761,7 @@ graph LR
     MIG --> S4
 ```
 
-The two chains of dependency are independent of each other: the EVM sunset chain (deploy canonical → retire V3 → drop V1) and the Solana sunset chain (migrate consumers → retire Anchor) can proceed in parallel. `ZapNative` deletion gates on nothing and should be done first as the trivial early win.
+The two chains of dependency are independent of each other: the EVM sunset chain (EVM live-path audit → delete `ZapNative` → deploy canonical → retire V3 → drop V1) and the Solana sunset chain (migrate consumers → retire Anchor) can proceed in parallel. The EVM live-path audit (§13.2 R8a) is the opener of the EVM chain: `ZapNative` deletion is *no longer* an unconstrained "do it first" — it gates on that audit confirming no live path references `ZapNative`, and V3 retirement gates on the audit establishing V3's actual live state (in addition to the V4-to-Ethereum gate). The audit is small, so the EVM chain still starts early — but it starts with the audit, not the deletion.
 
 ### 12.3 What does *not* get retired
 
@@ -775,7 +779,7 @@ Honest list. The "open questions" are the items the user (or the SOW/TRD phase) 
 
 | # | Question | This spec's call (made because the user waived clarifying questions) | Why it is still flagged |
 |---|---|---|---|
-| Q1 | **Does the V4-derived canonical contract go to Ethereum?** | **Yes — forced.** "One canonical contract set" is a Decision-1 invariant, and V3 (the only live contract on Ethereum) cannot retire until its replacement is live there (§12.1 #3). Therefore the canonical contract *must* ship to Ethereum. | It is forced by the architecture, but it has a real cost (Ethereum gas, Ethereum-specific deploy/audit care) that the SOW must price. The user should confirm they accept that cost rather than, e.g., leaving Ethereum on V3 as a permanent exception — which this spec recommends *against*. |
+| Q1 | **Does the V4-derived canonical contract go to Ethereum?** | **Yes — forced.** "One canonical contract set" is a Decision-1 invariant, and V3 — the legacy Ethereum path — cannot retire until its replacement is live there (§12.1 #3). Therefore the canonical contract *must* ship to Ethereum. (V3's *actual* live state on Ethereum — local audit notes have it "dormant by default," not confirmed-live — is to be verified by the WS0 EVM live-path audit, §13.2 R8a; that uncertainty does not change the Q1 answer, since the canonical contract ships to Ethereum either way.) | It is forced by the architecture, but it has a real cost (Ethereum gas, Ethereum-specific deploy/audit care) that the SOW must price. The user should confirm they accept that cost rather than, e.g., leaving Ethereum on V3 as a permanent exception — which this spec recommends *against*. |
 | Q2 | **The two separate `BridgeProtocol` enums in the backend — unify them.** | **Unify into one.** Two enums describing the same concept (which bridge/rail) is exactly the kind of latent inconsistency the consolidation exists to remove. | This is a call, but it is a real code-shape decision the user/plan should ratify: one canonical `BridgeProtocol` enum, every consumer on it. Flagged because it is a concrete breaking-ish refactor, not a no-op. |
 | Q3 | **Should the silent Allbridge→CCTP fallback become explicit?** | **Yes — make it explicit.** A *silent* fallback between rails hides which rail moved value, which is the opposite of the atomicity-and-observability posture. The route selector should pick Allbridge *explicitly* for Tron (it has no CCTP domain) and any rail change should be a visible, logged routing decision — never a silent catch. | Flagged because "explicit" has a behavioral consequence (a request that *would* have silently fallen back now visibly routes or visibly fails) and the user should confirm that is the desired behavior. §5.2 is drawn assuming the explicit version. |
 | Q4 | **Deployment-status unknowns for the Solana programs.** | **Resolve by inspection before the plan.** The research established the *program IDs* and that both are *wired into consumers*, but not the live deployment status (which clusters, which is the live mainnet program, version on-chain). | This is a genuine unknown the spec cannot close from research alone. The plan's first task should be a deployment-status audit of both Solana program IDs. The migration (§11.2 #1) cannot be sequenced safely without it. |
@@ -792,6 +796,7 @@ Honest list. The "open questions" are the items the user (or the SOW/TRD phase) 
 | R6 | **The Pinocchio rebuild loses a piece of `sw4p-native`'s audited security surface** (a limit check, a timelock edge case) in translation. | Medium | The audit (§11.2 #11) covers the *consolidated* program specifically. The rebuild must be diffed against `sw4p-native`'s existing fuzz tests and audit-fix lineage — the security surface is *carried*, and every carried control gets a test that proves it survived the rebuild. |
 | R7 | **Approach B (Gateway) or C (ERC-7683) creep into the A scope** and dilute the day-one consolidation. | Medium | §11 is the authoritative boundary. Anything Gateway-shaped is B; anything ERC-7683-shaped is C. The plan derives its task list from §11.2 *only*. |
 | R8 | **The EVM contract does not currently carry a safety-control surface** (pause / limits / timelock) equivalent to the Solana program's. | Unknown until confirmed | §9.6 flags this as the one genuine on-chain *gap* to close. The plan's early scoping must confirm what safety controls `ZapAndBridgeV4` has and specify the equivalent surface for the canonical EVM contract. |
+| R8a | **The EVM live-state is assumed rather than known** — `ZapNative` is treated as never-deployed dead code and V3 as a stale legacy path, but the repo still carries an active `sw4p-backend` deploy path that references `ZapNative` and a frontend `ZapNative` ABI, and local audit notes have V3 "dormant by default" rather than plainly the only live Ethereum path. Sequencing `ZapNative` deletion and V3 retirement on assumed state risks deleting something a live path still references. | Medium | The plan must run an **EVM deployment / live-path audit** as a WS0 work package: establish what is actually deployed on which EVM chains, what references `ZapNative` and `ZapAndBridgeV4`/V3 (including the `sw4p-backend` deploy path and the frontend ABI references), and V3's real live status. `ZapNative` deletion and V3 retirement both gate on this audit; the deletion is therefore *not* zero-risk / first / free. |
 
 ---
 
@@ -850,20 +855,19 @@ This spec deliberately does NOT:
 - **Cover the `@sw4p/kit` SDK work** beyond the constraint that the canonical interface must be stable enough for the kit to target.
 - **Re-add any rejected rail.** Wormhole NTT, Hyperlane, zkSync/Starknet, and LayerZero are rejected in §10 and stay rejected.
 - **Specify Approach B or C at implementation depth.** §3 describes the B+C end-state for architectural coherence; §11 bounds them; but B and C are sequenced sub-projects that get their own specs/plans after A lands.
-- **Contain any code or implementation.** It is a design document. The `writing-plans` output is the next artifact and is separate.
-- **Write the SOW/TRD.** Those derive from the plan, which derives from this spec. They are separate, later artifacts.
+- **Contain any code or implementation.** It is a design document. The `writing-plans` output is a separate artifact at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`.
+- **Restate the SOW or the TRD.** Those are separate artifacts. They already exist (the user directed they be written before the plan); they are the work-breakdown and requirements lenses on this spec, not part of it.
 - **Pre-decide the deployment-status unknowns (Q4).** The spec flags them; the plan's first task resolves them by inspection.
 
 ---
 
 ## 16. Handoff
 
-This spec is the terminal artifact of the brainstorming gate. Per the skill's process flow:
+This spec is the terminal artifact of the brainstorming gate. The companion SOW and TRD already exist alongside it — the user directed they be written before the plan — and the Approach-A implementation plan now exists at `docs/superpowers/plans/2026-05-15-sw4p-frontier-engine-approach-a.md`. Per the skill's process flow, what remains:
 
-1. **User reviews this spec.** Confirms or revises the four open questions in §13.1 (V4-to-Ethereum cost acceptance, the `BridgeProtocol` enum unification, the explicit-vs-silent Allbridge fallback, and the acknowledgement that the Solana deployment-status audit is the plan's first task). Confirms the A/B/C boundary in §11, the §8 atomicity discipline as an engine-wide rule, and the sunset ordering in §12.
-2. **On approval:** invoke `writing-plans` to produce the Approach-A implementation plan. The plan derives task-level steps from §11.2 (the day-one scope list), §12 (the sunset ordering), and §14 (the validation loop), with commit-per-step granularity. The plan's *first* task is the Q4 Solana deployment-status audit.
-3. **After the plan:** the SOW/TRD is derived from the plan. It is a separate artifact and does not appear here.
-4. **B and C** get their own specs after Approach A is live and stable.
+1. **User reviews this spec** (alongside the SOW and TRD). Confirms or revises the four open questions in §13.1 (V4-to-Ethereum cost acceptance, the `BridgeProtocol` enum unification, the explicit-vs-silent Allbridge fallback, and the acknowledgement that the Solana deployment-status audit is the plan's first task). Confirms the A/B/C boundary in §11, the §8 atomicity discipline as an engine-wide rule, and the sunset ordering in §12.
+2. **Implementation handoff:** execute the Approach-A plan. Its first milestone is WS0: Solana deployment-status audit, EVM live-path audit, EVM safety-control scoping, and P-Token activation-status check.
+3. **B and C** get their own specs after Approach A is live and stable.
 
 ---
 
