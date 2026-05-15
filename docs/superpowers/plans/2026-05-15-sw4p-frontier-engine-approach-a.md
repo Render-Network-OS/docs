@@ -406,7 +406,7 @@ git commit -m "feat(sw4p): rebuild native program with frontier parity controls"
 - Modify: `sw4p/programs/sw4p-native/tests/unit_tests.rs`
 - Modify: `sw4p/programs/sw4p-native/tests/fuzz_processor.rs`
 
-- [ ] **Step 1: Add failing tests for both modes**
+- [x] **Step 1: Add failing tests for both modes**
 
 Required test names:
 
@@ -416,15 +416,15 @@ frontier_ptoken_batch_falls_back_to_individual_cpis_when_inactive
 frontier_ptoken_batch_does_not_change_settlement_amounts
 ```
 
-- [ ] **Step 2: Implement activation flag read path**
+- [x] **Step 2: Implement activation flag read path**
 
 The program/config must expose an explicit activation mode: `PTokenBatchMode::Enabled` or `PTokenBatchMode::Fallback`. The value is set from the WS0 activation check, not inferred silently.
 
-- [ ] **Step 3: Implement batch path with fallback**
+- [x] **Step 3: Implement batch path with fallback**
 
 When active, build the batch instruction for multi-token-op settlement. When inactive, execute the existing individual token CPI sequence. Both paths must write the same settlement state and fee outputs.
 
-- [ ] **Step 4: Run targeted tests**
+- [x] **Step 4: Run targeted tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/programs/sw4p-native"
@@ -433,7 +433,7 @@ cargo test frontier_ptoken_batch_ -- --nocapture
 
 Expected: all three P-Token tests pass.
 
-- [ ] **Step 5: Commit P-Token gate**
+- [x] **Step 5: Commit P-Token gate**
 
 ```bash
 git add sw4p/programs/sw4p-native
