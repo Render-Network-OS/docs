@@ -357,7 +357,7 @@ git commit -m "docs(superpowers): scope evm safety controls for frontier engine"
 - Modify: `sw4p/programs/sw4p-native/tests/unit_tests.rs`
 - Modify: `sw4p/programs/sw4p-native/tests/fuzz_processor.rs`
 
-- [ ] **Step 1: Establish current tests before changing program internals**
+- [x] **Step 1: Establish current tests before changing program internals**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/programs/sw4p-native"
@@ -366,7 +366,7 @@ cargo test
 
 Expected: current pass/fail baseline recorded in the task notes. If existing tests fail before edits, capture failures and fix or split blocker before rebuild work.
 
-- [ ] **Step 2: Add security parity tests before changing behavior**
+- [x] **Step 2: Add security parity tests before changing behavior**
 
 Add failing tests that cover each carried control from Task 0.5: signature-gated fee, pause rejection, 24h timelock, daily limit, admin authority. Name tests with this exact prefix so the audit grep can find them: `frontier_parity_`.
 
