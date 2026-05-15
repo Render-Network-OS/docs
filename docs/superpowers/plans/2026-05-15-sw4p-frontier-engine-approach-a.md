@@ -447,7 +447,7 @@ git commit -m "feat(sw4p): gate p-token batch settlement by activation"
 - Modify: `sw4p/sw4p-frontend/e2e/swap-flow.spec.ts`
 - Modify: `sw4p/sw4p-frontend/e2e/bridge-status.spec.ts`
 
-- [ ] **Step 1: Prove current Anchor references**
+- [x] **Step 1: Prove current Anchor references**
 
 ```bash
 rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|SW4P_PROGRAM_ID|SW4P_NATIVE_PROGRAM_ID|HYw45arPggjxZkQiSj8hKLraEe4bVx8YuzGiEcxb7bVf' sw4p/sw4p-frontend/services/koraBridge.ts sw4p/sw4p-frontend/e2e
@@ -455,15 +455,15 @@ rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|SW4P_PROGRAM_ID|SW4P_NATIVE_
 
 Expected: current references are visible.
 
-- [ ] **Step 2: Add e2e assertion for canonical program target**
+- [x] **Step 2: Add e2e assertion for canonical program target**
 
 Update frontend tests so a built bridge transaction targets the canonical program ID from config, not the hard-coded Anchor ID.
 
-- [ ] **Step 3: Replace Anchor default wiring**
+- [x] **Step 3: Replace Anchor default wiring**
 
 `koraBridge.ts` must read the canonical program ID from one config source and must not keep the Anchor program as a default fallback. Devnet-only IDs must be named devnet-only.
 
-- [ ] **Step 4: Run frontend checks**
+- [x] **Step 4: Run frontend checks**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-frontend"
@@ -473,7 +473,7 @@ npx playwright test e2e/swap-flow.spec.ts e2e/bridge-status.spec.ts
 
 Expected: unit tests and named e2e tests pass or existing environmental blockers are recorded with exact failure output.
 
-- [ ] **Step 5: Commit frontend migration**
+- [x] **Step 5: Commit frontend migration**
 
 ```bash
 git add sw4p/sw4p-frontend/services/koraBridge.ts sw4p/sw4p-frontend/e2e/swap-flow.spec.ts sw4p/sw4p-frontend/e2e/bridge-status.spec.ts
