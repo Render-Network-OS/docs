@@ -562,7 +562,7 @@ git commit -m "chore(sw4p): strip anchor program runtime references"
 - Modify: `sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol`
 - Modify: `sw4p/sw4p-backend/contracts/test/ZapAndBridgeV4.test.cjs`
 
-- [ ] **Step 1: Add failing tests from Task 0.5 scope**
+- [x] **Step 1: Add failing tests from Task 0.5 scope**
 
 Required test names:
 
@@ -574,11 +574,11 @@ frontier_rejects_unauthorized_admin_action
 frontier_takes_fee_exactly_once
 ```
 
-- [ ] **Step 2: Implement the minimal controls**
+- [x] **Step 2: Implement the minimal controls**
 
 Use OpenZeppelin primitives already available in `package.json` where appropriate. Controls must protect all value-movement entry points, including Permit2 and destination receive/swap paths.
 
-- [ ] **Step 3: Run contract tests**
+- [x] **Step 3: Run contract tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend/contracts"
@@ -588,7 +588,7 @@ npm test
 
 Expected: targeted frontier tests and full contract tests pass.
 
-- [ ] **Step 4: Commit EVM controls**
+- [x] **Step 4: Commit EVM controls**
 
 ```bash
 git add sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol sw4p/sw4p-backend/contracts/test/ZapAndBridgeV4.test.cjs
