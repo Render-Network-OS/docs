@@ -606,7 +606,7 @@ git commit -m "feat(sw4p): add frontier safety controls to evm contract"
 - Modify: `sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol`
 - Modify: `sw4p/sw4p-backend/contracts/test/ZapAndBridgeV4.test.cjs`
 
-- [ ] **Step 1: Create registry schema from official addresses**
+- [x] **Step 1: Create registry schema from official addresses**
 
 Each registry entry must include:
 
@@ -624,15 +624,19 @@ Each registry entry must include:
 
 Replace zero addresses with verified official registry values. Do not invent chain support; Approach A EVM chains are Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon.
 
-- [ ] **Step 2: Add registry loader tests**
+Implementation note: mainnet registry covers all six Approach A EVM chains. Testnet registry is intentionally limited to the official CCTP + Universal Router overlap verified on 2026-05-15: Sepolia, Base Sepolia, and Arbitrum Sepolia. OP Sepolia, Avalanche Fuji, and Polygon Amoy remain Task 2.3 blockers unless an official Universal Router address or an explicit fallback is approved. Sources: [Circle USDC addresses](https://developers.circle.com/stablecoins/usdc-contract-addresses), [Circle CCTP contract addresses](https://developers.circle.com/cctp/references/contract-addresses), and [Uniswap deployments](https://developers.uniswap.org/docs/protocols/v4/deployments).
+
+- [x] **Step 2: Add registry loader tests**
 
 Add Rust tests that load both registry files and reject zero addresses, duplicate CCTP domains, missing Universal Router, and unsupported rails.
 
-- [ ] **Step 3: Wire route selector to registry**
+- [x] **Step 3: Wire route selector to registry**
 
 `route_selector.rs` must use registry data for chain capability and Universal Router address. Hard-coded router/USDC/domain values should be deleted or limited to tests.
 
-- [ ] **Step 4: Run registry tests**
+Implementation note: no `ZapAndBridgeV4.sol` change was required in this task. The contract remains constructor-injected; registry consumption is verified by the registry-backed constructor test and will be used by deploy tooling in Task 2.3.
+
+- [x] **Step 4: Run registry tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend"
@@ -642,7 +646,7 @@ cargo test route_selector -- --nocapture
 
 Expected: registry validation and route selector tests pass.
 
-- [ ] **Step 5: Run contract registry tests**
+- [x] **Step 5: Run contract registry tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend/contracts"
@@ -651,7 +655,7 @@ npm test -- --grep registry
 
 Expected: contract consumes registry-provided addresses in tests.
 
-- [ ] **Step 6: Commit registry work**
+- [x] **Step 6: Commit registry work**
 
 ```bash
 git add sw4p/sw4p-backend/contracts/registry sw4p/sw4p-backend/src/chain_registry.rs sw4p/sw4p-backend/src/lib.rs sw4p/sw4p-backend/src/route_selector.rs sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol sw4p/sw4p-backend/contracts/test/ZapAndBridgeV4.test.cjs
