@@ -667,14 +667,18 @@ git commit -m "feat(sw4p): add canonical per-chain address registry"
 **Files:**
 - Modify: `sw4p/sw4p-backend/contracts/scripts/deploy_v4.ts`
 - Modify: `sw4p/sw4p-backend/contracts/scripts/deploy_testnet.ts`
+- Create: `sw4p/sw4p-backend/contracts/scripts/deploy_testnet.cjs`
+- Modify: `sw4p/sw4p-backend/contracts/hardhat.config.cjs`
 - Modify: `sw4p/sw4p-backend/contracts/scripts/testnet_addresses.json`
 - Modify: `docs/superpowers/audits/2026-05-15-sw4p-frontier-engine-live-state.md`
 
-- [ ] **Step 1: Add deploy script guardrails**
+- [x] **Step 1: Add deploy script guardrails**
 
 Deploy scripts must read from `contracts/registry/testnet.json`, refuse zero addresses, and print chain ID, CCTP domain, Universal Router, Permit2, USDC, admin, limit config, and timelock config.
 
-- [ ] **Step 2: Run compile**
+Implementation note: this contracts package does not execute `.ts` Hardhat scripts directly under its current ESM setup (`ERR_UNKNOWN_FILE_EXTENSION`). The runnable testnet entrypoint is `scripts/deploy_testnet.cjs`; the `.ts` file is kept aligned as source/reference.
+
+- [x] **Step 2: Run compile**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend/contracts"
@@ -683,25 +687,29 @@ npm run compile
 
 Expected: Hardhat compile succeeds.
 
-- [ ] **Step 3: Dry-run or deploy each testnet**
+- [x] **Step 3: Dry-run or deploy each testnet**
 
 Run per-chain deployment only after RPC/env is configured:
 
 ```bash
-npx hardhat run scripts/deploy_testnet.ts --network sepolia
-npx hardhat run scripts/deploy_testnet.ts --network baseSepolia
-npx hardhat run scripts/deploy_testnet.ts --network arbitrumSepolia
-npx hardhat run scripts/deploy_testnet.ts --network optimismSepolia
-npx hardhat run scripts/deploy_testnet.ts --network avalancheFuji
-npx hardhat run scripts/deploy_testnet.ts --network polygonAmoy
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network sepolia
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network baseSepolia
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network arbitrumSepolia
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network optimismSepolia
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network avalancheFuji
+FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network polygonAmoy
 ```
 
 Expected: addresses written to `testnet_addresses.json`; if a chain cannot deploy due missing RPC/funds, record exact blocker in the audit file.
 
-- [ ] **Step 4: Commit deploy tooling and evidence**
+Result: Sepolia, Base Sepolia, and Arbitrum Sepolia dry-run ready. Optimism Sepolia, Avalanche Fuji, and Polygon Amoy are blocked by missing official CCTP + Universal Router registry entries; blockers are recorded in the audit file and `testnet_addresses.json`.
+
+Non-dry-run deployment was not attempted because `PRIVATE_KEY` and the chain-specific testnet RPC env vars were missing from this local process.
+
+- [x] **Step 4: Commit deploy tooling and evidence**
 
 ```bash
-git add sw4p/sw4p-backend/contracts/scripts/deploy_v4.ts sw4p/sw4p-backend/contracts/scripts/deploy_testnet.ts sw4p/sw4p-backend/contracts/scripts/testnet_addresses.json docs/superpowers/audits/2026-05-15-sw4p-frontier-engine-live-state.md
+git add sw4p/sw4p-backend/contracts/scripts/deploy_v4.ts sw4p/sw4p-backend/contracts/scripts/deploy_testnet.ts sw4p/sw4p-backend/contracts/scripts/deploy_testnet.cjs sw4p/sw4p-backend/contracts/hardhat.config.cjs sw4p/sw4p-backend/contracts/scripts/testnet_addresses.json docs/superpowers/audits/2026-05-15-sw4p-frontier-engine-live-state.md
 git commit -m "chore(sw4p): prepare frontier evm testnet deployments"
 ```
 

@@ -82,6 +82,35 @@ Byte-count interpretation: `cast code ... | wc -c` reports `3` for empty bytecod
 
 **EVM audit decision:** WS2 can start from V4 as the canonical base, but Approach A must deploy V4 to Ethereum, Optimism, and Avalanche before claiming six-chain coverage. Legacy `ZapAndBridge_V2` bytecode is real on four chains and must remain until active-version/env usage is audited on the deployment host and the canonical V4 path is verified for each chain.
 
+### Frontier V4 Testnet Dry-Run Status
+
+Commands run on 2026-05-15:
+
+```bash
+cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend/contracts"
+npm run compile
+for network in sepolia baseSepolia arbitrumSepolia optimismSepolia avalancheFuji polygonAmoy; do
+  FRONTIER_DRY_RUN=true npx hardhat run scripts/deploy_testnet.cjs --network "$network"
+done
+```
+
+Compile result: Hardhat reported `Nothing to compile` and exited successfully.
+
+| Testnet | Registry status | Dry-run outcome | Mainnet gate consequence |
+|---|---|---|---|
+| Sepolia | Official CCTP + Universal Router registry entry present. | Ready; printed chain ID `11155111`, CCTP domain `0`, Universal Router, Permit2, USDC, owner/admin placeholder, daily-limit default, and 24-hour timelock. | Can proceed to funded testnet deployment when `PRIVATE_KEY` and RPC are configured. |
+| Base Sepolia | Official CCTP + Universal Router registry entry present. | Ready; printed chain ID `84532`, CCTP domain `6`, Universal Router, Permit2, USDC, owner/admin placeholder, daily-limit default, and 24-hour timelock. | Can proceed to funded testnet deployment when `PRIVATE_KEY` and RPC are configured. |
+| Arbitrum Sepolia | Official CCTP + Universal Router registry entry present. | Ready; printed chain ID `421614`, CCTP domain `3`, Universal Router, Permit2, USDC, owner/admin placeholder, daily-limit default, and 24-hour timelock. | Can proceed to funded testnet deployment when `PRIVATE_KEY` and RPC are configured. |
+| Optimism Sepolia | No official CCTP + Universal Router overlap entry in `contracts/registry/testnet.json`. | Blocked: `Optimism Sepolia (OP) has no official CCTP + Universal Router registry entry; refusing to invent a Universal Router address.` | Must not deploy or treat as validated until official router support or an explicit approved fallback exists. |
+| Avalanche Fuji | No official CCTP + Universal Router overlap entry in `contracts/registry/testnet.json`. | Blocked: `Avalanche Fuji (AVAX) has no official CCTP + Universal Router registry entry; refusing to invent a Universal Router address.` | Must not deploy or treat as validated until official router support or an explicit approved fallback exists. |
+| Polygon Amoy | No official CCTP + Universal Router overlap entry in `contracts/registry/testnet.json`. | Blocked: `Polygon Amoy (MATIC) has no official CCTP + Universal Router registry entry; refusing to invent a Universal Router address.` | Must not deploy or treat as validated until official router support or an explicit approved fallback exists. |
+
+Evidence written to `sw4p/sw4p-backend/contracts/scripts/testnet_addresses.json` under `FrontierDryRuns` and `FrontierDeployBlockers`.
+
+Non-dry-run deployment was not attempted in this local session because `PRIVATE_KEY`, `ETH_SEPOLIA_RPC_URL`, `BASE_SEPOLIA_RPC_URL`, `ARB_SEPOLIA_RPC_URL`, `OP_SEPOLIA_RPC_URL`, `AVAX_FUJI_RPC_URL`, and `POLYGON_AMOY_RPC_URL` were not set in the process environment. The script has env-first RPC configuration and public fallback URLs for dry-run reachability, but funded deployment still requires an explicit deployer key and chain-specific RPC/funding check.
+
+**Mainnet gate:** BLOCKED until fresh devnet/testnet validation is complete. At this checkpoint no mainnet deployment was attempted.
+
 ## P-Token Activation Status
 
 Source checks run on 2026-05-15:
