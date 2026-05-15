@@ -822,7 +822,8 @@ stateDiagram-v2
     Iterate --> Simulate
     TestDevnet --> Audit: devnet/testnet stable across the loop
     Audit --> Fix: audit finding
-    Audit --> PromoteMainnet: audit clean (no open high/critical)
+    Audit --> FreshDevnetTestnet: audit clean (no open high/critical)
+    FreshDevnetTestnet --> PromoteMainnet: final devnet/testnet rerun passes
     PromoteMainnet --> [*]
 ```
 
@@ -835,6 +836,7 @@ stateDiagram-v2
 | **Test on devnet / testnet** | Exercise every §6 state transition — including the failure and recovery paths (`Stuck → Refunded`, `SettleRetry`), not just the happy path. Exercise the §8 atomicity discipline by *injecting* the failure classes (kill the process between Phase 2 and Phase 3; force a DB failure mid-transaction) and confirming no desync. | The full state machine, including recovery, passes; injected-failure tests confirm no half-state. |
 | **Iterate** | Where tests reveal a coverage gap, go back to Simulate/Fix. The loop is explicit — devnet is where iteration is cheap. | The loop converges: a full pass with no new findings. |
 | **Audit** | Full external audit of the *consolidated* set — the one Solana program and the one EVM contract — once consolidation is stable on testnet. (§11.2 #11.) | Audit clean: no open high/critical findings. |
+| **Fresh final devnet/testnet rerun** | After audit remediation and registry/config freeze, rerun the Solana devnet validation/deploy path and the full EVM/Tron testnet suite on the final candidate. This is a separate pre-mainnet gate, not evidence borrowed from earlier iteration. | The final-candidate devnet/testnet rerun passes before any mainnet transaction is prepared. |
 | **Promote to mainnet** | Promote the canonical contract set to mainnet across the 8 chains. The Decision-1 invariant means this *includes Ethereum* (Q1). | — terminal — the frontier engine (Approach A) is live. |
 
 ### 14.4 What the validation strategy specifically must cover

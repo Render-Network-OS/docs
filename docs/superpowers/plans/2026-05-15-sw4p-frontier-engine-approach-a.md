@@ -51,6 +51,7 @@ Official external references checked before this plan:
 - Do not delete `ZapNative.sol`, retire V3, or retire `programs/sw4p` until the named gate in this plan is satisfied.
 - Do not add Gateway runtime behavior in Approach A; document B-only seams but leave implementation out.
 - Do not add ERC-7683 runtime ingestion in Approach A; keep the state model interface-agnostic and defer the listener/front-door work to C.
+- Do not proceed to mainnet promotion until the final candidate has rerun and passed the full testnet suite and the Solana devnet validation/deploy path again after all consolidation, audit-remediation, and registry changes are in place.
 - Prefer primary verification commands listed in each task; if a command requires network and fails due sandbox restrictions, rerun with approved escalation.
 
 ---
@@ -376,11 +377,11 @@ rg -n 'frontier_parity_' sw4p/programs/sw4p-native/tests
 
 Expected before adding tests: no hits. Expected after adding tests: one hit per carried control.
 
-- [ ] **Step 3: Migrate internals to the chosen Pinocchio shape**
+- [x] **Step 3: Migrate internals to the chosen Pinocchio shape**
 
 Use the design spec's rule: carry behavior first, optimize second. Do not remove a control until its `frontier_parity_` test passes against the new shape.
 
-- [ ] **Step 4: Run Solana program tests**
+- [x] **Step 4: Run Solana program tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/programs/sw4p-native"
@@ -390,7 +391,7 @@ cargo test
 
 Expected: all parity tests and existing tests pass.
 
-- [ ] **Step 5: Commit Solana parity foundation**
+- [x] **Step 5: Commit Solana parity foundation**
 
 ```bash
 git add sw4p/programs/sw4p-native
@@ -1120,6 +1121,7 @@ The runbook must include these hard gates:
 - Canonical Solana program testnet cutover validated.
 - Canonical EVM contract deployed and validated on all six EVM testnets.
 - Full localnet and testnet validation pass.
+- Fresh final-candidate rerun on Solana devnet and the full testnet suite passes after all audit remediations and before any mainnet transaction is prepared.
 - External audit has no open high/critical findings.
 - Mainnet deploy keys/admin/multisig addresses recorded.
 ```
@@ -1215,6 +1217,7 @@ npx playwright test e2e/swap-flow.spec.ts e2e/bridge-status.spec.ts
 
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p"
 ./localnet/tests/run-all.sh
+./testnet/deploy-solana-devnet.sh
 ./testnet/tests/run-all.sh
 
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555"

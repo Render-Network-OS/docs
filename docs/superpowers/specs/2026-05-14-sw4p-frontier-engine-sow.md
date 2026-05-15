@@ -429,9 +429,11 @@ Per-milestone concrete, checkable conditions for "done." Tied to the design spec
 - A full external audit of the consolidated set (one Solana program + one EVM contract) is complete.
 - The Solana rebuild is diffed against `sw4p-native`'s existing fuzz tests and audit-fix lineage; the carried security surface is proven (per §13.2 R6).
 - **No open high or critical findings** (the §14.2 / §14.3 gate to promote).
+- After every audit remediation is applied, the final candidate reruns the Solana devnet validation/deploy path and the full testnet suite again; those fresh results are the evidence used for promotion.
 
 ### M6 acceptance
 
+- No mainnet transaction is prepared until the fresh final-candidate Solana devnet and testnet rerun from M5 has passed and is recorded.
 - The canonical Solana program and the canonical EVM contract are live on mainnet across all 8 day-one chains: Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon, Solana, Tron (per §11.1).
 - The per-chain address registry is populated and verified for the mainnet set.
 - `ZapAndBridge.sol` ("V3") is retired — and this happened *after* the canonical contract reached Ethereum mainnet with the Ethereum inbound path migrated (the §12.1 #3 hard constraint is satisfied, not bypassed).

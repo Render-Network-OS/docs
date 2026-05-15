@@ -301,7 +301,7 @@ The 8 day-one chains, the per-chain registry, no "same address everywhere" assum
 |---|---|---|---|---|
 | **NFR-MC-001** | MUST | The Approach-A engine operates across exactly the 8 day-one chains: Ethereum, Base, Arbitrum, Optimism, Avalanche, Polygon, Solana, Tron. No ninth chain is added in A. | §11.1, §13.2 R7 | INSP, TEST |
 | **NFR-MC-002** | MUST | The engine makes no "same contract address everywhere" assumption; per-chain addresses are resolved through the per-chain registry. | §1.1 Pressure 4, §7.2 | INSP |
-| **NFR-MC-003** | MUST | The canonical contract set is promoted to mainnet across all 8 day-one chains — including Ethereum (the Decision-1 invariant). | §11.1, §13.1 Q1, §14.3 | INSP, TEST |
+| **NFR-MC-003** | MUST | The canonical contract set is promoted to mainnet across all 8 day-one chains — including Ethereum (the Decision-1 invariant) — only after a fresh final-candidate rerun passes on Solana devnet and the full testnet suite. | §11.1, §13.1 Q1, §14.3 | INSP, TEST |
 | **NFR-MC-004** | MUST | The Solana-vs-EVM responsibility split (§7.3) is exercised on **both** halves of the canonical set during validation — not just one. | §7.3, §14.4 | TEST |
 | **NFR-MC-005** | MUST | Both halves of the canonical set expose the *same* intent lifecycle to the orchestration layer, so the state machine does not depend on which chain a leg is on. | §7.3, §6 | TEST |
 | **NFR-MC-006** | SHOULD | Per-chain rail config (which rail covers which chain) is data in the registry, not hard-coded branching. | §7.2, §3.3 | INSP |
@@ -365,7 +365,7 @@ Maps each requirement ID to its primary verification method and the design-spec 
 | NFR-MC-003 | INSP | TEST | M6 acceptance |
 | NFR-MC-004, NFR-MC-005 | TEST | — | M4 (both halves exercised) |
 
-> **Stage legend (design spec §14.3):** Simulate → Deploy devnet/testnet → Test → Iterate → Audit → Promote mainnet. **Milestone legend (SOW §4):** M0 audit + ZapNative gate resolved, M1 Solana program on devnet, M2 EVM contract on 6 testnets, M3 rails consolidated, M4 atomicity + validation-loop converged, M5 audit clean, M6 mainnet (Approach A live). A requirement's gate is the earliest milestone whose acceptance criteria (SOW §5) it must satisfy; many are re-checked at M4 (the converged loop) and again implicitly at M6.
+> **Stage legend (design spec §14.3):** Simulate → Deploy devnet/testnet → Test → Iterate → Audit → Fresh final devnet/testnet rerun → Promote mainnet. **Milestone legend (SOW §4):** M0 audit + ZapNative gate resolved, M1 Solana program on devnet, M2 EVM contract on 6 testnets, M3 rails consolidated, M4 atomicity + validation-loop converged, M5 audit clean plus fresh final-candidate devnet/testnet rerun, M6 mainnet (Approach A live). A requirement's gate is the earliest milestone whose acceptance criteria (SOW §5) it must satisfy; many are re-checked at M4 (the converged loop) and again immediately before M6.
 
 ---
 
