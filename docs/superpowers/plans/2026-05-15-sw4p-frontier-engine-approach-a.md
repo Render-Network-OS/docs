@@ -825,6 +825,7 @@ Expected: Allbridge mock path passes and logs chosen rail explicitly.
   - `./localnet/tests/test-bridge.sh` failed immediately with curl exit 7 at `Testing fee estimate endpoint (expect 401)...` because `localhost:3000` was not serving.
   - Escalated `docker compose -f localnet/docker-compose.localnet.yml ps` showed no localnet containers.
   - Escalated `./localnet/run.sh --up` stalled at image pull (`anvil-base Pulling`, `solana-validator Pulling`, `anvil-eth Pulling`) and still showed no containers after several minutes; the stalled startup processes were killed.
+  - `localnet/docker-compose.localnet.yml` is explicitly marked "BROKEN UNDER TRACK A1" because the stack still uses `NETWORK_MODE=localnet` and dead Circle mock env vars after the registry-DI refactor.
   - Do not proceed to devnet/testnet/mainnet promotion until localnet services start and `./localnet/tests/test-bridge.sh` passes.
 
 - [x] **Step 4: Commit Allbridge rail work**
