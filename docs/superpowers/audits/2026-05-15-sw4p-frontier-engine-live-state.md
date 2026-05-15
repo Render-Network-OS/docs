@@ -10,7 +10,7 @@
 |---|---|---|
 | Solana deployment-status audit | Complete | See "Solana Deployment Status". Public RPC checks found no mainnet account for either declared Solana program ID; devnet has two native-program references and no Anchor account. |
 | EVM live-path audit | Complete | See "EVM Deployment / Live-Path Status". V4 bytecode exists on Base, Arbitrum, and Polygon; legacy `ZapAndBridge_V2` bytecode exists on Ethereum, Base, Arbitrum, and Polygon; `ZapNative` has no artifact address but still has an active backend deploy path. |
-| P-Token activation-status check | Open | Filled by Task 0.4. |
+| P-Token activation-status check | Complete | See "P-Token Activation Status". Direct `solana feature status` checks show `ptokFjwyJtrwCa9Kgo9xoDS59V4QccBGEaRFnRPnSdP` / SIMD-0266 active on mainnet-beta and devnet. |
 | EVM safety-control scoping | Open | Filled by Task 0.5. |
 
 ## Decisions Produced
@@ -19,7 +19,7 @@
 |---|---|---|
 | Can WS1 migration sequence start? | Yes, with explicit target reconciliation | The audit resolved the live-state unknown: consumers must migrate off the Anchor ID and the hard-coded devnet native ID, and WS1 must treat mainnet Solana promotion as a deploy/promotion step rather than assuming the declared native ID is already live on mainnet. |
 | Can ZapNative be deleted? | Blocked | No deployed `ZapNative` address is recorded, but `sw4p-backend deploy` still routes to `deploy_zap_native::deploy_zap_native_contracts()`, the backend has a dedicated `deploy_zap_native` binary/module, and frontend components still carry `ZAP_NATIVE_ABI`. WP0.3 must first remove or migrate those operational references. |
-| Can P-Token batch be required on target mainnet? | Open | Requires target-cluster activation check. |
+| Can P-Token batch be required on target mainnet? | Yes for mainnet-beta and devnet as checked; keep fallback elsewhere | Mainnet-beta and devnet both report SIMD-0266 active through `solana feature status`. Approach A may use `batch` on those clusters, but code must still retain individual-CPI fallback for local/test clusters or future target clusters without activation evidence. |
 | What EVM safety controls must V4-derived canonical contract carry? | Open | Requires V4 safety-control scope. |
 
 ## Solana Deployment Status
@@ -79,3 +79,23 @@ Byte-count interpretation: `cast code ... | wc -c` reports `3` for empty bytecod
 **ZapNative deletion gate:** BLOCKED. The EVM deployment / live-path table above names active operational paths that still depend on `ZapNative`: the backend deploy subcommand/module/binary and stale frontend ABI constants. WP0.3 must not delete `ZapNative.sol` until those paths migrate to the canonical V4-derived contract or are deliberately removed as part of a reviewed deletion patch.
 
 **EVM audit decision:** WS2 can start from V4 as the canonical base, but Approach A must deploy V4 to Ethereum, Optimism, and Avalanche before claiming six-chain coverage. Legacy `ZapAndBridge_V2` bytecode is real on four chains and must remain until active-version/env usage is audited on the deployment host and the canonical V4 path is verified for each chain.
+
+## P-Token Activation Status
+
+Source checks run on 2026-05-15:
+
+- Solana upgrade page: `https://solana.com/it/upgrades/p-token`. The page says "Devnet Live Target Mainnet: May 2026", "Devnet Activation Completed", and lists `batch` as one of the added P-Token instructions.
+- Anza feature-gate tracker: `https://github.com/anza-xyz/agave/wiki/Feature-Gate-Tracker-Schedule`. The page was edited 2026-05-14 and its pending mainnet/devnet/testnet activation tables do not list SIMD-0266 as pending.
+- Direct cluster checks:
+
+```bash
+solana feature status --url https://api.mainnet-beta.solana.com | rg -i '0266|efficient|p-token|ptok|token'
+solana feature status --url https://api.devnet.solana.com | rg -i '0266|efficient|p-token|ptok|token'
+```
+
+| Cluster | Source evidence | Direct cluster evidence | Approach-A mode |
+|---|---|---|---|
+| mainnet-beta | Solana page still frames mainnet as a May 2026 target; Anza pending-activation table does not list SIMD-0266 as pending. | `ptokFjwyJtrwCa9Kgo9xoDS59V4QccBGEaRFnRPnSdP | active since epoch 971 | 419472000 | SIMD-0266: Efficient Token program`. | `batch` active on checked target mainnet; retain fallback for any unchecked cluster. |
+| devnet | Solana page says devnet activation completed; Anza pending-devnet table does not list SIMD-0266 as pending. | `ptokFjwyJtrwCa9Kgo9xoDS59V4QccBGEaRFnRPnSdP | active since epoch 1044 | 451008000 | SIMD-0266: Efficient Token program`. | `batch` active on checked devnet; use devnet to exercise batch-path tests. |
+
+**Implementation decision:** Use P-Token `batch` on activated clusters; keep individual-CPI fallback on non-activated or unverified clusters. It is now acceptable to claim SIMD-0266 activation for public mainnet-beta and devnet as of this audit, but not for arbitrary local/test clusters without fresh feature evidence.
