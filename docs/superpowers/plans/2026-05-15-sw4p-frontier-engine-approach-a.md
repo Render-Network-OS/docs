@@ -483,13 +483,13 @@ git commit -m "feat(sw4p): point frontend bridge flow at canonical solana progra
 ### Task 1.4: Migrate watcher/backend Solana consumer off Anchor
 
 **Files:**
-- Modify: `sw4p/sw4p-backend/src/watcher.rs`
-- Modify: `sw4p/sw4p-backend/src/native_bridge.rs`
-- Modify: `sw4p/sw4p-backend/src/sdk_solana.rs`
-- Modify: `sw4p/sw4p-backend/tests/e2e_native_bridge.rs`
-- Modify: `sw4p/sw4p-backend/tests/native_bridge_integration.rs`
+- Modify: `sw4p/sw4p-backend/src/watcher/mod.rs`
+- Modify: `sw4p/sw4p-backend/src/watcher/tests.rs`
+- Modify: `sw4p/sw4p-backend/tests/e2e_health.rs`
+- Modify: `sw4p/sw4p-backend/kora.toml`
+- Modify: `sw4p/kora/kora.toml`
 
-- [ ] **Step 1: Inventory backend Anchor references**
+- [x] **Step 1: Inventory backend Anchor references**
 
 ```bash
 rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|SW4P_PROGRAM_ID|SW4P_NATIVE_PROGRAM_ID|Anchor|programs/sw4p' sw4p/sw4p-backend sw4p/render.yaml sw4p/kora/kora.toml -g '!target'
@@ -497,15 +497,15 @@ rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|SW4P_PROGRAM_ID|SW4P_NATIVE_
 
 Expected: all backend/config Anchor references are listed before edits.
 
-- [ ] **Step 2: Add tests for watcher canonical program subscription**
+- [x] **Step 2: Add tests for watcher canonical program subscription**
 
 Create or extend a watcher integration test that asserts the watcher subscribes to the canonical program ID and ignores the Anchor program ID for new intents.
 
-- [ ] **Step 3: Replace watcher/native bridge program wiring**
+- [x] **Step 3: Replace watcher/native bridge program wiring**
 
 Backend runtime config must expose one canonical Solana program ID. Any Anchor ID remains only in migration audit docs, not in runtime routing.
 
-- [ ] **Step 4: Run backend tests**
+- [x] **Step 4: Run backend tests**
 
 ```bash
 cd "/Volumes/OWC Envoy Pro FX/desktop_dump/new/Work/555/sw4p/sw4p-backend"
@@ -516,7 +516,7 @@ cargo test
 
 Expected: targeted tests pass before full backend pass is claimed.
 
-- [ ] **Step 5: Commit backend migration**
+- [x] **Step 5: Commit backend migration**
 
 ```bash
 git add sw4p/sw4p-backend/src sw4p/sw4p-backend/tests sw4p/render.yaml sw4p/kora/kora.toml
