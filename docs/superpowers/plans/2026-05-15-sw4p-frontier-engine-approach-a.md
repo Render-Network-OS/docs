@@ -529,7 +529,7 @@ git commit -m "feat(sw4p): migrate backend watcher to canonical solana program"
 - Modify: runtime/config files found by grep in Task 1.4
 - Modify: `docs/superpowers/audits/2026-05-15-sw4p-frontier-engine-live-state.md`
 
-- [ ] **Step 1: Run final runtime grep**
+- [x] **Step 1: Run final runtime grep**
 
 ```bash
 rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|programs/sw4p|SW4P_PROGRAM_ID' sw4p/sw4p-backend sw4p/sw4p-frontend sw4p/render.yaml sw4p/kora/kora.toml -g '!target' -g '!node_modules'
@@ -537,7 +537,7 @@ rg -n '555FYVu5wEbRmKPg6g8zhPUhMXZCc9y2Z2hbQkz5wMj3|programs/sw4p|SW4P_PROGRAM_I
 
 Expected: only audit/docs references remain. Runtime references must be gone.
 
-- [ ] **Step 2: Record Anchor retirement state**
+- [x] **Step 2: Record Anchor retirement state**
 
 In the WS0 audit file, record:
 
@@ -545,7 +545,7 @@ In the WS0 audit file, record:
 **Anchor consumer migration:** complete for runtime consumers. The Anchor program is not decommissioned here. Retirement remains gated on WP7.5 testnet cutover validation and WP9.3.
 ```
 
-- [ ] **Step 3: Commit consumer-strip evidence**
+- [x] **Step 3: Commit consumer-strip evidence**
 
 ```bash
 git add docs/superpowers/audits/2026-05-15-sw4p-frontier-engine-live-state.md sw4p/sw4p-backend sw4p/sw4p-frontend sw4p/render.yaml sw4p/kora/kora.toml
