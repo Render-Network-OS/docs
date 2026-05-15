@@ -11,7 +11,7 @@
 | Solana deployment-status audit | Complete | See "Solana Deployment Status". Public RPC checks found no mainnet account for either declared Solana program ID; devnet has two native-program references and no Anchor account. |
 | EVM live-path audit | Complete | See "EVM Deployment / Live-Path Status". V4 bytecode exists on Base, Arbitrum, and Polygon; legacy `ZapAndBridge_V2` bytecode exists on Ethereum, Base, Arbitrum, and Polygon; `ZapNative` has no artifact address but still has an active backend deploy path. |
 | P-Token activation-status check | Complete | See "P-Token Activation Status". Direct `solana feature status` checks show `ptokFjwyJtrwCa9Kgo9xoDS59V4QccBGEaRFnRPnSdP` / SIMD-0266 active on mainnet-beta and devnet. |
-| EVM safety-control scoping | Open | Filled by Task 0.5. |
+| EVM safety-control scoping | Complete | See "EVM Safety-Control Scope". V4 is ownerless/immutable today and lacks the Solana-native pause, timelock, daily-limit, governed-admin, and fee-guardrail control surface. |
 
 ## Decisions Produced
 
@@ -20,7 +20,7 @@
 | Can WS1 migration sequence start? | Yes, with explicit target reconciliation | The audit resolved the live-state unknown: consumers must migrate off the Anchor ID and the hard-coded devnet native ID, and WS1 must treat mainnet Solana promotion as a deploy/promotion step rather than assuming the declared native ID is already live on mainnet. |
 | Can ZapNative be deleted? | Blocked | No deployed `ZapNative` address is recorded, but `sw4p-backend deploy` still routes to `deploy_zap_native::deploy_zap_native_contracts()`, the backend has a dedicated `deploy_zap_native` binary/module, and frontend components still carry `ZAP_NATIVE_ABI`. WP0.3 must first remove or migrate those operational references. |
 | Can P-Token batch be required on target mainnet? | Yes for mainnet-beta and devnet as checked; keep fallback elsewhere | Mainnet-beta and devnet both report SIMD-0266 active through `solana feature status`. Approach A may use `batch` on those clusters, but code must still retain individual-CPI fallback for local/test clusters or future target clusters without activation evidence. |
-| What EVM safety controls must V4-derived canonical contract carry? | Open | Requires V4 safety-control scope. |
+| What EVM safety controls must V4-derived canonical contract carry? | Pause, per-period movement limits, timelocked config changes, governed admin/multisig handoff, and fee-take guardrails | These are present or explicitly modeled in `sw4p-native`; V4 currently has CCTP V2 net-mint safety checks and constructor validation, but no owner/admin, no pause, no timelock, no movement limit, and no platform-fee guardrails. |
 
 ## Solana Deployment Status
 
@@ -99,3 +99,35 @@ solana feature status --url https://api.devnet.solana.com | rg -i '0266|efficien
 | devnet | Solana page says devnet activation completed; Anza pending-devnet table does not list SIMD-0266 as pending. | `ptokFjwyJtrwCa9Kgo9xoDS59V4QccBGEaRFnRPnSdP | active since epoch 1044 | 451008000 | SIMD-0266: Efficient Token program`. | `batch` active on checked devnet; use devnet to exercise batch-path tests. |
 
 **Implementation decision:** Use P-Token `batch` on activated clusters; keep individual-CPI fallback on non-activated or unverified clusters. It is now acceptable to claim SIMD-0266 activation for public mainnet-beta and devnet as of this audit, but not for arbitrary local/test clusters without fresh feature evidence.
+
+## EVM Safety-Control Scope
+
+Commands run on 2026-05-15:
+
+```bash
+rg -n 'pause|paused|timelock|daily|limit|fee|signature|squads|multisig|admin|authority' sw4p/programs/sw4p-native/src sw4p/programs/sw4p-native/tests
+rg -n 'pause|paused|Pausable|Ownable|AccessControl|timelock|daily|limit|cap|max|admin|owner|authority|fee' sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol sw4p/sw4p-backend/contracts/test/ZapAndBridgeV4.test.cjs
+```
+
+Current Solana control evidence:
+
+- `sw4p/programs/sw4p-native/src/state.rs` stores `admin`, `backend_authority`, `paused`, `pause_authority`, `paused_at`, `PendingConfig`, and `UserDailyUsage`.
+- `sw4p/programs/sw4p-native/src/lib.rs` defines `TIMELOCK_SECONDS = 86_400`, `DAILY_BRIDGE_LIMIT_USDC = 50_000_000_000`, `MIN_BRIDGE_AMOUNT = 5_000_000`, and `AUTO_UNPAUSE_SECONDS = 604_800`.
+- `sw4p/programs/sw4p-native/src/processor.rs` verifies admin/pause-authority signers, blocks bridging while paused, auto-unpauses after the configured window, enforces the minimum amount and daily bridge limit, verifies the backend Ed25519 signature over the fee commitment, caps the platform fee at 10%, and proposes/executes config changes through the 24-hour timelock.
+- `sw4p/programs/sw4p-native/tests/squads_integration.rs` covers admin migration to a vault PDA, pause-authority transfer through the timelock, pause/unpause through the authority model, and the timelock boundary.
+
+Current V4 control evidence:
+
+- `sw4p/sw4p-backend/contracts/contracts/ZapAndBridgeV4.sol` has immutable constructor wiring for Universal Router, Permit2, CCTP V2 TokenMessenger/MessageTransmitter, USDC, and WETH.
+- V4 validates nonzero constructor addresses, nonzero outbound amounts, nonzero inbound recipients/tokens, CCTP V2 message shape, and net minted amount (`amount - feeExecuted`) before transferring or swapping inbound funds.
+- V4 does **not** import or inherit `Ownable`, `AccessControl`, or `Pausable`; has no owner/admin field; has no pause/unpause functions; has no timelocked configuration path; has no daily/per-period movement limits; and has no platform-fee configuration or signature-gated fee take.
+
+| Control | Solana canonical source | Present in V4 today | Required in canonical EVM contract | Verification required |
+|---|---|---|---|---|
+| Pause | `Config.paused`, `Config.pause_authority`, `process_pause`, `process_unpause`, bridge-time paused check, auto-unpause after `AUTO_UNPAUSE_SECONDS`. | No. V4 has no pause state, authority, or pause guard on value-moving functions. | Yes. Every value-moving outbound and inbound function must respect pause state. | Unit test: paused value movement reverts; unpaused value movement proceeds. |
+| Daily / per-period movement limit | `UserDailyUsage`, `DAILY_BRIDGE_LIMIT_USDC`, and `process_bridge_to_evm` limit checks. | No. V4 has no per-user, per-chain, or global movement accounting. | Yes. At minimum, enforce a configurable per-period cap for value-moving outbound paths; if inbound routes are exposed through the contract, define whether inbound should count separately or share the cap. | Unit test: over-limit value movement reverts; reset behavior tested. |
+| Timelocked config changes | `PendingConfig`, `ProposeConfigUpdate`, `ExecuteConfigUpdate`, and `TIMELOCK_SECONDS = 86_400`. | No. V4 is immutable and ownerless; no mutable config exists today. | Yes. Any mutable safety config, admin handoff, fee config, limit config, registry pointers, or pause-authority update must use a timelocked propose/execute flow. | Unit test: change cannot execute before delay, can execute after delay. |
+| Admin authority / multisig handoff | `Config.admin`, `pause_authority`, signer checks compatible with Squads vault PDA, and Squads integration tests. | No. V4 has no admin/owner/multisig-controlled surface. | Yes. Use a governed admin model suitable for multisig ownership; separate emergency pause authority from slower config authority if possible. | Inspection: owner/admin set to governed address; tests cover only authorization. |
+| Fee-take guardrails | Ed25519 backend signature over amount/fee/domain/recipient/maxFee/finality/nonce/expiry; `MIN_BRIDGE_AMOUNT`; platform-fee ceiling at 10%; fee transferred once to treasury. | Partial but insufficient. V4 forwards CCTP `maxFee` and parses `feeExecuted`; it does not implement platform-fee configuration, fee ceiling, fee signature, or fee transfer. | Yes. Canonical EVM must define fee config, max fee bounds, exact-once fee deduction, and whether fee authorization is signature-gated or admin-configured. | Unit test: invalid fee config reverts, valid fee deducted exactly once. |
+
+**EVM safety-control decision:** WS2 must not ship the current V4 contract unchanged as the canonical EVM contract. The canonical V4-derived contract must add the safety-control surface above before six-chain deployment or audit handoff.
