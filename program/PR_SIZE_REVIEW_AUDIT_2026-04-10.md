@@ -17,7 +17,7 @@ This audit closes the review portion of `docs#86`.
 
 | PR | Title | Scope | Changed lines | Files | Result | Notes |
 | --- | --- | --- | ---: | ---: | --- | --- |
-| #183 | `docs: QA-SYS-03 first weekly security review — assign owners, set due…` | docs-only | 368 | 10 | Pass | Reviewable in one sitting. |
+| #183 | `docs: QA-SYS-03 first weekly security review, assign owners, set due…` | docs-only | 368 | 10 | Pass | Reviewable in one sitting. |
 | #181 | `docs(program): codify default-branch board truth rule` | docs-only | 13 | 2 | Pass | Tight fix-up PR. |
 | #180 | `docs(program): codify default-branch board truth rule` | docs-only | 1108 | 27 | Exceeds guideline | Oversized draft; later replaced by smaller merged PR #181. |
 | #179 | `docs: land program canon, first article, and target dossiers` | docs-only | 1103 | 27 | Exceeds guideline | One-time canon bootstrap; should have carried an explicit large-PR justification. |

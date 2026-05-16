@@ -74,8 +74,8 @@ Find solutions to the most common RNDRNTWRK problems below.
   <Accordion title="Score Not Recording" icon="circle-xmark">
     **Check the following:**
 
-    - ✅ Verify your wallet is connected — scores are tied to your wallet session
-    - ✅ Confirm your VAP (Verified Action Proof) session is active — if your Ed25519 signature has expired, reconnect your wallet to start a new session
+    - ✅ Verify your wallet is connected, scores are tied to your wallet session
+    - ✅ Confirm your VAP (Verified Action Proof) session is active, if your Ed25519 signature has expired, reconnect your wallet to start a new session
     - ✅ Ensure you completed the game round fully (partial rounds may not submit scores)
     - ✅ Check your browser console for network errors during score submission
     - ✅ If the issue persists, try a different browser or disable extensions that may interfere with WebSocket connections
@@ -84,9 +84,9 @@ Find solutions to the most common RNDRNTWRK problems below.
   <Accordion title="Leaderboard Delays" icon="clock">
     **Expected behavior and troubleshooting:**
 
-    - Leaderboard scores sync every few seconds — brief delays are normal during high-traffic periods
+    - Leaderboard scores sync every few seconds, brief delays are normal during high-traffic periods
     - If your score does not appear after 30 seconds, refresh the leaderboard page
-    - Check if you are in **beta mode** — beta mode games may apply score penalties or separate leaderboard tracking
+    - Check if you are in **beta mode**: beta mode games may apply score penalties or separate leaderboard tracking
     - Scores from games that trigger anti-cheat flags may be held for review before appearing on the leaderboard
   </Accordion>
 
@@ -94,7 +94,7 @@ Find solutions to the most common RNDRNTWRK problems below.
     **Resolution steps:**
 
     - ✅ Clear browser cache and cookies, then reload
-    - ✅ Confirm browser compatibility — Chrome, Brave, and Edge are recommended; Safari may have limited WebGL support
+    - ✅ Confirm browser compatibility, Chrome, Brave, and Edge are recommended; Safari may have limited WebGL support
     - ✅ Disable hardware acceleration if you experience rendering issues
     - ✅ Check that JavaScript is enabled and no content blockers are preventing game assets from loading
     - ✅ Try incognito/private browsing mode to rule out extension conflicts
@@ -107,9 +107,9 @@ Find solutions to the most common RNDRNTWRK problems below.
   <Accordion title="RTMP Connection Failures" icon="tower-broadcast">
     **Diagnose and fix RTMP problems:**
 
-    - ✅ Verify your stream key is correct — copy it fresh from CTRL Panel and ensure no trailing spaces
+    - ✅ Verify your stream key is correct, copy it fresh from CTRL Panel and ensure no trailing spaces
     - ✅ Confirm the RTMP URL matches the destination platform (e.g., `rtmp://live.twitch.tv/app/`)
-    - ✅ Check firewall and router settings — RTMP uses port 1935 by default; ensure it is not blocked
+    - ✅ Check firewall and router settings, RTMP uses port 1935 by default; ensure it is not blocked
     - ✅ Test with a single destination first before enabling multi-destination output
     - ✅ If using OBS, check the "Stream" settings and verify the server selection
   </Accordion>
@@ -119,7 +119,7 @@ Find solutions to the most common RNDRNTWRK problems below.
 
     - ✅ Ensure camera and microphone permissions are granted in your browser and OS settings
     - ✅ Check that no other application is using the camera or microphone exclusively
-    - ✅ Lower your output resolution or bitrate if your system is struggling — 720p at 2500 kbps is a safe baseline
+    - ✅ Lower your output resolution or bitrate if your system is struggling, 720p at 2500 kbps is a safe baseline
     - ✅ Update GPU drivers if hardware encoding (NVENC/AMF) is producing artifacts
     - ✅ Restart your encoding software if the stream output freezes
   </Accordion>
@@ -140,7 +140,7 @@ Find solutions to the most common RNDRNTWRK problems below.
   <Accordion title="Merkle Proof Errors" icon="tree">
     **Understanding and resolving Merkle claim issues:**
 
-    - Merkle distribution trees are generated at settlement time — if your proof is invalid, your claim may not yet be included in the current tree
+    - Merkle distribution trees are generated at settlement time, if your proof is invalid, your claim may not yet be included in the current tree
     - ✅ Wait for the next settlement cycle (Monday 05:55 CST) and retry
     - ✅ Verify that the wallet address you are claiming from matches the address that earned the rewards
     - ✅ Check the on-chain Merkle root to confirm your leaf is included using a block explorer
@@ -158,8 +158,8 @@ Find solutions to the most common RNDRNTWRK problems below.
     **Claiming your rewards:**
 
     - Navigate to the claims page in CTRL Panel and connect the wallet that earned the rewards
-    - Click "Claim" to submit the Merkle proof transaction — you will need a small amount of SOL for the transaction fee
+    - Click "Claim" to submit the Merkle proof transaction, you will need a small amount of SOL for the transaction fee
     - ✅ If the claim transaction fails, check that you have not already claimed for that period
-    - ✅ Unclaimed rewards remain available until the expiry window closes — check the [Fee Distribution](/tokenomics/fee-distribution) page for expiry details
+    - ✅ Unclaimed rewards remain available until the expiry window closes, check the [Fee Distribution](/tokenomics/fee-distribution) page for expiry details
   </Accordion>
 </AccordionGroup>

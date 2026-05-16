@@ -1,4 +1,4 @@
-# Weekly Security Review — Cadence Template
+# Weekly Security Review: Cadence Template
 
 **Frequency**: Every Friday
 **Owner**: Rotating (assigned per sprint)
@@ -41,7 +41,7 @@
 ## Review Table Template
 
 ```markdown
-## Weekly Security Review — YYYY-MM-DD
+## Weekly Security Review: YYYY-MM-DD
 
 **Reviewer**: @username
 

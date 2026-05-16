@@ -4,7 +4,7 @@
 **Status**: Open → **Owned**
 **Owner**: @Sw4pIO
 **Due Date**: 2026-04-24
-**Source**: `audit/SECURITY_AUDIT.md` §8 — Rate Limiting
+**Source**: `audit/SECURITY_AUDIT.md` §8, Rate Limiting
 
 ---
 
@@ -19,7 +19,7 @@ are not returned to clients.
 
 From `audit/SECURITY_AUDIT.md`:
 - IP-based rate limiting implemented in backend and gateway
-- No user-based limiting — can be bypassed with multiple IPs
+- No user-based limiting, can be bypassed with multiple IPs
 - No rate limit headers returned
 - No distributed rate limiting across instances
 

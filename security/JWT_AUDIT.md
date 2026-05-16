@@ -4,7 +4,7 @@
 **Status**: Open → **Owned**
 **Owner**: @Sw4pIO
 **Due Date**: 2026-04-24
-**Source**: `audit/SECURITY_AUDIT.md` §7 — Authentication & Authorization
+**Source**: `audit/SECURITY_AUDIT.md` §7, Authentication & Authorization
 
 ---
 
@@ -30,7 +30,7 @@ is no way to revoke it.  The attacker retains access until the token expires.
 ### Remediation Plan
 
 1. Implement a Redis-backed token blacklist (check on every authenticated request)
-2. Add a token version field to user records — increment on password change / revoke
+2. Add a token version field to user records, increment on password change / revoke
 3. Add SameSite=Strict to auth cookies
 4. Consider short-lived access tokens + refresh token pattern
 

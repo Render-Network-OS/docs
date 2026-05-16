@@ -88,10 +88,7 @@ Buying Tokens binds you to the DAO LLC operating agreement. Review it; it's part
 
 [Connect Wallet]
 
-**Top 10 Contributors**  
-—
-
-### How It Works
+**Top 10 Contributors**: ### How It Works
 
 **Get Funded:** Founders launch on MetaDAO. Contributors add USDC. If minimum not met, funds returned.
 

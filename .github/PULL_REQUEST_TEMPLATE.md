@@ -24,15 +24,15 @@
 
 ## Config / Secret Changes
 <!-- REQUIRED: check one. Reviewers use this to know whether to scrutinize auth, env, or infra code. -->
-- [ ] **None** — this PR does not touch env vars, secrets, or config
-- [ ] **Yes** — describe below:
+- [ ] **None**, this PR does not touch env vars, secrets, or config
+- [ ] **Yes**, describe below:
   - Env vars added/changed:
   - Secrets added/rotated:
   - Config files changed:
 
 ## Docs Updated
 <!-- REQUIRED: check one. If this PR changes behavior, docs/runbooks must be updated. -->
-- [ ] Not needed — no behavior change
+- [ ] Not needed, no behavior change
 - [ ] Updated in this PR
 - [ ] Follow-up issue: #
 
