@@ -4,7 +4,7 @@
 **Status**: Open → **Owned**
 **Owner**: @Sw4pIO
 **Due Date**: 2026-04-24
-**Source**: `audit/SECURITY_AUDIT.md` §5 — Input Validation, `audit/ERROR_HANDLING_AUDIT.md`
+**Source**: `audit/SECURITY_AUDIT.md` §5, Input Validation, `audit/ERROR_HANDLING_AUDIT.md`
 
 ---
 

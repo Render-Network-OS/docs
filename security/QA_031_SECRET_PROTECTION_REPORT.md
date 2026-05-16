@@ -1,4 +1,4 @@
-# QA-031: Secret Protection Pipeline — Evidence Report
+# QA-031: Secret Protection Pipeline: Evidence Report
 
 **Ticket:** docs#74
 **Status:** TESTED
@@ -44,7 +44,7 @@ secret-scan layer.
 | `SECURITY.md` | 555-bot | Vulnerability reporting policy; mentions planned automated scanning |
 | `docs/guides/secrets-management.md` | 555-bot | Comprehensive env var management guide |
 | `docs/STREAM_SECRET_INVENTORY.md` | stream | 37 secrets inventoried; 4 stdout leak findings |
-| `docs/SECRET_ROTATION_POLICY.md` | stream | Rotation schedule — all critical secrets marked OVERDUE |
+| `docs/SECRET_ROTATION_POLICY.md` | stream | Rotation schedule, all critical secrets marked OVERDUE |
 | `docs/DEPLOY_SECRET_INVENTORY.md` | stream | Build-time and runtime secret inventory |
 | `security/SECRET_SCAN_RESULTS.md` | docs | Clean working-tree scan (history not scanned) |
 | `BRANCH_RULES.md` | 555-bot | Mentions gitleaks as planned pre-commit hook |
@@ -85,15 +85,15 @@ secret-scan layer.
 | High entropy strings | 441 | Spread across documentation markdown files |
 | **Total** | **461** | |
 
-**Assessment:** The docs repo has the highest count because documentation files contain example API keys, code snippets with high-entropy strings, and references to secret patterns in audit reports. All 461 findings are documentation artifacts — no real secrets. The 16 "GitHub" hits are example patterns in security audit docs. The 4 "AWS" hits are example key formats in guides.
+**Assessment:** The docs repo has the highest count because documentation files contain example API keys, code snippets with high-entropy strings, and references to secret patterns in audit reports. All 461 findings are documentation artifacts, no real secrets. The 16 "GitHub" hits are example patterns in security audit docs. The 4 "AWS" hits are example key formats in guides.
 
 ### 3.4 Summary Verdict
 
 | Repo | Real secrets in history? | Action needed? |
 |------|--------------------------|----------------|
-| 555-bot | **YES** — `.env.github-secrets` contains Twitter OAuth tokens committed in Nov 2025 history, not in the current `main` tree | Verify token rotation status; history rewrite if the historical exposure still matters operationally |
-| stream | No — all hits are placeholder passwords in example/template files | No action (false positives) |
-| docs | No — all hits are documentation examples | No action (false positives) |
+| 555-bot | **YES**: `.env.github-secrets` contains Twitter OAuth tokens committed in Nov 2025 history, not in the current `main` tree | Verify token rotation status; history rewrite if the historical exposure still matters operationally |
+| stream | No, all hits are placeholder passwords in example/template files | No action (false positives) |
+| docs | No, all hits are documentation examples | No action (false positives) |
 
 ## 4. Dummy Secret Blocking Test
 
@@ -105,9 +105,9 @@ secret-scan layer.
 
 | Test | Input | Pattern | Result |
 |------|-------|---------|--------|
-| 1 — AWS key | `AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE` | `AKIA[0-9A-Z]{16}` | **BLOCKED** |
-| 2 — GitHub PAT | `GITHUB_TOKEN=ghp_ABCDEFghijklmnop1234567890abcdefghij` | `ghp_[a-zA-Z0-9]{36}` | **BLOCKED** |
-| 3 — Clean config | `DATABASE_URL=postgresql://localhost:5432/mydb` | (no match) | **ALLOWED** |
+| 1, AWS key | `AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE` | `AKIA[0-9A-Z]{16}` | **BLOCKED** |
+| 2, GitHub PAT | `GITHUB_TOKEN=ghp_ABCDEFghijklmnop1234567890abcdefghij` | `ghp_[a-zA-Z0-9]{36}` | **BLOCKED** |
+| 3, Clean config | `DATABASE_URL=postgresql://localhost:5432/mydb` | (no match) | **ALLOWED** |
 
 **Test output (Test 1):**
 ```
