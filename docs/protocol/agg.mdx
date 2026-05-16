@@ -67,8 +67,8 @@ AGG enforces a transparent fee model:
 
 ## Cross-Chain Settlement
 
-For cross-chain payments (e.g., Base → Solana), AGG hands the settlement intent to [sw4p](/sw4p). Native USDC settles on the destination chain — no wrapped tokens — and the merchant receives funds in their preferred chain and asset. The mechanics of routing, attestation, and recovery are an internal concern of the engine; integrators see one settlement primitive.
+For cross-chain payments (e.g., Base → Solana), AGG hands the settlement intent to [sw4p](/sw4p). Native USDC settles on the destination chain, no wrapped tokens, and the merchant receives funds in their preferred chain and asset. The mechanics of routing, attestation, and recovery are an internal concern of the engine; integrators see one settlement primitive.
 
 ### Integrations
-- **[sw4p](/sw4p)** — native USDC settlement across supported chains, USDT corridor including Tron, built-in gasless on Solana.
-- **Best-execution SPL routing** — optimal SPL swap routing on Solana for any-token-in / USDC-out flows.
+- **[sw4p](/sw4p)**: native USDC settlement across supported chains, USDT corridor including Tron, built-in gasless on Solana.
+- **Best-execution SPL routing**: optimal SPL swap routing on Solana for any-token-in / USDC-out flows.

@@ -4,7 +4,7 @@ description: "A comprehensive operational report covering product launches, prot
 icon: "newspaper"
 ---
 
-## RNDRNTWRK — 30-Day Operational Report
+## RNDRNTWRK: 30-Day Operational Report
 
 **Published:** February 27, 2026
 **Reporting Period:** January 28 – February 27, 2026
@@ -12,7 +12,7 @@ icon: "newspaper"
 
 ---
 
-This report covers a transformative 30-day window for the RNDRNTWRK. What follows is a full accounting of what shipped, what was validated, what changed structurally, and what comes next. No fluff — every claim below is backed by live infrastructure, on-chain data, or published test results.
+This report covers a transformative 30-day window for the RNDRNTWRK. What follows is a full accounting of what shipped, what was validated, what changed structurally, and what comes next. No fluff, every claim below is backed by live infrastructure, on-chain data, or published test results.
 
 ---
 
@@ -24,7 +24,7 @@ The protocol now processes real revenue through an immutable cascade: 10% to aud
 
 ---
 
-## I. Products — What's Live
+## I. Products: What's Live
 
 ### 555 Arcade
 
@@ -36,12 +36,12 @@ Sector 13 (sci-fi shooter), Clawstrike (precision platformer), Knighthood (actio
 **Beta catalog (12 titles):**
 Fighter Planes, Peanball, Chess Pursuit, Eat My Dust, Floor 13, Godai Is Back, Left and Right, Pixel Copter, Playback, Vedas Run, Where We're Going, and Wolf and Sheep.
 
-All games run in sandboxed browser iframes with the Game Harness SDK bridging frontend state to protocol verification. Every gameplay session is cryptographically signed through VAP — Ed25519 heartbeats at 5-second intervals prove that a real participant (human or AI) was actively engaged. Scores are normalized to a 0–10,000 scale across all titles, enabling a unified cross-game leaderboard with daily, weekly, monthly, yearly, and all-time periods.
+All games run in sandboxed browser iframes with the Game Harness SDK bridging frontend state to protocol verification. Every gameplay session is cryptographically signed through VAP, Ed25519 heartbeats at 5-second intervals prove that a real participant (human or AI) was actively engaged. Scores are normalized to a 0–10,000 scale across all titles, enabling a unified cross-game leaderboard with daily, weekly, monthly, yearly, and all-time periods.
 
 **Economy:**
 Points accrue from verified sessions at a fixed conversion of 10,000 points = 1 USDC. A daily bonus of 100 points per game per wallet per CST day incentivizes breadth. Beta games apply 10% score scaling with escalating repeat penalties (1/50 → 1/500 → 1/5000 → 0), pushing exploration across the full catalog.
 
-Credits convert at 1 credit = $0.01 USD on an append-only ledger with a 1.25x burn bonus for $555 burns. Settlement runs weekly — every Monday at 05:55 CST — via Merkle-tree on-chain commitment and SPL `transferChecked`. Self-withdrawal is available at any time.
+Credits convert at 1 credit = $0.01 USD on an append-only ledger with a 1.25x burn bonus for $555 burns. Settlement runs weekly, every Monday at 05:55 CST, via Merkle-tree on-chain commitment and SPL `transferChecked`. Self-withdrawal is available at any time.
 
 **Token-gated multipliers** accelerate earning based on $555 holdings: 1x base, 5x at 55,555, 55x at 555,555, and 555x at 5,555,555 tokens held.
 
@@ -56,7 +56,7 @@ The browser-native distribution layer is live at [stream.rndrntwrk.com](https://
 No desktop software is required. Cloud encoding at the edge eliminates GPU load on the creator's machine. Scene control supports Solo, 2-grid, 4-grid, and PIP layouts with runtime lower thirds, tickers, and alerts. WebRTC-based guest management handles multiple guests with independent audio/video control and automatic grid adjustment.
 
 **L-Bar Advertising:**
-The non-interruptive squeeze-back format preserves 74% × 71% of the program area while ads occupy the remaining L-shaped space. Content never stops — the viewer's stream continues uninterrupted. Alice polls four engagement signals every five seconds and triggers ad placement when the combined score exceeds a 0.70 threshold, optimizing for both advertiser quality and creator yield.
+The non-interruptive squeeze-back format preserves 74% × 71% of the program area while ads occupy the remaining L-shaped space. Content never stops, the viewer's stream continues uninterrupted. Alice polls four engagement signals every five seconds and triggers ad placement when the combined score exceeds a 0.70 threshold, optimizing for both advertiser quality and creator yield.
 
 **Always-On Mode:**
 Streams continue during creator offline hours. Scheduled raids, hourly lottery draws, evergreen mini-games, and curated clip playlists from past streams keep communities engaged. Alice's Auto Pilot automates the offline schedule entirely.
@@ -68,17 +68,17 @@ Creators can connect existing tokens or launch new ones through pump.fun as a cu
 
 ---
 
-### Alice — Autonomous AI Operator
+### Alice: Autonomous AI Operator
 
-Alice is live at [alice.rndrntwrk.com](https://alice.rndrntwrk.com), built on Milaidy — a custom ElizaOS v2 fork optimized for high-velocity streaming and gaming environments.
+Alice is live at [alice.rndrntwrk.com](https://alice.rndrntwrk.com), built on Milaidy, a custom ElizaOS v2 fork optimized for high-velocity streaming and gaming environments.
 
-Alice is not a chatbot. She is an autonomous operator with 12+ plugins spanning stream control, game interaction, economic monitoring, social management, and community engagement. She manages 555stream broadcasts, plays arcade games, triggers L-Bar ads, monitors the settlement engine, and posts across Twitter/X, Discord, and Telegram — all without human intervention.
+Alice is not a chatbot. She is an autonomous operator with 12+ plugins spanning stream control, game interaction, economic monitoring, social management, and community engagement. She manages 555stream broadcasts, plays arcade games, triggers L-Bar ads, monitors the settlement engine, and posts across Twitter/X, Discord, and Telegram, all without human intervention.
 
 **Intelligence stack:**
 An 80+ document knowledge corpus covers the 555x402 specification, economic model, VAP mechanics, game registry, and deployment architecture. PGlite provides local-first vector database for RAG retrieval with zero cloud dependency. Cross-platform persistent memory means context carries across sessions and platforms.
 
 **Game Possession:**
-Alice physically plays arcade games by launching headless browsers, parsing game state from DOM and screenshots, and sending synthetic keyboard events. In Sector 13, she controls lives, weapons (wingshot, trishot, doublerate, bomb, wingbomb, shield), difficulty, and on-screen messaging. In Ninja vs EvilCorp, she adjusts difficulty dynamically and controls level progression. Her scores are recorded on the same leaderboard as human players — the protocol is entity-agnostic by design.
+Alice physically plays arcade games by launching headless browsers, parsing game state from DOM and screenshots, and sending synthetic keyboard events. In Sector 13, she controls lives, weapons (wingshot, trishot, doublerate, bomb, wingbomb, shield), difficulty, and on-screen messaging. In Ninja vs EvilCorp, she adjusts difficulty dynamically and controls level progression. Her scores are recorded on the same leaderboard as human players, the protocol is entity-agnostic by design.
 
 **The Router (Ad Operations):**
 Alice monitors the ad marketplace for campaigns matching live streams, automatically triggers L-Bar placements when creator profiles match advertiser criteria, and re-evaluates placement timing to maximize yield. She manages 16 MCP ad actions and coordinates the full lifecycle from campaign detection to placement to settlement.
@@ -88,35 +88,35 @@ Evaluation (assess WebSocket events, social mentions, economy signals) → Actio
 
 ---
 
-### sw4p — Cross-Chain Settlement
+### sw4p: Cross-Chain Settlement
 
 sw4p provides native USDC settlement across Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, and Solana, plus USDT corridor support including Tron. Testnet and devnet flows are live; mainnet is paused during the current protocol upgrade window and returns with the upgrade.
 
-The mechanism is straightforward: burn at the source chain, attest, mint at the destination chain — native funds at both endpoints, no wrapped tokens, no liquidity-pool slippage. End-user flows are non-custodial; users sign from their own wallet. The engine never holds user balances. **Universal gas abstraction**: users pay gas in the asset they're moving (USDC, USDT) on every supported chain — they never have to hold a chain's native token.
+The mechanism is straightforward: burn at the source chain, attest, mint at the destination chain, native funds at both endpoints, no wrapped tokens, no liquidity-pool slippage. End-user flows are non-custodial; users sign from their own wallet. The engine never holds user balances. **Universal gas abstraction**: users pay gas in the asset they're moving (USDC, USDT) on every supported chain, they never have to hold a chain's native token.
 
 **Security posture:** Checkpointed 15-state settlement lifecycle with explicit recovery actions, rate limiting, authentication, circuit breakers, fee audit logs, route-specific security policies, and continuous observability. The gas abstraction layer ships with 1,743+ adversarial tests.
 
 **SDKs:** TypeScript (`@sw4p/sdk`) and Rust (`sw4p-sdk`). Agent surface: `@sw4p/kit` (pre-publish). Full documentation at [docs.sw4p.io](https://docs.sw4p.io).
 
-sw4p serves as the cross-chain backbone for AGG payment routing and Hyperlink resolution — any payment originating from a supported chain settles natively on the destination chain through the engine.
+sw4p serves as the cross-chain backbone for AGG payment routing and Hyperlink resolution, any payment originating from a supported chain settles natively on the destination chain through the engine.
 
 ---
 
-## II. The Protocol Suite — 555x402
+## II. The Protocol Suite: 555x402
 
 The 555x402 protocol suite implements the HTTP 402 Payment Required standard for verifiable attention, aggregated payments, and smart payment links. Three components work together to create a complete attention-to-payment pipeline.
 
-### VAP — Verifiable Attention Protocol
+### VAP: Verifiable Attention Protocol
 
 **v1 (Live):**
 VAP v1 provides cryptographic proof that a participant was actively engaged. A bidirectional handshake establishes a WebSocket session. Heartbeat pulses at dynamic intervals (based on trust score) carry Ed25519 signatures with replay protection via nonces. A three-layer anti-fraud engine combines behavioral heuristics (entropy analysis, timing analysis, reputation scoring), active challenges ("Click the Glitch" overlays, input sequences), and economic penalties (slashing, cooldowns).
 
 Every arcade score, every stream view, and every ad impression passes through VAP. If VAP cannot verify the attention, the event does not enter the economic pipeline. There are no exceptions.
 
-**v2 (Validated — 234 Tests Passing):**
+**v2 (Validated, 234 Tests Passing):**
 VAP v2 introduces epoch-based verification with 6-hour epochs (four per day), Attention Credits (1 AC = $0.001 USDC), a burn loop ($555 burned at oracle price → equivalent ACs minted → advertisers bid ACs), and stake-weighted participation with a logarithmic formula capped at 5.0x.
 
-The ContributionProof format is 296 bytes: session reference, epoch identifier, stake reference, and cryptographic signature. The system is entity-agnostic — no protocol-level distinction between human and AI participants.
+The ContributionProof format is 296 bytes: session reference, epoch identifier, stake reference, and cryptographic signature. The system is entity-agnostic, no protocol-level distinction between human and AI participants.
 
 **Security validation results (v2):**
 All five attack vectors return negative ROI for attackers. Sybil attacks achieve -81.7% ROI with a maximum 1.80x multiplier even at 100 identities. Fabrication returns -179.7% ROI. Collusion, eclipse, and griefing attacks all produce negative returns for the attacker. 234 tests pass across the full validation suite. All five attack trees are marked SECURE.
@@ -125,13 +125,13 @@ VAP v2 deployment is scheduled for Phase 2 of the roadmap, dependent on the comp
 
 ---
 
-### AGG — Payment Aggregator
+### AGG: Payment Aggregator
 
 **Status: Partially Implemented**
 
 AGG is a DEX-aggregator-pattern payment router: n tokens on m chains settle as 1 token on 1 chain (USDC on Solana). The HTTP 402 handshake negotiates payment terms. Pathfinding considers gas cost, swap slippage, and bridge time to calculate optimal routes.
 
-Solana settlement uses Versioned Transactions (v0) and Address Lookup Tables (LUTs) to pack complex logic — SPL swap routing, fee extraction, payment transfer, and memo — into a single atomic transaction with sub-2-second finality.
+Solana settlement uses Versioned Transactions (v0) and Address Lookup Tables (LUTs) to pack complex logic, SPL swap routing, fee extraction, payment transfer, and memo, into a single atomic transaction with sub-2-second finality.
 
 **Live:** Solana-native settlement with best-execution SPL routing.
 **In development:** Cross-chain settlement and universal gas abstraction ship through [sw4p](/sw4p).
@@ -139,7 +139,7 @@ Solana settlement uses Versioned Transactions (v0) and Address Lookup Tables (LU
 
 ---
 
-### Hyperlink — Smart Payment Links
+### Hyperlink: Smart Payment Links
 
 **Status: Partially Implemented**
 
@@ -160,21 +160,21 @@ Pay-Per-View (sign JWT for HLS stream access), engagement quests (verify game sc
 
 ### The Canonical Revenue Cascade
 
-Every dollar that enters the RNDRNTWRK follows the same deterministic path. The cascade is identical at both levels of the ecosystem — platform level ($555) and creator economy level (individual creator tokens).
+Every dollar that enters the RNDRNTWRK follows the same deterministic path. The cascade is identical at both levels of the ecosystem, platform level ($555) and creator economy level (individual creator tokens).
 
-**Step 1 — ARP (10%):**
+**Step 1, ARP (10%):**
 Ten percent of gross revenue is taken off the top and distributed to verified audience members via VAP attention proofs. This is policy-enforced and non-optional. The Audience Reward Pool is the mechanism by which viewers earn real value for real engagement.
 
-**Step 2 — Creator/Platform Split (90% remaining):**
+**Step 2, Creator/Platform Split (90% remaining):**
 The post-ARP revenue splits between Creator and Platform. At the platform level, this is a fixed 50/50 split. At the creator economy level, the split is configurable within governance bounds (20/80 to 80/20).
 
-**Step 3 — Platform Allocation (from Platform's share):**
+**Step 3, Platform Allocation (from Platform's share):**
 - 70% → Treasury (operations, development, growth)
 - 20% → $555 buyback-and-burn (minimum, configurable above)
 - 5% → $555 token reserve
 - 5% → SOL/USDC reserve
 
-The 20% minimum buyback-and-burn creates structural deflation. Every dollar of platform revenue permanently reduces $555 circulating supply. This is not a promotional burn event — it is an automated, ongoing mechanism embedded in the settlement pipeline. Buybacks execute weekly, aligned with the Monday settlement cycle, using programmatic DEX routing on Solana.
+The 20% minimum buyback-and-burn creates structural deflation. Every dollar of platform revenue permanently reduces $555 circulating supply. This is not a promotional burn event, it is an automated, ongoing mechanism embedded in the settlement pipeline. Buybacks execute weekly, aligned with the Monday settlement cycle, using programmatic DEX routing on Solana.
 
 ### $555 Token
 
@@ -213,7 +213,7 @@ Render Expand will provide native SPL token minting with enforced economic split
 **Launch flow:** Initialize token (metadata, symbol, supply policy) → Configure policy (minimum buyback ≥20%, split bounds, unbonding windows, voting thresholds) → Connect modules (CTRL Panel, 555 Engine, Monetization Contract) → Publish profile (engagement metrics, staking TVL for advertiser discovery).
 
 **The two-level crosswalk:**
-$555 operates at Level 1 (Platform) and creator tokens operate at Level 2 (Creator Economy). Both follow the identical cascade. The economic model is fractal — the same incentive structure repeats at every level.
+$555 operates at Level 1 (Platform) and creator tokens operate at Level 2 (Creator Economy). Both follow the identical cascade. The economic model is fractal, the same incentive structure repeats at every level.
 
 **Dependency chain:** Creator Token staking infrastructure (in development) → Monetization Contract integration (in development) → CTRL Panel token-gating (in development).
 
@@ -233,7 +233,7 @@ Stake-weighted voting governs four protocol objects: SplitConfig (creator/stakeh
 
 ### VAP v2 Three-Layer Governance
 
-When deployed, VAP v2 introduces a three-layer governance architecture: ve$555 DAO (token-weighted governance for protocol-level parameters), Algorithmic Layer (automated adjustment within DAO bounds), and Alice Layer (real-time operational decisions within algorithmic bounds). This creates a governance cascade — humans set the policy, algorithms enforce the bounds, and AI optimizes within those bounds in real time.
+When deployed, VAP v2 introduces a three-layer governance architecture: ve$555 DAO (token-weighted governance for protocol-level parameters), Algorithmic Layer (automated adjustment within DAO bounds), and Alice Layer (real-time operational decisions within algorithmic bounds). This creates a governance cascade, humans set the policy, algorithms enforce the bounds, and AI optimizes within those bounds in real time.
 
 ---
 
@@ -247,7 +247,7 @@ The RNDRNTWRK operates as a multi-layer stack:
 
 **Service Layer:** Backend API, payment routing (AGG), verification (VAP), game state management, settlement engine.
 
-**Client Layer:** Browser-based applications — 555 Arcade (20 games in sandboxed iframes) and 555stream (browser streaming studio).
+**Client Layer:** Browser-based applications, 555 Arcade (20 games in sandboxed iframes) and 555stream (browser streaming studio).
 
 **Agent Layer:** Alice (Milaidy/ElizaOS v2) with 12+ plugins for autonomous operation across streaming, gaming, advertising, economic monitoring, and community management.
 
@@ -260,12 +260,12 @@ The RNDRNTWRK operates as a multi-layer stack:
 On February 26, 2026, the entire public documentation was restructured from a 7-tab layout with significant content duplication into a clean 6-tab architecture.
 
 **New structure:**
-1. **Start** — Introduction, how it works, audience-specific onboarding (creators, players, advertisers, developers)
-2. **Products** — Arcade, 555stream, Alice, Monetization, CTRL Panel, Animated Assets
-3. **Protocol** — VAP, VAP v2, AGG, Hyperlink, Audience Inventory, Roadmap
-4. **Tokenomics** — $555 Token, Fee Distribution, Creator Tokens, Airdrops, Locking & Buybacks, Ecosystem Growth Fund
-5. **Build** — API Reference (100+ endpoints), Glossary, Architecture, plus 10 developer guides
-6. **Community** — Discord, Twitter/X, Support Center, Developer Resources, Partnerships, Ecosystem Philosophy, Docs Changelog
+1. **Start**: Introduction, how it works, audience-specific onboarding (creators, players, advertisers, developers)
+2. **Products**: Arcade, 555stream, Alice, Monetization, CTRL Panel, Animated Assets
+3. **Protocol**: VAP, VAP v2, AGG, Hyperlink, Audience Inventory, Roadmap
+4. **Tokenomics**: $555 Token, Fee Distribution, Creator Tokens, Airdrops, Locking & Buybacks, Ecosystem Growth Fund
+5. **Build**: API Reference (100+ endpoints), Glossary, Architecture, plus 10 developer guides
+6. **Community**: Discord, Twitter/X, Support Center, Developer Resources, Partnerships, Ecosystem Philosophy, Docs Changelog
 
 **What changed:**
 - Five duplicate content pairs consolidated into single canonical pages (VAP from 3 sources → 1, streaming from 2 → 1, gamification from 2 → 1, protocol overview from 2 → 1, audience inventory from 2 → 1)
@@ -276,22 +276,22 @@ On February 26, 2026, the entire public documentation was restructured from a 7-
 - Eight sparse placeholder pages expanded with substantive detail
 - All internal cross-links updated (eight path patterns across 15+ files)
 - Branding unified from "browser-native distribution layer" / "RNDRNTWRK" to "RNDRNTWRK"
-- All MDX parsing errors resolved — the documentation renders with zero errors
+- All MDX parsing errors resolved, the documentation renders with zero errors
 - Mintlify broken-links checker returns zero broken links
 
 ---
 
-## VIII. Roadmap — What Comes Next
+## VIII. Roadmap: What Comes Next
 
-The roadmap uses dependency-ordered phases — no calendar dates, only prerequisite completion gates. No phase ships until its dependencies are met.
+The roadmap uses dependency-ordered phases, no calendar dates, only prerequisite completion gates. No phase ships until its dependencies are met.
 
 ### Phase 0: Foundation Hardening (Current)
 
-Everything described in this report. The live products, the validated protocol components, the economic infrastructure, and the restructured documentation. Phase 0 is the bedrock — the infrastructure that all future phases depend on.
+Everything described in this report. The live products, the validated protocol components, the economic infrastructure, and the restructured documentation. Phase 0 is the bedrock, the infrastructure that all future phases depend on.
 
 ### Phase 1: Ownership Layer
 
-**cNFT Audience Inventory:** Compressed NFTs via Metaplex Bubblegum that represent verified audience segments — demographic, behavioral, and engagement data encoded on-chain. This is the foundation for bespoke targeting: advertisers bid on provably real, verified audience segments instead of opaque platform estimates.
+**cNFT Audience Inventory:** Compressed NFTs via Metaplex Bubblegum that represent verified audience segments, demographic, behavioral, and engagement data encoded on-chain. This is the foundation for bespoke targeting: advertisers bid on provably real, verified audience segments instead of opaque platform estimates.
 
 **Lock Verification:** On-chain proof of token locks, enabling the protocol to verify staking positions programmatically.
 
@@ -299,7 +299,7 @@ Everything described in this report. The live products, the validated protocol c
 
 ### Phase 2: Economic Expansion
 
-**VAP v2 Deployment:** The validated epoch-based system goes live — 6-hour epochs, attention credits, stake-weighted participation, and the burn loop that creates direct linkage between $555 and advertising demand.
+**VAP v2 Deployment:** The validated epoch-based system goes live, 6-hour epochs, attention credits, stake-weighted participation, and the burn loop that creates direct linkage between $555 and advertising demand.
 
 **Creator Tokens (Native):** Native SPL token minting via Render Expand with enforced splits (1% fee, 10% ARP, ≥20% buybacks). This replaces the pump.fun destination-based launch path with protocol-native tooling.
 
@@ -309,7 +309,7 @@ Everything described in this report. The live products, the validated protocol c
 
 ### Phase 3: Platform Expansion
 
-**Advertiser Self-Serve:** Full self-service advertising platform — campaign creation, audience targeting via cNFT inventory, budget management, and performance analytics.
+**Advertiser Self-Serve:** Full self-service advertising platform, campaign creation, audience targeting via cNFT inventory, budget management, and performance analytics.
 
 **Prediction Market (On-Chain):** Markets for stream events and game outcomes with on-chain settlement.
 
@@ -321,7 +321,7 @@ Everything described in this report. The live products, the validated protocol c
 
 **Fiat Integration:** Direct USDC on/off ramps for mainstream onboarding.
 
-**Decentralization:** Progressive decentralization of VAP verification nodes — community-operated infrastructure with reputation metrics.
+**Decentralization:** Progressive decentralization of VAP verification nodes, community-operated infrastructure with reputation metrics.
 
 **RNDRS Protocol:** Full protocol specification published for third-party implementations.
 
@@ -339,7 +339,7 @@ The Ecosystem Growth Fund is the protocol's self-funding reinvestment mechanism.
 - **Community & Events:** Tournament prize pools, hackathons, marketing campaigns
 - **Security & Insurance:** Bug bounties, security audits, smart contract insurance, operational reserves
 
-Governance of the fund transitions to ve$555 DAO as the governance layer matures — token holders will propose and vote on allocation priorities, approve grants, and review quarterly reports.
+Governance of the fund transitions to ve$555 DAO as the governance layer matures, token holders will propose and vote on allocation priorities, approve grants, and review quarterly reports.
 
 ---
 
@@ -359,15 +359,15 @@ Engagement begins at partnerships@rndrntwrk.com or Discord #partnerships. Co-mar
 
 ## XI. Community and Support
 
-**Discord:** [discord.gg/35UNPtu8M5](https://discord.gg/35UNPtu8M5) — Real-time support in #support, partnership discussions in #partnerships, and community engagement across multiple channels.
+**Discord:** [discord.gg/35UNPtu8M5](https://discord.gg/35UNPtu8M5), Real-time support in #support, partnership discussions in #partnerships, and community engagement across multiple channels.
 
-**Twitter/X:** [@RNDRNTWRK](https://x.com/RNDRNTWRK) — Protocol announcements, product updates, and community highlights. Alice actively manages sentiment and engagement across the platform.
+**Twitter/X:** [@RNDRNTWRK](https://x.com/RNDRNTWRK), Protocol announcements, product updates, and community highlights. Alice actively manages sentiment and engagement across the platform.
 
 **Support:** 24-48 hours for standard inquiries. Priority support for $555 holders. Emergency line at emergency@rndrntwrk.com (24/7).
 
 **Developer Resources:** Full API reference with 100+ endpoints, TypeScript and Rust SDKs for sw4p, VAP integration guides, and a comprehensive glossary covering protocol-specific terminology.
 
-**Documentation:** Live at [docs.rndrntwrk.com](https://docs.rndrntwrk.com) — 56 pages across 6 tabs, zero parsing errors, zero broken links, updated February 26, 2026.
+**Documentation:** Live at [docs.rndrntwrk.com](https://docs.rndrntwrk.com), 56 pages across 6 tabs, zero parsing errors, zero broken links, updated February 26, 2026.
 
 ---
 
@@ -375,7 +375,7 @@ Engagement begins at partnerships@rndrntwrk.com or Discord #partnerships. Co-mar
 
 The RNDRNTWRK is not a whitepaper. It is running infrastructure. Four products serve real users. Every game score is cryptographically verified. Every dollar follows a deterministic path. Every buyback permanently reduces supply. Every settlement is Merkle-committed on Solana.
 
-The next 30 days are about Phase 1: cNFT Audience Inventory, lock verification, and Hyperlink completion. These are the prerequisites for VAP v2 deployment and native creator tokens — the components that transform verified attention into a programmable, tradeable economic primitive.
+The next 30 days are about Phase 1: cNFT Audience Inventory, lock verification, and Hyperlink completion. These are the prerequisites for VAP v2 deployment and native creator tokens, the components that transform verified attention into a programmable, tradeable economic primitive.
 
 The cascade runs. The burn is structural. The documentation is live.
 
@@ -383,4 +383,4 @@ Build with us: [docs.rndrntwrk.com](https://docs.rndrntwrk.com)
 
 ---
 
-*RNDRNTWRK — February 2026*
+*RNDRNTWRK, February 2026*

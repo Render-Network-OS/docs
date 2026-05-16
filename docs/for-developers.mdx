@@ -39,9 +39,9 @@ Most integrations start the same way: authenticate with SIWS, keep the session c
 **Base URL:** `https://api.rndrntwrk.com`
 
 **Authentication:** SIWS (Sign In With Solana):
-1. `POST /auth/nonce` — request a sign-in nonce
+1. `POST /auth/nonce`, request a sign-in nonce
 2. Sign the nonce with a Solana wallet
-3. `POST /auth/verify` — submit signed message, receive session cookie
+3. `POST /auth/verify`, submit signed message, receive session cookie
 4. Include the session cookie on all subsequent requests
 
 **Format:** JSON REST for requests and responses. SSE for real-time events.
@@ -96,7 +96,7 @@ Score normalization maps all games to a 0 to 10,000 scale. Normalization config 
 
 Four components handle verification, routing, and settlement across the network. Each has a distinct role.
 
-### VAP — Verifiable Attention Protocol
+### VAP: Verifiable Attention Protocol
 
 VAP verifies participation.
 
@@ -106,7 +106,7 @@ VAP verifies participation.
 
 <Info>**Status:** VAP v1 is live. VAP v2 is in design (not yet deployed). See [VAP](/protocol/vap) and [VAP v2](/protocol/vap-v2).</Info>
 
-### AGG — Payment Aggregator
+### AGG: Payment Aggregator
 
 AGG routes and settles supported payment flows inside the protocol.
 
@@ -115,7 +115,7 @@ AGG routes and settles supported payment flows inside the protocol.
 
 <Info>**Status:** Solana-native settlement is live. Cross-chain settlement is live on testnet/devnet through [sw4p](/sw4p); mainnet returns with the current protocol upgrade. See [AGG](/protocol/agg).</Info>
 
-### Hyperlink — Smart Payment Links
+### Hyperlink: Smart Payment Links
 
 Hyperlink creates programmable payment surfaces.
 
@@ -123,20 +123,20 @@ Hyperlink creates programmable payment surfaces.
 - Embedded wallets, analytics, and social attribution
 - See [Hyperlink](/protocol/hyperlink)
 
-### sw4p — Cross-Chain USDC Movement
+### sw4p: Cross-Chain USDC Movement
 
 sw4p is the dedicated cross-chain USDC movement surface.
 
 Use sw4p when your application needs USDC to move between supported chains without wrapped assets or liquidity-pool dependencies.
 
-1. **Burn** — USDC is burned on the source chain
-2. **Attest** — Circle's attestation service verifies the burn
-3. **Mint** — Native USDC is minted on the destination chain
+1. **Burn**: USDC is burned at the source.
+2. **Attest**: the engine observes and verifies the burn attestation.
+3. **Mint**: native USDC is minted at the destination.
 
 **SDKs:**
-- TypeScript: `@sw4p/bridge` ([npm](https://npmjs.com/package/@sw4p/bridge))
-- Rust: `sw4p-bridge` ([crates.io](https://crates.io/crates/sw4p-bridge))
-- Full docs: [sw4p Documentation Site](https://docs.sw4p.io)
+- TypeScript: `@sw4p/sdk`
+- Rust: `@sw4p/rs-sdk`
+- Full docs: [docs.sw4p.io](https://docs.sw4p.io)
 
 ## Real-Time Events (SSE)
 

@@ -1,27 +1,27 @@
 ---
 title: "@sw4p/kit"
 icon: "robot"
-description: "Agent-native settlement surface over sw4p — MCP server, AP2 Cart Mandates, x402 V2, A2A, and ERC-7683 intents in one package."
+description: "Agent-native settlement surface over sw4p, MCP server, AP2 Cart Mandates, x402 V2, A2A, and ERC-7683 intents in one package."
 ---
 
 <Info>**Status:** Pre-publish. Source available at [github.com/Render-Network-OS/sw4p-kit](https://github.com/Render-Network-OS/sw4p-kit). Public npm publish ships with the mainnet return.</Info>
 
 # @sw4p/kit
 
-**`@sw4p/kit` is the agent-native surface for sw4p.** It lets any MCP-aware agent — Claude Code, Cursor, Continue, Goose, Codex, Cline, ElizaOS — settle cross-chain through the [sw4p](/sw4p) settlement engine over every open agent payment standard.
+**`@sw4p/kit` is the agent-native surface for sw4p.** It lets any MCP-aware agent, Claude Code, Cursor, Continue, Goose, Codex, Cline, ElizaOS, settle cross-chain through the [sw4p](/sw4p) settlement engine over every open agent payment standard.
 
 The kit is a thin client. Chain interaction, custody, rail selection, gas abstraction, and the settlement lifecycle live in the sw4p backend. The kit gives agents a small, opinionated tool surface and the wrappers for the open agent-payment standards.
 
 ## Why a separate kit
 
-The sw4p backend already speaks HTTP via `@sw4p/sdk`. The kit exists for one reason: **agents don't read HTTP APIs — they read MCP tool surfaces.** Wrapping the SDK in MCP lets any agent settle cross-chain with a two-tool surface (`sw4p.balance` and `sw4p.send`) rather than hand-rolling 30+ method calls.
+The sw4p backend already speaks HTTP via `@sw4p/sdk`. The kit exists for one reason: **agents don't read HTTP APIs, they read MCP tool surfaces.** Wrapping the SDK in MCP lets any agent settle cross-chain with a two-tool surface (`sw4p.balance` and `sw4p.send`) rather than hand-rolling 30+ method calls.
 
 Beyond MCP, the kit adapts every other open agent-payment standard to the same backend:
-- **MCP 2025-11-25** — tools + async Tasks primitive for long-running settlement
-- **AP2 Cart Mandates** — HMAC-signed cart authorization with canonical JSON
-- **x402 V2** — framework-agnostic 402 middleware + client (Web Request/Response, works in any runtime)
-- **A2A (Agent-to-Agent)** — Zod-validated payment messages + handler factory
-- **ERC-7683 intent builder** — produces the on-chain intent struct for solver-based execution
+- **MCP 2025-11-25**: tools + async Tasks primitive for long-running settlement
+- **AP2 Cart Mandates**: HMAC-signed cart authorization with canonical JSON
+- **x402 V2**: framework-agnostic 402 middleware + client (Web Request/Response, works in any runtime)
+- **A2A (Agent-to-Agent)**: Zod-validated payment messages + handler factory
+- **ERC-7683 intent builder**: produces the on-chain intent struct for solver-based execution
 
 ## Surface area
 
@@ -38,14 +38,14 @@ Beyond MCP, the kit adapts every other open agent-payment standard to the same b
 
 The kit exposes a deliberately small set of MCP tools so agents see a clean surface:
 
-- `sw4p.balance` — USDC balance across configured chains
-- `sw4p.send` — submit a settlement (cross-chain or same-chain). One call: submit → settle.
-- `sw4p.estimate` — pre-flight fee + route quote
-- `sw4p.status` — poll a settlement by intent ID
-- `sw4p.portfolio` — cross-chain portfolio aggregation
-- `sw4p.rebalance_plan` / `sw4p.rebalance_execute` — agent-driven rebalance
-- `sw4p.task` — MCP 2025-11-25 async task primitive
-- `sw4p.ap2.cart_propose` / `sw4p.ap2.cart_execute` — AP2 Cart Mandate flow (when an AP2 signing key is configured)
+- `sw4p.balance`, USDC balance across configured chains
+- `sw4p.send`, submit a settlement (cross-chain or same-chain). One call: submit → settle.
+- `sw4p.estimate`, pre-flight fee + route quote
+- `sw4p.status`, poll a settlement by intent ID
+- `sw4p.portfolio`, cross-chain portfolio aggregation
+- `sw4p.rebalance_plan` / `sw4p.rebalance_execute`, agent-driven rebalance
+- `sw4p.task`, MCP 2025-11-25 async task primitive
+- `sw4p.ap2.cart_propose` / `sw4p.ap2.cart_execute`, AP2 Cart Mandate flow (when an AP2 signing key is configured)
 
 ## Quickstart (source install, pre-publish)
 
@@ -89,7 +89,7 @@ npm install @sw4p/kit
 
 - **Now:** source install from GitHub.
 - **Next:** `npx @sw4p/kit init` for one-command setup across every major MCP-aware agent. Auto-detects Claude Code / Cursor / Continue / Goose / Codex / Cline / Aider / ElizaOS configs and writes the right config file.
-- **Next:** hosted MCP gateway at `mcp.sw4p.io` for remote agents (claude.ai web, Cursor cloud, etc.) — no local install required.
+- **Next:** hosted MCP gateway at `mcp.sw4p.io` for remote agents (claude.ai web, Cursor cloud, etc.), no local install required.
 - **Then:** public npm publish, MCP Registry submission, Smithery listing.
 - **Then:** `@sw4p/eliza-plugin` for first-class ElizaOS integration.
 
@@ -97,5 +97,5 @@ npm install @sw4p/kit
 
 - **Source:** [github.com/Render-Network-OS/sw4p-kit](https://github.com/Render-Network-OS/sw4p-kit)
 - **License:** MIT
-- **Backend:** [sw4p](/sw4p) — the settlement engine the kit wraps
-- **SDK:** [`@sw4p/sdk`](/sw4p#sdk) — the lower-level HTTP client the kit is built on
+- **Backend:** [sw4p](/sw4p), the settlement engine the kit wraps
+- **SDK:** [`@sw4p/sdk`](/sw4p#sdk), the lower-level HTTP client the kit is built on

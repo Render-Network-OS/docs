@@ -1,11 +1,11 @@
-# RNDRNTWRK — 30-Day Update Twitter Thread
+# RNDRNTWRK: 30-Day Update Twitter Thread
 # @RNDRNTWRK | February 27, 2026
 # Copy each numbered tweet below. Thread starts with tweet 1.
 
 ---
 
 **1/**
-RNDRNTWRK — 30 Day Report
+RNDRNTWRK, 30 Day Report
 
 4 products live. 20 games verified on-chain. Browser-native distribution everywhere all at once. An AI that plays games AND runs ads. Native USDC settlement across 7 chains, with USDT corridor including Tron.
 
@@ -18,9 +18,9 @@ Thread
 **2/**
 555 ARCADE
 
-20 browser games live at 555.rndrntwrk.com
+20 browser games live at rndrntwrk.com
 
-8 production titles. 12 in beta. Every session cryptographically signed via VAP — Ed25519 heartbeats every 5 seconds.
+8 production titles. 12 in beta. Every session cryptographically signed via VAP, Ed25519 heartbeats every 5 seconds.
 
 If VAP can't verify you played, the score doesn't count.
 
@@ -42,7 +42,7 @@ Based on $555 holdings.
 ---
 
 **4/**
-Prediction markets. Raids. Quests. Clips. A lottery with hourly VRF draws — Switchboard on-chain randomness, Merkle-claimed payouts via PDA escrow.
+Prediction markets. Raids. Quests. Clips. A lottery with hourly VRF draws, Switchboard on-chain randomness, Merkle-claimed payouts via PDA escrow.
 
 Beta games apply 10% score scaling with escalating repeat penalties. Explore or fall behind.
 
@@ -53,7 +53,7 @@ Beta games apply 10% score scaling with escalating repeat penalties. Explore or 
 
 Browser-based streaming studio. No downloads. No local encoding burden.
 
-Custom RTMP output to Twitch, YouTube, Kick, X, TikTok, Zora, and pump.fun — current first-party destinations, not the limit.
+Custom RTMP output to Twitch, YouTube, Kick, X, TikTok, Zora, and pump.fun, current first-party destinations, not the limit.
 
 WebRTC guests. Solo, 2-grid, 4-grid, PIP layouts. Lower thirds, tickers, alerts.
 
@@ -84,7 +84,7 @@ Your community stays engaged 24/7.
 ---
 
 **8/**
-ALICE — Autonomous AI Operator
+ALICE, Autonomous AI Operator
 
 Not a chatbot. An operator.
 
@@ -92,7 +92,7 @@ Not a chatbot. An operator.
 
 Zero human intervention required.
 
-Built on Milaidy — custom ElizaOS v2 fork.
+Built on Milaidy, custom ElizaOS v2 fork.
 
 ---
 
@@ -119,18 +119,18 @@ She doesn't forget.
 ---
 
 **11/**
-SW4P — Cross-Chain Settlement
+SW4P, Cross-Chain Settlement
 
 USDC across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, Ethereum.
 
 Native USDC. Burn at source → attest → mint at destination. No wrapped tokens. Users sign from their own wallet. Testnet/devnet live; mainnet returns with the current protocol upgrade.
 
-15-state lifecycle. Checkpointed recovery. Universal gas abstraction — pay gas in the asset you're moving on every chain. 1,743+ adversarial tests on the gas abstraction layer.
+15-state lifecycle. Checkpointed recovery. Universal gas abstraction, pay gas in the asset you're moving on every chain. 1,743+ adversarial tests on the gas abstraction layer.
 
 ---
 
 **12/**
-THE PROTOCOL SUITE — 555x402
+THE PROTOCOL SUITE, 555x402
 
 HTTP 402 Payment Required, implemented.
 
@@ -143,7 +143,7 @@ Attention → Verification → Payment → Settlement. One pipeline. Determinist
 ---
 
 **13/**
-VAP v2 — Validated. 234 tests passing.
+VAP v2, Validated. 234 tests passing.
 
 6-hour epochs. Attention Credits (1 AC = $0.001 USDC). Burn loop: $555 burned at oracle price → ACs minted → advertisers bid.
 
@@ -228,7 +228,7 @@ Live at docs.rndrntwrk.com
 ---
 
 **20/**
-ROADMAP — Dependency-ordered. No calendar dates. No phase ships until prerequisites are met.
+ROADMAP, Dependency-ordered. No calendar dates. No phase ships until prerequisites are met.
 
 Phase 0 (now): Foundation. Everything in this thread.
 Phase 1: cNFT Audience Inventory + Lock Verification + Hyperlink completion
@@ -247,7 +247,7 @@ The goal: verified attention as a programmable, tradeable economic primitive.
 **22/**
 The next 30 days:
 
-cNFT Audience Inventory — compressed NFTs representing verified audience segments. Advertisers bid on provably real engagement, not platform estimates.
+cNFT Audience Inventory, compressed NFTs representing verified audience segments. Advertisers bid on provably real engagement, not platform estimates.
 
 Lock verification on-chain. Hyperlink embedded wallets. No browser extension required.
 
@@ -268,7 +268,7 @@ The cascade runs. The burn is structural.
 Build with us:
 
 Docs: docs.rndrntwrk.com
-Arcade: 555.rndrntwrk.com
+Arcade: rndrntwrk.com
 Stream: stream.rndrntwrk.com
 Discord: discord.gg/35UNPtu8M5
 Partnerships: partnerships@rndrntwrk.com

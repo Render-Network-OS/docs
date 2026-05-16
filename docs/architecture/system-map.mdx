@@ -4,7 +4,7 @@ icon: "diagram-project"
 description: "How RNDRNTWRK fits together across client, service, agent, and chain layers"
 ---
 
-<Info>**Status: Live** — This feature is operational.</Info>
+<Info>**Status: Live**: This feature is operational.</Info>
 
 # Architecture Overview
 
@@ -93,42 +93,42 @@ graph TD
 
 ### Client Layer
 User-facing applications that connect to the protocol:
-*   **555 Arcade** — Browser-based game platform with wallet authentication (SIWS). Games run in sandboxed iframes with the VAP SDK for verified engagement.
-*   **555stream Studio** — Browser-based streaming studio with everywhere all at once, scene composition, and guest management via WebRTC.
-*   **sw4p Bridge** — Cross-chain settlement interface for native USDC across supported chains.
+*   **555 Arcade**: Browser-based game platform with wallet authentication (SIWS). Games run in sandboxed iframes with the VAP SDK for verified engagement.
+*   **555stream Studio**: Browser-based streaming studio with everywhere all at once, scene composition, and guest management via WebRTC.
+*   **sw4p Bridge**: Cross-chain settlement interface for native USDC across supported chains.
 
 ### Edge Layer
 Globally distributed infrastructure handling encoding, caching, and real-time sessions:
-*   **Encoding Workers** — Video encoding and distribution at the edge, offloading compute from creator devices.
-*   **Media Storage** — Persistent storage for stream recordings, clips, and media assets.
-*   **Edge Cache** — Low-latency caching for frequently accessed data.
-*   **Session Manager** — Stateful session handling for real-time interactions.
-*   **CDN / WAF** — Content delivery and web application firewall.
+*   **Encoding Workers**: Video encoding and distribution at the edge, offloading compute from creator devices.
+*   **Media Storage**: Persistent storage for stream recordings, clips, and media assets.
+*   **Edge Cache**: Low-latency caching for frequently accessed data.
+*   **Session Manager**: Stateful session handling for real-time interactions.
+*   **CDN / WAF**: Content delivery and web application firewall.
 
 ### Service Layer
 Backend services handling API routing, verification, media composition, and settlement:
-*   **API Service** — Central API handling authentication, game state, leaderboards, rewards, referrals, and settlement.
-*   **VAP Verifier** — Validates cryptographic heartbeats from client sessions, maintains engagement proofs.
-*   **AGG Router** — Payment aggregation with optimal swap routing and gasless transaction sponsorship.
-*   **Control Plane** — Manages scene composition, source routing, and guest connections for 555stream.
-*   **SFU Service** — Selective Forwarding Unit for multi-party WebRTC.
-*   **Media Engine** — Video composition and transcoding pipeline.
-*   **Capture Service** — Browser-based capture for recording and clip generation.
-*   **Text-to-Speech + Avatar** — Alice's voice and visual presence pipeline.
+*   **API Service**: Central API handling authentication, game state, leaderboards, rewards, referrals, and settlement.
+*   **VAP Verifier**: Validates cryptographic heartbeats from client sessions, maintains engagement proofs.
+*   **AGG Router**: Payment aggregation with optimal swap routing and gasless transaction sponsorship.
+*   **Control Plane**: Manages scene composition, source routing, and guest connections for 555stream.
+*   **SFU Service**: Selective Forwarding Unit for multi-party WebRTC.
+*   **Media Engine**: Video composition and transcoding pipeline.
+*   **Capture Service**: Browser-based capture for recording and clip generation.
+*   **Text-to-Speech + Avatar**: Alice's voice and visual presence pipeline.
 
 ### Agent Layer (Alice)
 Autonomous AI operator with persistent memory and multi-platform capabilities:
-*   **Agent Core** — Autonomous decision engine with 12+ custom plugins.
-*   **Vector Memory** — Local-first RAG retrieval for contextual intelligence.
-*   **Knowledge Corpus** — 80+ documents covering the full protocol specification.
+*   **Agent Core**: Autonomous decision engine with 12+ custom plugins.
+*   **Vector Memory**: Local-first RAG retrieval for contextual intelligence.
+*   **Knowledge Corpus**: 80+ documents covering the full protocol specification.
 *   See [Alice: The Operator](/alice/persona) for details.
 
 ### Blockchain Layer (Solana)
 On-chain programs and integrations:
-*   **$555 SPL Token** — Protocol token for staking, burns, and participation.
-*   **sw4p settlement** — Native USDC settlement across supported chains, USDT corridor including Tron, 15-state lifecycle with checkpointed recovery.
-*   **SPL swap routing** — Best-execution routing for any-token-in / USDC-out on Solana.
-*   **sw4p gasless** — Built-in transaction sponsorship on Solana for frictionless user experience.
+*   **$555 SPL Token**: Protocol token for staking, burns, and participation.
+*   **sw4p settlement**: Native USDC settlement across supported chains, USDT corridor including Tron, 15-state lifecycle with checkpointed recovery.
+*   **SPL swap routing**: Best-execution routing for any-token-in / USDC-out on Solana.
+*   **sw4p gasless**: Built-in transaction sponsorship on Solana for frictionless user experience.
 
 ## Data Flow: Play Session
 
@@ -147,7 +147,7 @@ Trace a user action through the system:
 
 1.  **555stream**: Creator starts broadcast from browser.
 2.  **Edge Encoding**: Handles video encoding and distribution.
-3.  **Distribution**: Custom RTMP output to any destination — everywhere all at once.
+3.  **Distribution**: Custom RTMP output to any destination, everywhere all at once.
 4.  **Alice**: Monitors engagement signals, triggers L-Bar ads at optimal moments.
 5.  **Control Plane**: Manages scene composition, guest WebRTC, overlays.
 6.  **Settlement**: Ad revenue flows through 10% ARP → 50/50 split cascade.
