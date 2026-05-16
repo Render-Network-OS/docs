@@ -2,7 +2,7 @@
 
 **Severity**: Clean
 **Status**: **Closed**
-**Source**: `audit/SECURITY_AUDIT.md` §1 — SQL Injection Risks
+**Source**: `audit/SECURITY_AUDIT.md` §1, SQL Injection Risks
 
 ---
 
@@ -14,5 +14,5 @@ queries for all user-facing inputs.  One raw SQL query exists
 
 ### Disposition
 
-Clean — no action required.  Recommend adding a code review checklist item
+Clean, no action required.  Recommend adding a code review checklist item
 to ensure new raw SQL queries never incorporate user input.

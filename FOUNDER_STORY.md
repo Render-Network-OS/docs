@@ -1,4 +1,4 @@
-# RNDRNTWRK — Founder Story & Vision
+# RNDRNTWRK: Founder Story & Vision
 
 I found a multi‑billion‑dollar market waiting to be taken: dynamic ads on live streams, done right. Today, most creators pin a static badge or hack overlays by hand. Advertisers who want the long tail can’t find, target, or trust what they’re buying. The result is under‑monetized creators and frustrated brands.
 
@@ -8,11 +8,11 @@ RNDRNTWRK is my answer. I’m building a Solana‑native, real‑time overlay sy
 
 - Live attention is massive, but tooling is pre‑social: static, manual, brittle. Brands want targeted reach with safety; creators want reliable income without selling their soul.
 - No one has packaged dynamic overlays + a buy‑side experience that works across many streams at once, with creator control and real‑time performance.
-- This is bigger than sponsorships. It’s a streaming ad network—composable, contextual, and moment‑based.
+- This is bigger than sponsorships. It’s a streaming ad network, composable, contextual, and moment‑based.
 
 ## The Wedge (MVP “555”)
 
-- Step 1: Normalize overlays with something creators love using. That’s “555”—high‑retention arcade games, reactions, and rewards that make streams more fun. It grows inventory (places we can later render ads) while building the muscle memory of using overlays.
+- Step 1: Normalize overlays with something creators love using. That’s “555”, high‑retention arcade games, reactions, and rewards that make streams more fun. It grows inventory (places we can later render ads) while building the muscle memory of using overlays.
 - Step 2: Make overlays effortless to add to OBS, Streamlabs, and any platform (Twitch, Kick, YouTube). One control panel, all destinations.
 - Step 3: Ship this to early creators in crypto‑native livestreams (Pump.fun, Binance Square, Zora) to battle‑harden the system, then expand everywhere.
 

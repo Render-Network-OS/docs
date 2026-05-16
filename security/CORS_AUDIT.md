@@ -1,10 +1,10 @@
 # Security Finding: CORS Configuration
 
-**Severity**: P2 (aggregated — source audit rates individual items Medium–Low)
+**Severity**: P2 (aggregated, source audit rates individual items Medium–Low)
 **Status**: Open → **Owned**
 **Owner**: @Sw4pIO
 **Due Date**: 2026-04-24
-**Source**: `audit/SECURITY_AUDIT.md` §6 — CORS Configuration
+**Source**: `audit/SECURITY_AUDIT.md` §6, CORS Configuration
 
 ---
 
@@ -26,14 +26,14 @@ From `audit/SECURITY_AUDIT.md` §6, Issues Identified:
 
 | # | Issue | Source Severity | Status |
 |---|-------|----------------|--------|
-| 1 | Single origin only — hard to support multiple domains | Medium | **Open** |
+| 1 | Single origin only, hard to support multiple domains | Medium | **Open** |
 | 2 | Missing `Access-Control-Allow-Credentials` | Medium | **Open** |
 | 3 | Missing `Access-Control-Max-Age` (no preflight caching) | Low | **Open** |
 | 4 | No origin validation logic | Low | **Open** |
 
 ### Disposition
 
-**Not clean** — the basic CORS policy is correctly restrictive and there is no
+**Not clean**: the basic CORS policy is correctly restrictive and there is no
 security vulnerability, but the source audit lists 4 improvement items (2 Medium,
 2 Low) that remain unresolved. These are hardening items, not critical gaps.
 
@@ -48,4 +48,4 @@ security vulnerability, but the source audit lists 4 improvement items (2 Medium
 
 | Date | Reviewer | Disposition |
 |:-----|:---------|:------------|
-| 2026-04-05 | @Sw4pIO | Reopened — source audit §6 has 4 unresolved items (QA-SYS-03 first review) |
+| 2026-04-05 | @Sw4pIO | Reopened, source audit §6 has 4 unresolved items (QA-SYS-03 first review) |

@@ -1,16 +1,16 @@
 # Security Finding: Secret Management
 
-**Severity**: P2 (aggregated — source audit rates individual items P1–P3)
+**Severity**: P2 (aggregated, source audit rates individual items P1–P3)
 **Status**: Open → **Owned**
 **Owner**: @Sw4pIO
 **Due Date**: 2026-04-24
-**Source**: `audit/SECURITY_AUDIT.md` §4 — Secret Exposure
+**Source**: `audit/SECURITY_AUDIT.md` §4, Secret Exposure
 
 ---
 
 ## Finding
 
-No hardcoded secrets were found in source code — backend secrets are stored in
+No hardcoded secrets were found in source code, backend secrets are stored in
 environment variables and frontend only exposes `NEXT_PUBLIC_*` variables.
 However, the source audit identifies three unresolved items in the same section:
 
@@ -32,13 +32,13 @@ From `audit/SECURITY_AUDIT.md` §4, Issues Identified:
 
 ### Disposition
 
-**Not clean** — the scan itself found no hardcoded secrets, but the source audit
+**Not clean**: the scan itself found no hardcoded secrets, but the source audit
 identifies missing operational controls (rotation, validation, scanning) in the
 same section. These remain open.
 
 ### Remediation Plan
 
-1. Add secret validation on startup — verify all required env vars are set
+1. Add secret validation on startup, verify all required env vars are set
    (source audit P1, item 6)
 2. Implement secret rotation mechanism (source audit P3, item 14)
 3. Add automated secret scanning to CI/CD pipeline (recommended in §4)
@@ -47,4 +47,4 @@ same section. These remain open.
 
 | Date | Reviewer | Disposition |
 |:-----|:---------|:------------|
-| 2026-04-05 | @Sw4pIO | Reopened — source audit §4 has 3 unresolved items (QA-SYS-03 first review) |
+| 2026-04-05 | @Sw4pIO | Reopened, source audit §4 has 3 unresolved items (QA-SYS-03 first review) |

@@ -12,7 +12,7 @@ Step-by-step procedure for detecting, removing, and recovering from a secret com
 
 ---
 
-## Part 1: Prevention — Pre-Commit Hook Installation
+## Part 1: Prevention: Pre-Commit Hook Installation
 
 ### 1.1 Install the hook
 
@@ -83,14 +83,14 @@ rm test-secret.txt
 
 ### 1.3 Limitations
 
-- Hooks are local-only — each developer must install them manually
+- Hooks are local-only, each developer must install them manually
 - Hooks can be bypassed with `git commit --no-verify`
 - Pattern-based detection has false positives and false negatives
 - No server-side enforcement on GitHub Free plan
 
 ---
 
-## Part 2: Detection — Scanning Git History
+## Part 2: Detection: Scanning Git History
 
 ### 2.1 Install truffleHog
 
@@ -121,14 +121,14 @@ for line in sys.stdin:
 | Category | Action |
 |----------|--------|
 | Known secret patterns (AWS, GitHub, Stripe, etc.) | **Rotate immediately**, then remove from history |
-| High entropy in `.env.example` or template files | Likely false positive — verify values are placeholders |
-| High entropy in `pnpm-lock.yaml`, `package-lock.json` | False positive — integrity hashes, ignore |
-| High entropy in `.svg`, `.json` data files | False positive — encoded data, ignore |
+| High entropy in `.env.example` or template files | Likely false positive, verify values are placeholders |
+| High entropy in `pnpm-lock.yaml`, `package-lock.json` | False positive, integrity hashes, ignore |
+| High entropy in `.svg`, `.json` data files | False positive, encoded data, ignore |
 | Password-in-URL in `docker-compose.yml` or example configs | Verify these are placeholder values, not real credentials |
 
 ---
 
-## Part 3: Remediation — Removing a Secret from Git History
+## Part 3: Remediation: Removing a Secret from Git History
 
 ### 3.1 Immediate response (within 15 minutes)
 
@@ -209,10 +209,10 @@ git filter-repo --replace-text <(echo 'ACTUAL_SECRET==>***REMOVED***')
 
 - **Source:** `docs/STREAM_SECRET_INVENTORY.md` (existing audit)
 - **Findings:**
-  - HIGH: `media-engine/src/worker.js:226` — RTMP URL with stream keys logged
-  - HIGH: `control-plane/scripts/setup-cf-sfu.js:89` — Cloudflare SFU secret logged
-  - MEDIUM: `control-plane/src/index.js:3541` — RTMPS URL logged
-  - MEDIUM: `control-plane/src/index.js:4769` — RTMPS URL logged
+  - HIGH: `media-engine/src/worker.js:226`, RTMP URL with stream keys logged
+  - HIGH: `control-plane/scripts/setup-cf-sfu.js:89`, Cloudflare SFU secret logged
+  - MEDIUM: `control-plane/src/index.js:3541`, RTMPS URL logged
+  - MEDIUM: `control-plane/src/index.js:4769`, RTMPS URL logged
 - **Action required:** Redact secrets from log output (tracked in stream security remediation)
 
 ---

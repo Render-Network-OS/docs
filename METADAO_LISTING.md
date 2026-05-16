@@ -1,4 +1,4 @@
-# RNDRNTWRK — MetaDAO Listing Package
+# RNDRNTWRK: MetaDAO Listing Package
 
 Project owner: RNDRNTWRK (building the economic operating system for human and agent media)
 Contact: founders@rndrntwrk.com
@@ -13,9 +13,9 @@ Short (1–2 sentences)
 Long
 - RNDRNTWRK is building the economic operating system for human and agent media. Today, most streams use static badges or manual overlays; brands cannot reliably reach smaller creators, and creators miss revenue. We provide a Solana-native overlay system and ad tools that make it easy to show ads inside overlays across many streams and measure what happens without pop-ups or intrusive formats.
 - The stack includes a creator‑controlled overlay system, a simple control panel, a real‑time gateway for events, and a dynamic ad layer. Creators choose size, placement, duration, and theme; updates propagate instantly across OBS/Streamlabs and platforms like Twitch, Kick, and YouTube. We meet users where they are, starting with crypto‑native venues (Pump.fun, Binance Square, Zora) to battle‑harden before broad rollout.
-- Our wedge is “555” gamification—fun, high‑retention interactions that normalize overlays and build inventory before monetization. As the network grows, ads stay creator‑controlled and measured with clear, simple reports.
+- Our wedge is “555” gamification, fun, high‑retention interactions that normalize overlays and build inventory before monetization. As the network grows, ads stay creator‑controlled and measured with clear, simple reports.
 
-Why participate: This is streaming‑native monetization done right—creator‑controlled, measurable, and simple. As supply (creators) and demand (brands) grow, network effects compound: better targeting, higher fill, and more revenue per minute watched. $555 governance brings the community into key decisions. Proceeds fund ~12–15 months of execution, security hardening, and scaling.
+Why participate: This is streaming‑native monetization done right, creator‑controlled, measurable, and simple. As supply (creators) and demand (brands) grow, network effects compound: better targeting, higher fill, and more revenue per minute watched. $555 governance brings the community into key decisions. Proceeds fund ~12–15 months of execution, security hardening, and scaling.
 
 ## Token Name & Ticker
 
