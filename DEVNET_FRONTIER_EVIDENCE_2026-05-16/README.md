@@ -5,6 +5,12 @@ sw4p devnet-frontier execution cycle. Every acceptance gate cites either a real
 on-chain tx hash with a public explorer URL, or a real external-service response
 capture. Mocks and synthetic fixtures are not cited here.
 
+## Critical blockers
+
+| Blocker | Discovered | Impact | Unblock criteria |
+|---|---|---|---|
+| sw4p-backend HTTP API not reachable | W0.d (commit `d3146d72`) | Gates W1 through W8 ZERO-MOCKS acceptance | See `waves/W0-setup/phase-5-baseline-deferred.md` |
+
 ## Structure
 
 - `waves/W{N}-<title>/`: per-wave evidence (acceptance, prs, commands, handoff).
@@ -16,7 +22,7 @@ capture. Mocks and synthetic fixtures are not cited here.
 
 | Wave | Title | Status | Evidence link |
 |---|---|---|---|
-| W0 | Setup, Live Deps, Landing/AWS/Cloudflare, Baseline | pending | `waves/W0-setup/` |
+| W0 | Setup, Live Deps, Landing/AWS/Cloudflare, Baseline | partial: probes complete; baseline deferred BLOCKED | `waves/W0-setup/` |
 | W1 | Canonical EVM (3-tier coverage) | not started | `waves/W1-canonical-evm/` |
 | W2 | Rail consolidation + Allbridge live-route discovery | not started | `waves/W2-rail-consolidation/` |
 | W3 | 3-phase atomicity | not started | `waves/W3-atomicity/` |
