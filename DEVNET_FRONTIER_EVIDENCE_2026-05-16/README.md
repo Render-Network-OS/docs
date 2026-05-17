@@ -23,7 +23,7 @@ capture. Mocks and synthetic fixtures are not cited here.
 | Wave | Title | Status | Evidence link |
 |---|---|---|---|
 | W0 | Setup, Live Deps, Landing/AWS/Cloudflare, Baseline | complete (partial): probes + AWS/Cloudflare + Circle gas all PASS; baseline DEFERRED BLOCKED on backend health | `waves/W0-setup/` |
-| W1 | Canonical EVM (3-tier coverage) | complete (partial): Tier 1 deployed + 5/6 gates PASS; CCTP RT + Tier 2 burns DEFERRED_PENDING_USDC_FAUCET | `waves/W1-canonical-evm/` |
+| W1 | Canonical EVM (3-tier coverage) | complete (partial): Tier 1 deployed + 5/6 gates PASS; Tier 2 CCTP-only burns + Iris attestations PASS on Fuji + Amoy; Tier 1 CCTP RT Sepolia receive leg DEFERRED_PENDING_USDC_FAUCET | `waves/W1-canonical-evm/` |
 | W2 | Rail consolidation + Allbridge live-route discovery | not started | `waves/W2-rail-consolidation/` |
 | W3 | 3-phase atomicity | not started | `waves/W3-atomicity/` |
 | W4 | Kit completion + Cloudflare Worker | not started | `waves/W4-kit-completion/` |
