@@ -1,0 +1,9 @@
+
+# Claude Code MCP config (contains backend keys when filled)
+.mcp.json
+
+# Local-only credentials (never pushed; /555 root has no canonical remote)
+.local-secrets/
+
+# Per-sub-repo worktrees created by execution cycles
+.worktrees/
