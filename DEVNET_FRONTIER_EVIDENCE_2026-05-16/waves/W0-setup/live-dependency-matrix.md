@@ -14,7 +14,7 @@
 | Allbridge Core live route corridors | https://core.api.allbridgecoreapi.net + https://docs-core.allbridge.io | `GET /token-info` (production), `GET /chains` (production), testnet hostname enumeration | `probes/allbridge-discovery.md` | **PASS with W2 path = B2 (defer live tx)**. Production endpoint `https://core.api.allbridgecoreapi.net/token-info` HTTP 200 with 53953-byte response covering 17 chains (ETH, BSC, POL, ARB, AVA, OPT, BAS, CEL, SNC, UNI, LIN, TRX, SOL, SRB, SUI, ALG, STX). USDC present on 15 chains; USDT present on 10. `GET /chains` returns canonical mainnet hex chain IDs only (`0x1`, `0x38`, `0x89`, `0xa4b1`, `0xa86a`, `0xa`, `0x2105`, `0xa4ec`, `0x92`, `0x82`, `0xe708`). All four candidate testnet hostnames (`core.api.allbridgecoreapi-test.net`, `test.api.allbridgecoreapi.net`, `staging.api.allbridgecoreapi.net`, `core-test.api.allbridgecoreapi.net`) return NXDOMAIN; `?testnet=true` query param silently ignored. Docs page surveyed end-to-end: zero references to testnet, sandbox, staging, or devnet. Multi-transport corridor observation (each corridor may expose `bridgeAddress`, `cctpAddress`, `cctpV2Address`, `oftBridgeAddress`, and `xReserve.bridgeAddress` simultaneously) flagged for W2 adapter design. |
 | Circle Solana gas sponsor | https://developers.circle.com/wallets/gas-station + https://developers.circle.com/cctp/references/solana-programs | fit-research + real sponsored devnet tx OR documented deferral | `probes/circle-gas-sponsor.md` (pending Phase 4) | **pending Phase 4 (W0.c)** |
 | Cloudflare zone for sw4p.io / mcp.sw4p.io / api.sw4p.io | Cloudflare authoritative nameservers (`monika.ns.cloudflare.com`, `damian.ns.cloudflare.com`) | `dig` per host (A, AAAA, CNAME, NS) + `openssl s_client` TLS capture | `probes/cloudflare-dns.md` | **PASS**. `sw4p.io`, `www.sw4p.io`, `api.sw4p.io`, `app.sw4p.io`, `console.sw4p.io` all resolve to Cloudflare anycast (A: 172.67.69.69, 104.26.10.41, 104.26.11.41; AAAA: 2606:4700:20::681a:a29, 2606:4700:20::ac43:4545, 2606:4700:20::681a:b29) and serve a Google Trust Services WE1 cert (`CN=sw4p.io`, SHA-256 `11:45:70:9A:89:C0:E9:8A:D4:66:68:50:1A:B3:19:F9:C9:68:4C:CA:40:C7:E3:C0:EB:DF:DE:0D:52:40:E3:52`, valid Apr 15 to Jul 14 2026) via Cloudflare TLS termination. `mcp.sw4p.io` NXDOMAIN (clear for W4 provisioning). `555.sw4p.io` no records (out of scope for this cycle). W0.b interpretation: "DNS swap" is a Cloudflare origin change to the AWS ELB hostname, not a record-level Cloudflare-to-AWS DNS edit, since the zone stays delegated to Cloudflare. |
-| AWS landing target | existing commit `b0e95fd feat(ops): route sw4p landing hosts to aws ingress` | `kubectl get ingress` + direct ELB curl with `Host: sw4p.io` | `probes/aws-landing.md` (pending Phase 3) | **pending Phase 3 (W0.b)** |
+| AWS landing target | existing commit `b0e95fd feat(ops): route sw4p landing hosts to aws ingress` | `kubectl get ingress` + direct ELB curl with `Host: sw4p.io` | `probes/aws-landing.md` + `phase-3-no-cutover-summary.md` | **PASS. sw4p.io already serves from AWS EKS per `phase-3-no-cutover-summary.md` (Scenario A). No DNS cutover executed; no cutover needed.** |
 
 ## W1 tier determination (locked from probes)
 
@@ -48,19 +48,20 @@ Pending Phase 4 (`probes/circle-gas-sponsor.md` write-up). W8.f is conditional o
 - If Circle Gas Station fits sw4p's Solana CCTP signer flow: W8.f documents the Kora sunset PR (not executed in this cycle).
 - If not: W8.f records the deferral; Kora stays in the architecture.
 
-## AWS / Cloudflare cutover state (pending W0.b outcome)
+## AWS / Cloudflare cutover state (W0.b complete, no cutover executed)
 
-Pending Phase 3 (`probes/aws-landing.md` write-up + Task 3.2 authorization gate).
+Phase 3 complete (`phase-3-no-cutover-summary.md`). No Cloudflare origin edit was executed because sw4p.io is already serving from AWS EKS (Scenario A, confirmed in `probes/aws-landing.md`).
 
-Pre-flight state captured (per `probes/cloudflare-dns.md`):
+Pre-flight and post-Phase-3 state both stable:
 
-- A targets: 172.67.69.69, 104.26.10.41, 104.26.11.41 (Cloudflare anycast)
-- AAAA targets: 2606:4700:20::681a:a29, 2606:4700:20::ac43:4545, 2606:4700:20::681a:b29
-- Cert fingerprint: `11:45:70:9A:89:C0:E9:8A:D4:66:68:50:1A:B3:19:F9:C9:68:4C:CA:40:C7:E3:C0:EB:DF:DE:0D:52:40:E3:52` (expires 2026-07-14)
-- Post-swap target: AWS ELB hostname to be captured during Phase 3 against commit `b0e95fd`
+- A targets: 172.67.69.69, 104.26.10.41, 104.26.11.41 (Cloudflare anycast, unchanged)
+- AAAA targets: 2606:4700:20::681a:a29, 2606:4700:20::ac43:4545, 2606:4700:20::681a:b29 (unchanged)
+- Cert fingerprint: `11:45:70:9A:89:C0:E9:8A:D4:66:68:50:1A:B3:19:F9:C9:68:4C:CA:40:C7:E3:C0:EB:DF:DE:0D:52:40:E3:52` (expires 2026-07-14, unchanged)
+- Origin: AWS EKS nginx-ingress (sw4p-landing Service on port 10000), confirmed via `x-powered-by: Express` header and commit chain
+- TLS termination: Cloudflare edge (Google Trust Services cert), no mid-cycle rotation detected
 
 ## Conclusion
 
-W0.a probes that ran in Phase 2 of W0 all PASS. Two rows remain pending until Phase 3 (AWS landing) and Phase 4 (Circle gas sponsor) complete. The W1 tier roster and the W2 Phase 2 path are now locked from probe data and ready to inform the W1 + W2 plan writers.
+W0.a probes that ran in Phase 2 of W0 all PASS. Phase 3 (AWS landing) is complete: sw4p.io is already serving from AWS EKS, so no Cloudflare origin edit was needed. One row remains pending until Phase 4 (Circle gas sponsor) completes. The W1 tier roster and the W2 Phase 2 path are now locked from probe data and ready to inform the W1 + W2 plan writers.
 
-This matrix is v1; v2 (with all 6 rows complete) is written after Phase 5 of W0 closes, as part of `acceptance.md`.
+This matrix is v1 Phase 3 update; v2 (with all 6 rows complete) is written after Phase 4 of W0 closes, as part of `acceptance.md`.
