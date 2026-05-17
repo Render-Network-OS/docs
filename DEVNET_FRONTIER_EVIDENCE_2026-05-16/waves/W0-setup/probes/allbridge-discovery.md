@@ -172,6 +172,17 @@ from the captured response):
 (Full 53,953-byte JSON captured locally at
 `/tmp/allbridge-token-info.json` for reproducibility; size: 53953 bytes.)
 
+### Important observation for W2 design: Multi-transport corridor support
+
+The `/token-info` endpoint exposes multiple active bridge transports per corridor. Each token record includes any subset of the following transport addresses:
+
+- `bridgeAddress` - native Allbridge pool path
+- `cctpAddress` and `cctpV2Address` - Circle CCTP variants routed through Allbridge
+- `xReserve.bridgeAddress` - liquidity reserve bridge
+- `oftBridgeAddress` - LayerZero OFT bridge (present on some corridors)
+
+A single (sourceChain, destChain, token) tuple may be addressable via 2 to 4 different transport modes, each with distinct settlement guarantees and fee profiles. The W2 adapter must account for this corridor-level transport multiplicity when selecting routes and computing gas/fee impact. Route selection cannot assume a single transport per corridor.
+
 ## Step 3: Testnet endpoint probe
 
 Probed hostnames (all attempted live, 2026-05-17T04:53Z UTC):
