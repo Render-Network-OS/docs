@@ -92,3 +92,57 @@ Log captures:
 All 5 controls listed in the W1 EVM Safety-Control Scope are implemented in `Sw4pV4Controls` and exercised end-to-end by `ZapAndBridgeV41` on every value-moving path. Every Solana counterpart has a matching Solidity surface, and every claim is line-anchored against current source. Unit-test coverage is real (49 + 25 = 74 unit tests passing on Hardhat 2.22 + ethers 6.16) and not a mock.
 
 **W1 Phase A (Task A.1) passes by inspection plus unit-test verification. No code changes are needed for the controls layer in W1.** The canonical V4.1 contract is ready for the W1 Tier 1 deploy steps gated on Tier 1 constructor preconditions captured in Section 4 below (Task A.2).
+
+## 4. Tier 1 V4.1 deploy constructor preconditions (Task A.2)
+
+`ZapAndBridgeV41` constructor signature (from `ZapAndBridgeV41.sol:86-99`):
+
+```
+constructor(
+    address _universalRouter,
+    address _permit2,
+    address _tokenMessenger,
+    address _messageTransmitter,
+    address _usdc,
+    address _weth,
+    address initialAdmin,
+    address initialPauser,
+    address initialTreasury,
+    uint48  defaultAdminDelay_
+)
+```
+
+The 6 chain-dependent addresses, plus the 3 deployer-supplied principals + 1 delay scalar, must be set per chain. Tier 1 (per W0 evidence + spec) is **Ethereum Sepolia** and **Base Sepolia**. The 7-argument chain-dependent vector below excludes the 3 deployer principals (`initialAdmin`, `initialPauser`, `initialTreasury`) and the `defaultAdminDelay_` (matched to TIMELOCK_DELAY = 1 day per Solana parity).
+
+### Ethereum Sepolia (chainId 11155111, CCTP domain 0)
+
+| Arg | Value | Source |
+|---|---|---|
+| `_universalRouter` | `0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b` (UniversalRouterV2) | W0 probe `DEVNET_FRONTIER_EVIDENCE_2026-05-16/waves/W0-setup/probes/uniswap-deploy-addresses.md` (sepolia.json) |
+| `_permit2` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` | canonical CREATE2 cross-chain Permit2 address |
+| `_tokenMessenger` | `0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA` | W0 probe `circle-cctp-v2.md` (TokenMessengerV2, identical bytecode confirmed by 4353-byte `cast code`) |
+| `_messageTransmitter` | `0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275` | W0 probe `circle-cctp-v2.md` (MessageTransmitterV2, identical bytecode confirmed by 4353-byte `cast code`) |
+| `_usdc` | `0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238` | Circle docs `https://developers.circle.com/stablecoins/usdc-contract-addresses` (Sepolia); cross-checked against `sw4p-backend/contracts/registry/testnet.json` ETH entry |
+| `_weth` | `0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14` | canonical Sepolia WETH9 (per spec; assumed-known) |
+| `initialAdmin` | deployer EOA (Tier 1 deploy-time supplied) | deployer-runtime |
+
+### Base Sepolia (chainId 84532, CCTP domain 6)
+
+| Arg | Value | Source |
+|---|---|---|
+| `_universalRouter` | `0x95273d871c8156636e114b63797d78D7E1720d81` (UniversalRouterV2) | W0 probe `uniswap-deploy-addresses.md` (base-sepolia.json) |
+| `_permit2` | `0x000000000022D473030F116dDEE9F6B43aC78BA3` | canonical CREATE2 cross-chain Permit2 address |
+| `_tokenMessenger` | `0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA` | W0 probe `circle-cctp-v2.md` |
+| `_messageTransmitter` | `0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275` | W0 probe `circle-cctp-v2.md` |
+| `_usdc` | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` | Circle docs (Base Sepolia); cross-checked against `sw4p-backend/contracts/registry/testnet.json` BASE entry |
+| `_weth` | `0x4200000000000000000000000000000000000006` | canonical Base WETH (OP-stack predeploy) |
+| `initialAdmin` | deployer EOA (Tier 1 deploy-time supplied) | deployer-runtime |
+
+### Drift notes (must address before Tier 1 deploy)
+
+1. **Base Sepolia Universal Router drift.** `sw4p-backend/contracts/registry/testnet.json` BASE entry currently records `universal_router = 0x492E6456D9528771018DeB9E87ef7750EF184104`, but the canonical Uniswap `deploy-addresses/base-sepolia.json` (probed at commit `050b93cf4e9508b78412f23ad66e85d5c76a45b5` 2025-12-01) lists `UniversalRouterV2 = 0x95273d871c8156636e114b63797d78D7E1720d81`. The Tier 1 deploy must use the canonical value from the W0 probe (`0x95273d871c8156636e114b63797d78D7E1720d81`), not the value currently in `testnet.json`. Registry hardening in W1.b should reconcile this entry.
+2. **Permit2 not in Uniswap deploy-addresses registry.** Confirmed in W0 probe: the Uniswap registry schema does not carry Permit2 at all; Permit2 has a canonical CREATE2 cross-chain address `0x000000000022D473030F116dDEE9F6B43aC78BA3` used universally. The `testnet.json` registry already reflects this constant for both Tier 1 chains.
+3. **`defaultAdminDelay_` should match Solana TIMELOCK_SECONDS = 86_400.** Pass `uint48(86_400)` (i.e., 1 day) at construction time so the OZ default-admin transfer delay equals the 24h timelock used by `proposeSafetyConfig` / `executeSafetyConfig` and by Solana `process_propose_config_update` / `process_execute_config_update`. The unit-test suite uses this exact value (`Sw4pV4Controls.test.cjs:13`, `ZapAndBridgeV41.test.cjs:79`).
+4. **`initialPauser` and `initialTreasury` must be non-zero and non-self.** Enforced at `Sw4pV4Controls.sol:130-135`. Tier 1 deploy runbook must supply both, distinct from `initialAdmin` if the multisig handoff plan calls for split roles at init.
+
+Tier 1 deploy readiness for the controls layer: **GREEN.** All 6 chain-dependent constructor inputs for both Tier 1 chains are known and W0-verified; the 3 deployer principals plus the `defaultAdminDelay_` are deploy-time parameters with constructor-side validation already in place (`ZapAndBridgeV41.sol:103-108` and `Sw4pV4Controls.sol:130-135`). The Base Sepolia registry drift in `testnet.json` is a registry-hardening task for W1.b and does not block Phase A acceptance.
