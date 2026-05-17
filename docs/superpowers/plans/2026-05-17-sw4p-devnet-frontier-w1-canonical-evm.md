@@ -565,7 +565,7 @@ Same TDD/verification discipline. Same real-action gate (covered by C.1's author
 
 ---
 
-## Phase D: Tier 1 acceptance — safety controls + real CCTP round-trip
+## Phase D: Tier 1 acceptance (safety controls + real CCTP round-trip)
 
 ### Task D.1: Exercise pause / unpause on real Sepolia + Base Sepolia deploys
 
