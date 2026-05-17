@@ -71,3 +71,16 @@ None. All 6 chains accepted `accountType: SCA` on first call.
 ## Next Action
 
 Re-run W1 Phase C (Tier-1 SCP contract deploys) targeting the SCA wallet IDs in the env-var block above, so Gas Station sponsorship covers the funding gap that broke commit `176a4b94`. Update Phase C evidence with the new transaction IDs and gas-sponsorship confirmations from Circle.
+
+## Canonical testnet operator (locked post-PR-#234 merge, 2026-05-17)
+
+Per user direction at PR #234 review time, the canonical testnet V4.1 operator identity going forward is:
+
+- **Canonical SCA:** `0x6c55ad0ae94dcd3a8c0b8bf38077e20f580233ac`
+- **Wallet set:** Circle `6035954f566a`
+- **Used as:** deployer + admin + pauser + treasury for Tier 1 testnet V4.1 deploys (Ethereum Sepolia, Arbitrum Sepolia, Unichain Sepolia per PR #234)
+- **Governance posture:** Option A (constructor-final, single-owner, no Safe handoff)
+
+The W0 cycle-internal SCA `0x7ddba97f140f936a53669aa1ba73f04dd25557d4` (wallet set `29b8aae4-e37b-5e72-9653-c7157ad20c0c`) is retained as a **parity SCA**: used for cycle-internal W0.c probes, W0.d baseline (Solana Devnet leg), and W1 Phase C/D/E acceptance evidence on Base Sepolia + Solana Devnet + Avalanche Fuji + Polygon Amoy. Not the canonical operator going forward.
+
+Keeper, SDK, and downstream consumers should resolve V4.1 admin authority by reading the deployed contract's `defaultAdmin()` / `getRoleMember(ADMIN_ROLE, 0)` rather than assuming either SCA. Both addresses are valid testnet identities; the canonical/parity distinction is documentation-level, not contract-level.
