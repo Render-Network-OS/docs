@@ -1,155 +1,271 @@
 # sw4p USDT / Tron Stablecoin Parity PRD
 
-**Status:** Product requirements - review gate.
+**Status:** Product requirements - external-team handoff ready.
 **Date:** 2026-05-18.
 **Owner:** sw4p Frontier Engine corpus.
-**Scope:** USDT support parity across EVM, Solana, and Tron. BTC is explicitly out of scope for USDT parity.
-**Companion docs:** `2026-05-18-sw4p-usdt-tron-parity-crd.md`, `2026-05-18-sw4p-usdt-tron-parity-sow.md`.
+**Audience:** External implementation team with no prior sw4p context.
+**Scope:** USDT support parity across EVM, Solana, and Tron. BTC and Omni USDT are explicitly out of scope.
+**Companion docs:** `2026-05-18-sw4p-usdt-tron-parity-crd.md`, `2026-05-18-sw4p-usdt-tron-parity-trd.md`, `2026-05-18-sw4p-usdt-tron-parity-sow.md`.
 
 ---
 
 ## 1. Executive Summary
 
-sw4p already has meaningful Tron and USDT code, but it does not yet meet the product bar implied by the canonical RNDRNTWRK story. The product claim is not simply "Tron exists in the enum." The product claim is: users, agents, and operators can move supported stablecoin value across EVM, Solana, and Tron with the same clarity, safety, observability, and no-native-gas posture that the USDC/CCTP path is designed to provide.
+sw4p is the RNDRNTWRK settlement rail. Its current Frontier Engine work is strongest around USDC movement across EVM and Solana through Circle CCTP V2. The missing product requirement is full USDT parity across EVM, Solana, and Tron.
 
-This PRD establishes USDT / Tron parity as a dedicated product track. It does not replace Frontier Engine Approach A; it corrects and sharpens Approach A's Allbridge/Tron row. The day-one USDC path remains CCTP V2 across EVM and Solana. The USDT path is Allbridge Core across the Allbridge-supported EVM, Solana, and Tron corridors. Bitcoin/Omni USDT is excluded because Tether's official supported-protocol page marks Omni as deprecated legacy support, not a current issuance/redemption path.
+The product requirement is not "add Tron to an enum." The product requirement is that users, agents, and operators can reason about and execute supported stablecoin movement across EVM, Solana, and Tron with the same clarity, safety, lifecycle tracking, and no-fake-evidence discipline expected of the USDC path.
 
-The required product outcome is a route surface that is honest: every displayed route is executable, every gated route says why it is gated, and every proof claim points at real provider support, real chain data, or an explicitly authorized mainnet proof transaction.
+The product split is canonical:
 
-## 2. Problem Statement
+- USDC routes use Circle CCTP V2 where CCTP supports the source and destination pair.
+- USDT and Tron routes use Allbridge Core where provider data, local execution support, liquidity, signing, fee display, lifecycle tracking, and proof gates all pass.
+- BTC and Omni USDT are `out_of_scope`, not merely `not_implemented`.
+- Tron is first-class, but not live until route, signing, fee, proof, and operations gates close.
 
-The corpus currently talks about sw4p as a cross-chain settlement engine with USDT corridor support including Tron. That is directionally correct, but incomplete. Local code and docs show three realities that must be reconciled before we claim parity:
+The central risk is false parity. Allbridge token metadata can prove that a provider recognizes a token and chain. It cannot prove that sw4p can safely execute, monitor, recover, and publicly expose the route. Product availability must therefore be derived from multiple dimensions: provider support, code support, quote support, liquidity state, proof state, policy state, runtime exposure, and operational health.
 
-1. The backend has Tron/Allbridge code, but not every advertised route is executable.
-2. The frontend and kit contain Tron/USDT surface area, but not full Tron execution parity.
-3. Allbridge Core has no public hosted testnet corridor, so the normal devnet/testnet acceptance model does not apply to Tron/USDT.
+## 2. External Truth Baseline
 
-Without this PRD, future agents will keep cycling between two bad outcomes: overclaiming Tron parity because code exists, or deleting/deprioritizing Tron because the proof corridor is hard. The correct posture is a third path: keep Tron/USDT as a first-class requirement, but gate public support on corridor-specific proof and product safety.
+### 2.1 Circle CCTP truth
 
-## 3. Goals
+Circle CCTP is a native USDC burn-and-mint protocol. Circle documents CCTP as a permissionless onchain utility for native USDC transfers without traditional bridge liquidity pools or wrapped tokens.
 
-### G1. Product parity for supported stablecoin movement
+Product implication: USDC remains on CCTP V2. USDT must not pretend to use CCTP.
 
-Users and agents must understand USDC and USDT as supported stablecoin assets with distinct rails and route eligibility.
+Source: https://developers.circle.com/cctp
+
+### 2.2 Circle Contracts deployment truth
+
+Circle Contracts supports deployment and interaction through console and APIs using Circle Wallets. sw4p's existing deployment rule remains unchanged: sw4p contract deployments must use Circle Smart Contract Platform only unless explicitly overridden for a named deployment.
+
+Product implication: this PRD does not authorize any non-Circle deployment path.
+
+Source: https://developers.circle.com/contracts
+
+### 2.3 Tether issuer truth
+
+Tether's supported-protocol material lists current USDT support on networks including ERC20, TRC20 on Tron, and Solana Token. The same source states that Tether is no longer issuing or obligated to redeem Tether Tokens on Omni Layer and several other legacy networks, and that the legacy rows are maintained for historical reference.
+
+Product implication: EVM, Tron, and Solana USDT are in scope. BTC and Omni USDT are out of scope.
+
+Sources:
+
+- https://tether.to/en/supported-protocols/
+- https://tether.io/news/tether-provides-update-on-transition-plan-for-legacy-blockchains/
+
+### 2.4 Allbridge Core truth
+
+Allbridge Core enables native stablecoin transfers between blockchains by connecting liquidity pools through a virtual stable-swap mechanism. Its docs describe stablecoin pools, vUsd accounting, cross-chain messaging, optional alternative mechanisms such as CCTP or OFT for some routes, fees, liquidity effects, raw transaction builders, approvals, and transfer status.
+
+Product implication: Allbridge support is provider-stateful. A route needs metadata, quote, liquidity, approval, raw transaction, signing, status, and proof handling. It is not a single boolean bridge flag.
+
+Sources:
+
+- https://docs-core.allbridge.io/product/how-does-allbridge-core-work
+- https://docs-core.allbridge.io/product/how-does-allbridge-core-work/fees
+- https://docs-core.allbridge.io/product/how-does-allbridge-core-work/allbridge-core-contracts
+- https://github.com/allbridge-io/allbridge-core-js-sdk
+- https://github.com/allbridge-io/allbridge-core-rest-api
+
+### 2.5 TRON execution truth
+
+TRON source execution needs TronLink or equivalent user-controlled wallet signing for production flows. TronWeb builds transactions, TronLink signs, and the signed transaction is broadcast. TRON fees and resource exposure must be described in TRX, Bandwidth, Energy, and fee limit terms.
+
+Product implication: a backend `TRON_RELAYER_PRIVATE_KEY` is not production user custody. It can only be used for a named canary or proof workflow if explicitly approved.
+
+Sources:
+
+- https://developers.tron.network/docs/tronlink-integration
+- https://developers.tron.network/docs/resource-model
+- https://developers.tron.network/docs/tron-network-security-and-scam-prevention-guide
+
+## 3. Local System Baseline
+
+The codebase already contains Tron and USDT work, but not full parity.
+
+| Surface | Current known state | Product verdict |
+|---|---|---|
+| Backend Tron client | `sw4p-backend/src/tron_client.rs` supports Tron RPC, TRC20 USDT balance, signing, broadcast, and Tron USDT contract `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t`. | Useful foundation. Private-key signing is not production parity by itself. |
+| Backend Tron swap | `sw4p-backend/src/tron_swap.rs` contains SunSwap V2, WTRX, and USDT logic. | Adjacent capability. Must not be silently composed into parity routes. |
+| Backend Allbridge adapter | `sw4p-backend/src/allbridge.rs` supports Allbridge chain enum and several paths. It currently has a Solana-to-Tron not-implemented gap and a problematic Base USDT to Base USDC mapping. | Real scaffold. Must be reconciled with provider APIs and fail-closed route states. |
+| Route selector | `route_selector.rs` chooses Allbridge when destination is Tron/TRX or token is USDT. | Directionally right, but too optimistic unless route state gates are added. |
+| Native bridge layer | `native_bridge.rs` has Allbridge selection for USDT and Tron. | Needs route-state and proof integration. |
+| Frontend wallet layer | `WalletProvider.tsx` has TronLink connection. | Connection is not execution parity. |
+| Frontend settlement config | `settlementChains.ts` includes Tron but gated/disabled. | Correct posture until proof gates close. |
+| Frontend bridge hook | `useBridge.ts` supports EVM and Solana factory types. | Tron source execution is incomplete. |
+| Kit and agent surface | `sw4p-kit/src/core/intent.ts` includes USDC and USDT, but chain/agent routes remain mostly base, solana, and USDC oriented. | Agent parity gap. |
+| Ops docs | Existing docs recorded no canonical public non-production Tron proof corridor. | Correct controlling assumption until provider-confirmed proof exists. |
+
+Older branches may contain useful work and must be inventoried before reimplementation:
+
+- `feat/sw4p-tron-sdk-contract`, believed mostly merged.
+- `fix/sw4p-tron-backend-adapter`, likely contains backend Allbridge, watcher, relay, Tron client, and helper work.
+- `ops/sw4p-tron-proof-corridor-provisioning`, likely contains proof and provisioning runbooks.
+- `docs/sw4p-tron-proof-corridor-research`, partially present in current docs.
+
+## 4. Product Goals
+
+### G1. Stablecoin asset clarity
+
+USDC and USDT are separate assets with separate rails. Product copy, route APIs, kit outputs, and UI must never treat USDT as a USDC alias.
 
 ### G2. Tron as a first-class USDT chain
 
-Tron must not be treated as an afterthought, fallback, or disabled marketing badge. When enabled, Tron must support explicit route discovery, wallet connection, address validation, fee explanation, signing, submission, tracking, and recovery.
+Tron must support route discovery, wallet connection, address validation, fee preview, approval review, signing, submission, status tracking, recovery, and proof once enabled.
 
-### G3. No false route availability
+### G3. No false live routes
 
-If a route cannot execute, the product must return a visible unsupported or gated state. It must not silently fall back to CCTP, pretend a testnet exists, or show a button that cannot produce a real transaction.
+Provider metadata does not make a route live. A route is live only when provider support, code support, quote support, liquidity, proof, policy, runtime exposure, frontend state, kit state, and operations state agree.
 
-### G4. Honest evidence standard
+### G4. Proof-gated availability
 
-USDT/Tron acceptance must be based on one of:
+USDT/Tron acceptance must use one of:
 
-- a provider-confirmed non-production Allbridge corridor,
-- a real mainnet Allbridge micro-transfer explicitly authorized by the user,
-- live Allbridge API discovery plus route-gated code where no transaction proof is authorized.
+- provider-confirmed non-production Allbridge corridor,
+- explicitly authorized mainnet micro-transfer,
+- gated deferral where live provider data exists but no transaction proof is authorized.
 
-Mocks, local-only Allbridge simulations, or inferred testnet addresses do not count as product acceptance.
+Mocks, local-only Allbridge simulations, guessed testnet contracts, and stale snapshots do not count.
 
-### G5. BTC exclusion is explicit
+### G5. Agent-safe outputs
 
-Bitcoin/Omni USDT is not in scope. BTC can remain a preview or future settlement concept elsewhere, but it is not part of USDT issuer-supported parity for this track.
+Agents must receive route-state reasons and remediation hints. They must not receive a boolean `available` answer that hides proof, policy, or code gaps.
 
-## 4. Non-Goals
+### G6. BTC and Omni exclusion
+
+BTC/Omni USDT must never appear as an active sw4p settlement route. The correct state is `out_of_scope`.
+
+## 5. Non-Goals
 
 - No BTC/Omni USDT integration.
 - No new bridge rail beyond CCTP V2 and Allbridge Core.
-- No public claim that Allbridge has a public testnet corridor unless provider documentation or direct provider confirmation proves it.
+- No public claim that Allbridge has a public testnet corridor unless provider documentation or direct confirmation proves it.
 - No mainnet transfer without explicit per-action authorization.
 - No replacement of V4.1 EVM contracts or Circle SCP deployment policy.
-- No NTT/555 token mobility work. That remains Phase H, a separate track.
+- No NTT or 555 token mobility work. That remains separate Phase H work.
 - No fiat settlement work.
+- No silent composed route such as Base USDT to Base USDC to Tron USDT.
+- No frontend or kit enablement before backend route-state truth exists.
 
-## 5. Users and Use Cases
+## 6. Users And Use Cases
 
-### User U1. Creator or earner receiving settlement
+### U1. Creator or earner receiving settlement
 
-A creator wants to receive value on the chain they actually use. If they prefer Tron USDT, sw4p must clearly show whether that route is enabled, what asset they will receive, what fees apply, and how long it may take.
+A creator wants value on the chain they use. If they prefer Tron USDT, sw4p must show whether the route is live, gated, policy-blocked, suspended, or unsupported.
 
-### User U2. EVM user moving USDT to Tron
+### U2. EVM user moving USDT to Tron
 
-An EVM user with USDT on Ethereum, Arbitrum, Polygon, Avalanche, Optimism, or Unichain wants to settle to Tron USDT without manually using an external bridge interface.
+A user with USDT on an Allbridge-supported EVM chain wants to receive TRC20 USDT on Tron without leaving sw4p.
 
-### User U3. Solana user moving USDT to Tron or EVM
+### U3. Solana user moving USDT to Tron or EVM
 
-A Solana user with SPL USDT wants the same route clarity and transaction tracking. This is a known gap because local `allbridge.rs` currently returns a not-implemented error for Solana to Tron.
+A Solana user with SPL USDT wants the same route clarity and tracking. This is currently a P0 parity gap because local code reports Solana to Tron as not implemented.
 
-### User U4. Agent using `@sw4p/kit`
+### U4. Tron user moving USDT to EVM or Solana
 
-An agent must be able to ask for balances, estimate routes, and initiate supported settlements without hardcoded USDC-only assumptions. Unsupported Tron routes must be machine-readable.
+A Tron user wants a non-custodial source flow using TronLink or equivalent wallet signing, not hidden backend custody.
 
-### User U5. Operator
+### U5. Agent using `@sw4p/kit`
 
-An operator needs a clean route matrix, proof state, secrets model, canary plan, and rollback posture for every USDT corridor that is enabled.
+An agent needs balance, route estimate, send, and unsupported-route responses that distinguish USDC, USDT, EVM, Solana, Tron, provider support, and proof state.
 
-## 6. Product Requirements
+### U6. Operator
+
+An operator needs route truth, provider snapshot, proof ledger, transfer status, stuck-transfer recovery, route suspension, and canary controls.
+
+## 7. Product Requirements
 
 | ID | Priority | Requirement |
-|---|---|---|
-| PRD-USDT-001 | MUST | The product must distinguish stablecoin asset from chain. USDC and USDT are separate route assets, not display aliases. |
-| PRD-USDT-002 | MUST | The product must support USDT as a first-class asset in route discovery, quote display, fee display, status tracking, and agent output. |
-| PRD-USDT-003 | MUST | Tron support must be gated until a route has executable evidence or an explicit provider/mainnet proof decision. |
+|---|---:|---|
+| PRD-USDT-001 | MUST | The product must distinguish stablecoin asset from chain. USDC and USDT are separate route assets. |
+| PRD-USDT-002 | MUST | USDT must be first-class in route discovery, quote display, fee display, status tracking, and agent output. |
+| PRD-USDT-003 | MUST | Tron support must be gated until executable evidence or explicit canary/proof authorization exists. |
 | PRD-USDT-004 | MUST | Tron destination routes must display TRC20 USDT as the received asset. |
-| PRD-USDT-005 | MUST | Tron source routes must require a real Tron wallet/signing path or a consciously approved relayer/custody model. |
-| PRD-USDT-006 | MUST | The UI and SDK must never show a Tron/USDT route as live if the backend would return `Solana to Tron bridging not yet implemented` or equivalent. |
-| PRD-USDT-007 | MUST | Route selection must be explicit: USDC CCTP V2 routes use CCTP V2, USDT/Tron routes use Allbridge Core, and unsupported crossovers fail visibly. |
-| PRD-USDT-008 | MUST | The product must explain Tron fees in terms of TRX, Energy, and Bandwidth where the user is exposed to Tron signing. |
-| PRD-USDT-009 | MUST | The agent surface must return machine-readable unsupported/gated reasons for Tron and USDT routes. |
+| PRD-USDT-005 | MUST | Tron source routes must use a real Tron wallet signing path or a consciously approved relayer/canary custody model. |
+| PRD-USDT-006 | MUST | UI and SDK must never show a Tron/USDT route as live if backend execution would return `Solana to Tron bridging not yet implemented` or equivalent. |
+| PRD-USDT-007 | MUST | Route selection must be explicit: USDC CCTP V2 routes use CCTP V2, USDT/Tron routes use Allbridge Core, unsupported crossovers fail visibly. |
+| PRD-USDT-008 | MUST | Tron fees must be explained as TRX, Bandwidth, Energy, and fee limit exposure before signing. |
+| PRD-USDT-009 | MUST | Agent surfaces must return machine-readable route states, reasons, and remediation hints. |
 | PRD-USDT-010 | MUST | BTC/Omni USDT must not appear as a supported route, settlement chain, or hidden bridge target. |
-| PRD-USDT-011 | SHOULD | Where Allbridge can provide destination gas top-up, the product should expose it as an explicit option, not an implicit promise. |
-| PRD-USDT-012 | SHOULD | The product should prefer provider-generated raw transactions or SDK calls over hand-maintained ABI encodings for Allbridge operations. |
-| PRD-USDT-013 | SHOULD | The route UI should show source asset, destination asset, rail, estimated received amount, fees, proof status, and expected completion time before signing. |
-| PRD-USDT-014 | MAY | A small mainnet canary route can be used for acceptance if and only if explicitly authorized by the user for a named source, destination, amount, and wallet. |
+| PRD-USDT-011 | MUST | Route availability must be generated from provider-backed registry state, not hardcoded enums. |
+| PRD-USDT-012 | MUST | Provider token support, quote support, liquidity state, code support, proof state, runtime exposure, and policy state must be separate fields. |
+| PRD-USDT-013 | MUST | Provider metadata alone must never promote a route to `live`. |
+| PRD-USDT-014 | MUST | The product must never silently convert Base USDT to Base USDC, USDT to USDC, or one token standard to another without an explicit user-visible composed route. |
+| PRD-USDT-015 | MUST | The route confirmation surface must show exact source asset, destination asset, token standard, provider rail, estimated receive amount, fees, slippage or pool impact, approval requirement, proof state, and expected completion status before signing. |
+| PRD-USDT-016 | MUST | Tron routes must validate recipient addresses and reject ambiguous, malformed, or wrong-chain destination inputs. |
+| PRD-USDT-017 | MUST | Allbridge raw transactions must be validated against the user's original route intent before wallet signing. |
+| PRD-USDT-018 | MUST | The UI and SDK must support a `suspended` state for routes disabled due to provider degradation, stale registry, insufficient liquidity, incident response, or policy hold. |
+| PRD-USDT-019 | MUST | Mainnet canary authorization must be captured as a structured object: route, amount, source wallet, destination wallet, fee cap, slippage cap, approval cap, expiry, approver, and proof destination. |
+| PRD-USDT-020 | MUST | A route must not move to `live` unless frontend, backend, kit, provider registry, proof ledger, and operations dashboard agree. |
+| PRD-USDT-021 | SHOULD | Destination gas top-up should be exposed only when provider support exists and must be shown separately from bridge fees. |
+| PRD-USDT-022 | SHOULD | The route detail screen should show whether the Allbridge route mechanism is pool, CCTP, CCTP V2, OFT, or unknown. |
+| PRD-USDT-023 | SHOULD | The product should prefer provider-generated raw transactions or SDK calls over hand-maintained ABI encodings. |
+| PRD-USDT-024 | MAY | A small mainnet canary route may be used for acceptance only after explicit authorization for a named source, destination, amount, and wallet. |
 
-## 7. Current Product Surface Inventory
+## 8. Route Matrix Policy
 
-| Surface | Current state | Product verdict |
-|---|---|---|
-| Backend Tron client | `sw4p-backend/src/tron_client.rs` supports Tron RPC, TRC20 USDT balance, signing, broadcast. | Useful foundation, but private-key based signing is not product parity by itself. |
-| Backend Allbridge adapter | `sw4p-backend/src/allbridge.rs` supports Allbridge chain enum and several EVM/Tron paths. | Real scaffold, but incomplete and partially stale. |
-| Route selector | Chooses Allbridge for USDT or Tron. | Directionally right, but can over-advertise unsupported execution. |
-| Solana to Tron | Explicitly not implemented in `bridge_to_tron_from_solana`. | P0 parity gap. |
-| Frontend TronLink | Wallet connection exists. | Connection is not execution parity. |
-| Frontend settlement config | Tron exists but gated. | Correct posture until proof gates close. |
-| `useBridge` hook | Bridge factory supports only `EVM` and `SOL`. | Tron source cannot execute through this hook today. |
-| `@sw4p/kit` | Asset type mentions USDT, but chain schemas and agent tools are mostly base/solana/USDC. | Agent parity gap. |
-| Ops docs | Existing docs state no canonical non-production Tron proof corridor. | Correct and must remain authoritative until provider proof exists. |
+The route matrix below is a policy starting point, not a permanent hardcoded registry. Implementation must regenerate route support from live Allbridge metadata and then apply sw4p policy, code support, proof state, liquidity state, and runtime exposure.
 
-## 8. Product Route Matrix
-
-| Source | Destination | Asset | Rail | Product state |
+| Source | Destination | Asset | Provider status | sw4p V1 policy |
 |---|---|---|---|---|
-| EVM CCTP chain | EVM CCTP chain | USDC | CCTP V2 | Existing Frontier path. |
-| EVM CCTP chain | Solana | USDC | CCTP V2 | Existing Frontier path. |
-| Solana | EVM CCTP chain | USDC | CCTP V2 | Existing Frontier path. |
-| Tron | EVM Allbridge USDT chain | USDT | Allbridge Core | Required, gated on signing/custody and proof. |
-| EVM Allbridge USDT chain | Tron | USDT | Allbridge Core | Required, gated on proof and operational wallet model. |
-| Solana | Tron | USDT | Allbridge Core | Required for parity, currently not implemented. |
-| Tron | Solana | USDT | Allbridge Core | Required for parity, needs proof and signing model. |
-| Base | Tron | USDT | Allbridge Core | Not available as Base USDT in live Allbridge token-info as of 2026-05-18. Must be gated or converted through an explicit route. |
-| BTC/Omni | Any | USDT | None | Out of scope. |
+| EVM CCTP chain | EVM CCTP chain | USDC | CCTP-supported pairs | Existing Frontier path. |
+| EVM CCTP chain | Solana | USDC | CCTP-supported pairs | Existing Frontier path. |
+| Solana | EVM CCTP chain | USDC | CCTP-supported pairs | Existing Frontier path. |
+| EVM Allbridge USDT chain | Tron | USDT | Provider-supported on eligible chains except unsupported tuples such as Base direct USDT | Gated until quote, tx, proof, and ops pass. |
+| Tron | EVM Allbridge USDT chain | USDT | Provider-supported | Gated until Tron signing/custody and proof pass. |
+| Solana | Tron | USDT | Provider-supported | P0 parity gap until implementation removes not-implemented path. |
+| Tron | Solana | USDT | Provider-supported | Gated until signing and proof pass. |
+| Base | Tron | USDT | Direct Base USDT unsupported in current Allbridge token-info | `provider_unsupported` unless explicit conversion route is designed. |
+| Unichain | Tron | USDT | Provider-supported in Allbridge data | `policy_blocked` unless runtime policy admits Unichain. |
+| BTC/Omni | Any | USDT | Issuer legacy/deprecated | `out_of_scope`. |
 
-## 9. Evidence and Sources
+## 9. Required User-Facing Route States
 
-Primary external sources used by this PRD:
+| State | Product meaning | User behavior |
+|---|---|---|
+| `live` | Fully executable and proof-backed. | User can execute. |
+| `canary_authorized` | Limited proof transfer explicitly approved. | Only named canary can execute. |
+| `code_supported_proof_missing` | Code exists but proof is missing. | Route visible as gated, no public execution. |
+| `provider_supported_code_incomplete` | Provider supports tuple but sw4p cannot execute safely yet. | Gated. |
+| `provider_unsupported` | Provider does not expose the asset/chain tuple. | No live button. |
+| `suspended` | Previously live/candidate route disabled by provider, liquidity, stale registry, incident, or policy hold. | No execution until cleared. |
+| `policy_blocked` | Provider may support it but sw4p policy blocks exposure. | No execution. |
+| `out_of_scope` | Deliberately excluded. | No execution. |
 
+## 10. Required Product Copy Rules
+
+- Do not say "Tron live" until launch gate passes.
+- Do not say "USDT everywhere" until route matrix and proof ledger support each route.
+- Do not say "gasless" for Tron unless the user is insulated from TRX, Energy, and Bandwidth costs by an approved sponsor or provider mechanism.
+- Do not call provider metadata proof of execution.
+- Do not use BTC/Omni in any active route copy.
+- Do not collapse USDC and USDT under the generic label "stablecoin" at the signing point.
+
+## 11. Evidence And Sources
+
+Primary external sources:
+
+- Circle CCTP: https://developers.circle.com/cctp
+- Circle Contracts: https://developers.circle.com/contracts
 - Tether supported protocols: https://tether.to/en/supported-protocols/
 - Tether legacy blockchain transition update: https://tether.io/news/tether-provides-update-on-transition-plan-for-legacy-blockchains/
-- Allbridge Core overview: https://docs-core.allbridge.io/
-- Allbridge Core REST API: https://docs-core.allbridge.io/sdk/allbridge-core-rest-api
-- TRON TRC20 protocol interface: https://developers.tron.network/docs/trc20-protocol-interface
-- TRON transaction fees: https://developers.tron.network/docs/tron-protocol-transaction
+- Allbridge Core overview: https://docs-core.allbridge.io/product/how-does-allbridge-core-work
+- Allbridge Core fees: https://docs-core.allbridge.io/product/how-does-allbridge-core-work/fees
+- Allbridge Core contracts: https://docs-core.allbridge.io/product/how-does-allbridge-core-work/allbridge-core-contracts
+- Allbridge Core JS SDK: https://github.com/allbridge-io/allbridge-core-js-sdk
+- Allbridge Core REST API: https://github.com/allbridge-io/allbridge-core-rest-api
+- TRON TronLink integration: https://developers.tron.network/docs/tronlink-integration
+- TRON resource model: https://developers.tron.network/docs/resource-model
+- TRON security guide: https://developers.tron.network/docs/tron-network-security-and-scam-prevention-guide
 
-Local sources:
+Local sources to inspect before coding:
 
 - `sw4p/sw4p-backend/src/tron_client.rs`
+- `sw4p/sw4p-backend/src/tron_swap.rs`
 - `sw4p/sw4p-backend/src/allbridge.rs`
 - `sw4p/sw4p-backend/src/route_selector.rs`
 - `sw4p/sw4p-backend/src/native_bridge.rs`
+- `sw4p/sw4p-backend/src/bridge_protocol.rs`
 - `sw4p/sw4p-frontend/src/WalletProvider.tsx`
 - `sw4p/sw4p-frontend/src/config/settlementChains.ts`
 - `sw4p/sw4p-frontend/hooks/useBridge.ts`
@@ -158,19 +274,57 @@ Local sources:
 - `sw4p/docs/operations/tron-proof-corridor-gap-2026-04-21.md`
 - `sw4p/docs/operations/tron-proof-corridor-options-2026-04-21.md`
 
-## 10. Acceptance Criteria
+## 12. Product Acceptance Gates
 
-The product track is done only when all of the following are true:
+### Gate A: Route truth
 
-1. A route matrix is generated from live Allbridge token-info plus canonical CCTP registry data, not hardcoded route optimism.
-2. Every displayed USDT route has a rail, asset, proof state, and unsupported reason where applicable.
-3. TronLink or an approved Tron signing/custody model can produce a real source transaction for enabled Tron source routes.
-4. Solana to Tron no longer returns a not-implemented error for a route marked live.
-5. `@sw4p/kit` can represent USDT and Tron in balance, estimate, send, and unsupported-route outputs.
-6. Allbridge lifecycle tracking has durable DB state and recovery behavior aligned to the Frontier 3-phase discipline.
-7. The non-production proof limitation is explicitly documented. If no provider-confirmed non-production corridor exists, the acceptance mode is live API discovery plus explicitly authorized mainnet canary or gated deferral.
-8. BTC/Omni USDT is absent from supported surfaces.
+- Provider registry is live-fetched or pinned with release evidence.
+- Route states are derived from provider data plus sw4p policy.
+- Stale registry snapshots are rejected.
+- Base direct USDT is not exposed while unsupported.
+- Tron USDC is not exposed while unsupported.
+- BTC/Omni is `out_of_scope`.
 
-## 11. Recommended Product Decision
+### Gate B: Execution safety
 
-Approve a dedicated USDT / Tron Stablecoin Parity track. Do not bury this inside generic W2 cleanup, and do not wait until Phase H. It is adjacent to Frontier Approach A because Approach A already names Allbridge Core and Tron, but it deserves its own PRD/CRD/SOW because the asset, wallet, fee, proof, and user-experience model are different from CCTP V2.
+- Quote is provider-backed.
+- Fees are itemized.
+- Approval is bounded.
+- Raw transaction validates against original route intent.
+- Wallet signing uses the correct chain signer.
+- No silent rail or asset conversion exists.
+
+### Gate C: Tron parity
+
+- TronLink source signing works.
+- TRC20 USDT destination display is exact.
+- TRX, Energy, Bandwidth, and fee limit are shown.
+- Tron confirmation watcher works.
+- Backend relayer is blocked for production user flows.
+
+### Gate D: Lifecycle and proof
+
+- Source tx hash is captured.
+- Provider status is tracked.
+- Destination settlement proof is captured where applicable.
+- Stuck routes can be escalated.
+- Evidence is stored with registry, quote, and proof hashes.
+
+### Gate E: Public live route
+
+A route may be public-live only if all are true:
+
+- provider support is `supported`,
+- code support is `implemented`,
+- quote support is `available`,
+- proof state is `destination_settled` or `provider_confirmed_nonprod`,
+- provider health is `ok`,
+- liquidity state is `available`,
+- frontend state equals backend state equals kit state,
+- runbook is ready.
+
+## 13. Recommended Product Decision
+
+Approve USDT/Tron as a dedicated parity track. Do not bury it in generic Allbridge cleanup, and do not defer it to 555 token mobility. The strongest positioning is:
+
+> sw4p USDT/Tron parity is not a bridge badge. It is a proof-gated settlement capability. USDC remains native CCTP V2. USDT/Tron uses Allbridge Core only where current provider data, sw4p execution code, user signing, fee clarity, liquidity, lifecycle tracking, and proof gates all pass. Unsupported or unproven routes remain visible to agents and operators as gated states, but never appear to users as live execution paths.

@@ -1,58 +1,62 @@
 # sw4p USDT / Tron Stablecoin Parity CRD
 
-**Status:** Corridor requirements - review gate.
+**Status:** Corridor requirements - external-team handoff ready.
 **Date:** 2026-05-18.
 **Owner:** sw4p Frontier Engine corpus.
-**Scope:** Corridor, rail, provider, signing, proof, and observability requirements for USDT movement across EVM, Solana, and Tron.
-**Companion docs:** `2026-05-18-sw4p-usdt-tron-parity-prd.md`, `2026-05-18-sw4p-usdt-tron-parity-sow.md`.
+**Audience:** External implementation team with no prior sw4p context.
+**Scope:** Corridor, route-state, provider, proof, policy, and launch requirements for USDT movement across EVM, Solana, and Tron.
+**Companion docs:** `2026-05-18-sw4p-usdt-tron-parity-prd.md`, `2026-05-18-sw4p-usdt-tron-parity-trd.md`, `2026-05-18-sw4p-usdt-tron-parity-sow.md`.
 
 ---
 
 ## 1. CRD Definition
 
-CRD means Corridor Requirements Document. It defines what each source-chain, destination-chain, asset, rail, wallet, and proof combination must satisfy before sw4p can label a route supported.
+CRD means Corridor Requirements Document. It defines what each source-chain, destination-chain, asset, rail, provider, signer, quote, proof, and operations combination must satisfy before sw4p can label a route supported.
 
-This CRD exists because USDT/Tron cannot be validated with the same clean devnet/testnet shape as USDC/CCTP. The system must still be rigorous. That means the corridor requirements must distinguish:
+This CRD is separate from the TRD. The CRD decides what a corridor means and when it can be exposed. The TRD decides how to implement those requirements.
 
-- route eligibility,
-- provider support,
-- token availability,
-- source signing model,
-- destination settlement asset,
-- transaction proof model,
-- operational evidence state.
+## 2. Corridor Principles
 
-## 2. Corridor Architecture
+1. Asset is the first discriminator. USDC and USDT are not aliases.
+2. USDC uses Circle CCTP V2 where CCTP supports the route.
+3. USDT uses Allbridge Core only where provider and sw4p state both pass.
+4. Provider token support is necessary but not sufficient.
+5. Routes fail closed when provider data, code support, proof, or policy is stale or missing.
+6. No route may silently change asset, rail, chain, recipient, or token standard.
+7. Tron source routes are user-signed by default.
+8. BTC/Omni USDT is `out_of_scope`.
+
+## 3. Corridor Architecture
 
 ```mermaid
 flowchart LR
-    User["User or Agent"] --> Route["sw4p Route Resolver"]
-    Route --> Asset{ "Asset" }
-    Asset -->|USDC| CCTP["CCTP V2 Rail"]
-    Asset -->|USDT| AB["Allbridge Core Rail"]
-    CCTP --> EVM["EVM CCTP Chains"]
-    CCTP --> SOL["Solana"]
-    AB --> AEVM["Allbridge EVM USDT Chains"]
-    AB --> ASOL["Solana USDT"]
-    AB --> TRON["Tron TRC20 USDT"]
-    Route --> Gate["Proof and Availability Gate"]
-    Gate --> Live["Live Route"]
-    Gate --> Gated["Gated Unsupported Reason"]
+    User["User or Agent"] --> Intent["Route Intent"]
+    Intent --> Asset{"Asset"}
+    Asset -->|USDC| CCTP["Circle CCTP V2"]
+    Asset -->|USDT| Registry["Allbridge Provider Registry"]
+    Registry --> Policy["sw4p Policy Filter"]
+    Policy --> Code["Code Support Check"]
+    Code --> Quote["Quote and Liquidity Check"]
+    Quote --> Proof["Proof and Health Gate"]
+    Proof --> State["Route State"]
+    State -->|live or canary| Signer["User Signer or Approved Canary Relayer"]
+    State -->|gated| Reason["User and Agent Reason"]
+    CCTP --> State
 ```
 
-The router must use the asset as the first discriminator. USDC uses CCTP V2 when both chains are CCTP-supported. USDT uses Allbridge Core only when live provider data and local execution support both say the route can be executed.
+## 4. Provider Truth As Of 2026-05-18
 
-## 3. Current Provider Truth
+### 4.1 Tether issuer truth
 
-### 3.1 Tether issuer truth
+Tether lists current supported protocols including ERC20, TRC20 on Tron, and Solana Token. Tether marks Omni Layer via Bitcoin, Bitcoin Cash SLP, Kusama, EOS, and Algorand as legacy/deprecated for issuance and redemption obligations.
 
-Tether's supported-protocol page lists current USDT support for ERC20, TRC20 on Tron, and Solana Token on Solana. The same page marks Omni Layer via Bitcoin, Bitcoin Cash SLP, Kusama, EOS, and Algorand as deprecated legacy support for issuance/redemption purposes. Therefore BTC/Omni is excluded from sw4p USDT parity.
+Requirement: BTC/Omni must be represented only as `out_of_scope`.
 
-### 3.2 Allbridge operational truth
+### 4.2 Allbridge provider truth
 
-The live Allbridge Core `/token-info` probe on 2026-05-18 returned these relevant entries:
+The 2026-05-18 live Allbridge token-info probe showed these relevant rows:
 
-| Chain | Allbridge symbol | Allbridge chain id | Token support relevant to sw4p |
+| Chain | Allbridge symbol | Allbridge chain id | Relevant support |
 |---|---:|---:|---|
 | Ethereum | ETH | 1 | USDC, USDT, USDe |
 | Arbitrum | ARB | 6 | USDC, USDT, USDe |
@@ -64,140 +68,242 @@ The live Allbridge Core `/token-info` probe on 2026-05-18 returned these relevan
 | Tron | TRX | 3 | USDT only |
 | Solana | SOL | 4 | USDC, USDT |
 
-Important consequences:
+Requirements:
 
-- Tron USDC must be treated as unsupported unless live token-info changes and the change is verified.
-- Base USDT must be treated as unsupported in the direct Allbridge matrix unless live token-info changes.
-- Solana USDT exists in live Allbridge token-info and must be included in the parity target.
-- Unichain USDT exists in Allbridge token-info, but Unichain runtime exposure remains separate from the six-chain Frontier runtime registry rule.
+- Regenerate this matrix from current provider data before implementation and before release.
+- Treat this table as a dated snapshot, not permanent truth.
+- Include newly supported chains only after sw4p policy admits them.
+- Keep Base direct USDT unsupported unless provider metadata changes and sw4p policy approves exposure.
+- Keep Tron USDC unsupported unless provider metadata changes and sw4p policy approves exposure.
 
-### 3.3 Allbridge testnet truth
+### 4.3 Allbridge non-production truth
 
-The existing W0 discovery found no documented or reachable public Allbridge testnet endpoint. That remains the controlling assumption until provider-confirmed evidence says otherwise.
+No public Allbridge testnet corridor is assumed. If provider confirms a non-production corridor, record the provider confirmation and update this CRD. Until then, acceptance options are:
 
-## 4. Corridor States
+1. gated deferral,
+2. provider metadata plus code readiness with no live claim,
+3. explicitly authorized mainnet micro-transfer canary.
 
-Every route must be in exactly one state.
+## 5. Required Route State Model
 
-| State | Meaning | User visible? | Agent visible? |
-|---|---|---:|---:|
-| `live` | Fully executable, with proof and operational support. | Yes | Yes |
-| `canary_authorized` | Explicitly authorized for a named small mainnet proof or controlled canary. | Yes, limited | Yes |
-| `provider_supported_code_incomplete` | Provider supports the route, but sw4p execution is incomplete. | Gated | Yes |
-| `code_supported_proof_missing` | sw4p code exists, but proof/corridor evidence is missing. | Gated | Yes |
-| `provider_unsupported` | Provider data does not support the asset/chain tuple. | No live button | Yes |
-| `out_of_scope` | Deliberately excluded by product decision. | No | Yes |
+Every route has one primary state and multiple support dimensions.
 
-No route may default from any non-live state into a different rail without an explicit user-visible route change.
+### 5.1 Primary states
 
-## 5. Corridor Matrix
+| State | Meaning | User visible? | Agent visible? | Execution allowed? |
+|---|---|---:|---:|---:|
+| `live` | Fully executable, proof-backed, operationally supported. | Yes | Yes | Yes |
+| `canary_authorized` | Explicitly approved for one named proof transfer. | Yes, limited | Yes | Limited |
+| `code_supported_proof_missing` | Code exists, but settlement proof is missing. | Gated | Yes | No public execution |
+| `provider_supported_code_incomplete` | Provider supports tuple, sw4p cannot execute safely yet. | Gated | Yes | No |
+| `provider_unsupported` | Provider does not expose the asset/chain tuple. | No live button | Yes | No |
+| `suspended` | Route disabled due to provider, liquidity, stale registry, incident, or policy hold. | Gated | Yes | No |
+| `policy_blocked` | Provider may support it, but sw4p policy blocks exposure. | No live button | Yes | No |
+| `out_of_scope` | Product deliberately excludes it. | No | Yes | No |
 
-| Corridor | Asset | Provider status | Local code status | Required state before live |
+### 5.2 Required dimensions
+
+Each route must carry these fields or equivalents:
+
+```ts
+type Sw4pRouteState = {
+  routeId: string;
+  routeState:
+    | "live"
+    | "canary_authorized"
+    | "code_supported_proof_missing"
+    | "provider_supported_code_incomplete"
+    | "provider_unsupported"
+    | "suspended"
+    | "policy_blocked"
+    | "out_of_scope";
+
+  asset: "USDC" | "USDT";
+  sourceChain: string;
+  destinationChain: string;
+  sourceTokenStandard: "ERC20" | "SPL" | "TRC20" | "other";
+  destinationTokenStandard: "ERC20" | "SPL" | "TRC20" | "other";
+
+  provider: "circle_cctp_v2" | "allbridge_core";
+  providerMechanism?: "pool" | "cctp" | "cctp_v2" | "oft" | "unknown";
+
+  providerSupport: "supported" | "unsupported" | "unknown";
+  quoteSupport: "available" | "unavailable" | "unknown";
+  codeSupport: "implemented" | "partial" | "not_implemented";
+  proofState:
+    | "none"
+    | "provider_metadata_only"
+    | "provider_quote_only"
+    | "raw_tx_built"
+    | "signed_source_tx"
+    | "source_tx_confirmed"
+    | "destination_settled"
+    | "provider_confirmed_nonprod";
+
+  liquidityState: "unknown" | "available" | "insufficient" | "imbalanced";
+  providerHealth: "unknown" | "ok" | "degraded" | "paused";
+  policyState: "allowed" | "blocked" | "review_required";
+  runtimeExposure: "hidden" | "operator_only" | "agent_visible" | "user_visible";
+  registrySnapshotAt: string;
+  registryExpiresAt: string;
+
+  userVisibleReason: string;
+  agentReasonCode: string;
+  remediation?: string;
+};
+```
+
+## 6. Corridor Matrix Requirements
+
+| Corridor | Asset | Provider status | Local code status | Required primary state before live |
 |---|---|---|---|---|
-| ETH to Tron | USDT | Supported by Allbridge token-info | EVM to Tron code exists but must be revalidated against current API and contracts | `live` after signed tx proof or canary |
-| ARB to Tron | USDT | Supported | EVM to Tron code exists | `live` after proof |
-| POL to Tron | USDT | Supported | EVM to Tron code exists | Strong low-fee canary candidate |
-| AVA to Tron | USDT | Supported | EVM to Tron code exists | `live` after proof |
-| OP to Tron | USDT | Supported | EVM to Tron code exists | `live` after proof |
-| UNI to Tron | USDT | Supported by Allbridge, not Frontier runtime registry | Script/registry policy required before exposure | `canary_authorized` or gated |
-| BASE to Tron | USDT | Direct Base USDT unsupported in Allbridge token-info | Current code maps Base USDT to USDC, which is not acceptable as silent behavior | `provider_unsupported` unless explicit conversion route is designed |
-| SOL to Tron | USDT | Supported by Allbridge token-info | Explicitly not implemented in local `allbridge.rs` | `provider_supported_code_incomplete` |
-| Tron to EVM USDT chains | USDT | Supported | Tron source code exists but relies on relayer private key | Gated until signing/custody model approved |
-| Tron to Solana | USDT | Supported by Allbridge token-info | Needs execution proof | Gated until signing/custody and proof |
-| BTC/Omni to any | USDT | Deprecated legacy issuer path | No supported sw4p path | `out_of_scope` |
+| ETH to Tron | USDT | Supported by provider snapshot | EVM to Tron code exists, must be revalidated | `live` only after quote, raw tx validation, source tx, destination proof |
+| ARB to Tron | USDT | Supported | EVM to Tron code exists | Same as ETH |
+| POL to Tron | USDT | Supported | EVM to Tron code exists | Best first canary candidate |
+| AVA to Tron | USDT | Supported | EVM to Tron code exists | Same as ETH |
+| OP to Tron | USDT | Supported | EVM to Tron code exists | Same as ETH |
+| UNI to Tron | USDT | Supported by Allbridge | Runtime policy separate | `policy_blocked` unless runtime policy admits Unichain |
+| BASE to Tron | USDT | Direct Base USDT unsupported in provider snapshot | Existing code maps Base USDT to USDC | `provider_unsupported` unless explicit composed route is designed |
+| SOL to Tron | USDT | Supported by provider snapshot | Explicitly not implemented locally | `provider_supported_code_incomplete` |
+| Tron to EVM USDT chains | USDT | Supported | Tron source code exists but relayer-based | Gated until TronLink/user-signing or canary custody approval |
+| Tron to Solana | USDT | Supported | Needs execution proof | Gated until signing and proof pass |
+| BTC/Omni to any | USDT | Issuer-deprecated legacy | No supported path | `out_of_scope` |
 
-## 6. Signing and Custody Requirements
+## 7. Signing And Custody Requirements
 
 ### CRD-SIGN-001: EVM source
 
-EVM source execution must use the approved sw4p EVM operational path. For contract deployments this means Circle SCP only. For user transfer execution, the route must use either user wallet signatures or an explicitly approved Circle WaaS/SCP account model. Private-key direct broadcast is not allowed as a production pattern.
+EVM source transfer execution must use user wallet signatures or an explicitly approved Circle WaaS/SCP account model. Contract deployments remain Circle SCP only. Private-key direct broadcast is not allowed as a production pattern.
 
 ### CRD-SIGN-002: Solana source
 
-Solana source execution must use the canonical Solana signing flow already accepted for sw4p. USDT ATA handling must be explicit and must not reuse USDC mint assumptions.
+Solana source execution must use the canonical sw4p Solana signing flow. USDT ATA handling must be explicit and must not reuse USDC mint assumptions.
 
 ### CRD-SIGN-003: Tron source
 
-Tron source execution must not silently use a backend relayer key as if it were a user wallet. The product must choose one of these models:
+Production Tron source execution must use user-signed TronLink or an equivalent user-controlled Tron wallet. Backend relayer custody is not production parity.
 
-| Model | Description | Default decision |
-|---|---|---|
-| TronLink user-signed | User signs approve and bridge transaction through TronLink/TronWeb. | Preferred for non-custodial parity. |
-| Controlled relayer | sw4p-controlled relayer executes from its own funded Tron address. | Allowed only for canary/proof or consciously custodial product mode. |
-| Provider raw transaction | Allbridge REST/API returns unsigned raw tx for the user wallet to sign. | Preferred if reliable across browsers and wallets. |
+Allowed Tron source models:
 
-The current `TRON_RELAYER_PRIVATE_KEY` path is not enough for production parity unless the product explicitly accepts a relayer-custody model.
+| Model | Allowed for production users? | Allowed for canary/proof? | Notes |
+|---|---:|---:|---|
+| TronLink user-signed | Yes | Yes | Default. |
+| Provider raw transaction signed by user wallet | Yes | Yes | Preferred if provider tx shape is stable. |
+| Controlled relayer | No by default | Yes, with explicit authorization | Requires caps, expiry, named route, and cleanup. |
+| Backend private-key direct user substitute | No | No unless explicitly authorized for one proof action | Must never look like user custody. |
 
-## 7. Fee and Gas Requirements
-
-| ID | Requirement |
-|---|---|
-| CRD-FEE-001 | EVM fees must show the selected rail and whether gas is sponsored, paid in stablecoin, or paid by wallet-native gas. |
-| CRD-FEE-002 | Solana fees must distinguish transaction fee, priority fee, and any sponsor path. |
-| CRD-FEE-003 | Tron fees must explain TRX, Energy, and Bandwidth. |
-| CRD-FEE-004 | Allbridge bridge fees and pool impact must be sourced from live Allbridge quote/calculation endpoints where possible. |
-| CRD-FEE-005 | Destination gas top-up must be an explicit route option, not a hidden promise. |
-
-## 8. Proof Requirements
+## 8. Fee And Gas Requirements
 
 | ID | Requirement |
 |---|---|
-| CRD-PROOF-001 | Live Allbridge route inventory must be refreshed from `/token-info` before any route is marked live. |
-| CRD-PROOF-002 | A route marked live must have at least one real transaction hash, provider transfer ID, or explicitly authorized canary result. |
-| CRD-PROOF-003 | If no public non-production Allbridge corridor exists, documentation must say so and route acceptance must use either gated deferral or user-authorized mainnet micro-transfer. |
-| CRD-PROOF-004 | No mock Allbridge transaction, localnet-only result, or guessed testnet contract address counts as acceptance. |
-| CRD-PROOF-005 | Every proof must capture source tx, destination tx if available, provider status response, amount, asset, source chain, destination chain, and timestamp. |
+| CRD-FEE-001 | EVM fees must distinguish wallet-native gas, Circle/Gas Station sponsorship, and provider fees. |
+| CRD-FEE-002 | Solana fees must distinguish transaction fee, priority fee, ATA/rent effects, and sponsorship. |
+| CRD-FEE-003 | Tron fees must explain TRX, Bandwidth, Energy, fee limit, and resource burn risk. |
+| CRD-FEE-004 | Allbridge fees must separate relayer/service fee, LP fee, pool impact, optional destination gas purchase, and receive estimate. |
+| CRD-FEE-005 | Destination gas top-up must be explicit and route-supported. It must not be represented as universal gas abstraction unless the user is actually insulated from native gas. |
+| CRD-FEE-006 | Quotes must carry expiry. Expired quotes cannot be signed. |
+| CRD-FEE-007 | User must approve max slippage or max pool impact before signing. |
 
-## 9. State Machine Requirements
+## 9. Provider Transaction Validation Requirements
 
-The Allbridge lifecycle must map into the Frontier 3-phase discipline.
+Before any Allbridge raw transaction reaches wallet signing, sw4p must validate:
+
+1. Target contract is a current allowlisted Allbridge contract or pool for the source chain.
+2. Source token contract equals the selected route token.
+3. Destination chain equals the selected destination.
+4. Recipient equals the user-reviewed recipient.
+5. Amount equals the reviewed amount within allowed tolerance.
+6. Fees and destination gas fields match the reviewed quote.
+7. Quote has not expired.
+8. Approval spender is correct.
+9. Approval amount is exact or bounded.
+10. Provider route is not suspended, stale, degraded, or policy-blocked.
+
+Any mismatch must stop the flow before signature.
+
+## 10. Approval Requirements
+
+| ID | Requirement |
+|---|---|
+| CRD-APPROVAL-001 | Approval spender must match the validated provider contract for the exact route. |
+| CRD-APPROVAL-002 | Default approval must be exact amount or bounded cap, not unlimited. |
+| CRD-APPROVAL-003 | Approval cap must be shown before signing. |
+| CRD-APPROVAL-004 | Ethereum USDT allowance reset behavior must be supported where required. |
+| CRD-APPROVAL-005 | Tron USDT approval must show spender and amount in the TronLink flow and sw4p confirmation surface. |
+
+## 11. Proof Requirements
+
+| ID | Requirement |
+|---|---|
+| CRD-PROOF-001 | Provider route inventory must be refreshed before any route is marked live. |
+| CRD-PROOF-002 | A route marked live must have a real transaction hash, provider transfer ID, destination settlement proof, or provider-confirmed non-production proof. |
+| CRD-PROOF-003 | Metadata alone can make a route candidate/gated, not live. |
+| CRD-PROOF-004 | No mock Allbridge transaction, localnet-only result, or guessed testnet address counts as acceptance. |
+| CRD-PROOF-005 | Every proof captures source tx, destination tx if available, provider status response, quote hash, registry snapshot hash, amount, asset, source, destination, timestamp, and operator. |
+| CRD-PROOF-006 | Proof records must be immutable append-only from the product perspective. Corrections use superseding records, not silent edits. |
+
+## 12. Lifecycle Requirements
+
+The Allbridge lifecycle must map into Frontier's 3-phase discipline: durable intent, prepared external action, committed settlement or recoverable failure.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Created
-    Created --> Routed
-    Routed --> SwapInDone
-    SwapInDone --> BridgeInitiated
-    BridgeInitiated --> Attested
-    BridgeInitiated --> Stuck
-    Attested --> Settled
-    Attested --> SettleRetry
-    SettleRetry --> Settled
-    SettleRetry --> Stuck
-    Stuck --> Attested
-    Stuck --> Refunded
-    Created --> Failed
-    Routed --> Failed
-    Settled --> [*]
-    Failed --> [*]
+    [*] --> RouteRequested
+    RouteRequested --> ProviderRegistryChecked
+    ProviderRegistryChecked --> QuoteRequested
+    QuoteRequested --> QuoteReceived
+    QuoteReceived --> ApprovalRequired
+    QuoteReceived --> RawTxBuilt
+    ApprovalRequired --> ApprovalSubmitted
+    ApprovalSubmitted --> ApprovalConfirmed
+    ApprovalConfirmed --> RawTxBuilt
+    RawTxBuilt --> RawTxValidated
+    RawTxValidated --> WalletSignatureRequested
+    WalletSignatureRequested --> SourceTxSubmitted
+    SourceTxSubmitted --> SourceTxConfirmed
+    SourceTxConfirmed --> ProviderTransferDetected
+    ProviderTransferDetected --> DestinationPending
+    DestinationPending --> DestinationSettled
+    DestinationPending --> ManualReviewRequired
+    ManualReviewRequired --> DestinationSettled
+    ManualReviewRequired --> Refunded
+    RouteRequested --> Failed
+    QuoteRequested --> Failed
+    RawTxValidated --> Failed
+    SourceTxSubmitted --> Failed
+    DestinationSettled --> [*]
     Refunded --> [*]
+    Failed --> [*]
 ```
 
-Each transition must be durable-store-first. In-memory tracking is allowed only after the DB transition commits. No async lock may be held across provider polling.
+Each transition must be written to durable storage before external side effects are treated as accepted by the application. No async lock may be held across provider polling.
 
-## 10. Registry Requirements
+## 13. API Requirements
 
-| ID | Requirement |
-|---|---|
-| CRD-REG-001 | USDC/CCTP registry remains separate from Allbridge token/corridor registry. |
-| CRD-REG-002 | Allbridge registry must be generated or refreshed from live token-info snapshots, with pinned evidence for releases. |
-| CRD-REG-003 | Base USDT must not be represented as direct support while Allbridge token-info lists only Base USDC. |
-| CRD-REG-004 | Tron USDT contract must remain `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` unless Tether changes its official guidance. |
-| CRD-REG-005 | Solana USDT mint must remain `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` unless Tether changes its official guidance. |
-| CRD-REG-006 | BTC/Omni identifiers must not be placed in the active route registry. |
+The route API must return structured state, not only quotes.
 
-## 11. API Requirements
-
-The backend route API and kit API must return a structured route result:
+Minimum route response:
 
 ```json
 {
+  "route_id": "SOL:USDT->TRX:USDT:allbridge_core",
   "source_chain": "SOL",
-  "destination_chain": "TRON",
+  "destination_chain": "TRX",
   "asset": "USDT",
-  "rail": "AllbridgeCore",
-  "state": "provider_supported_code_incomplete",
-  "reason": "Allbridge token-info supports SOL USDT and TRX USDT, but sw4p Solana-to-Tron execution is not implemented yet.",
+  "source_token_standard": "SPL",
+  "destination_token_standard": "TRC20",
+  "rail": "allbridge_core",
+  "provider_mechanism": "pool",
+  "route_state": "provider_supported_code_incomplete",
+  "provider_support": "supported",
+  "quote_support": "unknown",
+  "code_support": "not_implemented",
+  "proof_state": "provider_metadata_only",
+  "liquidity_state": "unknown",
+  "policy_state": "review_required",
+  "reason_code": "SOL_TO_TRON_NOT_IMPLEMENTED",
+  "reason": "Allbridge provider metadata supports SOL USDT and TRX USDT, but sw4p Solana-to-Tron execution is not implemented yet.",
+  "remediation": "Complete WS2.4 before exposing this route as live.",
   "evidence": {
     "provider": "Allbridge Core",
     "provider_snapshot": "2026-05-18 live token-info probe"
@@ -205,34 +311,39 @@ The backend route API and kit API must return a structured route result:
 }
 ```
 
-The exact JSON shape can evolve during implementation, but these fields are mandatory: `source_chain`, `destination_chain`, `asset`, `rail`, `state`, `reason`, and `evidence`.
-
-## 12. Security Requirements
+## 14. Security Requirements
 
 | ID | Requirement |
 |---|---|
-| CRD-SEC-001 | No production Tron private key may be checked into repo, committed to docs, pasted into evidence, or embedded in scripts. |
-| CRD-SEC-002 | Any relayer model must include spend caps, address allowlists where feasible, and transfer-size limits. |
-| CRD-SEC-003 | TronLink origin/message handling must be reviewed before Tron source routes are enabled. |
-| CRD-SEC-004 | Allbridge contract addresses and pool addresses must be verified against provider data before use. |
-| CRD-SEC-005 | The system must detect and fail closed when provider token-info changes remove a route that was previously live. |
+| CRD-SEC-001 | No production Tron private key may be committed, pasted into evidence, or embedded in scripts. |
+| CRD-SEC-002 | Any relayer/canary model must include route, amount, fee cap, approval cap, wallet, expiry, and approver. |
+| CRD-SEC-003 | TronLink origin and message handling must be reviewed before Tron source routes are enabled. |
+| CRD-SEC-004 | Allbridge contract and pool addresses must be verified against provider data before use. |
+| CRD-SEC-005 | Provider token-info removal must automatically suspend affected routes. |
+| CRD-SEC-006 | Raw transaction validation must happen before signature. |
+| CRD-SEC-007 | Approval caps must be bounded unless the user explicitly opts into a higher cap after warning. |
+| CRD-SEC-008 | Route suspension must be operator-accessible without code deployment. |
+| CRD-SEC-009 | User-facing Tron copy must warn that failed smart contract execution may still consume resources. |
 
-## 13. Open Decisions With Defaults
+## 15. Open Decisions With Defaults
 
 | ID | Decision | Default |
 |---|---|---|
-| OD-001 | Should Tron source use user-signed TronLink or relayer custody? | User-signed TronLink for production; relayer only for explicitly authorized canary/proof. |
-| OD-002 | Should a mainnet micro-transfer be used as acceptance if no non-production corridor exists? | Yes only after explicit user authorization for a named route and amount. |
-| OD-003 | Should Base to Tron USDT be synthesized through Base USDC or a two-leg conversion? | No for V1 parity. Mark unsupported unless explicitly designed as a conversion route. |
-| OD-004 | Should Unichain USDT be exposed in runtime route selection? | Keep off runtime default until Frontier runtime registry policy admits Unichain. |
+| OD-001 | Should Tron source use user-signed TronLink or relayer custody? | User-signed TronLink for production; relayer only for named canary/proof. |
+| OD-002 | Should a mainnet micro-transfer be used as acceptance if no non-production corridor exists? | Yes only after explicit authorization for route, amount, wallets, fee cap, and expiry. |
+| OD-003 | Should Base to Tron USDT be synthesized through Base USDC or a two-leg conversion? | No for V1 parity. Mark unsupported unless explicitly designed later. |
+| OD-004 | Should Unichain USDT be exposed in runtime route selection? | Keep policy-blocked until Frontier runtime policy admits Unichain. |
+| OD-005 | Should provider raw transactions be used? | Prefer provider-generated raw tx or SDK builder if sw4p validates the result before signing. |
+| OD-006 | What is the minimum proof threshold for live? | Destination settlement proof or provider-confirmed non-production proof. |
 
-## 14. Acceptance Gate
+## 16. Corridor Acceptance Gate
 
-The CRD is satisfied when:
+The CRD is satisfied only when:
 
-1. Live route registry reflects Allbridge token-info for EVM, Solana, and Tron.
-2. Tron, Solana, and EVM signing models are explicitly selected and implemented for every live route.
-3. No unsupported route is visible as live in frontend, backend, or kit.
-4. At least one Allbridge route has provider-backed proof, or the product is explicitly marked gated with no live Tron/USDT claim.
-5. All Allbridge lifecycle transitions are durable and restart-safe.
-6. BTC/Omni USDT is excluded from active code, docs, route registry, and agent outputs.
+1. Live route registry reflects current Allbridge and CCTP truth.
+2. Route state dimensions are produced from one backend source of truth.
+3. Tron, Solana, and EVM signing models are explicitly selected and implemented for every live route.
+4. No unsupported route is visible as live in frontend, backend, or kit.
+5. At least one Allbridge route has provider-backed proof, or the product remains explicitly gated with no live Tron/USDT claim.
+6. All Allbridge lifecycle transitions are durable and restart-safe.
+7. BTC/Omni USDT is excluded from active code, docs, route registry, and agent outputs.
