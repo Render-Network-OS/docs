@@ -1088,7 +1088,7 @@ git status --short
 
 **Files:**
 - Modify: `sw4p/sw4p-backend/src/allbridge.rs` (implement `bridge_from_solana_to_tron`)
-- Modify: `sw4p/sw4p-backend/src/policy.rs` (update `primary_for` for SOL→TRX to return `CodeSupportedProofMissing`)
+- Modify: `sw4p/sw4p-backend/src/policy.rs` (update `primary_for` for SOL to TRX to return `CodeSupportedProofMissing`)
 
 - [ ] **Step 1: Inspect the existing Solana bridging code paths in `allbridge.rs`.**
 
@@ -1098,7 +1098,7 @@ grep -nA20 'bridge_from_evm\|bridge_to_tron\|bridge_to_tron_from_solana' /Volume
 
 Identify the existing patterns: `bridge_from_evm` (EVM source via Circle WaaS or direct), `bridge_to_tron` (EVM/Solana to Tron destination). The Solana side likely uses the `solana_client` + `solana_sdk` crates already in deps.
 
-- [ ] **Step 2: Implement `bridge_from_solana_to_tron`.** The Solana side uses an SPL token transfer + Allbridge program call. The Tron side receives via the same Allbridge messenger as EVM→Tron. The function returns an unsigned Solana transaction (for the user's Solana wallet to sign via the existing Solana wallet adapter).
+- [ ] **Step 2: Implement `bridge_from_solana_to_tron`.** The Solana side uses an SPL token transfer + Allbridge program call. The Tron side receives via the same Allbridge messenger as EVM to Tron. The function returns an unsigned Solana transaction (for the user's Solana wallet to sign via the existing Solana wallet adapter).
 
 ```rust
 pub async fn bridge_from_solana_to_tron(
@@ -1160,7 +1160,7 @@ The `build_solana_allbridge_tx` helper is the core of this task. It needs to:
 5. Build the Allbridge program instruction with the encoded Tron destination (as bytes32 padded base58check decode).
 6. Build a `solana_sdk::transaction::Transaction` with these instructions, set `recent_blockhash`, and return its serialized message for frontend signing.
 
-This is substantial. If the implementer judges it too risky to complete in one task, **stop and report DONE_WITH_CONCERNS**, having created the function signature returning a structured `provider_supported_code_incomplete` error rather than the current "not yet implemented" string, and noting that the actual SPL/Allbridge instruction building is deferred to a sub-task. The route_state for SOL→TRX would remain `provider_supported_code_incomplete` in that case.
+This is substantial. If the implementer judges it too risky to complete in one task, **stop and report DONE_WITH_CONCERNS**, having created the function signature returning a structured `provider_supported_code_incomplete` error rather than the current "not yet implemented" string, and noting that the actual SPL/Allbridge instruction building is deferred to a sub-task. The route_state for SOL to TRX would remain `provider_supported_code_incomplete` in that case.
 
 - [ ] **Step 3: Update `policy::primary_for`.** If T10 lands the full implementation, change:
 
@@ -1180,7 +1180,7 @@ if src == "SOL" && dst == "TRX" {
 }
 ```
 
-(Or remove the special case entirely; the default branch already returns `CodeSupportedProofMissing` for everything that is not Unichain or SOL→TRX.)
+(Or remove the special case entirely; the default branch already returns `CodeSupportedProofMissing` for everything that is not Unichain or SOL to TRX.)
 
 If T10 lands DONE_WITH_CONCERNS with a stub, leave the policy as-is and document the gap.
 
@@ -1707,7 +1707,7 @@ git status --short
 
 ## Task T15: Solana to Tron Pinned Acceptance Test
 
-**Wave:** W8. **Subagent:** `general-purpose`, `model: opus`. **Goal:** Pinned acceptance test asserting the SOL→TRX route classification post-M4.
+**Wave:** W8. **Subagent:** `general-purpose`, `model: opus`. **Goal:** Pinned acceptance test asserting the SOL to TRX route classification post-M4.
 
 **Files:**
 - Create: `sw4p/sw4p-backend/tests/sol_to_tron_pinned.rs`
