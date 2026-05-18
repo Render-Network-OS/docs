@@ -540,7 +540,7 @@ $555 is the protocol token that coordinates the RNDRNTWRK economic system. It is
 
 - **Standard:** SPL (Solana Program Library)
 - **Contract:** CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2
-- **Supply:** 1,000,000,000 (fixed, 9 decimals)
+- **Supply:** 1,000,000,000 minted at 6 decimals (mint authority revoked, freeze authority revoked, ~989.86M circulating after burns; see `DEVNET_FRONTIER_EVIDENCE_2026-05-16/waves/W0-setup/555-mint-probe.md` for the live Solana mainnet probe)
 - **Distribution:** 92% public, 8% team (locked 5 years)
 - **Status:** Live, actively traded
 
