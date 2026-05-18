@@ -2419,8 +2419,8 @@ Plan complete and saved to `docs/superpowers/plans/2026-05-18-sw4p-usdt-tron-par
 
 Two execution options:
 
-**1. Subagent-Driven (recommended)** — Controller dispatches a fresh subagent per task, reviews per wave, fast iteration. Same model as M0-M2 execution. Estimate: 13 waves, ~3-4 hours wall-clock at the M0-M2 cadence, ~25-30 subagent dispatches.
+**1. Subagent-Driven (recommended)**: Controller dispatches a fresh subagent per task, reviews per wave, fast iteration. Same model as M0-M2 execution. Estimate: 13 waves, ~3-4 hours wall-clock at the M0-M2 cadence, ~25-30 subagent dispatches.
 
-**2. Inline Execution** — Controller executes tasks in this session using `superpowers:executing-plans`, batch execution with checkpoints for human review. Useful if you want to read every task as it lands.
+**2. Inline Execution**: Controller executes tasks in this session using `superpowers:executing-plans`, batch execution with checkpoints for human review. Useful if you want to read every task as it lands.
 
 **Which approach?**
