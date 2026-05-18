@@ -112,7 +112,7 @@ Value gets stuck. Creators cluster on whichever platform pays better this month.
 
 **How RNDRNTWRK fixes it:**
 
-sw4p settles natively across chains — currently operational across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum. Native USDC, no wrapped tokens, no liquidity-pool slippage. User flows are non-custodial — users sign from their own wallet. Universal gas abstraction: users pay gas in the asset they're moving (USDC, USDT) on every supported chain — never in the chain's native token. Mainnet is paused during the current protocol upgrade window — testnet/devnet flows remain live and the production return ships with the upgrade.
+sw4p settles natively across chains, currently operational across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum. Native USDC, no wrapped tokens, no liquidity-pool slippage. User flows are non-custodial; users sign from their own wallet. Universal gas abstraction is proven first on the USDC/CCTP path; USDT and Tron parity are a separate gated track specified in `docs/superpowers/specs/2026-05-18-sw4p-usdt-tron-parity-prd.md`, `2026-05-18-sw4p-usdt-tron-parity-crd.md`, and `2026-05-18-sw4p-usdt-tron-parity-sow.md`. Mainnet is paused during the current protocol upgrade window; testnet/devnet flows remain live and the production return ships with the upgrade.
 
 Expanding to more chains, then to fiat rails — so value never gets stuck between ecosystems, currencies, or financial regimes again.
 
@@ -224,7 +224,7 @@ VAP v1 is live in production. VAP v2 has been validated with 234 passing tests a
 
 **Layer 4: Settlement — sw4p**
 
-The rail that moves value. sw4p is a USDC settlement engine operating across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum, with USDT corridor support including Tron. Native settlement — burn at the source, mint at the destination, no wrapped tokens. User flows are non-custodial; users sign from their own wallet. **Universal gas abstraction**: users pay gas in the asset being moved (USDC, USDT) on every supported chain — they never have to hold a chain's native token. Mainnet is currently paused for a protocol upgrade window; testnet/devnet flows remain live, and the agent surface (`@sw4p/kit`) ships with the mainnet return.
+The rail that moves value. sw4p is a USDC settlement engine operating across Solana, Base, Arbitrum, Polygon, Optimism, Avalanche, and Ethereum, with USDT corridor support including Tron specified as a gated parity track. Native USDC settlement uses CCTP; USDT/Tron uses Allbridge Core where provider data and execution proof support the route. User flows are non-custodial; users sign from their own wallet. **Universal gas abstraction** is the target posture, but USDT/Tron has separate Energy, Bandwidth, Allbridge, and proof gates before it can be claimed live. Mainnet is currently paused for a protocol upgrade window; testnet/devnet flows remain live, and the agent surface (`@sw4p/kit`) ships with the mainnet return.
 
 sw4p exists to eliminate liquidity fragmentation. Value that enters the RNDRNTWRK system through any chain can settle on any other supported chain without custody risk, excessive fees, or manual bridging friction. The rail is expanding to additional chains and eventually to fiat — so that value moves wherever it needs to without getting stuck.
 
@@ -457,7 +457,7 @@ sw4p is the settlement rail of the RNDRNTWRK economic system. It moves value acr
 ### What It Is
 
 - Native cross-chain USDC settlement — burn at the source, mint at the destination, no wrapped tokens
-- Supported chains today: Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana — with USDT corridor support including Tron
+- Supported chains today: Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana; USDT and Tron parity are specified as a gated Allbridge Core track
 - User flows are non-custodial — users sign from their own wallet
 - **Universal gas abstraction**: pay gas in the asset you're moving on every supported chain. No need to hold ETH on Ethereum, MATIC on Polygon, AVAX on Avalanche, SOL on Solana, or any other chain-native token.
 - 15-state settlement lifecycle with retries, recovery, and checkpointed watcher
@@ -947,7 +947,7 @@ The founder's canonical closing: "We solve the problem today and put ourselves o
 | Token contract | CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2 |
 | Total supply | 1,000,000,000 |
 | Distribution | 92% public / 8% team (5-year lock) |
-| Settlement chains | Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana (+ Tron via USDT corridor) |
+| Settlement chains | Ethereum, Base, Arbitrum, Polygon, Optimism, Avalanche, Solana; Tron via gated USDT/Allbridge parity track |
 | Settlement engine | sw4p — native USDC, 15-state lifecycle, non-custodial user flow, universal gas abstraction (pay gas in the asset being moved, no native tokens required) |
 | Verification | Ed25519 heartbeats (5-second interval) |
 | Agent framework | Milaidy (ElizaOS v2) |
