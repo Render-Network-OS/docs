@@ -61,7 +61,7 @@ flowchart TD
 
 | WP | Deliverable | Acceptance |
 |---|---|---|
-| WP0.1 | Inventory branches `feat/sw4p-tron-sdk-contract`, `fix/sw4p-tron-backend-adapter`, `ops/sw4p-tron-proof-corridor-provisioning`, `docs/sw4p-tron-proof-corridor-research`. | Each file is classified as promote, cherry-pick, supersede, or close. |
+| WP0.1 | Inventory branches `feat/sw4p-tron-sdk-contract`, `fix/sw4p-tron-backend-adapter`, `ops/sw4p-tron-proof-corridor-provisioning`, `docs/sw4p-tron-proof-corridor-research`. None of these were present on local or origin as of 2026-05-18. | Record presence/absence in `docs/superpowers/specs/2026-05-18-sw4p-usdt-tron-parity-inventory.md`. Where present, classify each file as promote, cherry-pick, supersede, or close. Where absent, mark recovered-from-archive or treat as never-existed and proceed. |
 | WP0.2 | Inventory current backend, frontend, kit, and ops docs surfaces. | Covers Tron client, Allbridge adapter, route selector, native bridge, frontend wallet/config/hooks, kit intent schema, and ops proof docs. |
 | WP0.3 | Current provider source review. | Captures Circle CCTP, Circle Contracts, Tether, Allbridge, and TRON sources with URLs and date. |
 | WP0.4 | Existing evidence review. | Existing Allbridge discovery and Tron proof corridor docs are mapped to current requirements. |

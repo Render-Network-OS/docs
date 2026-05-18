@@ -85,23 +85,26 @@ The codebase already contains Tron and USDT work, but not full parity.
 
 | Surface | Current known state | Product verdict |
 |---|---|---|
-| Backend Tron client | `sw4p-backend/src/tron_client.rs` supports Tron RPC, TRC20 USDT balance, signing, broadcast, and Tron USDT contract `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t`. | Useful foundation. Private-key signing is not production parity by itself. |
-| Backend Tron swap | `sw4p-backend/src/tron_swap.rs` contains SunSwap V2, WTRX, and USDT logic. | Adjacent capability. Must not be silently composed into parity routes. |
-| Backend Allbridge adapter | `sw4p-backend/src/allbridge.rs` supports Allbridge chain enum and several paths. It currently has a Solana-to-Tron not-implemented gap and a problematic Base USDT to Base USDC mapping. | Real scaffold. Must be reconciled with provider APIs and fail-closed route states. |
-| Route selector | `route_selector.rs` chooses Allbridge when destination is Tron/TRX or token is USDT. | Directionally right, but too optimistic unless route state gates are added. |
-| Native bridge layer | `native_bridge.rs` has Allbridge selection for USDT and Tron. | Needs route-state and proof integration. |
-| Frontend wallet layer | `WalletProvider.tsx` has TronLink connection. | Connection is not execution parity. |
-| Frontend settlement config | `settlementChains.ts` includes Tron but gated/disabled. | Correct posture until proof gates close. |
-| Frontend bridge hook | `useBridge.ts` supports EVM and Solana factory types. | Tron source execution is incomplete. |
-| Kit and agent surface | `sw4p-kit/src/core/intent.ts` includes USDC and USDT, but chain/agent routes remain mostly base, solana, and USDC oriented. | Agent parity gap. |
+| Backend Tron client | `sw4p-backend/src/tron_client.rs` supports Tron RPC, TRC20 USDT balance (`get_usdt_balance` at line 92), signing, broadcast, and Tron USDT contract `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` (line 13). | Useful foundation. Private-key signing is not production parity by itself. |
+| Backend Tron swap | `sw4p-backend/src/tron_swap.rs` contains SunSwap V2 router `TKzxdSv2FZKQrEqkKVgp5DcwEXBEKMg2Ax`, WTRX, and USDT logic. Currently has no call sites in `allbridge.rs`, `route_selector.rs`, or `native_bridge.rs`. | Adjacent capability, currently unused. Must not be silently composed into parity routes. |
+| Backend Allbridge adapter | `sw4p-backend/src/allbridge.rs` exposes chain enum (Tron=3, Solana=4, Base=9), `bridge_from_tron`, `bridge_to_tron`, `bridge_to_tron_from_solana` (line 619: returns `Err("Solana to Tron bridging not yet implemented. Use EVM chains.")`), and `get_stablecoin_address` whose Base USDT match returns the Base USDC contract `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` (line 812). | Real scaffold. Must be reconciled with provider APIs and fail-closed route states. |
+| Route selector | `sw4p-backend/src/route_selector.rs` chooses Allbridge when destination is Tron/TRX or token is USDT (line 155); selection scoring is confidence > time > fee (line 275). | Directionally right, but too optimistic unless route state gates are added. |
+| Native bridge layer | `sw4p-backend/src/native_bridge.rs` maps Tron to non-CCTP domain 99 (line 108) and selects Allbridge for USDT (line 140) and Tron source/dest (line 146). | Needs route-state and proof integration. |
+| Frontend wallet layer | `sw4p-frontend/src/WalletProvider.tsx` lines 63 to 96 implement TronLink connection via `window.tronWeb`/`window.tronLink`, account-change postMessage, and disconnect. | Connection is not execution parity. |
+| Frontend settlement config | `sw4p-frontend/src/config/settlementChains.ts` lines 77 to 88 include Tron with `sourceEnabled: false`, `destinationEnabled: false`, `badge: 'Gated'`. | Correct posture until proof gates close. |
+| Frontend bridge hook | `sw4p-frontend/hooks/useBridge.ts` line 30 `createBridge(address, chain)` only branches on `'EVM'` or `'SOL'`. | Tron source execution will fail at runtime unless extended. |
+| Kit and agent surface | `sw4p-kit/src/core/intent.ts` line 3 `ChainSchema = z.enum(["base", "arbitrum", "polygon", "avalanche", "solana"])` lacks Tron entirely; assets include USDC and USDT. | Agent parity gap. |
+| MCP gateway | `sw4p-mcp-gateway/src/index.ts` and `src/tools.ts` wrap sw4p-kit for LLM/MCP clients. | Must consume kit's updated chain/asset schema and route-state response. |
 | Ops docs | Existing docs recorded no canonical public non-production Tron proof corridor. | Correct controlling assumption until provider-confirmed proof exists. |
 
-Older branches may contain useful work and must be inventoried before reimplementation:
+Older branches were referenced in earlier sessions but were not found on the local clone or origin remotes as of 2026-05-18:
 
-- `feat/sw4p-tron-sdk-contract`, believed mostly merged.
-- `fix/sw4p-tron-backend-adapter`, likely contains backend Allbridge, watcher, relay, Tron client, and helper work.
-- `ops/sw4p-tron-proof-corridor-provisioning`, likely contains proof and provisioning runbooks.
-- `docs/sw4p-tron-proof-corridor-research`, partially present in current docs.
+- `feat/sw4p-tron-sdk-contract`
+- `fix/sw4p-tron-backend-adapter`
+- `ops/sw4p-tron-proof-corridor-provisioning`
+- `docs/sw4p-tron-proof-corridor-research`
+
+Treat these as discoverable-but-not-blocking. WS0 must run `git branch -a | grep -iE "tron|sw4p"`, document what is or is not present, and proceed without depending on missing branches. Do not stall implementation waiting for these to be recovered.
 
 ## 4. Product Goals
 
@@ -262,15 +265,19 @@ Local sources to inspect before coding:
 
 - `sw4p/sw4p-backend/src/tron_client.rs`
 - `sw4p/sw4p-backend/src/tron_swap.rs`
-- `sw4p/sw4p-backend/src/allbridge.rs`
-- `sw4p/sw4p-backend/src/route_selector.rs`
-- `sw4p/sw4p-backend/src/native_bridge.rs`
+- `sw4p/sw4p-backend/src/allbridge.rs` (Solana to Tron gap at line 619, Base USDT to Base USDC mapping at line 812)
+- `sw4p/sw4p-backend/src/route_selector.rs` (Allbridge selection at line 155)
+- `sw4p/sw4p-backend/src/native_bridge.rs` (provider selection at lines 140 and 146)
 - `sw4p/sw4p-backend/src/bridge_protocol.rs`
-- `sw4p/sw4p-frontend/src/WalletProvider.tsx`
-- `sw4p/sw4p-frontend/src/config/settlementChains.ts`
-- `sw4p/sw4p-frontend/hooks/useBridge.ts`
-- `sw4p-kit/src/core/intent.ts`
-- `DEVNET_FRONTIER_EVIDENCE_2026-05-16/waves/W0-setup/probes/allbridge-discovery.md`
+- `sw4p/sw4p-backend/Cargo.toml` (Axum, Tokio, SQLx for PostgreSQL, reqwest, secp256k1, tracing, opentelemetry-otlp, alloy)
+- `sw4p/sw4p-backend/migrations/` (sqlx-cli auto-run)
+- `sw4p/sw4p-frontend/src/WalletProvider.tsx` (TronLink block lines 63 to 96)
+- `sw4p/sw4p-frontend/src/config/settlementChains.ts` (Tron entry lines 77 to 88)
+- `sw4p/sw4p-frontend/hooks/useBridge.ts` (factory at line 30)
+- `sw4p-kit/src/core/intent.ts` (ChainSchema at line 3)
+- `sw4p-kit/package.json` (vitest test runner)
+- `sw4p-mcp-gateway/src/index.ts`, `sw4p-mcp-gateway/src/tools.ts`
+- `DEVNET_FRONTIER_EVIDENCE_2026-05-16/waves/W0-setup/probes/allbridge-discovery.md` (2026-05-17 probe: TRX chainId=3 tokens=['USDT'])
 - `sw4p/docs/operations/tron-proof-corridor-gap-2026-04-21.md`
 - `sw4p/docs/operations/tron-proof-corridor-options-2026-04-21.md`
 

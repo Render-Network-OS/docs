@@ -18,7 +18,14 @@ The pack contains four binding artifacts:
 3. `2026-05-18-sw4p-usdt-tron-parity-trd.md`
 4. `2026-05-18-sw4p-usdt-tron-parity-sow.md`
 
-Read in that order.
+Read in that order. The companion implementation plan is `docs/superpowers/plans/2026-05-18-sw4p-usdt-tron-parity-m0-m2.md`.
+
+Pre-flight facts the pack assumes:
+
+- Backend is Rust on Axum with SQLx and PostgreSQL. Tests run with `cargo test`.
+- Kit and MCP gateway are TypeScript. Tests run with `vitest run`.
+- Frontend is React 19 on Vite. Tests run with `vitest run` and `playwright test`.
+- The four legacy branches named in PRD section 3 were not found on local or origin as of 2026-05-18. WS0 confirms current presence and proceeds without depending on them.
 
 ## 2. One-Sentence Architecture
 

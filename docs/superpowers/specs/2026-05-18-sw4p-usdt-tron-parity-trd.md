@@ -414,14 +414,16 @@ type Sw4pRouteQuoteResponse =
 
 | ID | Requirement |
 |---|---|
-| TRD-KIT-001 | Kit chain schema must include Tron without marking all Tron routes live. |
+| TRD-KIT-001 | Kit chain schema at `sw4p-kit/src/core/intent.ts` line 3 must include `"tron"` without marking all Tron routes live. |
 | TRD-KIT-002 | Kit asset schema must include USDT as a first-class asset. |
 | TRD-KIT-003 | Kit `estimate` must return route-state failures, not throw generic unsupported errors. |
 | TRD-KIT-004 | Kit `send` must refuse non-live routes unless canary authorization object is present. |
-| TRD-KIT-005 | Agent tool output must include reason code, remediation, and evidence summary. |
+| TRD-KIT-005 | Agent tool output (`sw4p-mcp-gateway/src/tools.ts`) must include reason code, remediation, and evidence summary. The gateway consumes the kit response shape directly and must not re-flatten it. |
 | TRD-KIT-006 | Unit mocks do not count as acceptance. Acceptance must use real provider data or pinned release evidence. |
 
 ## 11. Database Requirements
+
+Engine: PostgreSQL, accessed through `sqlx` with the existing `migrations/` directory in `sw4p-backend`. New tables ship as new `sqlx` migrations and follow the existing `YYYYMMDDHHMMSS_<name>.sql` naming convention.
 
 Recommended tables or equivalents:
 
@@ -440,6 +442,8 @@ Recommended tables or equivalents:
 Every table containing provider or transaction material must avoid raw secrets. Store hashes or redacted payloads when full payload is not required for recovery.
 
 ## 12. Observability Requirements
+
+Stack already in `sw4p-backend`: `tracing` and `tracing-subscriber` for structured JSON logs (`LOG_LEVEL` env), `opentelemetry` and `opentelemetry-otlp` for metrics and traces exported by gRPC, and `tower-http` request-id middleware for context propagation. New metrics and logs must be emitted through this stack, not added through a parallel logger.
 
 Metrics:
 
@@ -478,6 +482,8 @@ Logs must not include:
 - unredacted authorization tokens.
 
 ## 13. Testing Requirements
+
+Backend tests use `cargo test` against the existing `tokio-test`, `mockall`, and `wiremock` toolchain. Kit and gateway tests use `vitest run` (config at `sw4p-kit/vitest.config.ts` and the smoke config at `vitest.smoke.config.ts`). Frontend tests use `vitest run` plus `playwright test` for end to end.
 
 ### 13.1 Unit tests
 
