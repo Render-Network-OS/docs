@@ -32,6 +32,10 @@ gating_prereqs:
 
 555 cross-chain mobility is implemented as a Wormhole NTT mesh with Solana as the hub (lock mode) and 7 EVM chains as spokes (burn mode). Each EVM spoke peers ONLY with Solana, forcing all inter-chain transfers through the hub. The token's supply is fixed and renounced on Solana; EVM-side supply is minted by the NTT manager against locked Solana custody, preserving the canonical invariant `Solana_locked == Σ EVM_minted` at all times. Phase H code lives in sw4p-pro alongside Approach-A V4.1; governance reuses the Approach-A Circle SCA triple unchanged on the EVM side; the Solana-side authority model is recorded as an open sub-question with three options and a default-if-parity rule.
 
+## Cross-spec clarification (read before any review against Frontier Engine docs)
+
+The Frontier Engine SOW at `docs/superpowers/specs/2026-05-14-sw4p-frontier-engine-sow.md` categorically lists Wormhole NTT as a rejected rail. That rejection is **USDC settlement-specific** (the engine's scope is USDC bridging). It is unchanged by this spec. The NTT rail introduced here is the **ecosystem-layer 555 mobility rail**, owned by Phase H, not by the engine. The engine remains USDC-only; the engine repo absorbs no Phase H code. A reader of the engine SOW seeing the flat "NTT rejected" line should pair it with this clarification: rejected for USDC scope, used for 555 scope. The two scopes are independent.
+
 # Decisions locked in (do not re-open without explicit user authorization)
 
 | Item | Decision |
@@ -44,7 +48,8 @@ gating_prereqs:
 | Repo | sw4p-pro (reuses deploy_v4.ts pattern, 7-chain Circle wallet inventory, CI/CodeBuild) |
 | Governance (EVM) | reuse Approach-A Option-A triple: admin, pauser, treasury Circle SCAs; constructor-final; 1-day timelock; 7-day auto-unpause cap |
 | Governance (Solana) | OPEN sub-question, three options (S.a Circle Solana wallet-set, S.b Squads multisig, S.c single-signer); default S.a if Circle Solana SCP parity holds, decide before H.2 deploy ceremony |
-| Deploy mechanism | Circle SCP only (POST /v1/w3s/contracts/deploy), HARD per user rule feedback_circle_scp_only_deploys |
+| Deploy mechanism (EVM) | Circle SCP only (POST /v1/w3s/contracts/deploy), HARD per user rule feedback_circle_scp_only_deploys |
+| Deploy mechanism (Solana) | Solana-native tooling (Wormhole NTT CLI or equivalent) signed by the chosen Solana governance wallet (S.a / S.b / S.c). The "Circle SCP only" rule applies to EVM contract deploys; Solana program deploys are out of SCP's scope by mechanism, not by policy. Authorized via the same Solana governance choice that signs runtime admin actions. |
 | H.1 chain set | all 7 in one wave: ETH, BASE, ARB, OP, AVAX, MATIC, UNI |
 | Canary | supply-invariant (Solana locked = sum of EVM minted), 7 days continuous green for H.2 acceptance; alert-only during bake-in, auto-pause wired but disabled until H.2 close, then config-flipped to active |
 | H.3 (Hyperlane) | conditional-future with explicit three-criterion promotion gate |
@@ -66,7 +71,7 @@ gating_prereqs:
        ┌─────────────────────┼─────────────────────┐
        │                     │                     │
    ┌───▼───┐   ┌────┐    ┌───▼──┐    ┌────┐    ┌──▼──┐    ┌─────┐    ┌────┐
-   │  ETH  │   │BASE│    │  ARB │    │ OP │    │MATIC│    │AVAX │    │UNI │
+   │  ETH  │   │BASE│    │  ARB │    │ OP │    │AVAX │    │MATIC│    │UNI │
    │ 555   │   │555 │    │ 555  │    │555 │    │ 555 │    │555  │    │555 │
    │NTT:   │   │NTT:│    │ NTT: │    │NTT:│    │ NTT:│    │NTT: │    │NTT:│
    │BURN   │   │BURN│    │BURN  │    │BURN│    │BURN │    │BURN │    │BURN│
@@ -176,9 +181,13 @@ Two sequential rounds of Flow B then Flow A. NO direct EVM-X to EVM-Y peer. Late
 
 Spec records that front-end and SDK MAY abstract this as a single user action behind the scenes (auto-relay both legs), but on-chain reality is two transfers with a Solana intermediate state.
 
+**Operational note (Flow C user-impact scenario)**: if the Solana inbound rate limit is hit during leg 1 (EVM-X to Solana redeem step), the user's EVM-X 555 tokens are ALREADY burned and the Solana unlock is queued for up to 24h until the rate-limit window refills. Funds are NOT lost; recovery is automatic on refill. Front-ends and ops should surface this state to users as "burned on source, pending unlock on hub" rather than a generic "transfer failed." This is the worst-case user-visible failure mode of the hub-spoke design and is preferred over the alternative (lose-funds-on-revert from a direct EVM-X to EVM-Y attempt).
+
 ## Replay safety
 
-Wormhole VAAs are uniquely identified by (emitter chain, emitter address, sequence). Each NTT manager maintains a "consumed" set keyed by this tuple. `redeem(vaa)` is idempotent: a second submission reverts with `AlreadyConsumed`. Guardian-set rotations do not invalidate old VAAs (Wormhole signs with the prior set during the rotation window).
+Wormhole VAAs are uniquely identified externally by `(emitter chain, emitter address, sequence)`, but NTT contracts track replay via VAA **hash** (the hash of the full signed VAA body, including guardian signatures). Each NTT manager maintains a "consumed" set keyed by this hash. `redeem(vaa)` is idempotent: a second submission with the same hash reverts with `AlreadyConsumed`. Guardian-set rotations do not invalidate old VAAs (Wormhole signs with the prior set during the rotation window).
+
+**Subtlety with guardian-set rotation**: a rotation can produce different signatures on the same semantic payload, yielding a different VAA hash. The contract's consumed set tracks specific hashes it has seen. Operational guidance: in-flight VAAs at the moment of a guardian-set rotation should be redeemed using the original guardian-set form they were attested with, not re-requested with the new set's signatures. The NTT contract will accept either signature variant once it sees the corresponding hash, but the same semantic transfer cannot be replayed twice once any one signature variant has been redeemed.
 
 ## Rate-limit handling
 
@@ -251,11 +260,16 @@ Three viable options, with decision criteria:
 
 ## Canary response tiering (supply-invariant breach)
 
-- Tier 1 (drift < 0.01%, ~99 of 989M): Slack warn, log, daily summary.
-- Tier 2 (drift 0.01% to 0.1%): page on-call, manual triage within 1h, no auto action.
-- Tier 3 (drift > 0.1%): page on-call AND (post-H.2-close) auto-pause all NTT managers via pauser SCA.
+**Green-tier definition**: drift below the Tier-1 threshold (i.e., < 0.01% deviation from `Solana_locked == Σ EVM_minted`) sustained for the entire 7-day observation window. Continuous green-tier is the H.2 acceptance gate.
+
+**Tier definitions and clock-reset rules**:
+- **Tier 1 (drift < 0.01%, ~99 of 989M base units)**: Slack warn, log, daily summary. Does NOT reset the 7-day clock.
+- **Tier 2 (drift 0.01% to 0.1%)**: page on-call, manual triage within 1h, no auto action. **RESETS the 7-day clock**. Post-mortem required before canary resumes.
+- **Tier 3 (drift > 0.1%)**: page on-call AND (post-H.2-close only) auto-pause all NTT managers via pauser SCA. **RESETS the 7-day clock**. Post-mortem and root-cause-fix required before canary resumes.
 
 During the H.2 7-day bake-in: alert-only at all tiers, humans pause manually on Tier 3. After H.2 close: a config flip activates auto-pause for Tier 3. The flip is a deliberate post-acceptance action, not part of H.2 itself.
+
+**On-call SLA during bake-in**: Tier-3 pages target manual pause within **30 minutes** of page, maximum acceptable delay **1 hour**. If a Tier-3 event occurs during bake-in with no manual pause within 1 hour, escalate to a hard incident, force-pause everything via the pauser SCA, and reset the 7-day clock unconditionally. The choice of alert-only-during-bake-in (rather than auto-pause-from-day-1) is deliberate: it lets us calibrate the auto-pause threshold against real drift-signal quality before activating it, which avoids long-tail false-positive pauses that would cost user trust more than the bake-in risk costs.
 
 ## Error scenarios
 
@@ -331,6 +345,29 @@ The H.2 acceptance gate. Defined in canary response tiering above. 7 days of con
 | H.2 | not started | Solana NTT manager program deploy (locking mode), 7 x `NttManager555.sol` deploys via Circle SCP (burning mode), peer wiring (Solana-hub-only on each EVM, full peer set on Solana), transceiver wiring (Wormhole Core Bridge per chain), rate-limit init, `mainnet_h2_deploys.json` schema-v2 evidence, supply-invariant canary deployed and started, 7-day canary green-tier window observed. | 7-day continuous canary green; CC-14 + decimal verifier extensions report all hard invariants intact; one real Solana to EVM to Solana round trip per chain succeeded with rate limits and pause exercise; auto-pause config flip applied at H.2 close. |
 | H.3 | conditional-future | NONE in spec scope. Spec only defines promotion gate. | n/a |
 
+## H.2 deploy order (mandatory)
+
+All 8 managers (1 Solana + 7 EVM) must exist BEFORE any peer is wired. This order avoids chicken-and-egg confusion:
+
+1. **Deploy Solana NTT manager** (Solana-native tooling per the deploy-mechanism row in the decisions table). Capture its program address.
+2. **Deploy all 7 EVM NTT managers** via Circle SCP in one wave. Capture all 7 addresses.
+3. After all 8 addresses are known, **set peers** on all 8 managers: Solana gets the 7 EVM NTT manager addresses; each EVM NTT manager gets the Solana NTT manager address (Solana-only peer per the topology decision).
+4. **Set transceivers** on all 7 EVM managers (Wormhole Core Bridge canonical address per chain).
+5. **Set initial rate limits** (10M 555 per peer per 24h inbound and outbound; both queueing options enabled).
+6. **Verify peer-set canonicality** on all 8 managers via `cast` and `anchor` probes BEFORE handing off to the canary. This is a point-in-time assertion to add to the H.2 acceptance gate alongside the continuous CC-14 monitor.
+7. **Wire each EVM 555 token's authorized minter** to its chain's NTT manager (`Token555.setMinter(nttManager)` or equivalent constructor input if not configurable post-deploy).
+8. **Start the supply-invariant canary**; begin the 7-day clock.
+
+## Downstream dependency
+
+Per `docs/superpowers/specs/2026-05-13-sw4p-ecosystem-unified-design.md` line 87, **sw4p Earn Stage 2 hard-prereqs on the H.2 acceptance gate** (7-day NTT supply-invariant canary green). Any slip in H.2 acceptance silently blocks Earn Stage 2 until the canary completes its bake-in. Coordinate timeline accordingly; flag Phase H deploy slips to the Earn Stage 2 owner immediately.
+
+## H.2 round-trip testing mechanism
+
+The H.2 acceptance criterion "one real Solana → EVM → Solana round trip per chain" uses **DIRECT on-chain calls** (cast for EVM, anchor CLI for Solana) against the deployed NTT managers, NOT the front-end SDK. The front-end / SDK is owned by sw4p-earn product (per non-goals list) and is not gated on H.2 acceptance.
+
+The 7 per-chain round trips MAY be executed CONCURRENTLY (one per chain in parallel). Concurrent execution fits comfortably within the 7-day canary window. Sequential execution is NOT required and could risk exceeding the window if any chain encounters rate-limit queueing.
+
 ## H.3 promotion gate
 
 Promote H.3 from conditional-future to scheduled if ANY of:
@@ -365,6 +402,9 @@ Raise immediately if any trigger during H.1 / H.2 execution:
 8. Any drift-test failure during pre-deploy verification.
 9. Any frontier engine code touched by Phase H (engine stays USDC-only).
 10. Any tier-3 supply-invariant drift event during H.2 canary (resets 7-day clock, post-mortem required).
+11. Any tier-2 supply-invariant drift event during H.2 canary (also resets 7-day clock, post-mortem required; tier-2 vs tier-3 differs only in auto-pause behavior, not in clock-reset rule).
+12. Any Solana NTT manager program deploy using a keypair or wallet NOT authorized by the chosen Solana governance model (S.a / S.b / S.c). The Solana deploy uses Solana-native tooling, not Circle SCP; this stop condition is the Solana-side analog of stop condition 1.
+13. Any H.2 deploy using a Wormhole NTT framework version different from the version pinned and audit-verified during pre-H.1 verification.
 
 # Open items to resolve before H.1 kickoff
 
@@ -376,6 +416,8 @@ These are explicit pre-flight items the Phase H plan must address before H.1 dep
 - **Wormhole NTT framework reference version**: pin a specific commit of `wormhole-foundation/native-token-transfers` to vendor under `lib/ntt/`. Verify it is the most recent audited release.
 - **Solana governance choice (S.a / S.b / S.c)**: test Circle Solana wallet-set feature parity. Default to S.a if parity holds.
 - **Testnet 555 mint provisioning**: layer-4 testing needs a testnet SPL Token. Decide: deploy a brand-new testnet mint with a new (testnet-only) authority, OR mock the Solana side in testnet tests entirely.
+- **Solana NTT manager program deploy mechanism and evidence shape**: distinct from the governance-wallet choice (S.a/S.b/S.c). Decide: which tool deploys the Anchor program binary (Wormhole NTT CLI vs custom wrapper); which keypair or wallet signs the deploy transaction (must align with the chosen Solana governance model); how the deploy evidence is captured into a schema-v2 record analogous to `mainnet_h1_deploys.json` and `mainnet_h2_deploys.json`, given that Circle SCP fields like `circle_contract_id` and `circle_tx_id` do not apply to Solana program deploys. Resolve BEFORE H.2 deploy ceremony.
+- **Wormhole NTT framework audit-report inventory**: in addition to pinning the framework's commit/tag, collect the specific security-audit reports applicable to that revision (multiple firms have audited NTT at different times). Verify the pinned revision is covered by the most recent audit, NOT just the most recent tag. A newer unaudited tag is NOT acceptable for H.2 deploy.
 
 # References
 
