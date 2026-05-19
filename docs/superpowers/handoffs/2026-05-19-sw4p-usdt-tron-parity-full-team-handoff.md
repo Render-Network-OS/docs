@@ -1,4 +1,4 @@
-# sw4p USDT / Tron Parity — Full Team Handoff
+# sw4p USDT / Tron Parity, Full Team Handoff
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. The plan spans 5 phases; each phase has its own bite-sized tasks. Phases 1 and 2 reference existing detailed plans; phases 3, 4, 5 outline scope and exit gates, and the receiving team is expected to author a per-milestone detailed plan using the same writing-plans format as the M3, M4, M5 plans already in the corpus.
 
@@ -663,7 +663,7 @@ This handoff is considered fully delivered when:
 1. **Receiving team has access** to all binding specs, plans, and follow-up docs via one of the logistics options above.
 2. **Receiving team has acknowledged the goal** stated at the top of this document.
 3. **Phase 1 is complete:** all four open PRs (#268, #263, #7, plus any others opened during execution) have merged or been formally closed with documented reason.
-4. **A named owner exists** for each remaining phase (M5, M6, M7, M8). The owner is responsible for authoring the per-milestone detailed plan (M5 already exists; M6, M7, M8 are TBD) and dispatching execution.
+4. **A named owner exists** for each remaining phase (M5, M6, M7, M8). The owner is responsible for authoring the per-milestone detailed plan (M5 already exists; M6, M7, M8 plans need to be authored by their owners) and dispatching execution.
 5. **A risk acknowledgment is on record.** The receiving team has reviewed the risk register and either accepts each risk or proposes an alternate mitigation.
 6. **A check-in cadence is agreed.** Suggest weekly status against the milestone exit gates, plus an unscheduled escalation for any blocker that hits the highest impact tier of the risk register.
 
@@ -752,11 +752,11 @@ Plan complete and saved to `docs/superpowers/handoffs/2026-05-19-sw4p-usdt-tron-
 
 The receiving team has two execution options for the in-flight phases (1 and 2):
 
-**1. Subagent-Driven (recommended for Phase 2 M5 execution)** — Dispatch a fresh subagent per task, two-stage review per wave, fast iteration. Same pattern used for M3 and M4. Plan exists at `docs/superpowers/plans/2026-05-18-sw4p-usdt-tron-parity-m5-lifecycle-proof-ledger.md`.
+**1. Subagent-Driven (recommended for Phase 2 M5 execution).** Dispatch a fresh subagent per task, two-stage review per wave, fast iteration. Same pattern used for M3 and M4. Plan exists at `docs/superpowers/plans/2026-05-18-sw4p-usdt-tron-parity-m5-lifecycle-proof-ledger.md`.
 
-**2. Manual / Inline Execution** — Receiving team's engineers execute each task by hand, with their own review checkpoints. Slower but lower context-switching overhead.
+**2. Manual / Inline Execution.** Receiving team's engineers execute each task by hand, with their own review checkpoints. Slower but lower context-switching overhead.
 
-For Phase 1 (operational close-out), no subagent dispatch needed — it's just four `gh pr merge` commands plus one rebase. A single engineer with merge rights can close it in under an hour.
+For Phase 1 (operational close-out), no subagent dispatch needed. It is just four `gh pr merge` commands plus one rebase. A single engineer with merge rights can close it in under an hour.
 
 For Phases 3 (M6), 4 (M7), and 5 (M8), the receiving team must FIRST author a per-milestone detailed plan using the writing-plans skill (format like M3, M4, M5 plans already in the corpus), THEN execute via subagent-driven-development or manual.
 
