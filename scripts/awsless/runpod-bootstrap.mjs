@@ -24,6 +24,13 @@ const config = {
   vcpuCount: Number.parseInt(process.env.RUNPOD_VCPU_COUNT || "2", 10),
   containerDiskInGb: Number.parseInt(process.env.RUNPOD_CONTAINER_DISK_GB || "20", 10),
   volumeInGb: Number.parseInt(process.env.RUNPOD_VOLUME_GB || "40", 10),
+  // On-demand (interruptible:false) by DEFAULT. The Alice build is a long,
+  // stateful sequence (slow ~1.8 Mbps tarball upload -> build -> boot, ~70 min)
+  // on an ephemeral container disk (no persistent volume). A spot/interruptible
+  // pod gets reclaimed mid-upload and reverts to the stage-1 server, wiping
+  // /workspace and forcing a full restart. Set RUNPOD_INTERRUPTIBLE=true only
+  // for short throwaway smokes where reclamation is acceptable.
+  interruptible: process.env.RUNPOD_INTERRUPTIBLE === "true",
 };
 
 const usage = `Usage:
@@ -31,7 +38,7 @@ const usage = `Usage:
   node scripts/awsless/runpod-bootstrap.mjs write-diagnostic-payload [--output <payload.json>]
   node scripts/awsless/runpod-bootstrap.mjs install-server --base-url <url> --token-file <file>
   node scripts/awsless/runpod-bootstrap.mjs upload --base-url <url> --token-file <file> --tarball <file>
-  node scripts/awsless/runpod-bootstrap.mjs upload-chunked --base-url <url> --token-file <file> --tarball <file>
+  node scripts/awsless/runpod-bootstrap.mjs upload-chunked --base-url <url> --token-file <file> --tarball <file> [--resume]
   node scripts/awsless/runpod-bootstrap.mjs action --base-url <url> --token-file <file> --action <build|start|stop-runtime|status|logs>
 
 Notes:
@@ -194,7 +201,7 @@ async function writePayload() {
     volumeInGb: config.volumeInGb,
     volumeMountPath: "/workspace",
     locked: false,
-    interruptible: true,
+    interruptible: config.interruptible,
   };
 
   await mkdir(path.dirname(payloadPath), { recursive: true });
@@ -258,62 +265,124 @@ async function uploadTarballChunked() {
   const baseUrl = requiredValue("--base-url");
   const token = await readToken(requiredValue("--token-file"));
   const tarball = requiredValue("--tarball");
+  const resume = args.includes("--resume");
   const tarballStat = await stat(tarball);
   const sha256 = await sha256File(tarball);
   const chunkSize = Number.parseInt(
     process.env.RUNPOD_BOOTSTRAP_UPLOAD_CHUNK_BYTES || `${32 * 1024 * 1024}`,
     10,
   );
-  const initResponse = await fetchWithTimeout(
-    `${trimSlash(baseUrl)}/upload/init?token=${encodeURIComponent(token)}&bytes=${tarballStat.size}&sha256=${encodeURIComponent(sha256)}`,
-    {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "user-agent": "555stream-runpod-bootstrap/1.0",
+
+  // Resume must NOT call /upload/init — that truncates the pod-side file. The
+  // pod writes each chunk at its absolute offset into a persisted file and
+  // chunks are sent strictly sequentially, so receivedBytes is chunk-aligned.
+  // Snap down to a chunk boundary to re-send any partial last chunk.
+  let startOffset = 0;
+  if (resume) {
+    const statusResponse = await fetchWithTimeout(
+      `${trimSlash(baseUrl)}/status?token=${encodeURIComponent(token)}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          "user-agent": "555stream-runpod-bootstrap/1.0",
+        },
       },
-    },
-  );
-  const init = await responseSummary(initResponse);
-  if (!init.ok) {
-    return {
-      ok: false,
-      checkedAt: new Date().toISOString(),
-      label: "upload-chunked",
-      phase: "init",
-      tarball,
-      sizeBytes: tarballStat.size,
-      sha256,
-      init,
-    };
+    );
+    const status = await responseSummary(statusResponse);
+    const upload = status.body?.state?.upload;
+    if (!status.ok || !upload || upload.status !== "receiving_chunks") {
+      return {
+        ok: false,
+        checkedAt: new Date().toISOString(),
+        label: "upload-chunked",
+        phase: "resume-status",
+        tarball,
+        sizeBytes: tarballStat.size,
+        sha256,
+        status,
+      };
+    }
+    const received = Number(upload.receivedBytes || 0);
+    startOffset = Math.floor(received / chunkSize) * chunkSize;
+    process.stderr.write(
+      `[upload-chunked] resume from offset=${startOffset} (pod receivedBytes=${received})\n`,
+    );
+  } else {
+    const initResponse = await fetchWithTimeout(
+      `${trimSlash(baseUrl)}/upload/init?token=${encodeURIComponent(token)}&bytes=${tarballStat.size}&sha256=${encodeURIComponent(sha256)}`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "user-agent": "555stream-runpod-bootstrap/1.0",
+        },
+      },
+    );
+    const init = await responseSummary(initResponse);
+    if (!init.ok) {
+      return {
+        ok: false,
+        checkedAt: new Date().toISOString(),
+        label: "upload-chunked",
+        phase: "init",
+        tarball,
+        sizeBytes: tarballStat.size,
+        sha256,
+        init,
+      };
+    }
   }
 
+  const maxAttempts = 4;
   const chunkResults = [];
   const file = await open(tarball, "r");
   try {
     const buffer = Buffer.allocUnsafe(chunkSize);
-    for (let offset = 0; offset < tarballStat.size; offset += chunkSize) {
+    for (let offset = startOffset; offset < tarballStat.size; offset += chunkSize) {
       const { bytesRead } = await file.read(buffer, 0, chunkSize, offset);
       const chunk = buffer.subarray(0, bytesRead);
-      const response = await fetchWithTimeout(
-        `${trimSlash(baseUrl)}/upload/chunk?token=${encodeURIComponent(token)}&offset=${offset}`,
-        {
-          method: "POST",
-          body: chunk,
-          headers: {
-            "content-type": "application/octet-stream",
-            "content-length": String(bytesRead),
-            "user-agent": "555stream-runpod-bootstrap/1.0",
-          },
-        },
-      );
-      const chunkSummary = await responseSummary(response);
+      let chunkSummary = { ok: false, status: 0 };
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          const response = await fetchWithTimeout(
+            `${trimSlash(baseUrl)}/upload/chunk?token=${encodeURIComponent(token)}&offset=${offset}`,
+            {
+              method: "POST",
+              body: chunk,
+              headers: {
+                "content-type": "application/octet-stream",
+                "content-length": String(bytesRead),
+                "user-agent": "555stream-runpod-bootstrap/1.0",
+              },
+            },
+          );
+          chunkSummary = await responseSummary(response);
+        } catch (error) {
+          chunkSummary = {
+            ok: false,
+            status: 0,
+            error: error instanceof Error ? error.message : String(error),
+          };
+        }
+        if (chunkSummary.ok) {
+          break;
+        }
+        if (attempt < maxAttempts) {
+          await new Promise((resolveDelay) =>
+            setTimeout(resolveDelay, 2000 * attempt),
+          );
+        }
+      }
       chunkResults.push({
         ok: chunkSummary.ok,
         status: chunkSummary.status,
         offset,
         bytes: bytesRead,
       });
+      process.stderr.write(
+        `[upload-chunked] offset=${offset} bytes=${bytesRead} ok=${chunkSummary.ok} (${Math.round(((offset + bytesRead) / tarballStat.size) * 100)}%)\n`,
+      );
       if (!chunkSummary.ok) {
         return {
           ok: false,
@@ -326,6 +395,8 @@ async function uploadTarballChunked() {
           chunkSize,
           failedChunk: chunkResults.at(-1),
           chunksCompleted: chunkResults.length - 1,
+          resumeHint:
+            "re-run the same command with --resume to continue from the pod's receivedBytes",
         };
       }
     }
