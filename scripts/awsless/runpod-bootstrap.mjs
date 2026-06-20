@@ -334,7 +334,7 @@ async function uploadTarballChunked() {
     }
   }
 
-  const maxAttempts = 4;
+  const maxAttempts = 6;
   const chunkResults = [];
   const file = await open(tarball, "r");
   try {
@@ -369,8 +369,10 @@ async function uploadTarballChunked() {
           break;
         }
         if (attempt < maxAttempts) {
+          // Exponential backoff capped at 30s so the client rides out the
+          // Mac's intermittent multi-second uplink outages without giving up.
           await new Promise((resolveDelay) =>
-            setTimeout(resolveDelay, 2000 * attempt),
+            setTimeout(resolveDelay, Math.min(30000, 3000 * 2 ** (attempt - 1))),
           );
         }
       }
