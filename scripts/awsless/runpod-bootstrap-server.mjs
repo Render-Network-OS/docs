@@ -2,9 +2,11 @@
 
 import { createReadStream, createWriteStream, existsSync } from "node:fs";
 import { mkdir, open, readFile, rm, stat, writeFile } from "node:fs/promises";
-import { createHash } from "node:crypto";
+import { createHash, createDecipheriv } from "node:crypto";
 import http from "node:http";
+import https from "node:https";
 import path from "node:path";
+import { pipeline } from "node:stream/promises";
 import { spawn } from "node:child_process";
 
 const config = {
@@ -69,6 +71,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "POST" && url.pathname === "/upload/complete") {
       return handleUploadComplete(url, res);
+    }
+
+    if (req.method === "POST" && url.pathname === "/fetch-url") {
+      return handleFetchUrl(req, res);
     }
 
     if (req.method === "POST" && url.pathname === "/clone") {
@@ -227,6 +233,121 @@ async function handleUploadComplete(url, res) {
   };
   await writeState();
   sendJson(res, 200, { ok: true, upload: state.upload });
+}
+
+// Follow redirects and resolve to a 200 response stream for a GET URL.
+function httpGetStream(targetUrl, redirectsLeft = 5) {
+  return new Promise((resolve, reject) => {
+    const lib = targetUrl.startsWith("http://") ? http : https;
+    const request = lib.get(
+      targetUrl,
+      { headers: { "user-agent": "alice-runpod-fetch/1.0", accept: "*/*" } },
+      (response) => {
+        const status = response.statusCode || 0;
+        if (status >= 300 && status < 400 && response.headers.location) {
+          response.resume();
+          if (redirectsLeft <= 0) {
+            reject(new Error("too many redirects"));
+            return;
+          }
+          const next = new URL(response.headers.location, targetUrl).toString();
+          resolve(httpGetStream(next, redirectsLeft - 1));
+          return;
+        }
+        if (status !== 200) {
+          response.resume();
+          reject(new Error(`GET ${targetUrl} -> HTTP ${status}`));
+          return;
+        }
+        resolve(response);
+      },
+    );
+    request.on("error", reject);
+    request.setTimeout(180000, () => request.destroy(new Error("fetch timeout")));
+  });
+}
+
+// Pull an encrypted, chunked tarball from a public URL (fast pod-side download
+// at the pod's downlink, beating the restart window), concatenate, decrypt with
+// the supplied aes-256-cbc key/iv, and verify the decrypted sha256. Chunks live
+// at `${baseUrl}.part${i}` for i in [0, chunkCount).
+async function handleFetchUrl(req, res) {
+  let body;
+  try {
+    body = await readJsonBody(req);
+  } catch {
+    return sendJson(res, 400, { ok: false, error: "Invalid JSON body" });
+  }
+  const { baseUrl, chunkCount, keyHex, ivHex, sha256: expectedSha } = body || {};
+  if (!baseUrl || !chunkCount || !keyHex || !ivHex || !expectedSha) {
+    return sendJson(res, 400, {
+      ok: false,
+      error: "baseUrl, chunkCount, keyHex, ivHex, sha256 are required",
+    });
+  }
+
+  const encPath = `${paths.upload}.enc`;
+  try {
+    await mkdir(path.dirname(paths.upload), { recursive: true });
+    await rm(encPath, { force: true });
+    await rm(paths.upload, { force: true });
+    state.upload = {
+      status: "fetching",
+      source: "fetch-url",
+      baseUrl,
+      chunkCount,
+      receivedBytes: 0,
+      startedAt: new Date().toISOString(),
+    };
+    await writeState();
+
+    for (let i = 0; i < chunkCount; i += 1) {
+      const chunkUrl = `${baseUrl}.part${i}`;
+      const source = await httpGetStream(chunkUrl);
+      await pipeline(source, createWriteStream(encPath, { flags: i === 0 ? "w" : "a" }));
+      const encStat = await stat(encPath);
+      state.upload = { ...state.upload, receivedBytes: encStat.size, chunks: i + 1 };
+      await writeState();
+    }
+
+    const decipher = createDecipheriv(
+      "aes-256-cbc",
+      Buffer.from(keyHex, "hex"),
+      Buffer.from(ivHex, "hex"),
+    );
+    await pipeline(createReadStream(encPath), decipher, createWriteStream(paths.upload));
+    await rm(encPath, { force: true });
+
+    const sha256 = await sha256File(paths.upload);
+    if (sha256 !== expectedSha) {
+      state.upload = { ...state.upload, status: "failed", error: "sha256 mismatch", sha256 };
+      await writeState();
+      return sendJson(res, 409, {
+        ok: false,
+        error: "sha256 mismatch after decrypt",
+        expectedSha256: expectedSha,
+        sha256,
+      });
+    }
+
+    const uploadStat = await stat(paths.upload);
+    state.upload = {
+      status: "uploaded",
+      path: paths.upload,
+      bytes: uploadStat.size,
+      sha256,
+      source: "fetch-url",
+      uploadedAt: new Date().toISOString(),
+    };
+    await writeState();
+    return sendJson(res, 200, { ok: true, upload: state.upload });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    state.upload = { ...(state.upload || {}), status: "failed", error: message };
+    await writeState();
+    await rm(encPath, { force: true }).catch(() => {});
+    return sendJson(res, 500, { ok: false, error: message });
+  }
 }
 
 async function handleClone(req, res) {

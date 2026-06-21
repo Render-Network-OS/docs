@@ -80,6 +80,8 @@ async function run() {
       return uploadTarballChunked();
     case "clone":
       return callClone();
+    case "fetch-url":
+      return callFetchUrl();
     case "action":
       return callAction();
     default:
@@ -491,6 +493,35 @@ async function callClone() {
     },
   );
   return formatResponse("clone", response);
+}
+
+// Tell the pod to PULL an encrypted, chunked tarball from a public URL (fast,
+// at the pod downlink, beating the restart window) and decrypt+verify it.
+// --meta-file is the JSON written by the R2 staging step:
+//   { baseUrl, chunkCount, keyHex, ivHex, sha256 }
+async function callFetchUrl() {
+  const baseUrl = requiredValue("--base-url");
+  const token = await readToken(requiredValue("--token-file"));
+  const meta = JSON.parse(await readFile(requiredValue("--meta-file"), "utf8"));
+  const response = await fetchWithTimeout(
+    `${trimSlash(baseUrl)}/fetch-url?token=${encodeURIComponent(token)}`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        "user-agent": "555stream-runpod-bootstrap/1.0",
+      },
+      body: JSON.stringify({
+        baseUrl: meta.baseUrl,
+        chunkCount: meta.chunkCount,
+        keyHex: meta.keyHex,
+        ivHex: meta.ivHex,
+        sha256: meta.sha256,
+      }),
+    },
+  );
+  return formatResponse("fetch-url", response);
 }
 
 async function fetchWithTimeout(url, options) {
