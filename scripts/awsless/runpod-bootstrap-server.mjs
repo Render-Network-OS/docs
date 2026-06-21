@@ -709,6 +709,12 @@ function runtimeEnv() {
     MILADY_PORT: config.alicePort,
     ELIZA_PORT: config.alicePort,
     MILADY_API_BIND: "0.0.0.0",
+    // The eliza-api server (eliza/packages/agent/src/api/server.ts) binds the
+    // host from ELIZA_API_BIND (default 127.0.0.1) — MILADY_API_BIND above is
+    // ignored by it, so it bound localhost and the RunPod proxy got 502.
+    // Bind 0.0.0.0 so the proxy can reach :3000. ELIZA_API_TOKEN is set (payload)
+    // so the non-loopback-without-token guard is satisfied.
+    ELIZA_API_BIND: "0.0.0.0",
     ELIZA_ALLOWED_HOSTS: "*",
     // Local embeddings (eliza-1-lite gguf) are memory/RAG only — not needed to
     // go live with emotes — and their loader JSON-parses the binary .gguf and
@@ -717,6 +723,18 @@ function runtimeEnv() {
     // bootstrap optimization pass for a clean headless boot.
     ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
     MILADY_DISABLE_AUTO_BOOTSTRAP: "1",
+    // vault-bootstrap mirrors process.env secrets into the vault. On a headless
+    // Linux pod there is no OS keychain / D-Bus session, so the keychain-backed
+    // master key is "unsafe" and all secret writes fail, aborting runtime-boot
+    // ("[vault-bootstrap] all N secret writes failed; vault unreachable").
+    // Force the passphrase-derived master key (no keychain needed). The state
+    // dir is wiped each start, so the vault is ephemeral; this default only
+    // protects throwaway smoke-mode secrets. Override via the pod env for real
+    // secrets.
+    ELIZA_VAULT_DISABLE_KEYCHAIN: "1",
+    ELIZA_VAULT_PASSPHRASE:
+      process.env.ELIZA_VAULT_PASSPHRASE ||
+      "alice-runpod-ephemeral-vault-passphrase",
     MILADY_STATE_DIR: miladyStateDir,
     MILAIDY_HOME: miladyStateDir,
     ELIZA_STATE_DIR: miladyStateDir,

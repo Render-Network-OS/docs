@@ -51,6 +51,13 @@ const excludes = [
   // certs). Exclude it on bsdtar + GNU tar.
   "*/.bun-cache",
   "*/.bun-cache/*",
+  // macOS AppleDouble resource-fork sidecars (`._name`). They are BINARY (magic
+  // 0x00051607) but carry the sibling's extension, so `._twitch.json` etc. landed
+  // in the elizaOS registry/entries dir and crashed loadRegistry's JSON.parse at
+  // runtime-boot. Exclude them (also set COPYFILE_DISABLE=1 on the tar run).
+  "._*",
+  "*/._*",
+  "**/._*",
   `${config.sourceRoot}/.git`,
   `${config.sourceRoot}/.env`,
   `${config.sourceRoot}/.env.*`,
@@ -143,7 +150,13 @@ async function assertExists(filePath) {
 
 async function run(command, args) {
   await new Promise((resolve, reject) => {
-    const child = spawn(command, args, { stdio: "inherit" });
+    // COPYFILE_DISABLE=1 stops macOS tar from emitting AppleDouble (._*) entries
+    // for resource forks; combined with the ._* excludes this keeps macOS
+    // metadata out of the archive.
+    const child = spawn(command, args, {
+      stdio: "inherit",
+      env: { ...process.env, COPYFILE_DISABLE: "1" },
+    });
     child.on("error", reject);
     child.on("close", (code) => {
       if (code === 0) resolve();
