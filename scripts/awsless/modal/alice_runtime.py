@@ -164,7 +164,16 @@ RUNTIME_ENV = {
     buffer_containers=1,
     scaledown_window=600,
     timeout=3600,
-    secrets=[modal.Secret.from_name("alice-runtime")],
+    # alice-runtime: agent token / vault passphrase / master key.
+    # alice-api-token: MILADY_API_TOKEN — a KNOWN inbound API token. Modal is
+    # detected as a cloud-provisioned container, so without this milady
+    # auto-generates a RANDOM unknowable token and 401s every /api call; the
+    # companion (and the capture browser) authenticate by loading
+    # /companion#token=<MILADY_API_TOKEN>. Keeps the public Modal URL locked.
+    secrets=[
+        modal.Secret.from_name("alice-runtime"),
+        modal.Secret.from_name("alice-api-token"),
+    ],
 )
 @modal.web_server(port=8080, startup_timeout=900, label="alice")
 def alice_web():
