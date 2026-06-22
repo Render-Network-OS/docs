@@ -183,8 +183,12 @@ async function writePayload() {
       STREAM555_BASE_URL: smokeMode
         ? controlPlaneUrl
         : "https://replace-with-railway-control-plane.up.railway.app",
-      STREAM555_AGENT_TOKEN: smokeMode ? "" : "replace-with-secret",
-      STREAM555_AGENT_API_KEY: smokeMode ? "" : "replace-with-secret",
+      STREAM555_AGENT_TOKEN:
+        process.env.STREAM555_AGENT_TOKEN ||
+        (smokeMode ? "" : "replace-with-secret"),
+      STREAM555_AGENT_API_KEY:
+        process.env.STREAM555_AGENT_API_KEY ||
+        (smokeMode ? "" : "replace-with-secret"),
       STREAM555_REQUIRE_APPROVALS: "false",
       STREAM555_CONTROL_PLUGIN_ENABLED: "true",
       STREAM_PLUGIN_ENABLED: "true",
