@@ -121,6 +121,14 @@ RUNTIME_ENV = {
     "MILADY_API_BIND": "0.0.0.0",
     "ELIZA_API_BIND": "0.0.0.0",
     "ELIZA_ALLOWED_HOSTS": "*",
+    # The browser sends Origin on module-script subresources; milady's CORS guard
+    # (resolveCorsOrigin) 403s any Origin not on the allowlist. The wildcard-bind
+    # relaxation does not fire here (milady rewrites the bind host internally,
+    # Modal proxies via localhost), and the allowlist needs the EXACT origin (no
+    # `*` expansion), so list the Modal public origin explicitly. Without this
+    # every /assets/*.js 403s and the avatar SPA never boots.
+    "MILADY_ALLOWED_ORIGINS": "https://rndrntwrk--alice.modal.run",
+    "ELIZA_ALLOWED_ORIGINS": "https://rndrntwrk--alice.modal.run",
     "ELIZA_DISABLE_LOCAL_EMBEDDINGS": "1",
     "MILADY_DISABLE_AUTO_BOOTSTRAP": "1",
     "ELIZA_VAULT_DISABLE_KEYCHAIN": "1",
