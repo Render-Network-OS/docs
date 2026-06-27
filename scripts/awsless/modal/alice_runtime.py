@@ -132,7 +132,14 @@ RUNTIME_ENV = {
     "ELIZA_DISABLE_LOCAL_EMBEDDINGS": "1",
     "MILADY_DISABLE_AUTO_BOOTSTRAP": "1",
     "ELIZA_VAULT_DISABLE_KEYCHAIN": "1",
-    "MILAIDY_AUTH_DISABLED": "1",
+    # Keep the public Modal API locked. Modal provides MILADY_API_TOKEN via the
+    # alice-api-token secret, and the companion/capture browser authenticates
+    # with /companion#token=<token>. Do not disable auth on this public URL:
+    # Alice's API can execute code and expose secrets.
+    "MILADY_AUTH_DISABLED": "0",
+    "MILAIDY_AUTH_DISABLED": "0",
+    "ELIZA_AUTH_DISABLED": "0",
+    "API_AUTH_DISABLED": "0",
     "MILADY_STATE_DIR": "/tmp/alice-state/milaidy",
     "MILAIDY_HOME": "/tmp/alice-state/milaidy",
     "ELIZA_STATE_DIR": "/tmp/alice-state/milaidy",
@@ -161,8 +168,8 @@ RUNTIME_ENV = {
     cpu=4.0,
     memory=8192,
     min_containers=0,          # scale to zero when idle (cost)
-    buffer_containers=1,
-    scaledown_window=600,
+    buffer_containers=0,       # no warm spare during staging/dev smokes
+    scaledown_window=60,       # short warm tail; redeploy/wake only for proof windows
     timeout=3600,
     # alice-runtime: agent token / vault passphrase / master key.
     # alice-api-token: MILADY_API_TOKEN — a KNOWN inbound API token. Modal is
