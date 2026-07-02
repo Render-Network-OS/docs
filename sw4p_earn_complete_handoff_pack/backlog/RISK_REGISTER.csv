@@ -1,0 +1,11 @@
+id,risk,severity,impact,mitigation,owner,phase
+R-001,Wrong NTT supply invariant,Critical,False green dashboard / unbacked supply,"Burn-and-mint counters, canary, CI gate",Protocol,P0
+R-002,Publisher hot-key dual-role,Critical,Malicious epoch root / reward drain,"Safe publish, split secrets, cooldown/challenge",Backend/Safe,P0
+R-003,Anti-wash worker fails open,Critical,Fake volume earns rewards,"Persistence, liveness gate, epoch build block",Backend,P0
+R-004,LPVault withdraw/share bug,High,Funds stuck or diluted,Withdraw/share inflation tests + audit,Solidity,P0
+R-005,POL vault untested/no pause,High,Treasury funds at risk,Tests + pause + withdraw allowlist,Solidity,P0
+R-006,Misleading APY,High,User trust/regulatory risk,APY source separation,Frontend/Backend,P0
+R-007,Policy drift,High,Rewards do not match docs,Policy manifest + hash + drift alert,Backend/Tokenomics,P0
+R-008,Ops endpoint unauthenticated,High,Treasury/action data exposure,AuthN/AuthZ/rate limits/audit logs,Backend/SRE,P0
+R-009,Runbook not drilled,Medium,Slow incident response,Drill schedule and evidence logs,SRE,P0
+R-010,Overbuilt P1 scope leaks into launch,Medium,Delay/security risk,P0 freeze and feature flags,Launch Lead,P0

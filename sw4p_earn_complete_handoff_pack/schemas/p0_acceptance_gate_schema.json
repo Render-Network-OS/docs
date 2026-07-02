@@ -1,0 +1,16 @@
+{
+  "schema": "sw4p_earn_p0_acceptance_gate_v1",
+  "gate": {
+    "id": "string",
+    "name": "string",
+    "owner": "string",
+    "status": "red|yellow|green|waived",
+    "evidence": [
+      "uri"
+    ],
+    "launchBlocking": true,
+    "lastCheckedAt": "ISO-8601",
+    "notes": "string"
+  },
+  "waiverPolicy": "Only founder/launch lead + audit captain can waive non-critical gates. Critical gates cannot be waived for public launch."
+}

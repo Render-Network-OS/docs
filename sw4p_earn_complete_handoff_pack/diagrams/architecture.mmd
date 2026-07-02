@@ -1,0 +1,65 @@
+flowchart TB
+  subgraph CHAIN[Chain Layer]
+    SOL[Solana 555 SPL
+Canonical hub]
+    NTT[Wormhole NTT
+Burn-and-mint]
+    BASE[EVM555Token on Base
+Earn spoke]
+  end
+
+  subgraph CONTRACTS[Earn Contracts on Base]
+    STAKE[GlobalStakeVault]
+    LP[LPVault]
+    POL[ProtocolOwnedLiquidityVault]
+    REG[PoolRegistry]
+    REW[RewardsDistributor]
+    ADAPT[Pool Adapter]
+  end
+
+  subgraph SERVICES[Services]
+    ROUTE[route-ledger]
+    FEE[fee-ledger]
+    WASH[anti-wash]
+    TREAS[treasury-router]
+    EPOCH[rewards-epoch]
+    CLAIMS[claims]
+    DASH[dashboard-api]
+    IDX[indexers]
+  end
+
+  subgraph OPS[Ops]
+    SAFE[Safe]
+    CI[CI Gates]
+    ALERTS[Alerts]
+    RUNBOOKS[Runbooks]
+  end
+
+  SOL <--> NTT <--> BASE
+  BASE --> STAKE
+  BASE --> LP
+  BASE --> POL
+  LP --> ADAPT
+  POL --> ADAPT
+  REG --> LP
+  REG --> ROUTE
+
+  ROUTE --> FEE
+  ROUTE --> WASH
+  WASH --> EPOCH
+  FEE --> TREAS
+  TREAS --> EPOCH
+  EPOCH --> REW
+  CLAIMS --> REW
+  DASH --> ROUTE
+  DASH --> FEE
+  DASH --> WASH
+  DASH --> REW
+  IDX --> DASH
+
+  SAFE --> REW
+  SAFE --> STAKE
+  SAFE --> LP
+  SAFE --> POL
+  CI --> SERVICES
+  ALERTS --> RUNBOOKS

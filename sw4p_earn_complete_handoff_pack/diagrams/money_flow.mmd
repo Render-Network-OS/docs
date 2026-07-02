@@ -1,0 +1,35 @@
+flowchart LR
+  USERS[Users / routes / products] --> Q[Quote Engine]
+  Q --> ROUTE[Route Ledger]
+  ROUTE --> WASH[Anti-wash eligibility]
+  ROUTE --> FEES[Fee Ledger]
+
+  FEES --> DEX[DEX LP fees
+direct to LP position]
+  FEES --> SW4P[SW4P protocol fee]
+  FEES --> PUMP[Pump creator fee
+if confirmed]
+  FEES --> PRODUCT[Product revenue bags]
+
+  SW4P --> TR[Treasury Router]
+  PUMP --> TR
+  PRODUCT --> TR
+
+  TR --> ARP[ARP]
+  TR --> LPS[LP_STAKERS]
+  TR --> BUY[BUYBACK]
+  TR --> R555[RESERVE_555]
+  TR --> RST[RESERVE_STABLE]
+  TR --> TRES[TREASURY]
+  TR --> POL[POL]
+  TR --> LPI[LP_INCENTIVES]
+  TR --> MM[MM_FUND]
+  TR --> OPS[OPS_RESERVE]
+
+  WASH --> EPOCH[Reward Epoch Builder]
+  LPS --> EPOCH
+  DEX --> EPOCH
+  EPOCH --> ROOT[Merkle Root]
+  ROOT --> SAFE[Safe publication]
+  SAFE --> RD[RewardsDistributor]
+  RD --> CLAIM[User Claim]

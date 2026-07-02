@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: SW4P Earn P0 API
+  version: 0.1.0-p0
+paths:
+  /v1/earn/overview:
+    get:
+      summary: Public Earn overview
+      responses:
+        '200': { description: OK }
+  /v1/earn/positions/{account}:
+    get:
+      summary: Account staking, LP, and reward positions
+      parameters:
+        - in: path
+          name: account
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /v1/earn/claims/proof/{epochId}/{account}:
+    get:
+      summary: Claim proof for account and epoch
+      parameters:
+        - in: path
+          name: epochId
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: account
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /v1/dashboard/555-proof:
+    get:
+      summary: Public proof dashboard payload
+      responses:
+        '200': { description: OK }
+  /v1/ops/treasury-pending:
+    get:
+      summary: Operator-only pending treasury actions
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: OK }
+        '401': { description: Unauthorized }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

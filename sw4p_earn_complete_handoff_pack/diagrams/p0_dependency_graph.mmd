@@ -1,0 +1,29 @@
+flowchart TD
+  SCOPE[P0 scope freeze]
+  INV[Burn-and-mint supply invariant]
+  DEC[Decimal verifier blocking]
+  CONTRACTS[Contract hardening]
+  WASH[Anti-wash persistence]
+  POLICY[Policy manifest]
+  EPOCH[Reward epoch builder]
+  SAFE[Safe-mediated publish]
+  DASH[Proof dashboard]
+  DRILLS[Ops drills]
+  AUDIT[Audit evidence pack]
+  LAUNCH[Stage 3 launch]
+
+  SCOPE --> INV
+  SCOPE --> CONTRACTS
+  SCOPE --> WASH
+  SCOPE --> POLICY
+  INV --> DEC
+  INV --> DASH
+  CONTRACTS --> EPOCH
+  WASH --> EPOCH
+  POLICY --> EPOCH
+  EPOCH --> SAFE
+  SAFE --> DASH
+  DEC --> DRILLS
+  DASH --> DRILLS
+  DRILLS --> AUDIT
+  AUDIT --> LAUNCH

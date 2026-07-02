@@ -1,0 +1,21 @@
+id,workstream,title,severity,owner,description,acceptance,dependencies,labels
+P0-001,Cross-chain,Fix burn-and-mint supply invariant,Critical,Protocol/Cross-chain,Implement global minted/burned counters and invariant formula,Invariant test green; dashboard healthy; canary txs attached,P0-002,p0-crosschain
+P0-002,Cross-chain,Make decimal verifier blocking,Critical,Protocol/SRE,Production config + CI hard gate for SPL/EVM/SDK decimals,CI fails on mismatch; artifact attached,,"p0-crosschain,p0-ci"
+P0-003,Security,Remove publisher hot-key dual-role,Critical,Backend/Safe Captain,Split publisher/funder secrets and move publish to Safe queue or cooldown design,No single hot key can publish and fund; Safe tx evidence,P0-015,p0-security
+P0-004,Anti-wash,Implement anti-wash persistence,Critical,Backend,Implement unprocessedSinceLast/markIncluded/markExcluded + migration,Synthetic wash excluded in integration test,,p0-anti-wash
+P0-005,Anti-wash,Add MM/POL wallet exclusion classes,Critical,Backend,Classify market_maker and protocol_owned_liquidity wallets,MM route excluded from rewards,P0-004,"p0-anti-wash,p0-mm"
+P0-006,Contracts,Add ProtocolOwnedLiquidityVault tests and pause path,High,Solidity,Full test suite + Pausable or equivalent,Foundry coverage report; pause test green,,p0-contracts
+P0-007,Contracts,Add LPVault withdraw/share inflation/multi-depositor tests,High,Solidity,Close LPVault coverage gaps,Withdraw and inflation tests green,,p0-contracts
+P0-008,Contracts,Resolve adapter topology,High,Solidity,One adapter per vault or multi-vault adapter refactor,Deployment topology documented and tested,"P0-006,P0-007",p0-contracts
+P0-009,Policy,Centralize policy manifest and bucket registry,High,Backend/Tokenomics,Single policy module + JSON manifest + golden hash,Policy snapshot endpoint returns hash,,p0-policy
+P0-010,Policy,Decide LP/stake 70/30 split,High,Founder/Tokenomics,Make split explicit or per-epoch required,Dashboard shows split; epoch snapshot includes split,P0-009,needs-founder-decision
+P0-011,Policy,Resolve DEX LP fee APY treatment,High,Founder/Tokenomics,Separate direct LP fee APR vs protocol-routed APR,No double count; no hidden 20% haircut,P0-009,needs-founder-decision
+P0-012,Services,Fee ledger/outbox integration test,High,Backend,Real PgFeeLedgerStore + outbox + fake on-chain harness,No duplicate dispatch; trace available,P0-009,p0-services
+P0-013,Rewards,Deterministic epoch root reproduction,Critical,Backend,"Snapshot hash, policy hash, merkle tree export",Root can be recomputed; different root halts,"P0-004,P0-009",p0-rewards
+P0-014,Rewards,Source-tagged claim API/UI,High,Backend/Frontend,REAL_FEE and INCENTIVE exposed per claim,UI and API never return blended-only APY,P0-013,p0-dashboard
+P0-015,Ops,Safe role table and role rotation,Critical,SRE/Safe Captain,"Export roles, rotate admin to Safe, separate guardian",Role table attached; unsafe owners removed,,"p0-ops,p0-security"
+P0-016,Dashboard,Build proof dashboard endpoints,High,Frontend/Backend,"/v1/dashboard/555-proof with invariant, excluded volume, epoch, APY",Non-zero proof metrics in canary,"P0-001,P0-004,P0-013",p0-dashboard
+P0-017,Ops,Pause/unpause drill,Critical,SRE/Safe Captain,Rehearse pause and recovery on testnet,Tx hashes + drill log,P0-015,p0-ops
+P0-018,Ops,Reward epoch synthetic close drill,Critical,Backend/Safe Captain,"Close epoch, retry same root, reject different root",Drill evidence and root export,"P0-003,P0-013","p0-ops,p0-rewards"
+P0-019,Ops,Anti-wash liveness 24h gate,Critical,Backend/SRE,Worker liveness and lag alert before launch,24h liveness report,P0-004,"p0-anti-wash,p0-ops"
+P0-020,Audit,Assemble external audit evidence pack,High,Audit Captain,Compile artifacts and residual risks,Audit folder complete,all,p0-audit

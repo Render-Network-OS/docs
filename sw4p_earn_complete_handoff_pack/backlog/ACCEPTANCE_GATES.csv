@@ -1,0 +1,12 @@
+gate,name,owner,evidence_required,phase
+G0,Scope freeze,Launch Lead,P0 scope PR signed; P1/P2 disabled,P0
+G1,Cross-chain invariant,Protocol,Invariant report healthy; canary txs,P0
+G2,Decimal coherence,Protocol/SRE,CI decimal verifier blocking,P0
+G3,Contract tests,Solidity,Foundry tests + coverage for P0 paths,P0
+G4,Service tests,Backend,Postgres integration tests green,P0
+G5,Anti-wash,Backend,"Synthetic wash excluded, dashboard visible",P0
+G6,Reward epoch,Backend/Safe,"Deterministic root, Safe publish, source tags",P0
+G7,APY truth,Frontend,Real/incentive/blended split everywhere,P0
+G8,Dashboard proof,Frontend/Backend,/v1/dashboard/555-proof non-zero and truthful,P0
+G9,Ops drills,SRE,Canary/pause/epoch/reconcile/key drills done,P0
+G10,Audit handoff,Audit Captain,Evidence pack complete,P0

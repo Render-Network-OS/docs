@@ -1,0 +1,25 @@
+sequenceDiagram
+  participant Ledger as Fee/Route Ledger
+  participant Wash as Anti-wash Worker
+  participant Epoch as Rewards Epoch Builder
+  participant Policy as Policy Snapshot
+  participant Safe as Treasury Safe
+  participant RD as RewardsDistributor
+  participant User as User
+  participant Dash as Dashboard
+
+  Ledger->>Wash: expose unprocessed route events
+  Wash->>Wash: classify organic / excluded / review
+  Wash->>Ledger: mark eligibility finalized
+  Epoch->>Ledger: read eligible volume + fees
+  Epoch->>Policy: read policy hash and splits
+  Epoch->>Epoch: build deterministic snapshot
+  Epoch->>Epoch: build Merkle leaves with sourceTag
+  Epoch->>Safe: queue publishEpoch transaction
+  Safe->>RD: publishEpoch(root,totalReal,totalIncentive)
+  Epoch->>RD: fund rewards or verify funded state
+  User->>Dash: request claim proof
+  Dash->>Epoch: fetch proof
+  User->>RD: claim(epoch,account,asset,amount,sourceTag,proof)
+  RD->>User: transfer reward asset
+  Dash->>Dash: show claimed + source-tag history

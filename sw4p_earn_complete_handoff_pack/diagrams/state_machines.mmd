@@ -1,0 +1,27 @@
+stateDiagram-v2
+  [*] --> EpochOpen
+  EpochOpen --> SnapshotPending
+  SnapshotPending --> SnapshotTaken
+  SnapshotTaken --> AntiWashFinalized
+  AntiWashFinalized --> RootBuilt
+  RootBuilt --> SafeQueued
+  SafeQueued --> Published
+  Published --> Funded
+  Funded --> Claimable
+  Claimable --> Closed
+  Closed --> Reconciled
+
+  SnapshotTaken --> Halted: anti-wash stale
+  RootBuilt --> Halted: policy drift
+  SafeQueued --> Halted: different root
+  Published --> Halted: underfunded
+
+  state SupplyInvariant {
+    [*] --> Unknown
+    Unknown --> Syncing
+    Syncing --> Healthy
+    Healthy --> Degraded
+    Degraded --> Broken
+    Broken --> Paused
+    Degraded --> Healthy
+  }

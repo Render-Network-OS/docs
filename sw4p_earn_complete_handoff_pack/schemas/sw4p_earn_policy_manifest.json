@@ -1,0 +1,86 @@
+{
+  "name": "SW4P Earn P0 Policy Manifest",
+  "version": "0.1.0-p0",
+  "status": "draft-for-team-handoff",
+  "chainTopology": {
+    "hub": {
+      "chain": "solana",
+      "token": "555 SPL",
+      "decimals": 6,
+      "nttMode": "burn-and-mint"
+    },
+    "spokes": [
+      {
+        "chain": "base",
+        "token": "EVM555Token",
+        "decimals": 6,
+        "nttMode": "burn-and-mint"
+      }
+    ]
+  },
+  "sourceTags": [
+    "REAL_FEE",
+    "INCENTIVE"
+  ],
+  "feeSources": {
+    "DEX_LP_FEE": {
+      "status": "active-if-lp-live",
+      "rateBps": 30,
+      "routing": "direct_to_lp_position"
+    },
+    "SW4P_PROTOCOL_FEE": {
+      "status": "active",
+      "rateBps": 50,
+      "routing": "treasury_router"
+    },
+    "PUMP_CREATOR_FEE": {
+      "status": "accounting_ready_confirm_fee_owner_before_public_apr",
+      "planningRateBps": 30
+    },
+    "PRODUCT_REVENUE_BAG": {
+      "status": "accounting_ready",
+      "rate": "variable"
+    }
+  },
+  "buckets": [
+    "ARP",
+    "LP_STAKERS",
+    "BUYBACK",
+    "RESERVE_555",
+    "RESERVE_STABLE",
+    "TREASURY",
+    "POL",
+    "LP_INCENTIVES",
+    "MM_FUND",
+    "OPS_RESERVE"
+  ],
+  "sw4pFeeAllocationPct": {
+    "ARP": 10.0,
+    "LP_STAKERS": 45.0,
+    "BUYBACK": 9.0,
+    "RESERVE_555": 2.25,
+    "RESERVE_STABLE": 2.25,
+    "TREASURY": 31.5
+  },
+  "lpStakersSplit": {
+    "lpPct": 70,
+    "stakePct": 30,
+    "p0Decision": "recommended_explicit_policy_constant"
+  },
+  "ineligibleVolumeClasses": [
+    "market_maker",
+    "protocol_owned_liquidity",
+    "treasury",
+    "affiliate",
+    "wash_cluster",
+    "sybil_suspected",
+    "banned"
+  ],
+  "p0BlockingRules": [
+    "supply invariant must be healthy",
+    "anti-wash must be fresh before epoch build",
+    "reward root must be reproducible",
+    "operator endpoints must be authenticated",
+    "APY must be source separated"
+  ]
+}
