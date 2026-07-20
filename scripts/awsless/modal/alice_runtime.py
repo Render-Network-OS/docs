@@ -31,6 +31,129 @@ EXPECTED_SHA = "0fb9fa04b328e89aec97b369a3c52bb15b058d55e4007798d0526ed4a06c1fa2
 MILAIDY = "/build/src/555-bot/milaidy"
 SCRIPTS = "/build/src/555-bot/scripts"
 
+ALICE_SOURCE_PATCH = r"""
+import os
+from pathlib import Path
+
+root = Path(os.environ["MILAIDY_ROOT"])
+route = root / "eliza/packages/agent/src/api/misc-routes.ts"
+text = route.read_text()
+
+catalog_import = (
+    'import { EMOTE_BY_ID, EMOTE_CATALOG } from '
+    '"../../../../../packages/agent/src/emotes/catalog.ts";\n'
+)
+
+if catalog_import not in text:
+    core_import = '''import {
+  type AgentRuntime,
+  buildStoreVariantBlockedMessage,
+  composePrompt,
+  customActionGenerateTemplate,
+  isLocalCodeExecutionAllowed,
+  ModelType,
+} from "@elizaos/core";
+'''
+    patched_core_import = '''import {
+  type AgentRuntime,
+  buildStoreVariantBlockedMessage,
+  composePrompt,
+  customActionGenerateTemplate,
+  isLocalCodeExecutionAllowed,
+  ModelType,
+  logger,
+} from "@elizaos/core";
+'''
+    if core_import not in text:
+        raise SystemExit("Alice emote patch failed: core import anchor not found")
+    text = text.replace(core_import, patched_core_import)
+
+    route_import_anchor = 'import { resolveTerminalRunLimits } from "./terminal-run-limits.ts";\n'
+    if route_import_anchor not in text:
+        raise SystemExit("Alice emote patch failed: route import anchor not found")
+    text = text.replace(route_import_anchor, route_import_anchor + catalog_import)
+
+old_get = '''  // ── GET /api/emotes ──────────────────────────────────────────────────
+  if (method === "GET" && pathname === "/api/emotes") {
+    const emotes = await loadCompanionEmotes();
+    json(res, { emotes: emotes.catalog });
+    return true;
+  }
+'''
+new_get = '''  // ── GET /api/emotes ──────────────────────────────────────────────────
+  if (method === "GET" && pathname === "/api/emotes") {
+    json(res, { emotes: EMOTE_CATALOG });
+    return true;
+  }
+'''
+if old_get in text:
+    text = text.replace(old_get, new_get)
+elif new_get not in text:
+    raise SystemExit("Alice emote patch failed: /api/emotes block not found")
+
+old_post = '''    const body = parsedEmote.data;
+    const emotes = await loadCompanionEmotes();
+    const emote = body.emoteId ? emotes.byId.get(body.emoteId) : undefined;
+    if (!emote) {
+      error(res, `Unknown emote: ${body.emoteId ?? "(none)"}`);
+      return true;
+    }
+    state.broadcastWs?.({
+      type: "emote",
+      emoteId: emote.id,
+      path: emote.path,
+      duration: emote.duration,
+      loop: false,
+    });
+    json(res, { ok: true });
+    return true;
+'''
+new_post = '''    const body = parsedEmote.data;
+    const emote = body.emoteId ? EMOTE_BY_ID.get(body.emoteId) : undefined;
+    if (!emote) {
+      error(res, `Unknown emote: ${body.emoteId ?? "(none)"}`);
+      return true;
+    }
+    const emotePayload = {
+      emoteId: emote.id,
+      path: emote.path,
+      duration: emote.duration,
+      loop: false,
+    };
+    state.broadcastWs?.({ type: "emote", ...emotePayload });
+
+    const streamControl =
+      (state.runtime?.getService?.("stream555") as
+        | {
+            broadcastEvent?: (
+              topic: string,
+              payload: unknown,
+            ) => Promise<unknown>;
+          }
+        | undefined) ?? undefined;
+    if (streamControl && typeof streamControl.broadcastEvent === "function") {
+      void streamControl
+        .broadcastEvent("emote", emotePayload)
+        .catch((err: unknown) => {
+          logger.debug?.(
+            "[misc-routes] LiveKit emote broadcast failed (non-fatal):",
+            err instanceof Error ? err.message : String(err),
+          );
+        });
+    }
+
+    json(res, { ok: true });
+    return true;
+'''
+if old_post in text:
+    text = text.replace(old_post, new_post)
+elif new_post not in text:
+    raise SystemExit("Alice emote patch failed: /api/emote block not found")
+
+route.write_text(text)
+print("[alice-runtime] patched upstream agent emote routes to Alice catalog")
+"""
+
 # Native deps mirror the RunPod buildScript (canvas/cairo, chromium, ffmpeg, xvfb).
 APT = [
     "python3", "make", "g++", "git", "pkg-config",
@@ -56,11 +179,17 @@ export PUPPETEER_SKIP_DOWNLOAD=1 CYPRESS_INSTALL_BINARY=0
 mkdir -p /build && cd /build
 : > alice.enc
 for i in $(seq 0 {CHUNKS - 1}); do curl -fsSL "{R2_BASE}.part$i" >> alice.enc; done
+# Do not xtrace the decrypt command: it expands ALICE_KEY_HEX/ALICE_IV_HEX.
+set +x
 openssl enc -d -aes-256-cbc -K "$ALICE_KEY_HEX" -iv "$ALICE_IV_HEX" -in alice.enc -out alice.tar.gz
+set -x
 sha=$(sha256sum alice.tar.gz | cut -d' ' -f1)
 [ "$sha" = "{EXPECTED_SHA}" ] || {{ echo "sha mismatch: $sha"; exit 1; }}
 mkdir -p /build/src && tar xzf alice.tar.gz -C /build/src
 rm -f alice.enc alice.tar.gz
+MILAIDY_ROOT="{MILAIDY}" python3 - <<'PY'
+{ALICE_SOURCE_PATCH}
+PY
 
 # 2. toolchain
 npm install -g bun@1.3.10
@@ -170,7 +299,7 @@ RUNTIME_ENV = {
     min_containers=0,          # scale to zero when idle (cost)
     buffer_containers=0,       # no warm spare during staging/dev smokes
     scaledown_window=60,       # short warm tail; redeploy/wake only for proof windows
-    timeout=3600,
+    timeout=14400,             # four-hour ceiling = bounded staging-window maximum
     # alice-runtime: agent token / vault passphrase / master key.
     # alice-api-token: MILADY_API_TOKEN — a KNOWN inbound API token. Modal is
     # detected as a cloud-provisioned container, so without this milady
