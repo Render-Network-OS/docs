@@ -282,19 +282,41 @@ routes and operator actions, companion public-route exemption, mobile and landsc
 Go Live header fixes, tracked local evidence with an accepted manifest). Deploying the
 current image as-is would regress the restored companion.
 
+**The load-bearing mechanism (why a tarball swap alone is not enough):** the runtime
+serves the SPA from `apps/app/dist` (`packages/agent/src/api/static-file-server.ts`,
+`path.resolve("apps/app/dist")`). The image `_BUILD` script rebuilds the BACKEND from
+source (tsdown) but deliberately never runs the Vite SPA build (24 GB OOM on Modal
+builders). So the SPA that Modal serves is whatever `apps/app/dist` the SOURCE TARBALL
+already contains. The June tarball shipped a stale `apps/app/dist`; that is the companion
+regression. The fix is that the release-candidate tarball MUST contain the freshly built
+`apps/app/dist` (and `dist/entry.js`).
+
 Before Task 11 (deploy the exact candidate to direct Modal URLs):
 
-1. Hydrate a fresh assembly from `3294f8e11` (recovery plan Task 1 Step 5 recipe) and run
-   the FULL production build (backend + SPA; the SPA build needs the large-heap
-   `NODE_OPTIONS`, which is why the June rail skipped it).
-2. Re-encrypt + chunk + upload that tree with FRESHLY MINTED key material and rotate the
-   `alice-build` Modal secret to match (the June key/iv are retired and must not be
-   reused: they sat in `555stream/.secrets/alice-*-meta.json` beside non-secret metadata
-   and were exposed to a working session on 2026-07-20). Update `R2_BASE` chunks +
-   `EXPECTED_SHA` in `alice_runtime.py` in the same commit as the artifact swap; the
-   build must keep verifying the sha before decrypt.
-3. Because the artifact now ships the prebuilt SPA and the full patched tree, drop the
-   in-build backend-only rebuild if redundant, keeping image build time down.
-4. Re-run 0.1 contract tests, deploy, and record the revision in the staging evidence.
+1. Hydrate a CLEAN assembly from `3294f8e11` (recovery plan Task 1 Step 5 recipe) and run
+   the FULL production build (`node scripts/run-production-build.mjs` builds both backend
+   and SPA locally; verified 2026-07-20 to produce `dist/entry.js` plus a ~133 MB
+   `apps/app/dist` with `index.html` + hashed assets). The tarball must be from a clean
+   `3294f8e11` checkout, NOT the session's dirty `/tmp/alice-release-assembly.*` (its sha
+   would not reproduce).
+2. Build the tarball layout the launcher expects: `tar xzf` extracts to `/build/src` such
+   that `/build/src/555-bot/milaidy` is `MILAIDY`, so the tree is rooted at
+   `555-bot/milaidy/...` and MUST include the freshly built `apps/app/dist` and
+   `dist/entry.js`. There is NO committed encrypt/chunk/upload script (the June artifact
+   was made ad hoc); building one is itself a step, and R2 write credentials are required
+   (confirm the founder has provisioned them).
+3. Encrypt with FRESHLY MINTED key material (`openssl enc -aes-256-cbc -K <keyhex>
+   -iv <ivhex>`), split into `CHUNKS` parts (`alice.enc.part0..N`), upload to R2, and
+   rotate the `alice-build` Modal secret to the new key/iv. The June key/iv are RETIRED
+   and must not be reused: they sat in `555stream/.secrets/alice-*-meta.json` beside
+   non-secret metadata and were exposed to a working session on 2026-07-20. Update
+   `R2_BASE` chunks + `EXPECTED_SHA` in `alice_runtime.py` in the SAME commit as the
+   artifact swap; the build must keep verifying the sha before decrypt.
+4. Since the tarball now ships the prebuilt SPA and the full patched tree, the image
+   `_BUILD` backend rebuild can be trimmed to a verification of the prebuilt `dist/entry.js`
+   if the prebuilt backend is trusted; keep the `@elizaos -> milaidy` source remap.
+5. Re-run 0.1 contract tests, deploy, and record the revision in the staging evidence.
 
-Do NOT open a staging window against the June artifact.
+Do NOT open a staging window against the June artifact. Steps 2-3 (R2 publish + Modal
+secret rotation) are outward-facing infra and are founder-gated together with the staging
+window (spend limit, Cloudflare Stream token, platform RTMP keys per section 7).
