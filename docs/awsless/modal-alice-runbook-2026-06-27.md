@@ -287,9 +287,12 @@ Before Task 11 (deploy the exact candidate to direct Modal URLs):
 1. Hydrate a fresh assembly from `3294f8e11` (recovery plan Task 1 Step 5 recipe) and run
    the FULL production build (backend + SPA; the SPA build needs the large-heap
    `NODE_OPTIONS`, which is why the June rail skipped it).
-2. Re-encrypt + chunk + upload that tree with the existing `alice-build` key material and
-   update `R2_BASE` chunks + `EXPECTED_SHA` in `alice_runtime.py` (same commit as the
-   artifact swap; the build must keep verifying the sha before decrypt).
+2. Re-encrypt + chunk + upload that tree with FRESHLY MINTED key material and rotate the
+   `alice-build` Modal secret to match (the June key/iv are retired and must not be
+   reused: they sat in `555stream/.secrets/alice-*-meta.json` beside non-secret metadata
+   and were exposed to a working session on 2026-07-20). Update `R2_BASE` chunks +
+   `EXPECTED_SHA` in `alice_runtime.py` in the same commit as the artifact swap; the
+   build must keep verifying the sha before decrypt.
 3. Because the artifact now ships the prebuilt SPA and the full patched tree, drop the
    in-build backend-only rebuild if redundant, keeping image build time down.
 4. Re-run 0.1 contract tests, deploy, and record the revision in the staging evidence.
