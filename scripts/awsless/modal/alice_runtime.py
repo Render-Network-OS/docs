@@ -29,7 +29,12 @@ R2_BASE = "https://pub-322696b8cb0e447abd9d87725628383a.r2.dev/alice.enc"
 CHUNKS = 4
 EXPECTED_SHA = "0fb9fa04b328e89aec97b369a3c52bb15b058d55e4007798d0526ed4a06c1fa2"
 MILAIDY = "/build/src/555-bot/milaidy"
-SCRIPTS = "/build/src/555-bot/scripts"
+# Use the milaidy tree's OWN build scripts (tarred inside the release artifact)
+# as the single source of truth. The separate 555-bot/scripts copies drifted
+# from the proven release-branch versions (resolve/pin/build-workspaces were
+# rewritten during the livestream-recovery work to build the full server
+# workspace set in dependency order); pointing here removes the dual-copy hazard.
+SCRIPTS = "/build/src/555-bot/milaidy/scripts"
 
 ALICE_SOURCE_PATCH = r"""
 import os

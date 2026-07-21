@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# release artifact staging + secret key material (never commit)
+alice-artifact-out/
+alice-artifact-meta.json
+alice.enc.part*
