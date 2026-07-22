@@ -14,7 +14,8 @@ Usage:
   -> https://rndrntwrk--alice-runtime-web.modal.run
 
 Secrets (already created via `modal secret create`):
-  alice-build:   ALICE_KEY_HEX, ALICE_IV_HEX   (aes-256-cbc decrypt of R2 source)
+  alice-build:   ALICE_KEY_HEX, ALICE_IV_HEX, ALICE_R2_API_TOKEN
+                 (aes-256-cbc decrypt of R2 source; private R2 read token)
   alice-runtime: STREAM555_AGENT_TOKEN, ELIZA_VAULT_PASSPHRASE,
                  MILAIDY_CREDENTIALS_MASTER_KEY
 """
@@ -25,9 +26,11 @@ import modal
 
 app = modal.App("alice-runtime")
 
-R2_BASE = "https://pub-322696b8cb0e447abd9d87725628383a.r2.dev/alice.enc"
+R2_ACCOUNT_ID = "036df6c823669b8fa2f66cf4c16eeb29"
+R2_BUCKET = "alice-xfer"
+WRANGLER_VERSION = "4.113.0"
 CHUNKS = 4
-EXPECTED_SHA = "0fb9fa04b328e89aec97b369a3c52bb15b058d55e4007798d0526ed4a06c1fa2"
+EXPECTED_SHA = "c8b522393814bd9be7f10f79e128e8e0179354134e9aa638beaed561db581638"
 MILAIDY = "/build/src/555-bot/milaidy"
 # Use the milaidy tree's OWN build scripts (tarred inside the release artifact)
 # as the single source of truth. The separate 555-bot/scripts copies drifted
@@ -38,11 +41,34 @@ SCRIPTS = "/build/src/555-bot/milaidy/scripts"
 
 ALICE_SOURCE_PATCH = r"""
 import os
+import re
 from pathlib import Path
 
 root = Path(os.environ["MILAIDY_ROOT"])
 route = root / "eliza/packages/agent/src/api/misc-routes.ts"
 text = route.read_text()
+
+# The release source may already contain the Alice emote route. Require all
+# current catalog/loader/live-broadcast markers before treating it as complete;
+# a partial route must still go through the legacy migration and fail closed.
+modern_route_markers = (
+    bool(re.search(
+        r'import\s*\{(?=[^}]*\bEMOTE_BY_ID\b)(?=[^}]*\bEMOTE_CATALOG\b)'
+        r'[^}]*\}\s*from\s*"\.\./emotes/catalog\.ts"\s*;',
+        text,
+    )),
+    bool(re.search(r"function\s+loadCompanionEmotes\(\)\s*:", text)),
+    bool(re.search(
+        r"return\s*\{\s*catalog:\s*EMOTE_CATALOG,\s*"
+        r"byId:\s*EMOTE_BY_ID\s*\};",
+        text,
+    )),
+    'streamControl.broadcastEvent("emote",' in text,
+    "json(res, { ok: true, broadcast });" in text,
+)
+if all(modern_route_markers):
+    print("[alice-runtime] modern Alice emote routes already integrated")
+    raise SystemExit(0)
 
 catalog_import = (
     'import { EMOTE_BY_ID, EMOTE_CATALOG } from '
@@ -171,7 +197,7 @@ APT = [
     "libcairo2", "libatspi2.0-0", "ffmpeg", "xvfb", "dumb-init", "libopus-dev",
 ]
 
-# Build steps: decrypt+extract the R2 source, install, build backend (tsdown),
+# Build steps: fetch/decrypt+extract the R2 source, install, build backend (tsdown),
 # then the @elizaos -> source remap. Runs in the Modal image builder.
 _BUILD = rf"""
 set -euxo pipefail
@@ -180,17 +206,36 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export NODE_LLAMA_CPP_SKIP_DOWNLOAD=true PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 export PUPPETEER_SKIP_DOWNLOAD=1 CYPRESS_INSTALL_BINARY=0
 
-# 1. pull encrypted chunks from R2 (Modal's fast network), concat, decrypt, extract
+# 1. Pull encrypted chunks from private R2 (Modal's fast network), concat,
+# decrypt, and extract. Keep the token setup and Wrangler calls outside xtrace.
 mkdir -p /build && cd /build
 : > alice.enc
-for i in $(seq 0 {CHUNKS - 1}); do curl -fsSL "{R2_BASE}.part$i" >> alice.enc; done
-# Do not xtrace the decrypt command: it expands ALICE_KEY_HEX/ALICE_IV_HEX.
 set +x
+: "${{ALICE_R2_API_TOKEN:?ALICE_R2_API_TOKEN is required}}"
+export CLOUDFLARE_API_TOKEN="$ALICE_R2_API_TOKEN"
+export CLOUDFLARE_ACCOUNT_ID="{R2_ACCOUNT_ID}"
+npm install --global "wrangler@{WRANGLER_VERSION}" --no-fund --no-audit
+for i in $(seq 0 {CHUNKS - 1}); do
+  wrangler r2 object get "{R2_BUCKET}/alice.enc.part$i" \
+    --file="alice.enc.part$i" --remote
+  cat "alice.enc.part$i" >> alice.enc
+  rm -f "alice.enc.part$i"
+done
+unset CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+# Do not xtrace the decrypt command: it expands ALICE_KEY_HEX/ALICE_IV_HEX.
 openssl enc -d -aes-256-cbc -K "$ALICE_KEY_HEX" -iv "$ALICE_IV_HEX" -in alice.enc -out alice.tar.gz
 set -x
 sha=$(sha256sum alice.tar.gz | cut -d' ' -f1)
 [ "$sha" = "{EXPECTED_SHA}" ] || {{ echo "sha mismatch: $sha"; exit 1; }}
-mkdir -p /build/src && tar xzf alice.tar.gz -C /build/src
+mkdir -p /build/src
+if tar xzf alice.tar.gz -C /build/src 2>/build/tar-extract.stderr; then
+  rm -f /build/tar-extract.stderr
+else
+  tar_status=$?
+  echo "Alice artifact extraction failed; tar stderr (last 120 lines):" >&2
+  tail -n 120 /build/tar-extract.stderr >&2 || true
+  exit "$tar_status"
+fi
 rm -f alice.enc alice.tar.gz
 MILAIDY_ROOT="{MILAIDY}" python3 - <<'PY'
 {ALICE_SOURCE_PATCH}

@@ -34,7 +34,10 @@ for s in resolve-milaidy-missing-workspaces.mjs pin-alice-release-runtime-deps.m
 done
 
 mkdir -p "$OUT_DIR"
-STAGE="$(mktemp -d /tmp/alice-artifact-stage.XXXXXX)"
+STAGE_ROOT="${ALICE_ARTIFACT_STAGE_ROOT:-${TMPDIR:-/tmp}}"
+mkdir -p "$STAGE_ROOT"
+test -d "$STAGE_ROOT" || { echo "FATAL: artifact staging root is not a directory: $STAGE_ROOT"; exit 1; }
+STAGE="$(mktemp -d "$STAGE_ROOT/alice-artifact-stage.XXXXXX")"
 trap 'rm -rf "$STAGE"' EXIT
 
 echo "[artifact] staging tree under 555-bot/milaidy (excluding node_modules, .git)"
@@ -60,7 +63,12 @@ if [ -f "$BOT_SEED" ] && [ ! -f "$STAGE/555-bot/milaidy/scripts/seed-knowledge.t
 fi
 
 echo "[artifact] creating tarball"
-tar czf "$STAGE/alice.tar.gz" -C "$STAGE" 555-bot
+# COPYFILE_DISABLE prevents macOS tar from emitting AppleDouble/resource-fork
+# metadata; the explicit patterns also keep any pre-existing ._* files out.
+COPYFILE_DISABLE=1 tar czf "$STAGE/alice.tar.gz" \
+  --exclude '._*' \
+  --exclude '*/._*' \
+  -C "$STAGE" 555-bot
 SHA="$(shasum -a 256 "$STAGE/alice.tar.gz" | cut -d' ' -f1)"
 echo "[artifact] tarball sha256=$SHA size=$(du -h "$STAGE/alice.tar.gz" | cut -f1)"
 
