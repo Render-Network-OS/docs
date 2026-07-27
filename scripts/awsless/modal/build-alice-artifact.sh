@@ -25,7 +25,10 @@ MILAIDY_ROOT="${1:?usage: build-alice-artifact.sh <hydrated-milaidy-root> <out-d
 OUT_DIR="${2:?usage: build-alice-artifact.sh <hydrated-milaidy-root> <out-dir>}"
 CHUNKS="${ALICE_ARTIFACT_CHUNKS:-4}"
 
-# Preflight: the two build outputs the runtime depends on must be present.
+# Preflight: the launcher and built outputs the runtime depends on must be present.
+# alice_runtime.py starts `node milady.mjs start`; packaging an assembly without
+# this tracked entrypoint would otherwise produce a costly, delayed Modal boot failure.
+test -f "$MILAIDY_ROOT/milady.mjs" || { echo "FATAL: $MILAIDY_ROOT/milady.mjs missing (restore the tracked launcher before packaging)"; exit 1; }
 test -f "$MILAIDY_ROOT/dist/entry.js" || { echo "FATAL: $MILAIDY_ROOT/dist/entry.js missing (run run-production-build.mjs first)"; exit 1; }
 test -f "$MILAIDY_ROOT/apps/app/dist/index.html" || { echo "FATAL: $MILAIDY_ROOT/apps/app/dist/index.html missing (SPA not built)"; exit 1; }
 test -d "$MILAIDY_ROOT/eliza/packages/vault" || { echo "FATAL: $MILAIDY_ROOT/eliza subtree missing"; exit 1; }
@@ -48,6 +51,7 @@ rsync -a \
   --exclude '.git' \
   --exclude 'node_modules' \
   --exclude 'eliza/**/node_modules' \
+  --exclude '.bun-cache' \
   --exclude '.turbo' \
   --exclude '**/.cache' \
   --exclude '**/*.log' \

@@ -14,10 +14,14 @@ Usage:
   -> https://rndrntwrk--alice-runtime-web.modal.run
 
 Secrets (already created via `modal secret create`):
-  alice-build:   ALICE_KEY_HEX, ALICE_IV_HEX, ALICE_R2_API_TOKEN
+  alice-build-release-20260723-livefix:
+                 ALICE_KEY_HEX, ALICE_IV_HEX, ALICE_R2_API_TOKEN
                  (aes-256-cbc decrypt of R2 source; private R2 read token)
   alice-runtime: STREAM555_AGENT_TOKEN, ELIZA_VAULT_PASSPHRASE,
                  MILAIDY_CREDENTIALS_MASTER_KEY
+  alice-stream-control: short-lived STREAM555_AGENT_TOKEN override for
+                        bounded public livestream control
+  alice-stream-destinations: enabled platform RTMP destinations and stream keys
 """
 
 import base64
@@ -28,9 +32,10 @@ app = modal.App("alice-runtime")
 
 R2_ACCOUNT_ID = "036df6c823669b8fa2f66cf4c16eeb29"
 R2_BUCKET = "alice-xfer"
+ARTIFACT_PREFIX = "alice-release-20260723-livefix"
 WRANGLER_VERSION = "4.113.0"
 CHUNKS = 4
-EXPECTED_SHA = "c8b522393814bd9be7f10f79e128e8e0179354134e9aa638beaed561db581638"
+EXPECTED_SHA = "e7bb0b0d94bf65428241facfa40c45506af6fc2a29f8f6cbc9335fcc32eae6fe"
 MILAIDY = "/build/src/555-bot/milaidy"
 # Use the milaidy tree's OWN build scripts (tarred inside the release artifact)
 # as the single source of truth. The separate 555-bot/scripts copies drifted
@@ -47,6 +52,83 @@ from pathlib import Path
 root = Path(os.environ["MILAIDY_ROOT"])
 route = root / "eliza/packages/agent/src/api/misc-routes.ts"
 text = route.read_text()
+
+# Keep the canonical Eliza agent package intact, then port only the Alice
+# operator bridge it does not own. This must run before the idempotent emote
+# fast-path below, which may exit after observing a previously patched route.
+operator_source = root / "packages/agent/src/api/alice-operator-routes.ts"
+canonical_operator_route = root / "eliza/packages/agent/src/api/alice-operator-routes.ts"
+if not operator_source.is_file():
+    raise SystemExit("Alice operator patch failed: source route not found")
+
+operator_text = operator_source.read_text().replace(
+    'from "./route-helpers";',
+    'from "./route-helpers.ts";',
+)
+if "handleAliceOperatorRoutes" not in operator_text:
+    raise SystemExit("Alice operator patch failed: source handler missing")
+
+# A new control plane begins without the persisted default session.  Bootstrap
+# is the plugin's existing session-creation action, so permit it through the
+# otherwise narrow operator allowlist before a status or Go Live request.
+operator_allowlist_anchor = 'export const ALICE_OPERATOR_ALLOWED_ACTIONS = new Set([\n'
+bootstrap_action = '  "STREAM555_BOOTSTRAP_SESSION",\n'
+if operator_allowlist_anchor not in operator_text:
+    raise SystemExit("Alice operator patch failed: allowlist anchor not found")
+if bootstrap_action not in operator_text:
+    operator_text = operator_text.replace(
+        operator_allowlist_anchor,
+        operator_allowlist_anchor + bootstrap_action,
+        1,
+    )
+canonical_operator_route.write_text(operator_text)
+
+server = root / "eliza/packages/agent/src/api/server.ts"
+server_text = server.read_text()
+operator_import = 'import { handleAliceOperatorRoutes } from "./alice-operator-routes.ts";\n'
+avatar_import = 'import { handleAvatarRoutes } from "./avatar-routes.ts";\n'
+if operator_import not in server_text:
+    if avatar_import not in server_text:
+        raise SystemExit("Alice operator patch failed: avatar import anchor not found")
+    server_text = server_text.replace(avatar_import, avatar_import + operator_import)
+
+avatar_dispatch = '''  // ── Avatar routes (extracted to avatar-routes.ts) ───────────────────
+  if (
+    await handleAvatarRoutes({
+      req,
+      res,
+      method,
+      pathname,
+      json,
+      error,
+    })
+  ) {
+    return;
+  }
+'''
+operator_dispatch = '''
+  // ── Alice operator routes (ported from Alice-owned agent source) ─────
+  if (
+    await handleAliceOperatorRoutes({
+      req,
+      res,
+      method,
+      pathname,
+      json,
+      error,
+      readJsonBody,
+      runtime: state.runtime,
+    })
+  ) {
+    return;
+  }
+'''
+if operator_dispatch not in server_text:
+    if avatar_dispatch not in server_text:
+        raise SystemExit("Alice operator patch failed: avatar dispatch anchor not found")
+    server_text = server_text.replace(avatar_dispatch, avatar_dispatch + operator_dispatch)
+server.write_text(server_text)
+print("[alice-runtime] ported Alice operator bridge into canonical agent")
 
 # The release source may already contain the Alice emote route. Require all
 # current catalog/loader/live-broadcast markers before treating it as complete;
@@ -216,7 +298,7 @@ export CLOUDFLARE_API_TOKEN="$ALICE_R2_API_TOKEN"
 export CLOUDFLARE_ACCOUNT_ID="{R2_ACCOUNT_ID}"
 npm install --global "wrangler@{WRANGLER_VERSION}" --no-fund --no-audit
 for i in $(seq 0 {CHUNKS - 1}); do
-  wrangler r2 object get "{R2_BUCKET}/alice.enc.part$i" \
+  wrangler r2 object get "{R2_BUCKET}/{ARTIFACT_PREFIX}/alice.enc.part$i" \
     --file="alice.enc.part$i" --remote
   cat "alice.enc.part$i" >> alice.enc
   rm -f "alice.enc.part$i"
@@ -255,6 +337,7 @@ node {SCRIPTS}/build-milaidy-runtime-plugin-workspaces.mjs {MILAIDY}
 test -f node_modules/@elizaos/plugin-sql/package.json
 NODE_OPTIONS=--max-old-space-size=8192 ./node_modules/.bin/tsdown --config-loader native --fail-on-warn false
 test -f dist/entry.js
+grep -aq "/api/alice/operator/execute" dist/entry.js
 
 # 4. @elizaos -> milaidy source remap (mirrors the RunPod buildScript)
 rm -rf node_modules/@elizaos/app-core node_modules/@elizaos/agent node_modules/@elizaos/vault node_modules/@miladyai/shared
@@ -262,6 +345,11 @@ mkdir -p node_modules/@elizaos/app-core node_modules/@elizaos/agent node_modules
 cp packages/app-core/package.json node_modules/@elizaos/app-core/
 cp -a packages/app-core/src node_modules/@elizaos/app-core/src
 cp -a packages/app-core/dist node_modules/@elizaos/app-core/dist 2>/dev/null || true
+# The entry bundle keeps @elizaos/agent external.  Resolve that external to
+# Alice's fork rather than the upstream Eliza checkout: it carries the public
+# broadcast shell behavior (including root-base injection for Vite's relative
+# assets), companion routes, and the Alice operator surface.  This matches the
+# proven RunPod bootstrap layout.
 cp packages/agent/package.json node_modules/@elizaos/agent/
 cp -a packages/agent/src node_modules/@elizaos/agent/src
 cp -a packages/agent/dist node_modules/@elizaos/agent/dist 2>/dev/null || true
@@ -285,7 +373,9 @@ alice_image = (
     # decode + run it with bash.
     .run_commands(
         f"echo {base64.b64encode(_BUILD.encode()).decode()} | base64 -d | bash",
-        secrets=[modal.Secret.from_name("alice-build")],
+        # Version the artifact decrypt secret with the R2 prefix. This lets the
+        # old deployment retain its matching key until the recreated app is live.
+        secrets=[modal.Secret.from_name("alice-build-release-20260723-livefix")],
     )
 )
 
@@ -311,7 +401,9 @@ RUNTIME_ENV = {
     "ELIZA_DISABLE_LOCAL_EMBEDDINGS": "1",
     "MILADY_DISABLE_AUTO_BOOTSTRAP": "1",
     "ELIZA_VAULT_DISABLE_KEYCHAIN": "1",
-    # Keep the public Modal API locked. Modal provides MILADY_API_TOKEN via the
+    # Canonical Eliza plugin staging must link hoisted dependencies in the Modal assembly.
+    "ELIZA_STAGE_ALL_HOISTED_NODE_MODULES": "true",
+    # Keep the public Modal API locked. Modal provides ELIZA_API_TOKEN via the
     # alice-api-token secret, and the companion/capture browser authenticates
     # with /companion#token=<token>. Do not disable auth on this public URL:
     # Alice's API can execute code and expose secrets.
@@ -333,11 +425,10 @@ RUNTIME_ENV = {
     "STREAM_PLUGIN_ENABLED": "true",
     "STREAM555_DEFAULT_SESSION_ID": "alice",
     "STREAM555_REQUIRE_APPROVALS": "false",
+    # Destination credentials and enabled flags are injected at runtime by the
+    # dedicated alice-stream-destinations secret. Keep them out of this mapping:
+    # alice_web applies RUNTIME_ENV after Modal has injected its secrets.
     "STREAM555_DEST_SYNC_ON_GO_LIVE": "false",
-    "STREAM555_DEST_TWITCH_ENABLED": "false",
-    "STREAM555_DEST_KICK_ENABLED": "false",
-    "STREAM555_DEST_YOUTUBE_ENABLED": "false",
-    "STREAM555_DEST_PUMPFUN_ENABLED": "false",
     "ANTHROPIC_API_KEY": "",
 }
 
@@ -348,17 +439,22 @@ RUNTIME_ENV = {
     memory=8192,
     min_containers=0,          # scale to zero when idle (cost)
     buffer_containers=0,       # no warm spare during staging/dev smokes
-    scaledown_window=60,       # short warm tail; redeploy/wake only for proof windows
+    scaledown_window=300,      # 5m tail covers the 86.9s boot with operational margin
     timeout=14400,             # four-hour ceiling = bounded staging-window maximum
     # alice-runtime: agent token / vault passphrase / master key.
-    # alice-api-token: MILADY_API_TOKEN — a KNOWN inbound API token. Modal is
+    # alice-stream-control: short-lived, admin-issued control token. This comes
+    # after alice-runtime so it overrides only STREAM555_AGENT_TOKEN when the
+    # durable Alice identity is intentionally authorized for a live test.
+    # alice-api-token: ELIZA_API_TOKEN — a KNOWN inbound API token. Modal is
     # detected as a cloud-provisioned container, so without this milady
     # auto-generates a RANDOM unknowable token and 401s every /api call; the
     # companion (and the capture browser) authenticate by loading
-    # /companion#token=<MILADY_API_TOKEN>. Keeps the public Modal URL locked.
+    # /companion#token=<ELIZA_API_TOKEN>. Keeps the public Modal URL locked.
     secrets=[
         modal.Secret.from_name("alice-runtime"),
         modal.Secret.from_name("alice-api-token"),
+        modal.Secret.from_name("alice-stream-destinations"),
+        modal.Secret.from_name("alice-stream-control"),
     ],
 )
 @modal.web_server(port=8080, startup_timeout=900, label="alice")
