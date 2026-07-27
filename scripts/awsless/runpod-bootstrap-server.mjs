@@ -662,23 +662,29 @@ test -f node_modules/@elizaos/plugin-sql/package.json
 node_modules_sql="$(readlink node_modules/@elizaos/plugin-sql || true)"
 case "$node_modules_sql" in *eliza/plugins/plugin-sql*) echo "runtime @elizaos/plugin-sql resolved to workspace: $node_modules_sql" >&2; exit 1 ;; esac
 bun -e "const fs=require('fs'); const pkg=JSON.parse(fs.readFileSync('node_modules/@elizaos/plugin-sql/package.json','utf8')); if (pkg.version !== '2.0.0-alpha.20') throw new Error('@elizaos/plugin-sql must be 2.0.0-alpha.20, got '+pkg.version); console.log('@elizaos/plugin-sql release runtime OK', pkg.version)"
-bun run build
 
-rm -rf node_modules/@elizaos/app-core node_modules/@elizaos/agent node_modules/@elizaos/vault node_modules/@miladyai/shared
-mkdir -p node_modules/@elizaos/app-core node_modules/@elizaos/agent node_modules/@elizaos/vault node_modules/@miladyai/shared
-cp packages/app-core/package.json node_modules/@elizaos/app-core/
-cp -a packages/app-core/src node_modules/@elizaos/app-core/src
-cp -a packages/app-core/dist node_modules/@elizaos/app-core/dist 2>/dev/null || true
+# Build dist/entry.js against Alice's agent implementation. Copying it only
+# after the build leaves upstream imports embedded in the generated server.
+rm -rf node_modules/@elizaos/agent
+mkdir -p node_modules/@elizaos/agent
 cp packages/agent/package.json node_modules/@elizaos/agent/
 cp -a packages/agent/src node_modules/@elizaos/agent/src
 cp -a packages/agent/dist node_modules/@elizaos/agent/dist 2>/dev/null || true
+find packages eliza -path '*/node_modules/@elizaos/agent' -not -path '*/node_modules/.bun/*' -exec rm -rf {} +
+test -f node_modules/@elizaos/agent/src/api/config-env.ts
+bun run build
+
+rm -rf node_modules/@elizaos/app-core node_modules/@elizaos/vault node_modules/@miladyai/shared
+mkdir -p node_modules/@elizaos/app-core node_modules/@elizaos/vault node_modules/@miladyai/shared
+cp packages/app-core/package.json node_modules/@elizaos/app-core/
+cp -a packages/app-core/src node_modules/@elizaos/app-core/src
+cp -a packages/app-core/dist node_modules/@elizaos/app-core/dist 2>/dev/null || true
 cp eliza/packages/vault/package.json node_modules/@elizaos/vault/
 cp -a eliza/packages/vault/src node_modules/@elizaos/vault/src
 cp -a eliza/packages/vault/dist node_modules/@elizaos/vault/dist 2>/dev/null || true
 cp packages/shared/package.json node_modules/@miladyai/shared/
 cp -a packages/shared/src node_modules/@miladyai/shared/src
 cp -a packages/shared/dist node_modules/@miladyai/shared/dist 2>/dev/null || true
-find packages eliza -path '*/node_modules/@elizaos/agent' -not -path '*/node_modules/.bun/*' -exec rm -rf {} +
 test -f node_modules/@elizaos/app-core/src/index.ts
 test -f node_modules/@elizaos/agent/src/api/config-env.ts
 test -f node_modules/@elizaos/vault/src/index.ts
@@ -705,6 +711,10 @@ function runtimeEnv() {
     HOME: path.join(runtimeStateDir, "home"),
     NODE_OPTIONS: [process.env.NODE_OPTIONS, "--trace-uncaught"].filter(Boolean).join(" "),
     NODE_ENV: "production",
+    // RunPod intentionally executes the hydrated TypeScript tree with tsx.
+    // Use the verified source CLI rather than dist/entry.js's bundled lazy
+    // initializer, which can stall before the API server owns a socket.
+    MILAIDY_SOURCE_CLI: "1",
     PORT: config.alicePort,
     MILADY_PORT: config.alicePort,
     ELIZA_PORT: config.alicePort,

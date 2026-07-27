@@ -34,7 +34,7 @@ const config = {
 };
 
 const usage = `Usage:
-  node scripts/awsless/runpod-bootstrap.mjs write-payload [--smoke] [--output <payload.json>] [--control-plane-url <url>]
+  node scripts/awsless/runpod-bootstrap.mjs write-payload [--smoke] [--output <payload.json>] [--control-plane-url <url>] [--runtime-api-token-file <path>] [--stream-agent-token-file <path>]
   node scripts/awsless/runpod-bootstrap.mjs write-diagnostic-payload [--output <payload.json>]
   node scripts/awsless/runpod-bootstrap.mjs install-server --base-url <url> --token-file <file>
   node scripts/awsless/runpod-bootstrap.mjs upload --base-url <url> --token-file <file> --tarball <file>
@@ -152,7 +152,18 @@ async function writePayload() {
   const token = randomBytes(32).toString("hex");
   const smokeMode = args.includes("--smoke");
   const controlPlaneUrl = valueAfter("--control-plane-url");
-  const runtimeApiToken = randomBytes(32).toString("hex");
+  const runtimeApiToken = await resolvePayloadSecret({
+    path: valueAfter("--runtime-api-token-file"),
+    fallback: smokeMode ? randomBytes(32).toString("hex") : "replace-with-secret",
+    label: "runtime API token",
+  });
+  const streamAgentToken = await resolvePayloadSecret({
+    path: valueAfter("--stream-agent-token-file"),
+    fallback:
+      process.env.STREAM555_AGENT_TOKEN ||
+      (smokeMode ? "" : "replace-with-secret"),
+    label: "555stream agent token",
+  });
   const credentialMasterKey = randomBytes(32).toString("hex");
   const payload = {
     name: "alice-awsless-bootstrap",
@@ -172,23 +183,20 @@ async function writePayload() {
       NODE_ENV: "production",
       PORT: "3000",
       MILADY_API_BIND: "0.0.0.0",
-      MILAIDY_AUTH_DISABLED: smokeMode ? "1" : "0",
-      MILAIDY_API_TOKEN: smokeMode ? runtimeApiToken : "replace-with-secret",
-      ELIZA_API_TOKEN: smokeMode ? runtimeApiToken : "replace-with-secret",
-      MILAIDY_CREDENTIALS_MASTER_KEY: smokeMode
-        ? credentialMasterKey
-        : "replace-with-secret",
-      ANTHROPIC_API_KEY: smokeMode ? "" : "replace-with-secret",
+      MILAIDY_AUTH_DISABLED: "0",
+      MILAIDY_API_TOKEN: runtimeApiToken,
+      ELIZA_API_TOKEN: runtimeApiToken,
+      // This pod's runtime state is wiped on teardown, so a generated key is
+      // sufficient for the local credential vault. Long-lived stream access
+      // is supplied separately through the protected agent-token file.
+      MILAIDY_CREDENTIALS_MASTER_KEY: credentialMasterKey,
+      ANTHROPIC_API_KEY: "",
       OPENAI_API_KEY: "",
       STREAM555_BASE_URL: smokeMode
         ? controlPlaneUrl
-        : "https://replace-with-railway-control-plane.up.railway.app",
-      STREAM555_AGENT_TOKEN:
-        process.env.STREAM555_AGENT_TOKEN ||
-        (smokeMode ? "" : "replace-with-secret"),
-      STREAM555_AGENT_API_KEY:
-        process.env.STREAM555_AGENT_API_KEY ||
-        (smokeMode ? "" : "replace-with-secret"),
+        : controlPlaneUrl || "https://replace-with-railway-control-plane.up.railway.app",
+      STREAM555_AGENT_TOKEN: streamAgentToken,
+      STREAM555_AGENT_API_KEY: process.env.STREAM555_AGENT_API_KEY || "",
       STREAM555_REQUIRE_APPROVALS: "false",
       STREAM555_CONTROL_PLUGIN_ENABLED: "true",
       STREAM_PLUGIN_ENABLED: "true",
@@ -233,9 +241,11 @@ async function writePayload() {
     volumeInGb: payload.volumeInGb,
     volumeMountPath: payload.volumeMountPath,
     placeholdersRemaining: countPlaceholders(payload),
+    runtimeApiTokenConfigured: Boolean(runtimeApiToken && !isPlaceholder(runtimeApiToken)),
+    streamAgentTokenConfigured: Boolean(streamAgentToken && !isPlaceholder(streamAgentToken)),
     next: [
-      smokeMode
-        ? "Smoke payload has no placeholders; create can proceed under the recorded test window."
+      countPlaceholders(payload) === 0
+        ? "Payload has no placeholders; create can proceed under the recorded test window."
         : "Fill secret placeholder values in the payload before create.",
       "Create with: node scripts/awsless/runpod-pod.mjs create --payload <payload> --yes",
       "Install server with: node scripts/awsless/runpod-bootstrap.mjs install-server --base-url <bootstrap-url> --token-file <token>",
@@ -244,6 +254,17 @@ async function writePayload() {
       "Start Alice with: node scripts/awsless/runpod-bootstrap.mjs action --base-url <bootstrap-url> --token-file <token> --action start",
     ],
   };
+}
+
+async function resolvePayloadSecret({ path: secretPath, fallback, label }) {
+  if (!secretPath) return fallback;
+  const value = (await readFile(secretPath, "utf8")).trim();
+  if (!value) throw new Error(`${label} file is empty: ${secretPath}`);
+  return value;
+}
+
+function isPlaceholder(value) {
+  return /replace-with|REPLACE_WITH|changeme|todo/i.test(value);
 }
 
 async function installServer() {

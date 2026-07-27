@@ -45,6 +45,12 @@ const excludes = [
   "*/node_modules/*",
   "*/.git",
   "*/.git/*",
+  // Alice releases may be assembled from a dirty working tree. Keep any
+  // gitignored secret stores out even when they do not use a .env filename.
+  "*/.secrets",
+  "*/.secrets/*",
+  "**/.secrets",
+  "**/.secrets/*",
   // Bun's on-disk package cache (264k files, ~2GB) — pointless to ship (the pod
   // does a fresh `bun install`) and the only secret-pattern hits in the tree
   // are benign npm test fixtures cached under here (e.g. agent-base snakeoil
@@ -61,6 +67,8 @@ const excludes = [
   `${config.sourceRoot}/.git`,
   `${config.sourceRoot}/.env`,
   `${config.sourceRoot}/.env.*`,
+  `${config.sourceRoot}/.secrets`,
+  `${config.sourceRoot}/.secrets/*`,
   `${config.sourceRoot}/agent.log`,
   `${config.sourceRoot}/content_cache`,
   `${config.sourceRoot}/test-results`,
@@ -72,6 +80,8 @@ const excludes = [
   `${config.sourceRoot}/milaidy/.milady`,
   `${config.sourceRoot}/milaidy/.env`,
   `${config.sourceRoot}/milaidy/.env.*`,
+  `${config.sourceRoot}/milaidy/.secrets`,
+  `${config.sourceRoot}/milaidy/.secrets/*`,
   `${config.sourceRoot}/milaidy/**/node_modules`,
   `${config.sourceRoot}/milaidy/**/.env`,
   `${config.sourceRoot}/milaidy/**/.env.*`,
@@ -123,6 +133,7 @@ const manifest = {
   excludes,
   secretSafety: {
     envFilesExcluded: true,
+    secretStoresExcluded: true,
     gitHistoryExcluded: true,
     nodeModulesExcluded: true,
     knownSecretTextExcluded: [
