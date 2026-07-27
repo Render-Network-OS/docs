@@ -17,9 +17,19 @@ and the campaign plan
 
 | State | Count |
 |---|---|
-| Green | 9 |
+| Green | 13 |
 | Amber (unverifiable offline, by design) | 5 |
-| Red | 3 |
+| Red | 4 |
+| Out of scope this pass | 1 |
+| **Total rows** | **23** |
+
+Green 6 in section 1, 6 in section 3, 1 in section 4. Amber all 5 in section 2.
+Red 1 in section 1, 1 in section 3, 2 in section 4. Out of scope 1 in section 4.
+
+The four reds are: `alice-artifact-meta.json` absent from the bucket (cosmetic, and
+it must stay absent), a network-fresh `bun install` being impossible, and the
+`staging/` and `platform/` evidence directories not existing. Only the last two
+gate the campaign, and both are founder-gated on a paid window.
 
 **Nothing red blocks a restore.** The one blocker remains Modal provider billing,
 which is a founder payment action, not an engineering task. The single most useful
@@ -106,7 +116,7 @@ The plan (line 65) sets the evidence root to `evidence/alice-livestream/2026-07-
 | `evidence/alice-livestream/2026-07-18/local/` | 7 | **GREEN** in the milaidy worktree. Manifest, browser observations, 10 screenshots. |
 | `evidence/alice-livestream/2026-07-18/staging/` | 10, 11 | **RED**. Does not exist in any tree. Wanted: `config-preflight.json`, `window.json` (Task 10), `deploy.json`, `runtime-smoke.json`, `screenshots/**` (Task 11). **Needed:** a live Modal window, so founder-gated. |
 | `evidence/alice-livestream/2026-07-18/platform/` | 12 | **RED**. Does not exist. Wanted: `twitch-emote-proof.json`, `twitch-game-pip-proof.json`, `screenshots/**` including `operator-game-pip.png` and `twitch-game-pip.png`, plus a sanitized capture log. **Needed:** a paid Twitch staging window with real RTMP playback. This is the one piece of evidence the campaign has never produced. |
-| `evidence/alice-livestream/2026-07-18/production/` | 13 | Not started, out of scope this pass. |
+| `evidence/alice-livestream/2026-07-18/production/` | 13 | **OUT OF SCOPE.** Does not exist. Task 13 is not started and sits downstream of Tasks 10 to 12, so it is not counted as a readiness red for this pass. |
 
 ### Repo placement discrepancy, flagged deliberately
 
