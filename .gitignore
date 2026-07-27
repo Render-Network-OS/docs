@@ -7,3 +7,16 @@
 
 # Per-sub-repo worktrees created by execution cycles
 .worktrees/
+.local/
+
+# Wallet keypairs — NEVER commit (added 2026-07-27 after GitHub key leak purge;
+# see /Volumes/OWC Envoy Pro FX/rndrntwrk/_synthesis-2026-07-27/KEY_ROTATION_LEDGER.md)
+wallets/
+MM_wallets/
+trading_wallets/
+*keypair*.json
+*wallet*.json
+payout.json
+555dqSyo1Fi9wELywAw2Ecfrp9Beyn1RR1c6wdncNdas.json
+555JkXqcy3TDY4dNVAFT79jARkCTsvQerUzERPfbyzpU.json
+555Tm1cfV52SrBQmnxXiHMUMrpci8miW3CkLP1Qbmtd7.json
