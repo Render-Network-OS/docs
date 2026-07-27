@@ -1,0 +1,81 @@
+{
+  "prefix": "alice-release-20260723-livefix",
+  "key": "alice-release-20260723-livefix/alice.enc.part0..3",
+  "sha256": "e7bb0b0d94bf65428241facfa40c45506af6fc2a29f8f6cbc9335fcc32eae6fe",
+  "expectedSha": "e7bb0b0d94bf65428241facfa40c45506af6fc2a29f8f6cbc9335fcc32eae6fe",
+  "match": true,
+  "rebuilt": false,
+  "checkedAt": "2026-07-27T15:30:14Z",
+  "bucket": "alice-xfer",
+  "r2AccountId": "036df6c823669b8fa2f66cf4c16eeb29",
+  "verdict": "exists-matching",
+  "conclusion": "The four encrypted chunks under the pinned prefix are present in alice-xfer and are byte-identical to the local copies, which decrypt to a tarball whose sha256 equals EXPECTED_SHA in scripts/awsless/modal/alice_runtime.py. No rebuild is required. The runtime sha gate at alice_runtime.py line 311 will pass against the objects currently in the bucket.",
+  "shaSemantics": "EXPECTED_SHA is the sha256 of the DECRYPTED tarball (alice.tar.gz), not of any single R2 object. The R2 objects are aes-256-cbc ciphertext split into 4 parts. No individual object sha256 can equal EXPECTED_SHA by construction.",
+  "objects": [
+    {
+      "key": "alice-release-20260723-livefix/alice.enc.part0",
+      "size": 258523096,
+      "uploaded": "2026-07-23T07:03:17.101000+00:00",
+      "etagMd5": "cf85b841114e96125871bdac5060f761",
+      "localMd5": "cf85b841114e96125871bdac5060f761",
+      "identical": true
+    },
+    {
+      "key": "alice-release-20260723-livefix/alice.enc.part1",
+      "size": 258523096,
+      "uploaded": "2026-07-23T07:04:31.082000+00:00",
+      "etagMd5": "ba52d1b1cfd0b3e5d0d664a6ccd1ad56",
+      "localMd5": "ba52d1b1cfd0b3e5d0d664a6ccd1ad56",
+      "identical": true
+    },
+    {
+      "key": "alice-release-20260723-livefix/alice.enc.part2",
+      "size": 258523096,
+      "uploaded": "2026-07-23T07:05:54.445000+00:00",
+      "etagMd5": "626bbb1ffde034c2e2dd1da461f478f3",
+      "localMd5": "626bbb1ffde034c2e2dd1da461f478f3",
+      "identical": true
+    },
+    {
+      "key": "alice-release-20260723-livefix/alice.enc.part3",
+      "size": 258523096,
+      "uploaded": "2026-07-23T07:10:32.178000+00:00",
+      "etagMd5": "c16682d200b68213dbd9411877665816",
+      "localMd5": "c16682d200b68213dbd9411877665816",
+      "identical": true
+    }
+  ],
+  "objectCount": 4,
+  "expectedChunks": 4,
+  "totalEncryptedBytes": 1034092384,
+  "metaEncBytes": 1034092384,
+  "verificationMethod": {
+    "summary": "Verified without downloading the 1.03 GB payload, by combining an R2 ETag comparison with a local decrypt.",
+    "steps": [
+      "1. Listed the prefix over the R2 S3-compatible API (endpoint https://036df6c823669b8fa2f66cf4c16eeb29.r2.cloudflarestorage.com, bucket alice-xfer). Four objects returned, sizes and LastModified as recorded above.",
+      "2. Each returned ETag is a bare 32-hex value with no multipart -N suffix, so for these single-part uploads the ETag is the MD5 of the stored object.",
+      "3. Computed MD5 of the four local files in 555stream/.secrets/alice-artifact-livefix-20260723/. All four equal the corresponding R2 ETags, so the stored bytes are identical to the local bytes.",
+      "4. Concatenated the four local parts and streamed them through openssl enc -d -aes-256-cbc using the keyHex/ivHex from the local gitignored alice-artifact-meta.json, then sha256 of the plaintext tarball. Result: e7bb0b0d94bf65428241facfa40c45506af6fc2a29f8f6cbc9335fcc32eae6fe, equal to EXPECTED_SHA.",
+      "5. Steps 3 and 4 together establish that the objects in the bucket decrypt to the tarball the runtime expects."
+    ],
+    "r2Auth": "Account-scoped Cloudflare API token at ~/.sw4p-cf/r2-token, verified via /accounts/{id}/tokens/verify (status active). S3 access key id is the token id; secret is the sha256 of the token value. No token or key material was printed or stored.",
+    "objectsDownloaded": 0,
+    "bucketsTouched": ["alice-xfer"],
+    "mutations": "none, read-only listing"
+  },
+  "localSources": {
+    "artifactDir": "555stream/.secrets/alice-artifact-livefix-20260723/",
+    "metaFile": "555stream/.secrets/alice-artifact-livefix-20260723/alice-artifact-meta.json",
+    "buildSecretFile": "555stream/.secrets/alice-artifact-livefix-20260723/modal-build-secret-livefix.json",
+    "note": "Both files hold secret key material, are gitignored, and their contents are not reproduced here. Only their existence and the derived sha256 are recorded."
+  },
+  "runbookCaveatResolved": {
+    "caveat": "HANDOVER-alice-resume-2026-07-27.md section 2 Step 0 states that no local artifact meta carries the e7bb0b0d sha and that a rebuild should be assumed.",
+    "finding": "That scan was scoped to the 16 metas under 555/.alice-tmp/ and missed 555stream/.secrets/. The livefix meta there carries exactly this sha and its encBytes of 1034092384 equals the sum of the four R2 object sizes.",
+    "effect": "The rebuild assumption is lifted. Neither a rebuild nor fresh key material is needed for a restore."
+  },
+  "notes": [
+    "alice-artifact-meta.json is NOT present in the bucket under this prefix, so the runbook Step 0 command (wrangler r2 object get of alice-artifact-meta.json) would report absent and wrongly imply a rebuild. Only the four alice.enc.part objects were ever uploaded, which matches the build script contract in section 2 Step 2.1.",
+    "This file lives in the 555 root repo. The canonical alice-livestream evidence tree from the campaign plan lives in the 555/milaidy repo worktree .worktrees/milaidy-alice-livestream-recovery-2026-07-18/evidence/alice-livestream/2026-07-18/, which currently holds only local/. See task10-readiness-2026-07-27.md."
+  ]
+}
