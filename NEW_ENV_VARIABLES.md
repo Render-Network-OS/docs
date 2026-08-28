@@ -111,4 +111,13 @@ Ensure these are set in your Render.com dashboard:
    - Ensure all environment variables are set in Render.com dashboard
    - Test E2E workflows manually after adding secrets
 
+## Temporary read-only forensic fetch links
 
+This temporary section contains read-only endpoints for the $555 capital-ledger audit. No transaction, signing, or mutation endpoints are included.
+
+- [Creator enhanced transactions](https://r.jina.ai/https://api-mainnet.helius-rpc.com/v0/addresses/HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq/transactions?api-key=64d5184c-1e1a-41a7-aed2-04aa72576bfd&limit=100)
+- [Creator Pump claim account](https://r.jina.ai/https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
+- [Streamflow 6jEB contract](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
+- [Streamflow HHX contract](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
+- [Streamflow BSkf contract](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
+- [PumpSwap pair](https://r.jina.ai/https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
