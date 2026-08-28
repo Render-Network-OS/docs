@@ -1,0 +1,36 @@
+name: 555 Capital Ledger Forensic Snapshot
+
+on:
+  push:
+    branches:
+      - forensics/555-capital-ledger-20260828
+    paths:
+      - .github/workflows/555-capital-ledger.yml
+      - forensics/555-capital-ledger/**
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch and classify public onchain evidence
+        run: python forensics/555-capital-ledger/fetch_ledger.py
+
+      - name: Upload forensic snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: 555-capital-ledger-${{ github.sha }}
+          path: forensics/555-capital-ledger/output
+          if-no-files-found: error
+          retention-days: 30
