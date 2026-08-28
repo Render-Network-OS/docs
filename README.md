@@ -292,7 +292,7 @@ mint dev --port 3001
 - 📖 [Mintlify Documentation](https://mintlify.com/docs)
 - 🐛 [GitHub Issues](https://github.com/rndrntwrk/docs/issues)
 - 💬 [Discord Community](https://discord.gg/35UNPtu8M5)
-- 📧 [Support Email](mailto:support@rndrntwrk.com)
+- 📧 [Support Email](mailto:support@rndntwrk.com)
 
 ## 📊 Analytics & Monitoring
 
@@ -359,6 +359,23 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ Tokenomics documentation
 - ✅ Community resources
 - ✅ Mobile-responsive design
+
+## Temporary read-only forensic data bridge
+
+The links below are temporary read-only evidence endpoints used for the $555 capital-ledger reconciliation. They do not sign or submit transactions.
+
+- [Current PumpSwap pair JSON](https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
+- [Current PumpSwap pair through text reader](https://r.jina.ai/https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
+- [Pump creator claim account](https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
+- [Pump creator claim through text reader](https://r.jina.ai/https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
+- [Creator wallet public transactions](https://public-api.solscan.io/account/transactions?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
+- [Creator wallet transactions through text reader](https://r.jina.ai/https://public-api.solscan.io/account/transactions?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
+- [Streamflow contract 6jEB](https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
+- [Streamflow contract 6jEB through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
+- [Streamflow contract HHX](https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
+- [Streamflow contract HHX through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
+- [Streamflow contract BSkf](https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
+- [Streamflow contract BSkf through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
 
 ---
 
