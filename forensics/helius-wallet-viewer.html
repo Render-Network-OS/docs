@@ -1,0 +1,29 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Helius Wallet Forensic Viewer</title>
+<style>
+  *{box-sizing:border-box} body{margin:0;padding:14px;font:13px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#fff;color:#111}
+  h1{font:700 18px/1.2 system-ui;margin:0 0 8px} .meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}
+  .meta div{border:1px solid #aaa;padding:6px;overflow-wrap:anywhere}.tx{border:1px solid #333;margin:0 0 8px;padding:7px;break-inside:avoid}
+  .head{display:grid;grid-template-columns:32px 1fr 168px 80px;gap:6px;align-items:start}.sig{overflow-wrap:anywhere;font-weight:700}
+  table{width:100%;border-collapse:collapse;margin-top:5px}th,td{border:1px solid #bbb;padding:3px;text-align:left;overflow-wrap:anywhere}th{background:#eee}
+  .error{color:#b00020;font-weight:700}.qrgrid{display:grid;grid-template-columns:repeat(3,300px);gap:8px;margin-top:12px}.qrgrid img{width:300px;height:300px;border:1px solid #ddd}
+  #status{padding:12px;background:#eee} @media print{.tx{page-break-inside:avoid}}
+</style>
+<h1>Helius wallet forensic viewer</h1>
+<div id="status">Loading…</div><main id="app"></main><section class="qrgrid" id="qrs"></section>
+<script>
+(async()=>{
+  const p=new URLSearchParams(location.search); const wallet=p.get('wallet'); const key=p.get('key'); const before=p.get('before')||''; const limit=Math.min(10,Math.max(1,Number(p.get('limit')||10)));
+  if(!wallet||!key){status.textContent='Missing wallet or key';return}
+  const u=new URL(`https://api.helius.xyz/v1/wallet/${wallet}/history`);u.searchParams.set('api-key',key);u.searchParams.set('limit',String(limit));u.searchParams.set('tokenAccounts','balanceChanged');if(before)u.searchParams.set('before',before);
+  try{
+    const r=await fetch(u); const j=await r.json(); if(!r.ok)throw new Error(`${r.status} ${JSON.stringify(j)}`);
+    status.remove(); const data=(j.data||[]).map((t,i)=>({i,signature:t.signature,timestamp:t.timestamp,slot:t.slot,fee:t.fee,feePayer:t.feePayer,error:t.error,balanceChanges:t.balanceChanges||[]}));
+    document.querySelector('#app').innerHTML=`<section class="meta"><div><b>wallet</b><br>${wallet}</div><div><b>count</b><br>${data.length}</div><div><b>hasMore</b><br>${j.pagination?.hasMore}</div><div><b>nextCursor</b><br>${j.pagination?.nextCursor||''}</div></section>`+data.map(t=>`<article class="tx"><div class="head"><b>${t.i}</b><span class="sig">${t.signature}</span><span>${new Date(t.timestamp*1000).toISOString()}</span><span>fee ${t.fee}</span></div><div>slot ${t.slot} · payer ${t.feePayer} · error ${t.error===null?'none':JSON.stringify(t.error)}</div><table><thead><tr><th>mint</th><th>amount</th><th>decimals</th></tr></thead><tbody>${t.balanceChanges.map(c=>`<tr><td>${c.mint}</td><td>${c.amount}</td><td>${c.decimals}</td></tr>`).join('')}</tbody></table></article>`).join('');
+    const payload=JSON.stringify({wallet,pagination:j.pagination,data}); const chunk=850; const parts=[];for(let i=0;i<payload.length;i+=chunk)parts.push(payload.slice(i,i+chunk));
+    document.querySelector('#qrs').innerHTML=parts.map((part,i)=>`<img alt="QR ${i+1}/${parts.length}" src="https://quickchart.io/qr?size=300&ecLevel=L&margin=1&text=${encodeURIComponent(`${i+1}/${parts.length}|${part}`)}">`).join('');
+    document.title=`OK ${data.length} ${j.pagination?.hasMore?'MORE':'END'}`;
+  }catch(e){status.className='error';status.textContent=String(e);document.title='ERROR'}
+})();
+</script>
