@@ -1,0 +1,7 @@
+https://public-api.solscan.io/account/transactions?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=10
+https://public-api.solscan.io/account/tokens?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq
+https://public-api.solscan.io/account/solTransfers?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&offset=0&limit=50
+https://public-api.solscan.io/account/splTransfers?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&offset=0&limit=50
+https://public-api.solscan.io/token/meta?tokenAddress=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2
+https://public-api.solscan.io/token/holders?tokenAddress=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2&offset=0&limit=10
+https://public-api.solscan.io/account/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG
