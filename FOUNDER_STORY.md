@@ -72,3 +72,20 @@ RNDRNTWRK is my answer. I’m building a Solana‑native, real‑time overlay sy
 
 - We’re not retrofitting banner ads into streams. We’re building streaming‑native, real‑time placements that creators actually want to run and brands can trust. With the right team and runway, we can capture a quarter of a very large market.
 
+<details>
+<summary>Temporary read-only forensic links — remove after evidence capture</summary>
+
+- [Pump creator claim account](https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
+- [Creator Solscan account](https://public-api.solscan.io/account/HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq)
+- [Creator Solscan transactions](https://public-api.solscan.io/account/transactions?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
+- [Creator SOL transfers](https://public-api.solscan.io/account/solTransfers?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
+- [Creator SPL transfers](https://public-api.solscan.io/account/splTransfers?account=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
+- [Creator token holdings](https://public-api.solscan.io/account/tokens?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq)
+- [Known Solana transaction](https://solscan.io/tx/2YF4uZd8FhgHCjknRB2ESr6sTkEzUiooem5Phne85DHZhZKaCsQ14rLCmEHzhnFH2o58wWFM5YAPpPZ5VP5QgPLU)
+- [PumpSwap pair via DexScreener](https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
+- [PumpSwap pair via GeckoTerminal](https://api.geckoterminal.com/api/v2/networks/solana/pools/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
+- [Streamflow contract 6jEB](https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
+- [Streamflow contract HHXg](https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
+- [Streamflow contract BSkf](https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
+
+</details>
