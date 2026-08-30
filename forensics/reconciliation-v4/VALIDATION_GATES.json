@@ -1,0 +1,47 @@
+{
+  "version": "4.0",
+  "as_of": "2026-08-30",
+  "status": "PUBLICATION_READY_WITH_DISCLOSED_EVIDENCE_CLASSES",
+  "gates": [
+    {
+      "id": "STREAMFLOW_NO_CROSS_CONTRACT_NETTING",
+      "status": "PASS",
+      "rule": "Current balances, historical deposits, withdrawals and returns remain position-specific."
+    },
+    {
+      "id": "STREAMFLOW_FOUNDER_FLOOR_PRESERVED",
+      "status": "PASS",
+      "rule": "The 55M-plus five-year lock, two 5M obligations and four-position count floor remain explicit until chain matched."
+    },
+    {
+      "id": "BUYBACK_STRICT_ATTRIBUTION",
+      "status": "PASS",
+      "rule": "A chain purchase swap is not labelled a protocol buyback without project funding and intent evidence."
+    },
+    {
+      "id": "BURN_INSTRUCTION_ONLY",
+      "status": "PASS",
+      "rule": "Only SPL Token burn or burnChecked instructions enter the burn subtotal."
+    },
+    {
+      "id": "X_CANONICAL_URL_PRESERVATION",
+      "status": "PASS",
+      "rule": "Canonical RNDRNTWRK status URLs and recovered public payloads remain linked to outbound chain evidence."
+    },
+    {
+      "id": "INFRA_NOT_CASH_PAID",
+      "status": "PASS",
+      "rule": "Deployment-derived provider run rates are not presented as historical invoices or settled cash."
+    },
+    {
+      "id": "V1_WITHDRAWN_TOTALS_EXCLUDED",
+      "status": "PASS",
+      "rule": "The withdrawn 37-buyback, 10.928596247-SOL, 86.472M-token and zero-Streamflow conclusions are not authoritative inputs."
+    },
+    {
+      "id": "CREDENTIAL_EXCLUSION",
+      "status": "PASS",
+      "rule": "No provider credential is included in the distributed reconciliation corpus."
+    }
+  ]
+}

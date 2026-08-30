@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>$555 public RPC matrix</title>
+<style>
+body{margin:0;padding:18px;background:#071019;color:#e5edf5;font:14px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+h1{font:700 20px/1.2 system-ui,sans-serif;color:#7dd3fc;margin:0 0 12px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;border:1px solid #29435b;background:#0b1722;padding:12px}
+</style>
+</head>
+<body>
+<h1>$555 read-only RPC and module availability matrix</h1>
+<pre id="out">Starting concurrent checks…</pre>
+<script type="module">
+const WALLET='HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq';
+const endpoints=[
+ ['solana-mainnet','https://api.mainnet-beta.solana.com'],
+ ['publicnode','https://solana-rpc.publicnode.com'],
+ ['drpc','https://solana.drpc.org'],
+ ['ankr','https://rpc.ankr.com/solana'],
+ ['alchemy-demo','https://solana-mainnet.g.alchemy.com/v2/demo'],
+ ['solana-public-rpc','https://solana.public-rpc.com'],
+ ['metaplex','https://api.metaplex.solana.com']
+];
+const modules=[
+ ['esm-sh','https://esm.sh/@streamflow/stream@13.3.1?bundle'],
+ ['jsdelivr','https://cdn.jsdelivr.net/npm/@streamflow/stream@13.3.1/+esm']
+];
+const results={startedAt:new Date().toISOString(),rpc:[],modules:[],complete:false};
+const out=document.getElementById('out');
+function brief(text){return String(text).replace(/\s+/g,' ').slice(0,210)}
+function render(){out.textContent=JSON.stringify(results,null,2)}
+async function rpc(name,url){
+ const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),5500);
+ try{
+  const response=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[WALLET,{commitment:'confirmed'}]}),signal:controller.signal});
+  const text=await response.text();
+  return {name,url,status:response.status,ok:response.ok,body:brief(text)};
+ }catch(error){return {name,url,error:brief(error?.stack||error)}} finally{clearTimeout(timer)}
+}
+async function moduleTest(name,url){
+ const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),5500);
+ try{
+  const response=await fetch(url,{signal:controller.signal});
+  const text=await response.text();
+  return {name,url,status:response.status,ok:response.ok,bytes:text.length,head:brief(text)};
+ }catch(error){return {name,url,error:brief(error?.stack||error)}} finally{clearTimeout(timer)}
+}
+render();
+const rpcPromises=endpoints.map(async ([name,url])=>{const result=await rpc(name,url);results.rpc.push(result);render();return result});
+const modulePromises=modules.map(async ([name,url])=>{const result=await moduleTest(name,url);results.modules.push(result);render();return result});
+await Promise.all([...rpcPromises,...modulePromises]);
+results.complete=true;results.finishedAt=new Date().toISOString();render();
+</script>
+</body>
+</html>

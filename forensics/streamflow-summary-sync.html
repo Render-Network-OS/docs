@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>$555 Streamflow summary</title><style>body{margin:0;padding:14px;background:#071019;color:#e5edf5;font:12px/1.27 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}h1{margin:0 0 8px;color:#7dd3fc;font:700 18px/1.2 system-ui,sans-serif}pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:10px;border:1px solid #29435b;background:#0b1722}</style></head><body><h1>$555 Streamflow read-only ledger summary</h1><pre id="out">decoding...</pre><script>
+const RPC='https://solana-rpc.publicnode.com',MINT='CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2';
+const IDS=['6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb','HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN','BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ'];
+const A='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function rpc(method,params){const x=new XMLHttpRequest();x.open('POST',RPC,false);x.setRequestHeader('content-type','application/json');x.send(JSON.stringify({jsonrpc:'2.0',id:1,method,params}));if(x.status!==200)throw Error(method+' HTTP '+x.status+' '+x.responseText);const j=JSON.parse(x.responseText);if(j.error)throw Error(method+' '+JSON.stringify(j.error));return j.result}
+function b64(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function u64(a,o){let n=0n;for(let i=7;i>=0;i--)n=(n<<8n)+BigInt(a[o+i]);return n}
+function b58(a){let d=[0];for(const byte of a){let c=byte;for(let j=0;j<d.length;j++){c+=d[j]<<8;d[j]=c%58;c=(c/58)|0}while(c){d.push(c%58);c=(c/58)|0}}let z=0;while(z<a.length&&a[z]===0)z++;let s='1'.repeat(z);for(let q=d.length-1;q>=0;q--)s+=A[d[q]];return s}
+function pk(a,o){return b58(a.slice(o,o+32))}function text(a,o,n){return new TextDecoder().decode(a.slice(o,o+n)).replace(/\0/g,'').trim()}function iso(n){if(!n||n===0n)return'-';return new Date(Number(n)*1000).toISOString()}function units(n,d){let s=n.toString().padStart(d+1,'0'),c=s.length-d,v=s.slice(0,c)+(d?'.'+s.slice(c).replace(/0+$/,''):'');return v.endsWith('.')?v.slice(0,-1):v}
+try{
+ const m=rpc('getMultipleAccounts',[IDS.concat([MINT]),{encoding:'base64',commitment:'confirmed'}]),mb=b64(m.value[3].data[0]),dec=mb[44],supply=u64(mb,36),lines=[];
+ lines.push('RPC SLOT '+m.context.slot+' | MINT DECIMALS '+dec+' | SUPPLY '+units(supply,dec));
+ for(let i=0;i<IDS.length;i++){
+  const id=IDS[i],acc=m.value[i];if(!acc){lines.push('\n'+id+'\nACCOUNT MISSING');continue}const a=b64(acc.data[0]);
+  const created=u64(a,9),withdrawn=u64(a,17),canceled=u64(a,25),end=u64(a,33),sender=pk(a,49),recipient=pk(a,113),mint=pk(a,177),escrow=pk(a,209),sfFee=u64(a,305),partnerFee=u64(a,389),start=u64(a,409),net=u64(a,417),period=u64(a,425),perPeriod=u64(a,433),cliff=u64(a,441),cliffAmt=u64(a,449),name=text(a,463,64),closed=a.length>671?!!a[671]:false,payer=a.length>=778?pk(a,746):'-';
+  let escrowDisplay='-';try{escrowDisplay=rpc('getTokenAccountBalance',[escrow,{commitment:'confirmed'}]).value.uiAmountString}catch(e){escrowDisplay='ERROR '+e.message}
+  let count=0,oldest='-',newest='-';try{const sigs=rpc('getSignaturesForAddress',[id,{limit:1000},'confirmed']);count=sigs.length;if(count){const n=sigs[0],o=sigs[count-1];newest=n.signature+' @ '+(n.blockTime?new Date(n.blockTime*1000).toISOString():'-');oldest=o.signature+' @ '+(o.blockTime?new Date(o.blockTime*1000).toISOString():'-')}}catch(e){oldest='ERROR '+e.message}
+  let status=closed?'CLOSED':canceled>0n?'CANCELED':period===0n?'TOKEN LOCK':Date.now()/1000>=Number(end)?'ENDED':'ONGOING';
+  lines.push('\n'+id+' | '+(name||'(unnamed)')+' | '+status+' | bytes '+a.length+' | owner '+acc.owner);
+  lines.push('mint '+mint+' | net '+units(net,dec)+' | withdrawn '+units(withdrawn,dec)+' | escrow '+escrowDisplay+' | fees '+units(sfFee+partnerFee,dec));
+  lines.push('created '+iso(created)+' | start '+iso(start)+' | cliff '+iso(cliff)+' | end '+iso(end)+' | canceled '+iso(canceled));
+  lines.push('sender '+sender+' | recipient '+recipient+' | payer '+payer);
+  lines.push('escrow '+escrow+' | period '+period+'s | per-period '+units(perPeriod,dec)+' | cliff amount '+units(cliffAmt,dec));
+  lines.push('rules cancel[s/r] '+!!a[457]+'/'+!!a[458]+' transfer[s/r] '+!!a[460]+'/'+!!a[461]+' auto-withdraw '+!!a[459]+' topup '+!!a[462]);
+  lines.push('signatures '+count+' | oldest '+oldest+' | newest '+newest);
+ }
+ document.getElementById('out').textContent=lines.join('\n');
+}catch(e){document.getElementById('out').textContent='ERROR\n'+String(e.stack||e)}
+</script></body></html>

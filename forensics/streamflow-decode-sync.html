@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>$555 Streamflow account decode</title><style>body{margin:0;padding:14px;background:#071019;color:#e5edf5;font:12px/1.28 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}h1{margin:0 0 8px;color:#7dd3fc;font:700 18px/1.2 system-ui,sans-serif}pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:10px;border:1px solid #29435b;background:#0b1722}</style></head><body><h1>$555 Streamflow read-only account decode</h1><pre id="out">decoding...</pre><script>
+const RPC='https://solana-rpc.publicnode.com';
+const MINT='CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2';
+const IDS=['6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb','HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN','BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ'];
+const ALPHABET='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function rpc(method,params){const x=new XMLHttpRequest();x.open('POST',RPC,false);x.setRequestHeader('content-type','application/json');x.send(JSON.stringify({jsonrpc:'2.0',id:1,method,params}));if(x.status!==200)throw new Error(method+' HTTP '+x.status+' '+x.responseText);const j=JSON.parse(x.responseText);if(j.error)throw new Error(method+' '+JSON.stringify(j.error));return j.result}
+function bytes64(s){const b=atob(s);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function u64(a,o){let n=0n;for(let i=7;i>=0;i--)n=(n<<8n)+BigInt(a[o+i]);return n}
+function u32(a,o){return (a[o]|(a[o+1]<<8)|(a[o+2]<<16)|(a[o+3]<<24))>>>0}
+function f32(a,o){return new DataView(a.buffer,a.byteOffset+o,4).getFloat32(0,true)}
+function b58(a){if(!a.length)return'';let d=[0];for(const byte of a){let c=byte;for(let j=0;j<d.length;j++){c+=d[j]<<8;d[j]=c%58;c=(c/58)|0}while(c){d.push(c%58);c=(c/58)|0}}let z=0;while(z<a.length&&a[z]===0)z++;let s='1'.repeat(z);for(let q=d.length-1;q>=0;q--)s+=ALPHABET[d[q]];return s}
+function pk(a,o){return b58(a.slice(o,o+32))}
+function text(a,o,n){return new TextDecoder().decode(a.slice(o,o+n)).replace(/\0/g,'').trim()}
+function iso(n){if(!n||n===0n)return null;const v=Number(n);return Number.isFinite(v)?new Date(v*1000).toISOString():String(n)}
+function units(raw,dec){const neg=raw<0n;let s=(neg?-raw:raw).toString().padStart(dec+1,'0');const cut=s.length-dec;let v=s.slice(0,cut)+(dec?'.'+s.slice(cut).replace(/0+$/,''):'');if(v.endsWith('.'))v=v.slice(0,-1);return(neg?'-':'')+v}
+try{
+ const multi=rpc('getMultipleAccounts',[IDS.concat([MINT]),{encoding:'base64',commitment:'confirmed'}]);
+ const mintAcc=multi.value[3];const mintBytes=bytes64(mintAcc.data[0]);const decimals=mintBytes[44];const supply=u64(mintBytes,36);
+ const records=[];
+ for(let i=0;i<IDS.length;i++){
+  const id=IDS[i],acc=multi.value[i];if(!acc){records.push({id,error:'account missing'});continue}
+  const a=bytes64(acc.data[0]);
+  const r={id,owner:acc.owner,lamports:acc.lamports,dataLength:a.length,version:a[8],createdAt:iso(u64(a,9)),withdrawnRaw:u64(a,17),canceledAt:iso(u64(a,25)),endTime:iso(u64(a,33)),lastWithdrawnAt:iso(u64(a,41)),sender:pk(a,49),senderTokens:pk(a,81),recipient:pk(a,113),recipientTokens:pk(a,145),mint:pk(a,177),escrowTokens:pk(a,209),streamflowFeeTotalRaw:u64(a,305),streamflowFeeWithdrawnRaw:u64(a,313),streamflowFeePercent:f32(a,321),partner:pk(a,325),partnerFeeTotalRaw:u64(a,389),partnerFeeWithdrawnRaw:u64(a,397),partnerFeePercent:f32(a,405),startTime:iso(u64(a,409)),netDepositedRaw:u64(a,417),periodSeconds:u64(a,425).toString(),amountPerPeriodRaw:u64(a,433),cliffTime:iso(u64(a,441)),cliffAmountRaw:u64(a,449),cancelableBySender:!!a[457],cancelableByRecipient:!!a[458],automaticWithdrawal:!!a[459],transferableBySender:!!a[460],transferableByRecipient:!!a[461],canTopup:!!a[462],streamName:text(a,463,64),withdrawFrequencySeconds:u64(a,527).toString(),pausable:!!a[539],canUpdateRate:!!a[540],isPda:!!a[545],nonce:u32(a,546),closed:a.length>671?!!a[671]:null,payer:a.length>=778?pk(a,746):null,feePartner:a.length>=811?pk(a,779):null,cancelRequestTime:a.length>=819?iso(u64(a,811)):null};
+  r.netDeposited=units(r.netDepositedRaw,decimals);r.withdrawn=units(r.withdrawnRaw,decimals);r.cliffAmount=units(r.cliffAmountRaw,decimals);r.amountPerPeriod=units(r.amountPerPeriodRaw,decimals);r.streamflowFeeTotal=units(r.streamflowFeeTotalRaw,decimals);r.partnerFeeTotal=units(r.partnerFeeTotalRaw,decimals);
+  try{const bal=rpc('getTokenAccountBalance',[r.escrowTokens,{commitment:'confirmed'}]);r.escrowBalanceRaw=bal.value.amount;r.escrowBalance=bal.value.uiAmountString;r.tokenDecimals=bal.value.decimals}catch(e){r.escrowBalanceError=String(e.message||e)}
+  try{const sigs=rpc('getSignaturesForAddress',[id,{limit:1000},'confirmed']);r.signatureCount=sigs.length;if(sigs.length){const newest=sigs[0],oldest=sigs[sigs.length-1];r.newestSignature={signature:newest.signature,blockTime:newest.blockTime?new Date(newest.blockTime*1000).toISOString():null,err:newest.err};r.oldestSignature={signature:oldest.signature,blockTime:oldest.blockTime?new Date(oldest.blockTime*1000).toISOString():null,err:oldest.err}}}catch(e){r.signatureError=String(e.message||e)}
+  records.push(r)
+ }
+ const clean=records.map(r=>({id:r.id,owner:r.owner,dataLength:r.dataLength,name:r.streamName,version:r.version,mint:r.mint,createdAt:r.createdAt,startTime:r.startTime,cliffTime:r.cliffTime,endTime:r.endTime,canceledAt:r.canceledAt,closed:r.closed,sender:r.sender,recipient:r.recipient,payer:r.payer,escrow:r.escrowTokens,netDeposited:r.netDeposited,withdrawn:r.withdrawn,escrowBalance:r.escrowBalance,streamflowFeeTotal:r.streamflowFeeTotal,partnerFeeTotal:r.partnerFeeTotal,periodSeconds:r.periodSeconds,amountPerPeriod:r.amountPerPeriod,cliffAmount:r.cliffAmount,withdrawFrequencySeconds:r.withdrawFrequencySeconds,cancelableBySender:r.cancelableBySender,cancelableByRecipient:r.cancelableByRecipient,transferableBySender:r.transferableBySender,transferableByRecipient:r.transferableByRecipient,automaticWithdrawal:r.automaticWithdrawal,canTopup:r.canTopup,pausable:r.pausable,canUpdateRate:r.canUpdateRate,isPda:r.isPda,signatureCount:r.signatureCount,oldestSignature:r.oldestSignature,newestSignature:r.newestSignature,errors:r.error||r.escrowBalanceError||r.signatureError||null}));
+ document.getElementById('out').textContent=JSON.stringify({rpcSlot:multi.context.slot,mint:MINT,decimals,supplyRaw:supply.toString(),supply:units(supply,decimals),records:clean},null,2)
+}catch(e){document.getElementById('out').textContent='ERROR\n'+String(e.stack||e)}
+</script></body></html>
