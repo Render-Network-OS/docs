@@ -1,125 +1,89 @@
 ---
-title: "How the Protocol Works"
+title: "How RNDRNTWRK Works"
 icon: "arrows-spin"
-description: "Participation is verified, monetized, and routed through one fixed economic loop."
+description: "How work, participation, ownership, and payments fit together."
 ---
 
-**Render Network Protocol, or RNDRNTWRK, runs as one continuous economic loop. A stream goes live, a game session starts, an audience engages, or an AI agent operates. The protocol verifies that activity, turns it into monetizable inventory, and routes value through fixed economic logic.**
+The model starts with an activity: running a programme, providing a service, building software, or creating an interactive experience. It connects that activity to the people and agents involved, the resources they can use, the work they produce, and any ownership or payment agreements.
 
-## The Market Loop
+RNDRNTWRK’s products are being developed to carry those connections through the activity and into what comes next.
 
-### 1. Activity enters the network
+## The Operating Loop
 
-Activity begins in a live surface such as 555stream, 555 Arcade, or an agent-operated flow. The protocol starts tracking from here.
+```mermaid
+flowchart TD
+    A["1. Set the purpose and terms"] --> B["2. Carry out the work"]
+    B --> C["3. Record what happened"]
+    C -->|Where payment applies| D["4. Handle payments and allocations"]
+    C -->|No payment involved| E["5. Build on the result"]
+    D --> E
+    E -->|Support the next activity| A
+```
 
-### 2. Participation is verified
+The operating model RNDRNTWRK is building. Work, resources, records, and relationships from one activity can support the next.
 
-The **Verifiable Attention Protocol**, or **VAP**, verifies sessions with Ed25519 cryptographic heartbeats every 5 seconds.
+### 1. Set the purpose and terms
 
-Once participation is verified, the network can measure it and treat it as economic inventory.
+An activity starts with a purpose, the people or agents involved, and the resources available. Its terms establish what should be produced, who can do what, who owns the result, and how any payments will be handled.
 
-### 3. Verified participation becomes inventory
+### 2. Carry out the work
 
-Verified participation creates inventory the network can monetize.
+People and agents use the relevant products and services to carry out the activity. Agent Fixtures organise agent capabilities around a defined objective, including the tools, permissions, and expected outputs.
 
-That inventory can support:
+### 3. Record what happened
 
-* L-Bar ads
-* Prediction markets
-* Game fees
-* Creator-side markets
+The model connects the work produced and the contributions made to the participants involved. It keeps track of resources used, ownership, costs, and any amounts owed.
 
-This is the point where participation stops being a reported metric and becomes an economic surface.
+### 4. Handle payments and allocations
 
-### 4. Value routes through a fixed cascade
+When an activity involves payment, SW4P is the settlement component. It coordinates route selection, fees, execution, confirmation, recovery, and accounting for the result.
 
-Value entering RNDRNTWRK follows fixed economic logic.
+The activity’s funding source and agreements determine its costs, recipients, and allocations. SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
 
-| Step | Allocation | Recipient |
-|---|---:|---|
-| 1. ARP | 10% off the top | Audience Reward Pool |
-| 2. Creator | 50% of post-ARP value | Creator wallet |
-| 3. Platform | 50% of post-ARP value | Platform allocation |
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-Platform allocation then routes to:
+### 5. Build on the result
 
-| Platform Split | Allocation |
-|---|---:|
-| Treasury | 70% |
-| Buyback and burn | 20% |
-| $555 reserve | 5% |
-| SOL / USDC reserve | 5% |
-
-### 5. Settlement closes the loop
-
-Some RNDRNTWRK surfaces use internal accounting layers before payout, but they all resolve back into the same economic loop.
-
-Settlement closes the cycle and prepares the next one to begin.
+Work, software, records, remaining resources, and relationships can support later activities. Each completed activity can add to what people and agents are able to do next.
 
 ## Points and Credits
 
-Some RNDRNTWRK surfaces use points and credits before settlement.
+An experience can use points to record participation and credits to record a balance. Its published terms explain what each means and how it can be used.
 
 ### Points
-Points track eligible participation across supported activities such as gameplay, quests, and referrals.
 
-Current rule:
-
-* **10,000 points = 1 USDC**
-
-Points are non-transferable.
+Points can record things such as progress in a game, completed tasks, or participation in a programme. The experience defines which actions count, how points are calculated, and what they can be used for.
 
 ### Credits
-Credits track internal balances before payout.
 
-Current rule:
+Credits are a balance recorded within an experience. The terms explain what that balance represents, how it changes, and whether it can be spent, transferred, or paid out.
 
-* **1 credit = $0.01**
+### Conversion and payment
 
-Some surfaces may also apply burn bonuses or other surface-specific reward logic.
+The published terms for each experience define any conversion rate, expiry date, claim process, or payment schedule. The [SW4P Earn](/products/earn) documentation explains the allocation, claims, and payout model.
 
-### Settlement cadence
-Current settlement runs:
+## Token-Based Access
 
-* **Weekly**
-* **Mondays at 05:55 CST**
-* **via Merkle distribution**
+A product can use a token holding as an access condition—for example, to enter an experience or take part in a particular role.
 
-See the relevant product pages for current implementation details.
+Where this is used, the product’s terms explain which token and network are supported, the amount required, how the holding is checked, and what access it provides.
 
-## Token-Gated Participation
-
-Some RNDRNTWRK surfaces use $555-gated participation multipliers.
-
-| Tier | $555 Balance | Multiplier |
-|---|---:|---:|
-| Curious | 0 | 1x |
-| Creator | 55,555 | 5x |
-| Owner | 555,555 | 55x |
-| Institution | 5,555,555 | 555x |
-
-See Tokenomics and product-specific pages for current multiplier logic and eligibility rules.
-
-## The Economic Flywheel
-
-Participation creates inventory. Inventory attracts monetization. Monetization strengthens audience rewards, creator economics, and protocol funding. Then the loop starts again.
-
-![RNDRNTWRK: The Economic Flywheel](https://res.cloudinary.com/davqktkik/image/upload/v1761223434/render_flywheel_r9ctsr.png)
+The [$555 Token](/tokenomics/555-token) documentation explains $555’s role as RNDRNTWRK’s coordination asset. Any use of $555 for access is defined by the particular product or programme.
 
 ## Where to Go Next
 
 <CardGroup cols={2}>
   <Card title="555stream" icon="video" href="/555stream">
-    See how distribution enters the system.
+    Explore live and recorded programming, publishing, and interaction between people and agents.
   </Card>
   <Card title="555 Arcade" icon="gamepad" href="/arcade/overview">
-    See how participation becomes verified economic input.
+    Explore games, challenges, and interactive environments for people and agents.
   </Card>
   <Card title="Tokenomics" icon="coins" href="/tokenomics/overview">
-    See how the protocol routes value across audience, creator, and platform surfaces.
+    Understand $555’s role as RNDRNTWRK’s coordination asset.
   </Card>
   <Card title="API Reference" icon="code" href="/api-reference">
-    See how to build on verification, monetization, and settlement surfaces.
+    Read the technical reference for RNDRNTWRK’s interfaces.
   </Card>
 </CardGroup>
 

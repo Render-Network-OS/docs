@@ -1,268 +1,150 @@
 ---
 title: "Countdown Announcements"
-description: "Time-based participation prompts for scheduling, launches, and synchronized engagement"
+description: "Prepare countdowns for scheduled moments, launches, and events in a stream."
 icon: "hourglass-half"
 ---
 
-<Info>**Status: Live**: This feature is operational.</Info>
+Countdown announcements show the time remaining until a chosen date and time, using flip cards for the digits. They can mark the start of a programme, an upcoming segment, a launch, or another scheduled moment in a stream.
 
-Time-based participation prompts that count down to a target date/time with smooth card-flip transitions. Used for scheduling, launches, and synchronized engagement moments across the network.
+This guide describes the countdown design and how to prepare it in a stream setup that includes announcement controls.
 
-## Architecture Flow
+## Prepare a Countdown
 
-```
-User → AnnouncementsPage → Backend API → Database
-                ↓
-        ControlPanelApp (loads & broadcasts)
-                ↓
-        BroadcastChannel (same browser) / WebSocket (OBS)
-                ↓
-        Overlay Page → AnnouncementsOverlay → FlipCountdown
-```
+### Choose the announcement and target time
 
-## Components
+Open the announcement controls and choose the countdown style. Add a label that tells the audience what is about to happen, then select the target date and time.
 
-### Frontend Components
+The form design includes shortcuts for **10 minutes**, **1 hour**, **1 day**, and **1 week** from the time you configure it. Check the selected date, time, and timezone before saving.
 
-1. **FlipCountdown.tsx** - Core countdown component
-   - Real-time countdown calculation
-   - Individual flip card per digit
-   - Auto mode for smart unit visibility
-   - Panchang-Bold font for numbers
+### Choose the displayed units
 
-2. **FlipCountdown.module.css** - 3D flip animations
-   - Perspective transforms
-   - Smooth easing transitions
-   - Card shadows and depth effects
+Use **Auto mode** for the display to adjust as the event approaches. Use **Manual mode** to choose which units remain visible.
 
-3. **AnnouncementsOverlay.tsx** - Overlay renderer
-   - Handles all announcement styles
-   - Manages placement and sizing
-   - Integrates FlipCountdown component
+### Set the appearance and placement
 
-4. **AnnouncementsPage.tsx** - Management UI
-   - Create/edit/delete interface
-   - Time presets (+10min, +1h, +1d, +1w)
-   - Auto mode toggle
-   - Live preview while editing
-   - Past date validation
+Choose the placement, card background, text colour, and font size. Leave room for the rest of the stream, including captions, participant names, and sponsor material.
 
-5. **ControlPanelApp.tsx** - State broadcaster
-   - Loads announcements from backend
-   - Broadcasts via BroadcastChannel
-   - Sends to overlay page in real-time
+### Preview, save, and check the overlay
 
-### Backend Components
+Use the form preview to review the countdown while editing. Save the announcement, enable its visibility, and check it in the actual stream layout.
 
-1. **model/model.go** - Database model
-   - Announcement struct with countdown fields
-   - JSON serialization tags for API responses
+Use the announcement management controls to edit or remove an entry when the schedule changes. Check the overlay again after saving a change.
 
-2. **handler/announcements.go** - API endpoints
-   - CRUD operations
-   - Countdown field validation
-   - Special handling for countdown style
-
-3. **Database Table**: `announcements`
-   - Standard announcement fields
-   - Countdown-specific fields:
-     - `target_time` (TIMESTAMP)
-     - `countdown_show_days` (BOOLEAN)
-     - `countdown_show_hours` (BOOLEAN)
-     - `countdown_show_minutes` (BOOLEAN)
-     - `countdown_show_seconds` (BOOLEAN)
-     - `countdown_auto_mode` (BOOLEAN)
-
-## Data Flow
-
-### 1. Creating a Countdown
-
-```
-User fills form → POST /api/announcements →
-Backend validates → Saves to DB →
-Returns announcement with ID →
-Frontend refreshes list →
-ControlPanelApp broadcasts to overlay
-```
-
-### 2. Displaying on Overlay
-
-```
-ControlPanelApp loads announcements (every 30s or on change) →
-Broadcasts via BroadcastChannel →
-Overlay page receives update →
-AnnouncementsOverlay filters visible announcements →
-FlipCountdown renders for 'countdown' style →
-Updates every second with flip animations
-```
-
-## UX Features
-
-### Smart Time Presets
-- **+10 min** - Quick countdown for imminent events
-- **+1 hour** - Short-term announcements
-- **+1 day** - Next-day events
-- **+1 week** - Weekly milestones
+## Time Display
 
 ### Auto Mode
-When enabled, automatically shows/hides units based on time remaining:
-- Hides "Days" if < 1 day
-- Hides "Hours" if < 1 hour
-- Always shows minutes and seconds
-- Keeps display clean and relevant
+
+The documented Auto mode design:
+
+- Hides days when less than one day remains.
+- Hides hours when less than one hour remains.
+- Keeps minutes and seconds visible.
 
 ### Manual Mode
-Full control over which units display:
-- Toggle Days on/off
-- Toggle Hours on/off
-- Toggle Minutes on/off
-- Toggle Seconds on/off
 
-### Validation
-- Prevents past dates with `min` attribute
-- Shows warning if past date is detected
-- Client-side validation before submission
-- Backend validation for countdown requirements
+Manual mode provides separate visibility controls for days, hours, minutes, and seconds. Choose the combination that fits the event and available space.
 
-### Live Preview
-- Shows countdown while creating (before saving)
-- Updates in real-time as settings change
-- Also shows in standard Preview section
-- Matches exact overlay appearance
+### Target-Time Validation
 
-## API Endpoints
+The form design includes a minimum selectable date and a warning for a past target. Both the form and the service need to validate the target time for a countdown announcement.
 
-### GET /v1/announcements
-Returns all announcements for authenticated user, including countdown fields.
-
-**Response**:
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "type": "manual",
-      "text": "Countdown",
-      "style": "countdown",
-      "placement": "top-bar",
-      "duration": 5,
-      "backgroundColor": "#000000",
-      "textColor": "#ffffff",
-      "fontSize": 16,
-      "is_visible": true,
-      "target_time": "2026-06-15T20:00:00Z",
-      "countdown_show_days": true,
-      "countdown_show_hours": true,
-      "countdown_show_minutes": true,
-      "countdown_show_seconds": true,
-      "countdown_auto_mode": false
-    }
-  ]
-}
-```
-
-### POST /v1/announcements
-Creates a new countdown announcement.
-
-**Request**:
-```json
-{
-  "type": "manual",
-  "text": "",
-  "style": "countdown",
-  "placement": "center",
-  "duration": 10,
-  "backgroundColor": "#000000",
-  "textColor": "#ffffff",
-  "fontSize": 16,
-  "isVisible": true,
-  "targetTime": "2026-06-16T15:00:00Z",
-  "countdownShowDays": true,
-  "countdownShowHours": true,
-  "countdownShowMinutes": true,
-  "countdownShowSeconds": true,
-  "countdownAutoMode": false
-}
-```
-
-### PUT /v1/announcements/\{id\}
-Updates an existing countdown.
-
-### DELETE /v1/announcements/\{id\}
-Deletes a countdown announcement.
+The target date and time determine the countdown. The announcement’s display-duration setting is a separate presentation setting.
 
 ## Placement Options
 
-All standard placement options supported:
-- `full-screen` - Full viewport
-- `top-bar` - Top center strip
-- `bottom-bar` - Bottom center strip
-- `center` - Dead center
-- `top-left` - Upper left corner
-- `top-right` - Upper right corner
-- `bottom-left` - Lower left corner
-- `bottom-right` - Lower right corner
+The documented placement design includes:
+
+| Placement | Position |
+|---|---|
+| `full-screen` | Full overlay area |
+| `top-bar` | Top-centre strip |
+| `bottom-bar` | Bottom-centre strip |
+| `center` | Centre of the overlay |
+| `top-left` | Upper-left corner |
+| `top-right` | Upper-right corner |
+| `bottom-left` | Lower-left corner |
+| `bottom-right` | Lower-right corner |
+
+Preview the placement at the output size your audience will see. A countdown that fits an editing window may need a different size or position in the stream layout.
 
 ## Styling
 
-### Colors
-- `backgroundColor` - Card background color
-- `textColor` - Digit and label color
+The card background and text colours control the contrast between the digits, labels, and surrounding stream.
 
-### Typography
-- Uses **Panchang-Bold** font (same as headers)
-- Font size scales all elements proportionally
-- Tabular numbers for consistent digit width
+The typography design uses **Panchang-Bold**, proportional scaling with the selected font size, and tabular numbers to keep digit widths consistent.
 
-### Animations
-- 3D flip animation on digit change
-- 0.6s duration with cubic-bezier easing
-- Smooth, professional transitions
+Each digit has its own flip card. The animation design uses a **0.6-second** transition with easing, perspective transforms, shadows, and depth effects.
+
+Check the whole countdown as well as an individual card: the label, visible units, spacing, and contrast should remain readable as the digits change.
+
+## Components and Data Flow
+
+The documented architecture separates editing, storage, distribution, and rendering.
+
+| Component | Role in the design |
+|---|---|
+| `AnnouncementsPage.tsx` | Create, edit, and remove announcements; provide time presets, unit controls, validation, and an editing preview |
+| `ControlPanelApp.tsx` | Load announcement state and send updates to the overlay |
+| `AnnouncementsOverlay.tsx` | Select visible announcements and apply their style, placement, and size |
+| `FlipCountdown.tsx` | Calculate time remaining, select displayed units, and render the digit cards |
+| `FlipCountdown.module.css` | Define the card layout, perspective, transitions, and shadows |
+| `model/model.go` | Describe stored announcement fields and their serialized representation |
+| `handler/announcements.go` | Handle announcement creation, retrieval, changes, removal, and countdown validation |
+
+An announcement begins in the management form. The service validates and stores it, and the control panel makes the saved state available to the overlay. The overlay selects visible announcements and renders the countdown style through the countdown component.
+
+The communication design includes **BroadcastChannel** for compatible pages in the same browser and **WebSocket** transport for a separate overlay client, such as an OBS browser source. Use the overlay connection supplied by the stream integration.
+
+Countdown calculation and announcement updates are separate responsibilities. The countdown component uses the target time to calculate the remaining time; the overlay connection carries changes to the announcement’s settings.
+
+## Announcement Data
+
+The documented frontend model uses the following fields. API and storage representations need an explicit mapping to these fields.
+
+| Field | Purpose |
+|---|---|
+| `id` | Identify a saved announcement |
+| `type` | Identify the announcement category |
+| `text` | Label or message associated with the announcement |
+| `style` | Select the presentation style; `countdown` selects the countdown design |
+| `placement` | Select the overlay position |
+| `duration` | Store the announcement’s display-duration setting |
+| `backgroundColor` | Set the card background colour |
+| `textColor` | Set digit and label colour |
+| `fontSize` | Set the typography scale |
+| `isVisible` | Control whether the announcement is shown |
+| `targetTime` | Store the target date and time |
+| `countdownShowDays` | Control day visibility in Manual mode |
+| `countdownShowHours` | Control hour visibility in Manual mode |
+| `countdownShowMinutes` | Control minute visibility in Manual mode |
+| `countdownShowSeconds` | Control second visibility in Manual mode |
+| `countdownAutoMode` | Enable automatic unit visibility |
+
+The handler design uses “Countdown” as the fallback label when the text is empty. A countdown still needs a valid target time.
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Countdown Not Showing on Overlay">
-    **Check**:
-    1. Is `isVisible` set to `true`?
-    2. Is the streamer ID correct in the overlay URL?
-    3. Open browser console - any errors?
-    4. Check if BroadcastChannel is working (same browser)
+  <Accordion title="Countdown is missing from the overlay">
+    Check that the announcement is saved and visibility is enabled. Confirm that the overlay belongs to the intended stream and uses the connection supplied by that integration.
 
-    **Solution**:
-    - Ensure countdown announcement has `is_visible = true` in database
-    - Verify ControlPanelApp is broadcasting (check console logs)
-    - Refresh overlay page to re-establish BroadcastChannel
+    Check the placement and size in case the countdown is outside the visible layout. If a saved change has not appeared, refresh the overlay and check its connection to the control panel.
   </Accordion>
+  <Accordion title="Preview does not match the saved countdown">
+    Keep the editing form open and check its visibility and unit settings while using the preview. Save the current values, then compare them with the countdown in the stream layout.
 
-  <Accordion title="Preview Erratic">
-    **Issue**: Preview flickering or not updating properly.
-
-    **Solution**:
-    - Fixed by ensuring `previewAnnouncements` includes form data when editing
-    - Only shows preview when form is open AND visibility is ON
-    - Uses consistent field mapping
+    For an integration, check that the form, saved announcement, and overlay use consistent field mappings.
   </Accordion>
+  <Accordion title="The target date or time is rejected">
+    Confirm that a target is set, that it is in the future, and that the date, time, and timezone represent the intended event.
 
-  <Accordion title="400 Bad Request">
-    **Issue**: Backend rejecting countdown creation.
+    For an integration, check the target-time format and the countdown-specific validation in both the form and service.
+  </Accordion>
+  <Accordion title="Settings change in the control panel but not in the overlay">
+    Check the update connection separately from the countdown display. A countdown can continue calculating time while showing older announcement settings.
 
-    **Causes**:
-    1. Missing `targetTime` for countdown style
-    2. Invalid date format
-    3. Missing JSON tags on backend model
-
-    **Solutions**:
-    - Client validates `targetTime` before submission
-    - Backend uses default "Countdown" text for empty text field
-    - All model fields have proper JSON tags
+    Confirm the correct overlay connection, reload the overlay, and check any reported connection or validation error.
   </Accordion>
 </AccordionGroup>
 
-## Performance
-
-- **Update Frequency**: 1 second (minimal CPU)
-- **Animation Cost**: CSS transforms (GPU accelerated)
-- **Network**: No polling (BroadcastChannel is local)
-- **Database**: Indexed on `target_time` for queries
+Related: [555stream](/555stream) · [CTRL Panel](/products/ctrl-control-panel) · [OBS Migration](/guides/obs-migration)

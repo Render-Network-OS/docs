@@ -1,46 +1,75 @@
 ---
-title: "Proposals & Treasury Splits"
+title: "Proposals & Economic Policy"
 icon: "gavel"
-description: "How economic policy evolves inside the network"
+description: "A proposed approach to changes in programme rules and allocations"
 ---
 
-<Info>**Status: Designed**: Governance voting is not yet live. Split proposals follow the designed framework.</Info>
+<Info>**Design proposal.** This page describes how changes to programme rules and economic policy could be proposed, reviewed, and put into effect.</Info>
 
-## Overview
+## Scope and Authority
 
-RNDRNTWRK economic policy is set by stakeholders, not operators. Stake-weighted voting configures the Treasury split between Creator and Stakeholders within a bounded range (e.g., 20/80 to 80/20). Proposals manage policy parameters like minimum buyback %, unbonding windows, and campaign guardrails.
+A proposal identifies the rule being changed, why the change is useful, and which participants, funds, or activities it would affect.
 
-## Governance Objects
+The programme’s terms would define who can submit a proposal, who makes the decision, and who is authorised to carry it out. Different matters may involve different responsibilities. A token holding alone does not establish decision-making authority across RNDRNTWRK.
 
-- SplitConfig: min/max bounds and current active split
-- BuybackPolicy: minimum buyback percentage (≥20%), optional ceiling
-- UnbondingPolicy: cooldown windows for staking exits
-- VenuePolicy: allow-lists for DEX venues and oracle sources
+For a programme using voting, the rules would explain eligibility, how votes are weighted, quorum, the decision threshold, and how abstentions are counted.
 
-## Lifecycle
+## Policy Topics
+
+The documented design uses four references to organise proposed changes. These names describe policy topics, not a deployed contract or interface.
+
+| Design reference | What a proposal needs to explain |
+| --- | --- |
+| `SplitConfig` | The source of value, recipients, proposed allocations, and any programme-specific bounds. |
+| `BuybackPolicy` | The token, eligible funding source, allocation basis, and policy being applied. |
+| `UnbondingPolicy` | The commitment involved and the conditions and timing for releasing it. |
+| `VenuePolicy` | The venues and information sources a policy permits, and the criteria for selecting them. |
+
+A proposal should show the existing rule alongside the requested change, including its effect on costs, agreed payments, committed funds, and unfinished activity.
+
+## Proposal Lifecycle
 
 <Steps>
-  <Step title="Proposal Creation">
-    Any stakeholder can propose a change; proposals specify target object, change set, and justification.
+  <Step title="Describe the change">
+    Identify the programme and policy topic. Set out the requested change, its purpose, the affected participants and resources, and the information needed to assess its effect.
   </Step>
-  <Step title="Voting Window">
-    Stake-weighted voting with quorum and majority thresholds. Abstain/No/Yes tallied with on-chain records.
+  <Step title="Review and decide">
+    Follow the programme’s stated decision rules. A voting process would record the eligible participation, vote weights, quorum, and result, including yes, no, and abstain responses.
   </Step>
-  <Step title="Execution Delay">
-    Short timelock before changes are enacted; circuit breakers apply to risky changes.
+  <Step title="Prepare the change">
+    Identify who would carry out the decision and when it would take effect. The rules would explain any delay, pause condition, or recovery action, and who may use those controls.
   </Step>
-  <Step title="Activation">
-    Contract state updated; public receipts and dashboards reflect new parameters.
+  <Step title="Record what took effect">
+    Connect the decision to the resulting policy version, effective date, and affected records. Distinguish an approved proposal from a change that has actually been applied.
   </Step>
 </Steps>
 
-## Parameters (Defaults)
+## Allocation Policy
 
-- Split bounds: 20/80 ↔ 80/20 (creator/stakeholders)
-- Minimum buyback: ≥20%
-- Unbonding: creator-defined within published limits
+Allocations start with a defined source of value and its obligations. Programme funding, service fees, settlement revenue, and token-related revenue keep their own records and allocation rules.
 
-<Note>
-  Related: [Fee Distribution](/tokenomics/fee-distribution) · [Creator Tokens](/tokenomics/creator-tokens)
-</Note>
+The Public Corpus v1.1 planning model, dated 28 August 2026, assigns **20% of eligible recognised platform revenue** to $555 buybacks after the source’s statutory, contractual, payment, refund, and other senior obligations have been met.
 
+That basis excludes gross transaction volume, user principal, creator and audience liabilities, restricted liquidity or route inventory, and borrowed or third-party capital. Remaining allocations depend on the source and economic lifecycle.
+
+This is a planned treasury policy, without a token-holder entitlement or a guarantee of purchases, liquidity, price, yield, or returns.
+
+[Fee Distribution](/tokenomics/fee-distribution) explains the allocation bases and planned source-specific models. A proposal needs to identify the exact source and policy it concerns.
+
+## Economic Programmes
+
+Proposed staking commitments and release conditions belong to the programme’s economic terms.
+
+SW4P provides the settlement role. SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
+
+A future programme would explain its commitments, release conditions, allocations, and decision rules before people participate. [SW4P Earn](/products/earn) describes the economic model; [Creator Tokens](/tokenomics/creator-tokens) covers proposed creator-specific participation and decision rights.
+
+## Related Pages
+
+- [Economic Model](/economics)
+- [$555 Token](/tokenomics/555-token)
+- [Fee Distribution](/tokenomics/fee-distribution)
+- [SW4P Earn](/products/earn)
+- [Creator Tokens](/tokenomics/creator-tokens)

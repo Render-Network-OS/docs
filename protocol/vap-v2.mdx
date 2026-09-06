@@ -1,126 +1,92 @@
 ---
 title: "VAP v2 Research"
 icon: "flask"
-description: "Where the proof layer is going next"
+description: "Research into contribution records, reporting periods, and participation integrity."
 ---
 
-# VAP v2: Research Design
+VAP v2 explores how to record contributions from people and agents, group those records into reporting periods, and review their integrity.
 
-<Warning>This is a research document. VAP v2 is validated but **not deployed to production**. The current live system runs VAP v1 (see [VAP documentation](/protocol/vap)).</Warning>
-
-VAP v2 is the next-generation proof layer for the RNDRNTWRK. After 14 weeks of research, the design has been validated with **234 tests passing** and **all 5 attack trees marked SECURE**.
+This page describes the research direction. The [VAP guide](/protocol/vap) introduces the underlying session and verification concepts.
 
 ## Design Principles
 
-### Entity-Agnostic
-Zero protocol components check entity type. No differential rates between human and AI participants. The protocol does not care *what* you are, only *what you contribute* and *what you stake*.
+### Participation by people and agents
 
-### Stake-Weighted Meritocracy
-Participation requires skin in the game. Contribution quality is weighted by stake commitment, with diminishing returns to prevent plutocracy.
+The design covers contributions from both people and software agents. Each experience defines the roles it supports, the actions those roles permit, and the records needed to assess a contribution.
 
-### Deterministic Economics
-All economic parameters are formula-driven. No discretionary allocation, no manual intervention.
+### Traceable contributions
 
-## Core Mechanics
+A contribution should remain connected to its session, the period it belongs to, the activity reported, and the checks applied to the record.
 
-### Epochs
-*   **Duration**: 6 hours (4 per day).
-*   **Boundary**: Settlement occurs at each epoch boundary.
-*   **Auctions**: Advertisers bid for attention credits within each epoch.
+### Defined programme rules
 
-### Attention Credits (AC)
-The atomic unit of verified attention.
-*   **Value**: 1 AC = $0.001 USDC.
-*   **Source**: Burn $555 at oracle price to mint equivalent ACs.
-*   **Usage**: Bidding unit in epoch auctions for verified airtime.
+Record validation and programme economics have different responsibilities. VAP addresses participation records. SW4P Earn provides the model for applying a programme’s funding and allocation rules to eligible activity.
 
-### The Burn Loop
-```
-$555 Token
-  → Burn at oracle price
-  → Mint equivalent Attention Credits
-  → Advertisers bid ACs in epoch auctions
-  → Contributors earn ACs from verified engagement
-  → ARP (10%) distributed to audience
-  → Remaining ACs redeemable for USDC
-```
+## Epochs as Reporting Periods
 
-## Stake Model
+An epoch is a defined period used to group contributions. Grouping records gives a programme a clear reporting window and supports comparison and batch processing.
 
-### Parameters
+The research needs to define the start and end of each period, how a contribution is associated with it, and how delayed, repeated, or incomplete records are handled.
 
-| Parameter | Value |
-| :--- | :--- |
-| **Minimum Stake** | 55,555 $555 |
-| **Weight Formula** | `ln(1 + S/27,778)` |
-| **Weight Cap** | 5.0 |
-| **Activation Period** | 7 days |
-| **Maturation** | 90 days to full weight |
+A programme’s terms would separately define any allocation or payment schedule through SW4P Earn.
 
-### Logarithmic Weighting
-The formula `ln(1 + S/27,778)` ensures diminishing returns on additional stake:
+## Contribution Records
 
-*   55,555 $555 (minimum) → weight ~1.0
-*   500,000 $555 → weight ~3.0
-*   5,000,000 $555 → weight ~5.0 (cap)
+The research uses the name **ContributionProof** for a signed contribution record.
 
-This makes Sybil attacks economically irrational, splitting stake across identities reduces total weight.
+The documented design includes:
 
-## ContributionProof
+| Information | Purpose |
+|---|---|
+| Session reference | Connect the contribution to its session |
+| Epoch reference | Identify the reporting period |
+| Hashed activity metrics | Link the summary to the activity being reported |
+| Ed25519 signature | Support checks on the signed record |
 
-The v2 proof format is a 296-byte structure containing:
-*   Session identifier and epoch reference.
-*   Stake reference and weight at time of contribution.
-*   Engagement metrics (hashed).
-*   Ed25519 signature.
+These describe the record’s intended contents. An implementation would define its encoding and how the verifier interprets each field.
 
-Entity-agnostic: the proof contains no field for entity type.
+Where a programme uses accepted contributions, SW4P Earn’s programme rules would connect those records to eligibility, funding, and allocations.
 
-## Security Validation
+## Integrity Research
 
-### Attack Tree Results
+The research considers several questions:
 
-| Attack | Strategy | ROI | Max Advantage | Verdict |
-| :--- | :--- | :--- | :--- | :--- |
-| **Sybil** | Split stake across identities | -81.7% | 1.80x at 100 IDs | SECURE |
-| **Fabrication** | Generate fake engagement | -179.7% | N/A | SECURE |
-| **Collusion** | Coordinate manipulation | Negative | Limited by stake | SECURE |
-| **Eclipse** | Network isolation | Negative | Detected by epoch validation | SECURE |
-| **Griefing** | Economic disruption | Negative | Self-harming | SECURE |
+| Concern | Question to resolve |
+|---|---|
+| Repeated or linked submissions | How are contributions distinguished and counted under the experience’s rules? |
+| Fabricated activity | How does a reported contribution relate to the underlying session and state? |
+| Coordinated manipulation | How are related submissions examined when their combined effect conflicts with the rules? |
+| Missing or isolated records | How are gaps, delayed updates, and incomplete reporting represented? |
+| Disruption | How does the system preserve useful session records when an operation is interrupted? |
 
-### Why Sybil Fails
-At 100 identities (the point of maximum Sybil advantage), the attacker achieves 1.80x return. But:
-*   Each identity requires the minimum 55,555 $555 stake.
-*   100 identities = 5,555,500 $555 at risk.
-*   The 1.80x advantage does not cover the opportunity cost of locked capital.
-*   ROI is -81.7% after accounting for stake requirements and gas costs.
+The relevant checks depend on the activity, permitted participant roles, and available records. Integrity findings need to explain the conditions examined and what the records show.
 
-## Governance
+## Governance and Operational Controls
 
-VAP v2 introduces a three-layer governance model:
+The governance research distinguishes three responsibilities:
 
-### 1. ve$555 DAO
-Token-weighted governance for protocol-level decisions:
-*   Epoch duration adjustments.
-*   Fee schedule changes.
-*   Minimum stake thresholds.
+1. **Set the rules:** define who may change session requirements, reporting periods, and verification parameters.
+2. **Adjust within defined bounds:** allow automated changes only within the limits set by those rules.
+3. **Operate within the assigned role:** observe the system, handle issues, and carry out permitted actions.
 
-### 2. Algorithmic Layer
-Automated parameter adjustment within DAO-set bounds:
-*   Dynamic difficulty adjustment based on network load.
-*   Automatic stake weight recalculation.
+A change needs a clear scope, an effective time, and a record of who or what authorised it.
 
-### 3. Alice Layer
-Real-time operational decisions within algorithmic bounds:
-*   Ad placement timing optimization.
-*   Engagement signal weighting.
-*   Anomaly detection and response.
+RNDRNTWRK uses Alice to develop and test its systems for research, planning, coding, and media operations. The research can use that reference-agent work to examine how an agent follows operational limits and records its decisions.
 
-## Migration Path
+[$555](/tokenomics/555-token) is RNDRNTWRK’s coordination asset. Any token-based decision rights would need to be defined by the relevant programme’s terms.
 
-v1 → v2 migration will be phased:
-1.  **Parallel Run**: v2 runs alongside v1, validating results match.
-2.  **Gradual Migration**: Traffic shifted from v1 to v2 incrementally.
-3.  **Sunset**: v1 deprecated once v2 is stable in production.
+## Considering a Future Transition
 
-No tokens at risk during migration. Stake activation begins after v2 goes live.
+The transition design considers comparing results, introducing changes gradually, and retiring an older version once its required responsibilities are covered.
+
+Such a transition would need to explain version differences, how ongoing sessions are handled, and which rules apply to records produced before and after a change.
+
+## Relationship to SW4P Earn
+
+Any staking arrangement or related allocation, reward, claim, payout, reserve, or reconciliation capability belongs to SW4P Earn and would be governed by its programme terms.
+
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation. The programme’s funding source and agreements determine its costs, eligible activity, recipients, and allocations.
+
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
+
+Related: [VAP](/protocol/vap) · [Security & Fairness](/guides/security-and-fairness)

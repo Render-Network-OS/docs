@@ -1,50 +1,51 @@
 ---
 title: "API Usage & Proxying"
 icon: "server"
-description: "Best practices for integrating with the live network safely"
+description: "Browser and server responsibilities for requests, credentials, and scoped events"
 ---
 
 ## Principles
 
-- Do not expose backend endpoints in frontend code
-- Use SSR/edge routes to forward authenticated calls
-- Keep secrets in server-only env vars
+An integration needs a clear boundary between what the browser can request and what a server is authorised to do. A proxy is useful when an operation needs server-held credentials or server-side access checks.
 
-## Server-Side Proxy Example
+A browser can use a public interface intended for browser clients. Protect service credentials and privileged operations according to the selected integration’s requirements.
 
-```ts
-// pages/api/tokens/balance.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+- Keep service secrets in server-only configuration.
+- Check the participant’s session and permission for the requested action.
+- Limit a proxy to the destinations, operations, and data the application needs.
+- Treat browser input and upstream responses as data to validate, not authority to act.
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const auth = req.headers.authorization;
-  const r = await fetch(process.env.BACKEND_URL + "/balance", {
-    headers: { authorization: auth || "" }
-  });
-  res.status(r.status).send(await r.text());
-}
-```
+The [API Reference](/api-reference) describes documented interface families. For a specific integration, use its product documentation for the host, supported operations, authentication, and request and response formats.
+
+## Server-Side Request Flow
+
+Consider an application that needs to show an account-scoped record. The browser requests that record through the application; the server checks access and obtains the permitted data from the relevant service.
+
+1. **Receive a defined request.** Accept the intended method and validate its parameters and body. The browser selects an application action, not an arbitrary upstream destination.
+2. **Check identity and authority.** Establish the account context and whether it may read the requested record. State-changing operations also need the relevant action permission and protections against unintended cross-site requests.
+3. **Prepare the upstream call.** Choose the configured destination and required operation. Use credentials intended for that service; forward a client credential only when the integration explicitly requires it.
+4. **Bound the work.** Apply suitable request limits and timeouts. Handle cancellation and failures so a disconnected client or unavailable service does not leave the request hanging.
+5. **Shape the response.** Return the fields the client needs and an appropriate status. Handle errors deliberately, keeping credentials and internal diagnostics out of the public response.
+6. **Record the outcome.** Retain enough server-side context to diagnose the request without logging secrets. For a state change, distinguish a rejected request, an uncertain result, and a confirmed update before retrying.
+
+A proxy adds a place to enforce these responsibilities. Its presence alone does not determine whether a request is authorised.
 
 ## WebSocket Proxy Notes
 
-- Terminate WS at the server and relay authorized events to clients
-- Avoid direct browser → backend WS when auth/secrets are involved
+Use a direct browser connection when the selected service supports browser authentication and appropriately scoped events. Use a server relay when a connection needs server-held credentials or access to privileged upstream events.
+
+For a relay, define the following responsibilities:
+
+- Authenticate the connection and authorise each requested subscription.
+- Associate events with the correct account, stream, or session before forwarding them.
+- Relay only the event types and fields that the client is permitted to receive.
+- Recheck access when a subscription or permission changes, and end access when it expires or is revoked.
+- Define connection cleanup, reconnect behaviour, and how the client recovers current state after missed events.
+
+Connection access and event access are separate checks. A client connected to one stream should receive only the information allowed for that stream.
 
 ## Cross-Links
 
-- OBS Integration: [OBS Integration Guide](/guides/obs-integration)
-- For Developers: [Developer Onboarding](/for-developers)
-
-
-
-
-
-
-
-
-
-
-
+- [API Reference](/api-reference) — Documented interface families and their responsibilities.
+- [OBS Integration Guide](/guides/obs-integration) — Media-source and stream integration.
+- [For Developers](/for-developers) — Application, identity, participation, and settlement context.

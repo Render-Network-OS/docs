@@ -1,90 +1,67 @@
 ---
 title: "Monetization Module"
 icon: "coins"
-description: "The surfaces where participation becomes revenue"
+description: "Plan briefs, placements, budgets, measurement, and payment terms."
 ---
 
-## Where Participation Becomes Revenue
+The Monetization Module describes the planned commercial configuration for advertising, sponsored builds, and media programmes. It brings together the brief, participants, placements, budget, pricing, measurement, and payment terms.
 
-The Monetization Module is where economic activity across the RNDRNTWRK converts into revenue. An on-chain marketplace, smart campaign automation, and verifiable analytics connect advertisers to invested communities and automate fair, transparent payouts.
-
-> **Current Revenue Flow (Feb 2026):** All gross revenue first passes through the **ARP (Audience Reward Pool), 10% off the top** goes to verified audience members via VAP attention proofs. The remaining 90% splits **50/50 between Creator and Platform**. The platform's 50% is then allocated: 70% treasury, **20% token buyback-and-burn** ($555), 5% $555 reserve, 5% SOL/USDC reserve.
-
- 
-## On‑chain Marketplace & Contracts
+## Programme Structure
 
 <AccordionGroup>
   <Accordion title="Monetization Contract" icon="file-code">
-    All campaign inflows are processed by the Monetization Contract and split automatically (10% ARP, 20%+ Buybacks, 70% Treasury). Includes event logs, attribution hooks, and payout receipts.
+    The [Monetization Contract](/products/monetization-contract) is the planned contract and record design behind the module. It connects a programme’s agreed terms with its funding, allocations, and payment records.
   </Accordion>
-  <Accordion title="Advertiser Options" icon="briefcase">
-    - Option A: Pay for ads (direct budget injection into the distribution system)
-    - Option B: Stake Creator Token (become a stakeholder and benefit from buybacks and Treasury)
+  <Accordion title="Advertiser Brief" icon="briefcase">
+    Define the audience, purpose, deliverables, and duration. Choose whether the work is a single sponsorship or a continuing partnership, and agree when creative work and results will be reviewed.
   </Accordion>
-  <Accordion title="Streamers & Collectives" icon="users">
-    Solo or collective campaigns with aggregated metrics, standardized placement specs, and automatic multi-party payouts via PDAs.
+  <Accordion title="Creators and Collectives" icon="users">
+    A programme can involve one creator, a collective, or several independent contributors. Use a shared brief and specify each contributor’s role, placements, schedule, and payment terms. Creators and advertisers agree how the sponsorship will be identified to the audience.
   </Accordion>
 </AccordionGroup>
 
-## Marketplace Overview
+## Formats and Placements
 
-- Transparent shopping: browse creators and collectives with verifiable metrics boosted by the 555 Engine (watch time, plays, engagement score, staking TVL)
-- Placement catalog: standardized specs for overlays (lower‑thirds, sidebars, takeovers), sponsored segments, product placements, and read‑outs
-- Trustless execution: fund campaigns on‑chain; receive real‑time receipts and attribution events
+Placement choices can include lower-thirds, sidebars, L-Bar layouts, takeovers, sponsored segments, product placements, and spoken read-outs.
 
-## Targeting, Budgeting, and Bidding
+For each proposed placement, define the dimensions, duration, creative assets, intended devices, and how it fits the stream or other media. Agree which placements the creator accepts and when they should appear.
+
+If comparing several creative versions, decide how often each should appear and how the results will be compared. Include time to review the assets and test the planned experience before the programme begins.
+
+## Audience, Budget, and Pricing
 
 <AccordionGroup>
-  <Accordion title="Targeting & Eligibility" icon="filter">
-    - Audience geography, language, device presets
-    - Engagement cohorts (e.g., stakers only, holders above threshold)
-    - Creator tags and category fit; brand safety alignment
+  <Accordion title="Audience and Creator Fit" icon="filter">
+    Describe the subject, audience, language, geography, and device requirements that matter to the brief. Use creator and category fit to choose suitable contributors and placements. Any proposed audience grouping needs a clear definition and an agreed way to measure it.
   </Accordion>
-
-  <Accordion title="Budgeting & Pacing" icon="credit-card">
-    - Total and daily budgets with pacing (even, as‑fast‑as‑possible)
-    - Frequency caps per viewer or per session
-    - Flight windows and dayparting
+  <Accordion title="Budget and Schedule" icon="credit-card">
+    Set the total budget and any daily spending limits. Agree whether spending should be spread evenly or concentrated in particular periods, along with start and end dates, times of day, and limits on how often a placement should appear to a viewer or during a session.
   </Accordion>
-
-  <Accordion title="Pricing & Auction" icon="layers">
-    - Fixed price or auction (CPM/CPC/CPA models)
-    - Reserve floors and auto‑bid ranges
-    - Creative weighting and A/B variants
+  <Accordion title="Pricing and Bidding" icon="layers">
+    Choose a fixed fee or a unit-based price, such as per thousand impressions (CPM), per click (CPC), or per agreed action (CPA). Define what counts toward the price. If a proposed programme uses an auction, specify the minimum accepted price, bidding limits, and who can change them.
   </Accordion>
 </AccordionGroup>
 
-## Brand Safety & Measurement
+## Brand Safety and Measurement
 
-- Category filters, blocklists/allowlists, and fallback creatives
-- Measurement: impressions, viewability, CTR, conversions; on‑chain receipts and public dashboards
-- Third‑party beacons optional; first‑party analytics included
+Agree the content categories, creators, and placements the brand accepts or excludes. Specify fallback creative and what should happen if a placement needs to change.
 
-## Payouts & Distribution
+Choose measures that match the programme’s purpose: impressions, viewability, clicks, click-through rate, conversions, or relevant participation. Define each measure and any conversion event before the programme begins.
 
-The actual revenue flow as implemented (SOW v2):
+Set the reporting sources, who supplies the data, the reporting schedule, and any measurement limits. These choices can include first-party data or agreed third-party measurement.
 
-1. **10% ARP** off the top of all gross revenue → Audience Reward Pool (verified attention payouts via VAP)
-2. **50% Creator** (of post-ARP amount) → Creator's wallet
-3. **50% Platform** (of post-ARP amount) → Platform allocation:
-   - 70% → Treasury (operations, development, growth)
-   - **20% → Token buyback-and-burn** ($555, creates structural deflationary pressure)
-   - 5% → $555 token reserve
-   - 5% → SOL/USDC reserve
-- Programmatic payouts via PDAs with receipt events
-- Weekly USDC settlement (Mondays 05:55 CST) for points/credits
+Use payment records and, where applicable, on-chain receipts to reconcile funding and payouts. Review programme results at the agreed checkpoints to decide what to continue or adjust.
 
-## Workflows
+## Funding, Settlement, and Allocation
 
-<AccordionGroup>
-  <Accordion title="Advertiser Workflow" icon="briefcase">
-    1) Select creators or a collective → 2) Define targeting, budget, and creative → 3) Fund campaign → 4) Monitor live metrics and receipts → 5) Settlement and reports
-  </Accordion>
-  <Accordion title="Creator Workflow" icon="user">
-    1) Opt‑in placements and safe lists → 2) Configure schedule and caps → 3) Go live (or Always‑On) → 4) Review receipts and payouts; adjust buyback % and split bounds as needed
-  </Accordion>
-</AccordionGroup>
+Programme funding, service fees, settlement revenue, and any token-related revenue remain distinct. Each programme defines its funding, direct costs, obligations, agreed recipients, and platform share.
+
+SW4P is the programmable settlement engine for RNDRNTWRK and other applications. It coordinates payment routes, fees, execution, confirmation, recovery, and accounting for the result.
+
+If a proposed programme includes audience incentives, specify their funding source, eligibility, and distribution terms. [SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
 <Note>
-  Continue with: [Monetization Contract](/products/monetization-contract)
+Continue with: [Monetization Contract](/products/monetization-contract) · [For Advertisers](/for-advertisers) · [Economic Model](/economics)
 </Note>

@@ -1,131 +1,102 @@
 ---
 title: "Protocol Overview"
 icon: "shield"
-description: "The infrastructure layer that verifies participation, routes value, and connects products across Render Network Protocol."
+description: "Shared rules and interfaces for identity, authority, participation, and value"
 ---
 
-<Note>Some protocol interfaces and facilitator options are still evolving as the system expands through pilots and partner integrations. See the component pages for current implementation status.</Note>
+The protocol is the shared rules and interfaces RNDRNTWRK is developing so different products and operators can work together—connecting identity, authority, ownership, and value.
 
-**The protocol layer is the infrastructure beneath Render Network Protocol. It is responsible for verifying participation, routing value, and exposing the payment and settlement surfaces that the rest of the network builds on.**
+An activity can involve several services. Those services need to agree on who is acting, what they are allowed to do, what happened, who owns the result, and how any payment is handled.
 
-**When a stream goes live, a game session starts, or an agent acts inside the network, the protocol layer is what verifies that activity, decides how value moves, and keeps every surface on the same economic logic.**
+## What the Protocol Connects
 
-## What the Protocol Layer Is Responsible For
+### Participants and authority
 
-### Verify participation
-The protocol verifies that activity actually happened, rather than relying only on platform-reported metrics.
+Identify the people, agents, companies, or services involved. Record the role each has, the resources it can use, and the limits on its actions.
 
-### Route value
-Once participation or payment enters the network, the protocol decides how value moves through the system.
+### Work and participation
 
-### Expose payment surfaces
-The protocol gives products and integrations programmable ways to request, route, and confirm payments.
+Connect an activity to its participants and results. A contribution record needs enough information to explain what it represents and how it was checked.
 
-### Support settlement
-The protocol connects activity and payments to the settlement logic underneath the network.
+### Ownership and obligations
 
-### Keep humans and AI agents on the same rules
-The protocol does not need one set of economic rules for humans and another for agents. It handles both through the same verification and routing logic.
+Keep track of who owns the work, how it may be used, and any agreed payment or other commitment arising from the activity.
 
-## The Core Protocol Components
+### Payment and settlement
 
-The payment and verification surface is sometimes referred to internally as **555x402**.
+Connect payment requests to the authority behind them, the intended recipients, and the outcome. Retain the information needed to follow an interrupted or incomplete operation.
 
-What matters here is not the internal label. What matters is what the stack does.
+## Components and Roles
 
-| Component | Role | What it handles | Current status |
-|---|---|---|---|
-| [VAP](/protocol/vap) | Verification layer | Session verification and proof of participation | v1 live, v2 validated |
-| [AGG](/protocol/agg) | Routing layer | Payment routing and settlement coordination | Partially implemented |
-| [Hyperlink](/protocol/hyperlink) | Payment surface | Programmable payment links, embedded wallets, and attribution | Partially implemented |
-| [sw4p](/sw4p) | Settlement rail | Cross-chain USDC movement across supported chains | Live |
+| Component | Role in the system |
+|---|---|
+| **555ID** | Identity and permissions for people, agents, and the relationships between them. |
+| [VAP](/protocol/vap) | The participation-record and verification design. |
+| [AGG](/protocol/agg) | Payment routing and coordination between a request and settlement. |
+| [Hyperlink](/protocol/hyperlink) | A link-based way to present a payment or participation request. |
+| [SW4P](/sw4p) | The programmable settlement engine for RNDRNTWRK and other applications. |
+| [SW4P Earn](/products/earn) | Source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation. |
 
-## Key Protocol Concepts
+The component pages explain these roles and their design in more detail. A role in the system is separate from the capabilities offered by a particular product setup.
 
-### Verified participation
-The protocol turns activity into something it can verify. That is what makes the network more than a content platform or a game layer.
+## Participation and Evidence
 
-### Audience inventory
-Once participation is verified, it becomes inventory the network can measure, rank, and monetize.
+A participation record can describe a game session, a contribution to a programme, or another defined activity. Checking the record means comparing it with the activity's rules and the available evidence.
 
-### Entity-agnostic participation
-The same protocol logic can support humans and AI agents participating inside the same system.
+The result needs to remain connected to the session, participant, and method used to check it. That helps an experience explain its scores, reports, or other uses of the record.
 
-## How the Protocol Connects to Products
+[Audience Inventory](/protocol/audience-inventory) explores how participation records can inform media placements and commercial arrangements.
 
-The protocol is not the same thing as the products built on top of it.
+## People and Agents
 
-Products are the places where the protocol becomes visible.
+People and agents can participate through the same foundations. They may act separately, collaborate, or operate under authority delegated by another participant.
 
-### 555stream
-555stream is the distribution surface. It uses the protocol layer when live media, monetization, and settlement need to stay on one set of rules.
+Each role still has its own permissions, resources, and agreements. An agent's record should identify what it was authorised to do and the activity carried out under that authority.
 
-### 555 Arcade
-Arcade is the participation surface. It uses the protocol layer to verify play, rank activity, and route rewards.
+## How Products Use the Foundations
 
-### Alice
-Alice is the operator proof. She uses the same live surfaces and economic logic the rest of the system uses.
+- **555stream:** Media production, programming, publishing, and interaction.
+- **555 Arcade:** Games, challenges, and interactive experiences with records of participation and results.
+- **Alice:** RNDRNTWRK's agent for developing and testing research, planning, coding, and media operations.
+- **Commercial programmes:** Agreements about work, funding, recipients, and reported results.
 
-### Monetization Surfaces
-Ad formats, payment links, and creator-side economic flows rely on the protocol layer to verify, route, and settle value.
+SW4P connects payment instructions to route selection, fees, execution, confirmation, recovery, and accounting for the result.
 
-## Current Implementation Status
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
 
-Render Network Protocol is live in parts and expanding in parts.
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
 
-### Live now
-- VAP v1
-- sw4p
-- Product surfaces that already rely on protocol verification and routing
+## Working with the Component Documentation
 
-### Expanding now
-- AGG
-- Hyperlink
-- Broader programmable payment and monetization surfaces
+Start with the component that matches the activity you want to support. Use its source and integration reference for the version you are working with, including its interfaces, authority requirements, and supported behaviour.
 
-### Deeper work continues
-- VAP v2
-- Broader settlement and payment abstractions
-- More complete contract-layer execution across the network
+The [Roadmap](/protocol/roadmap) explains how the broader system is intended to develop.
 
-## What This Page Does Not Cover
-
-This page is the overview.
-
-It does **not** try to be:
-- The full HTTP 402 integration guide
-- The source of truth for tokenomics
-- The source of truth for payout splits
-- The developer implementation page
-- The roadmap page
-
-Use the deeper pages for those details.
-
-## Where to Go Deeper
+## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="VAP" icon="eye" href="/protocol/vap">
-    See how participation is verified.
+    Read about participation records and verification.
   </Card>
   <Card title="AGG" icon="route" href="/protocol/agg">
-    See how payment routing and settlement coordination work.
+    Follow the payment-routing model.
   </Card>
   <Card title="Hyperlink" icon="link" href="/protocol/hyperlink">
-    See how programmable payment links fit into the system.
+    See how payment and participation requests can be presented through links.
   </Card>
   <Card title="Economic Model" icon="chart-line" href="/economics">
-    See how value moves once it enters the network.
+    Understand funding, costs, payments, and the platform's share.
   </Card>
   <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
-    See the current allocation model and source-of-truth split.
+    Read about source-specific allocation policies.
   </Card>
   <Card title="For Developers" icon="code" href="/for-developers">
-    See how to build against the live surfaces.
+    Explore the architecture and integration responsibilities.
   </Card>
   <Card title="Architecture" icon="sitemap" href="/architecture/overview">
-    See how the protocol sits across client, service, agent, and chain layers.
+    See how client, service, agent, and settlement components fit together.
   </Card>
-  <Card title="sw4p" icon="bridge" href="/sw4p">
-    See the settlement engine beneath cross-chain movement.
+  <Card title="SW4P" icon="bridge" href="/sw4p">
+    Read about the settlement engine and operation lifecycle.
   </Card>
 </CardGroup>

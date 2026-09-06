@@ -1,1195 +1,318 @@
 ---
 title: "API Reference"
 icon: "code"
-description: "Public interfaces for building on RNDRNTWRK"
+description: "Documented interfaces for sessions, games, participation, media, and programme records."
 ---
 
-# API Reference
+This page is a catalogue of RNDRNTWRK’s documented interface design. It describes operation names, their intended responsibilities, and the information an integration needs to handle.
 
-Complete reference for the RNDRNTWRK backend API. All endpoints are served from a single REST server and use JSON for request/response bodies unless otherwise noted.
+The route symbols below are design references, not a deployment-specific API contract. For a specific integration, use its product documentation for the host, supported operations, authentication, and exact request and response schemas.
 
-**Base URL:** `https://api.rndrntwrk.com`
+Placeholders such as `{id}`, `{epoch}`, and `{wallet}` identify a resource within a route. Their format, validation, and permitted use belong to the selected integration.
 
 ## Authentication Model
 
-Most endpoints require a valid session cookie obtained through the **SIWS (Sign In With Solana)** flow. The flow works as follows:
+The documented account model includes Sign In With Solana, or SIWS: a client obtains a challenge, asks a wallet to sign the sign-in message, and submits the result for verification. The design then associates subsequent requests with an authenticated session.
 
-1. Request a nonce via `POST /auth/nonce`
-2. Sign the nonce with your Solana wallet
-3. Submit the signed message to `POST /auth/verify` to receive a session cookie
-4. Include the session cookie on all subsequent requests
+A signing request needs to make its purpose clear to the participant. The wallet handles signing; the application uses the resulting signed message.
 
-Admin endpoints additionally require a server-side admin token passed via the `requireAdminToken` middleware.
-
----
+The integration defines session creation, expiry, logout, and which operations an account may perform. Account sessions, service webhooks, and operator controls have different authority requirements. People and agents act within the permissions assigned to them.
 
 ## Authentication
 
-<AccordionGroup>
-  <Accordion title="POST /auth/nonce" icon="key">
-    **Request a sign-in nonce**
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /auth/nonce` | Obtain the challenge used in the sign-in design. |
+| `POST /auth/verify` | Submit signed sign-in information for verification and session creation; the documented result includes the associated wallet address. |
+| `POST /auth/logout` | End an account session and clear its client-side session state. |
+| `GET /me` | Read the account associated with the session, including its participant reference and relevant account metadata. |
+| `POST /auth/social/link/start` | Begin linking a social account to the authenticated account; the design includes a redirect or verification challenge. |
+| `POST /auth/social/link/verify` | Complete social linking using the response required by the selected provider integration. |
 
-    Generates a one-time nonce for the SIWS authentication flow. The client signs this nonce with their Solana wallet private key and submits it to `/auth/verify`.
-
-    - **Auth:** None
-    - **Returns:** JSON object containing the nonce string
-  </Accordion>
-
-  <Accordion title="POST /auth/verify" icon="shield-check">
-    **Verify signed nonce and create session**
-
-    Validates the signed SIWS message. On success, sets an authenticated session cookie and returns the wallet address.
-
-    - **Auth:** None (establishes auth)
-    - **Returns:** Session cookie + wallet address
-  </Accordion>
-
-  <Accordion title="POST /auth/logout" icon="right-from-bracket">
-    **End the current session**
-
-    Destroys the server-side session and clears the session cookie.
-
-    - **Auth:** Session cookie
-    - **Returns:** `200 OK`
-  </Accordion>
-
-  <Accordion title="GET /me" icon="user">
-    **Get current authenticated user**
-
-    Returns the wallet address and account metadata for the currently authenticated session.
-
-    - **Auth:** Session cookie
-    - **Returns:** Wallet address, eligibility status, and session metadata
-  </Accordion>
-
-  <Accordion title="POST /auth/social/link/start" icon="link">
-    **Start social account linking**
-
-    Initiates the flow to link a social account (e.g. Twitter/X) to the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** OAuth redirect URL or verification challenge
-  </Accordion>
-
-  <Accordion title="POST /auth/social/link/verify" icon="circle-check">
-    **Verify social account link**
-
-    Completes the social account linking flow by verifying the OAuth callback or challenge response.
-
-    - **Auth:** Session cookie
-    - **Returns:** Linked social account confirmation
-  </Accordion>
-</AccordionGroup>
-
----
+The session-cookie and social-linking details need to match the chosen service. A session reference identifies an account context; individual actions still depend on that account’s permissions.
 
 ## Arcade & Gaming
 
-<AccordionGroup>
-  <Accordion title="GET /game/{id}/rank" icon="ranking-star">
-    **Get wallet rank for a game**
+This family connects games, sessions, scores, saved state, and rankings. An experience’s rules define valid participation and how results are interpreted.
 
-    Returns the current authenticated wallet's rank within a specific game leaderboard.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /game/{id}/rank` | Account-scoped rank for a game, with score and percentile information. |
+| `POST /arcade/score` | Submit a score for checking and recording under the game’s rules; retain the submission result and its relationship to the leaderboard. |
+| `GET /arcade/state` | Arcade presentation state, such as theme, event information, and display metadata. |
+| `GET /arcade/cabinets` | Cabinet descriptions, game identifiers, display metadata, and any recorded control or possession state. |
+| `GET /game/{id}/state` | Read saved game state associated with the account and game. |
+| `PUT /game/{id}/state` | Save game progress and retain the service’s recorded outcome. |
+| `POST /game/{id}/record` | Submit a completed run or match record, with its session and result context. |
+| `POST /game/{id}/play` | Record the start of a play session for the specified game. |
+| `GET /game/{id}/leaderboard` | Per-game rankings. The documented filter is `period`, with `day`, `week`, `month`, and `year` as design values. |
+| `GET /game/{id}/stats` | Aggregate game information, such as play counts and participant counts. |
+| `GET /game/referral/leaderboard` | Referral-activity rankings presented in the game-leaderboard format. |
 
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Rank position, score, and percentile
-  </Accordion>
+A score submission, an accepted result, and a point entry describe different steps. Points are interpreted under the experience’s terms. The [VAP guide](/protocol/vap) describes participation-record verification.
 
-  <Accordion title="POST /arcade/score" icon="gamepad">
-    **Submit an arcade score**
-
-    Records a game score for the authenticated wallet. Scores are validated server-side and contribute to leaderboard standings and point accrual.
-
-    - **Auth:** Session cookie
-    - **Returns:** Recorded score confirmation and updated rank
-  </Accordion>
-
-  <Accordion title="GET /arcade/state" icon="ghost">
-    **Get current arcade state**
-
-    Returns the current arcade theme, active events, and visual state. Used by the frontend to render the Alice-themed arcade environment.
-
-    - **Auth:** None
-    - **Returns:** Theme configuration, active event data, and arcade metadata
-  </Accordion>
-
-  <Accordion title="GET /arcade/cabinets" icon="tv-retro">
-    **List arcade cabinets**
-
-    Returns all arcade cabinets and their current possession state (which entity or character is controlling each cabinet).
-
-    - **Auth:** None
-    - **Returns:** Array of cabinet objects with game ID, possession status, and display metadata
-  </Accordion>
-
-  <Accordion title="GET /game/{id}/state" icon="floppy-disk">
-    **Get game state**
-
-    Retrieves the persisted game state for the authenticated wallet in a specific game.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Serialized game state object
-  </Accordion>
-
-  <Accordion title="PUT /game/{id}/state" icon="floppy-disk">
-    **Save game state**
-
-    Persists game state for the authenticated wallet. Used for saving progress in stateful games.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Confirmation of saved state
-  </Accordion>
-
-  <Accordion title="POST /game/{id}/record" icon="medal">
-    **Post a game record**
-
-    Submits a finalized game record (e.g. completed run, match result) that is immutably logged.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Recorded entry confirmation
-  </Accordion>
-
-  <Accordion title="POST /game/{id}/play" icon="play">
-    **Register a game play session**
-
-    Logs that the user started a play session for a specific game. Used for engagement tracking and quest completion.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Play session acknowledgment
-  </Accordion>
-
-  <Accordion title="GET /game/{id}/leaderboard" icon="trophy">
-    **Get per-game leaderboard**
-
-    Returns the leaderboard for a specific game. Supports period-based filtering.
-
-    - **Auth:** None
-    - **Path params:** `id` -- game identifier
-    - **Query params:** `period` -- `day`, `week`, `month`, or `year`
-    - **Returns:** Ranked array of wallet addresses and scores
-  </Accordion>
-
-  <Accordion title="GET /game/{id}/stats" icon="chart-bar">
-    **Get game statistics**
-
-    Returns aggregate statistics for a specific game (total plays, unique players, etc.).
-
-    - **Auth:** None
-    - **Path params:** `id` -- game identifier
-    - **Returns:** Aggregate game stats object
-  </Accordion>
-
-  <Accordion title="GET /game/referral/leaderboard" icon="user-group">
-    **Get referral pseudo-game leaderboard**
-
-    Returns a leaderboard ranked by referral activity, formatted like a game leaderboard.
-
-    - **Auth:** None
-    - **Returns:** Ranked array of wallets by referral performance
-  </Accordion>
-</AccordionGroup>
-
----
+Cabinet control also needs the authority of the relevant creator or operator. Reading a cabinet’s state and changing its game session are separate responsibilities.
 
 ## Battles
 
-<AccordionGroup>
-  <Accordion title="POST /battle/create" icon="swords">
-    **Create a new battle**
+The battle design covers creating an instance, finding instances, and joining a chosen game session.
 
-    Creates a head-to-head or multiplayer battle instance for a specific game.
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /battle/create` | Create a battle description with its game configuration, instance identifier, and joining information. |
+| `GET /battle/active` | List battle records by their recorded joinable or in-progress state. |
+| `POST /battle/{id}/join` | Request participation in a battle and obtain the resulting participant/session state. |
 
-    - **Auth:** Session cookie
-    - **Returns:** Battle ID, game configuration, and join details
-  </Accordion>
-
-  <Accordion title="GET /battle/active" icon="bolt">
-    **Get active battles**
-
-    Lists all currently active (joinable or in-progress) battles.
-
-    - **Auth:** None
-    - **Returns:** Array of active battle objects
-  </Accordion>
-
-  <Accordion title="POST /battle/{id}/join" icon="hand-fist">
-    **Join an active battle**
-
-    Enrolls the authenticated wallet into an existing battle.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- battle identifier
-    - **Returns:** Battle state with participant list
-  </Accordion>
-</AccordionGroup>
-
----
+The game’s rules need to define who may join, when entries close, and how the application handles a full, ended, or interrupted battle.
 
 ## Lottery
 
-<AccordionGroup>
-  <Accordion title="POST /round" icon="dice">
-    **Create a lottery round** (legacy)
+The round-based design includes round descriptions, entries, result selection, and supporting records. Each experience would define its entry rules, permitted operators, selection method, and treatment of interrupted rounds.
 
-    Creates a new lottery round. This is the original endpoint kept for backwards compatibility.
+Prize allocations, reward claims, and payout records belong to [SW4P Earn](/products/earn).
 
-    - **Auth:** Session cookie
-    - **Returns:** Round ID and configuration
-  </Accordion>
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
 
-  <Accordion title="POST /round/{id}/ticket" icon="ticket">
-    **Buy a lottery ticket** (legacy)
+### Round and entry records
 
-    Purchases a ticket for an existing round.
+The catalogue documents an earlier `/round` family alongside a `/chat/round` family.
 
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Ticket number and transaction confirmation
-  </Accordion>
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /round` | Describe a proposed round and its configuration. |
+| `POST /round/{id}/ticket` | Describe an entry request and any associated payment reference under the round’s terms. |
+| `POST /round/{id}/finalize` | Describe a finalisation request for the authorised round controller, including selection and result records. |
+| `GET /round/{id}` | Round metadata, recorded status, entries, and any programme prize information. |
+| `GET /chat/round/active` | The round identified as active in the chat-round records, or an empty result. |
+| `GET /chat/round/{id}/entries` | Entry records associated with a chat round. |
+| `GET /chat/round/recent-finalized` | Summaries of rounds recorded as finalised. |
+| `GET /chat/status` | Chat-round connection and operation status information. |
 
-  <Accordion title="POST /round/{id}/finalize" icon="flag-checkered">
-    **Finalize a lottery round** (legacy)
+### Results and supporting records
 
-    Triggers the finalization and winner selection for a round.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /chat/round/{id}/winning-numbers` | The recorded selection result and information explaining its derivation. |
+| `GET /chat/round/{id}/audit` | The round’s activity and selection record, including references to randomness, entries, and checks where the design uses them. |
+| `GET /chat/round/{id}/entries/root` | A Merkle-root reference for the recorded entries in a design that uses that representation. |
+| `GET /chat/round/{id}/winners` | The selected recipients and the programme amounts recorded against them. |
+| `GET /chat/round/{id}/payouts` | Programme payout state and associated transaction references. |
 
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Winning ticket, payout details
-  </Accordion>
+Selection records and payment records need to remain connected to the same round. The application should distinguish a selected result, an allocation, and a confirmed payment.
 
-  <Accordion title="GET /round/{id}" icon="circle-info">
-    **Get a lottery round** (legacy)
-
-    Retrieves metadata and status for a specific round.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Round object with status, entries, and prize pool
-  </Accordion>
-
-  <Accordion title="POST /chat/round" icon="comments">
-    **Create a chat-based lottery round**
-
-    Creates a new chat-integrated lottery round where entries are submitted via the chat system.
-
-    - **Auth:** Admin token
-    - **Returns:** Round ID and configuration
-  </Accordion>
-
-  <Accordion title="GET /chat/round/active" icon="circle-play">
-    **Get the active chat round**
-
-    Returns the currently active chat-based lottery round, if any.
-
-    - **Auth:** None
-    - **Returns:** Active round object or `null`
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/entries" icon="list-ol">
-    **Get entries for a chat round**
-
-    Returns all entries submitted to a specific chat round.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Array of chat entry objects
-  </Accordion>
-
-  <Accordion title="POST /chat/round/{id}/start" icon="play">
-    **Start a chat round**
-
-    Transitions a chat round from pending to active, allowing entries.
-
-    - **Auth:** Admin token
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Updated round state
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/winning-numbers" icon="star">
-    **Get winning numbers**
-
-    Returns the winning numbers for a finalized chat round.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Winning number set and derivation proof
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/audit" icon="magnifying-glass">
-    **Get round audit trail**
-
-    Returns the full audit trail for a round including randomness source, entry hashes, and selection proof.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Audit object with cryptographic proofs
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/entries/root" icon="tree">
-    **Get Merkle root of entries**
-
-    Returns the Merkle root hash of all entries in a chat round for on-chain verification.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Merkle root hash
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/winners" icon="award">
-    **Get chat round winners**
-
-    Returns the list of winners for a finalized chat round.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Array of winner objects with wallet and prize
-  </Accordion>
-
-  <Accordion title="GET /chat/round/{id}/payouts" icon="money-bill-transfer">
-    **Get round payout details**
-
-    Returns payout transaction details for a finalized round.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Payout status and transaction signatures
-  </Accordion>
-
-  <Accordion title="GET /chat/round/recent-finalized" icon="clock-rotate-left">
-    **Get recently finalized rounds**
-
-    Returns a list of recently finalized chat rounds for display.
-
-    - **Auth:** None
-    - **Returns:** Array of finalized round summaries
-  </Accordion>
-
-  <Accordion title="GET /chat/status" icon="signal">
-    **Get chat system status**
-
-    Returns the current status of the chat/lottery system, including connection health.
-
-    - **Auth:** None
-    - **Returns:** Status object with system health indicators
-  </Accordion>
-</AccordionGroup>
-
----
+Chat-round creation and start controls belong to the operator responsibilities described under [Admin](#admin).
 
 ## Leaderboards
 
-<AccordionGroup>
-  <Accordion title="GET /leaderboard/global" icon="earth-americas">
-    **Get global leaderboard**
+Leaderboard records describe rankings under a specified scoring model and reporting period.
 
-    Returns the cross-game global leaderboard combining points from all sources (games, quests, referrals).
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /leaderboard/global` | Combined rankings from the experience’s chosen score sources. The documented query names are `period`, `limit`, and `offset`. |
+| `GET /leaderboard/global/stats` | Aggregate participation and score information for the combined leaderboard. |
+| `GET /leaderboard/global/period-stats` | Aggregate information for the requested `period`. |
+| `GET /leaderboard/global/rank` | The account’s position, score, and percentile in the combined ranking. |
+| `GET /leaderboard/quests` | Rankings based on the quest-point records selected by the experience. |
+| `GET /leaderboard/quests/rank` | The account’s quest rank and point total. |
+| `GET /leaderboard/quests/stats` | Aggregate quest-leaderboard information. |
 
-    - **Auth:** None
-    - **Query params:** `period` -- `day`, `week`, `month`, or `year`; `limit`, `offset`
-    - **Returns:** Ranked array of wallets with composite scores
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/global/stats" icon="chart-line">
-    **Get global leaderboard stats**
-
-    Returns aggregate statistics for the global leaderboard (total participants, total points distributed, etc.).
-
-    - **Auth:** None
-    - **Returns:** Global stats summary object
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/global/period-stats" icon="calendar-days">
-    **Get period-based global stats**
-
-    Returns global stats scoped to a specific time period.
-
-    - **Auth:** None
-    - **Query params:** `period` -- `day`, `week`, `month`, or `year`
-    - **Returns:** Period-scoped stats object
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/global/rank" icon="hashtag">
-    **Get current wallet's global rank**
-
-    Returns the authenticated wallet's rank on the global leaderboard.
-
-    - **Auth:** Session cookie
-    - **Returns:** Rank position, score, and percentile
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/quests" icon="scroll">
-    **Get quest leaderboard**
-
-    Returns a leaderboard ranked by social/quest points only (excludes game scores).
-
-    - **Auth:** None
-    - **Returns:** Ranked array of wallets with quest point totals
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/quests/rank" icon="hashtag">
-    **Get current wallet's quest rank**
-
-    Returns the authenticated wallet's rank on the quest leaderboard.
-
-    - **Auth:** Session cookie
-    - **Returns:** Rank position and quest point total
-  </Accordion>
-
-  <Accordion title="GET /leaderboard/quests/stats" icon="chart-pie">
-    **Get quest leaderboard stats**
-
-    Returns aggregate statistics for the quest leaderboard.
-
-    - **Auth:** None
-    - **Returns:** Quest leaderboard stats summary
-  </Accordion>
-</AccordionGroup>
-
----
+The documented period values are `day`, `week`, `month`, and `year`. An integration needs to define the period boundaries, score sources, pagination, and visibility rules it uses.
 
 ## Rewards
 
-<AccordionGroup>
-  <Accordion title="POST /api/rewards/claim" icon="hand-holding-dollar">
-    **Claim a reward**
+This family describes financial programme records and proposed claim operations within [SW4P Earn](/products/earn).
 
-    Submits a Merkle proof to claim a reward for a specific epoch. The proof is verified on-chain and tokens are transferred to the wallet.
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
 
-    - **Auth:** Session cookie
-    - **Returns:** Transaction signature and claim confirmation
-  </Accordion>
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
 
-  <Accordion title="GET /api/rewards/epoch/{epoch}/proof/{wallet}" icon="certificate">
-    **Get reward proof for a wallet**
+The symbols below preserve the documented reward-interface design. A future programme would supply its eligible activity, funding source, allocation rules, recipients, claim timing, supported network and addresses, effective date, and support path.
 
-    Returns the Merkle proof needed to claim rewards for a specific epoch and wallet address.
+### Epoch and proof records
 
-    - **Auth:** None
-    - **Path params:** `epoch` -- epoch number; `wallet` -- Solana wallet address
-    - **Returns:** Merkle proof, amount, and leaf index
-  </Accordion>
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /api/rewards/epoch/{epoch}/proof/{wallet}` | A proposed record connecting a recipient and epoch to an allocation proof. The documented data includes a proof, amount, and leaf index. |
+| `GET /api/rewards/epoch/{epoch}` | Epoch metadata, including a root reference, total, status, and timestamp in the documented model. |
+| `GET /api/rewards/epochs` | An ordered list of epoch summaries. |
+| `GET /api/rewards/epochs/committed` | Epoch records classified by a recorded chain commitment. |
 
-  <Accordion title="GET /api/rewards/epoch/{epoch}" icon="layer-group">
-    **Get reward epoch details**
+The programme would define the proof representation and the meaning of each epoch state. A commitment record and a completed payment have distinct meanings.
 
-    Returns metadata for a specific reward epoch including totals, Merkle root, and status.
+### Claims and recipient records
 
-    - **Auth:** None
-    - **Path params:** `epoch` -- epoch number
-    - **Returns:** Epoch object with root, total, status, and timestamp
-  </Accordion>
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /api/rewards/claim` | A proposed claim-submission operation that associates a recipient, epoch, and proof with the programme’s claim process. |
+| `GET /api/rewards/wallet/{wallet}/claimable` | Proposed recipient allocations grouped by epoch and amount, according to programme eligibility and claim state. |
+| `GET /api/rewards/wallet/{wallet}/claimable-epochs` | The recipient’s epoch records filtered by the programme’s claim and settlement rules. |
+| `GET /api/rewards/wallet/{wallet}/projected` | An estimate in the programme design, with the assumptions and calculation that produced it. |
+| `GET /api/rewards/wallet/{wallet}/pending-usdc` | A proposed record of USDC-denominated amounts still outstanding in the programme. |
+| `GET /api/rewards/pool/today` | Programme funding and allocation information for a defined reporting period. |
+| `GET /config/rewards` | The programme’s allocation configuration and distribution rules. |
 
-  <Accordion title="GET /api/rewards/epochs" icon="list">
-    **List all reward epochs**
-
-    Returns all reward epochs ordered by epoch number.
-
-    - **Auth:** None
-    - **Returns:** Array of epoch summary objects
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/epochs/committed" icon="lock">
-    **List committed (on-chain) epochs**
-
-    Returns only epochs that have been committed on-chain, excluding those settled off-chain. Used post-go-live.
-
-    - **Auth:** None
-    - **Returns:** Array of committed epoch objects
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/wallet/{wallet}/claimable" icon="coins">
-    **Get claimable rewards for a wallet**
-
-    Returns all unclaimed reward amounts across all epochs for the specified wallet.
-
-    - **Auth:** None
-    - **Path params:** `wallet` -- Solana wallet address
-    - **Returns:** Array of claimable epoch/amount pairs
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/wallet/{wallet}/claimable-epochs" icon="filter">
-    **Get claimable epochs (filtered)**
-
-    Returns claimable epochs excluding off-chain settled ones. Used for the post-go-live claim UI.
-
-    - **Auth:** None
-    - **Path params:** `wallet` -- Solana wallet address
-    - **Returns:** Filtered array of claimable epoch objects
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/wallet/{wallet}/projected" icon="chart-line">
-    **Get projected rewards for today**
-
-    Returns the estimated reward amount for today based on current leaderboard standing and pool size.
-
-    - **Auth:** None
-    - **Path params:** `wallet` -- Solana wallet address
-    - **Returns:** Projected reward amount and calculation breakdown
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/wallet/{wallet}/pending-usdc" icon="dollar-sign">
-    **Get pending USDC balance**
-
-    Returns the pending (not yet claimed) USDC balance for a wallet.
-
-    - **Auth:** None
-    - **Path params:** `wallet` -- Solana wallet address
-    - **Returns:** Pending USDC amount
-  </Accordion>
-
-  <Accordion title="GET /api/rewards/pool/today" icon="piggy-bank">
-    **Get today's reward pool**
-
-    Returns the current day's total reward pool size and distribution parameters.
-
-    - **Auth:** None
-    - **Returns:** Pool total, distribution curve, and timestamp
-  </Accordion>
-
-  <Accordion title="GET /config/rewards" icon="gear">
-    **Get rewards configuration**
-
-    Returns the dynamic rewards configuration including total reward amounts and distribution rules.
-
-    - **Auth:** None
-    - **Returns:** Rewards config object
-  </Accordion>
-</AccordionGroup>
-
----
+An estimate, an eligible allocation, a submitted claim, and a confirmed payout need separate records. The selected programme would explain the transitions between them, including any off-chain settlement record.
 
 ## Referrals
 
-<AccordionGroup>
-  <Accordion title="GET /api/referral/link" icon="link">
-    **Get referral link**
+The referral design connects a shared reference with an account and the activity attributed to it.
 
-    Returns the referral link for the authenticated wallet. Creates one if it does not exist.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /api/referral/link` | Obtain the account’s referral link and code. The documented design also considers initialising a link when one is absent. |
+| `POST /api/referral/link` | Create an account-associated referral reference. |
+| `POST /api/referral/bind` | Associate the account with a referrer. The documented design allows one referrer binding per wallet. |
+| `GET /api/referral/summary` | Referral counts and any associated participation-point totals. |
+| `GET /api/referral/stats` | The account’s detailed referral-activity measures. |
+| `GET /api/referral/referred` | Referred-account references and the times those relationships were recorded. |
 
-    - **Auth:** Session cookie
-    - **Returns:** Referral link URL and code
-  </Accordion>
-
-  <Accordion title="POST /api/referral/link" icon="link">
-    **Create referral link**
-
-    Explicitly creates a new referral link for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Referral link URL and code
-  </Accordion>
-
-  <Accordion title="POST /api/referral/bind" icon="handshake">
-    **Bind a referral code**
-
-    Binds the authenticated wallet to a referrer using a referral code. A wallet can only be referred once.
-
-    - **Auth:** Session cookie
-    - **Returns:** Binding confirmation
-  </Accordion>
-
-  <Accordion title="GET /api/referral/summary" icon="chart-simple">
-    **Get referral summary**
-
-    Returns a summary of the authenticated wallet's referral activity (total referrals, points earned).
-
-    - **Auth:** Session cookie
-    - **Returns:** Referral count, total points earned from referrals
-  </Accordion>
-
-  <Accordion title="GET /api/referral/stats" icon="chart-bar">
-    **Get referral stats**
-
-    Returns detailed referral statistics for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Detailed referral performance metrics
-  </Accordion>
-
-  <Accordion title="GET /api/referral/referred" icon="users">
-    **Get referred wallets**
-
-    Returns a list of wallets that were referred by the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Array of referred wallet addresses and timestamps
-  </Accordion>
-</AccordionGroup>
-
----
+An integration needs to make link creation, binding rules, visibility, and duplicate handling clear. Referral activity is a reporting input; any financial referral programme would use SW4P Earn’s funding and allocation terms.
 
 ## Profile & Daily Tasks
 
-<AccordionGroup>
-  <Accordion title="GET /api/profile" icon="id-card">
-    **Get user profile**
+Account records can bring together participation, ranks, linked accounts, task state, and payment history.
 
-    Returns the profile for the authenticated wallet including points balance, rank, and linked accounts.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /api/profile` | The account profile, participation-point records, rank, and linked accounts. |
+| `GET /api/profile/beta-points` | Point totals and their breakdown in the beta context. |
+| `GET /api/profile/beta-stats` | Activity statistics in the beta context. |
+| `GET /api/beta/preference` | The account’s recorded beta-mode preference. |
+| `POST /api/beta/preference` | Change the account’s beta-mode preference. |
+| `GET /api/tasks/daily` | Task definitions and the account’s recorded completion state. |
+| `POST /api/tasks/daily/complete` | Submit a task-completion report for checking under the experience’s rules. |
+| `GET /api/me/payments` | The account’s payment-history records, including amounts, timestamps, and recorded outcomes. |
+| `GET /users/{wallet}/stats` | Participant statistics made visible under the application’s sharing rules. |
 
-    - **Auth:** Session cookie
-    - **Returns:** Profile object with balances, rank, and social links
-  </Accordion>
-
-  <Accordion title="GET /api/profile/beta-points" icon="flask">
-    **Get beta points balance**
-
-    Returns the beta (devnet) points balance for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Beta points total and breakdown
-  </Accordion>
-
-  <Accordion title="GET /api/profile/beta-stats" icon="chart-column">
-    **Get beta statistics**
-
-    Returns detailed beta-mode statistics for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Beta stats object
-  </Accordion>
-
-  <Accordion title="GET /api/beta/preference" icon="toggle-on">
-    **Get beta mode preference**
-
-    Returns whether the authenticated wallet has opted into beta (devnet) mode.
-
-    - **Auth:** Session cookie
-    - **Returns:** Boolean preference flag
-  </Accordion>
-
-  <Accordion title="POST /api/beta/preference" icon="toggle-on">
-    **Set beta mode preference**
-
-    Toggles the beta (devnet) mode preference for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Updated preference
-  </Accordion>
-
-  <Accordion title="GET /api/tasks/daily" icon="list-check">
-    **Get daily tasks**
-
-    Returns the list of daily tasks and their completion status for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Array of task objects with completion state
-  </Accordion>
-
-  <Accordion title="POST /api/tasks/daily/complete" icon="circle-check">
-    **Complete a daily task**
-
-    Marks a daily task as completed for the authenticated wallet and awards associated points.
-
-    - **Auth:** Session cookie
-    - **Returns:** Points awarded and updated task state
-  </Accordion>
-
-  <Accordion title="GET /api/me/payments" icon="receipt">
-    **Get my payment history**
-
-    Returns USDC payment transactions for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Array of payment objects with amounts and timestamps
-  </Accordion>
-
-  <Accordion title="GET /users/{wallet}/stats" icon="chart-user">
-    **Get public user stats**
-
-    Returns publicly visible stats for any wallet address.
-
-    - **Auth:** None
-    - **Path params:** `wallet` -- Solana wallet address
-    - **Returns:** Public stats summary
-  </Accordion>
-</AccordionGroup>
-
----
+The interface needs to identify the environment to which a preference or record belongs. Points, task completion, and payments remain distinct: a task report is checked under the experience’s rules, while a payment record describes an economic operation.
 
 ## Events & SSE
 
-<AccordionGroup>
-  <Accordion title="GET /events" icon="tower-broadcast">
-    **Subscribe to Server-Sent Events (SSE)**
+Server-Sent Events, or SSE, lets a service send updates over a persistent connection.
 
-    Opens a persistent SSE connection for real-time event streaming. The server pushes events for new chat entries, lottery updates, battle results, and system notifications.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /events` | The documented event-stream design uses `text/event-stream` and JSON event data. Subjects include chat entries, messages, round transitions, battle results, and system notices. |
 
-    - **Auth:** None (public stream)
-    - **Returns:** `text/event-stream` with typed JSON payloads
+Named examples in the design include `new_entry` and `chat_message`. An integration needs to define subscription authority, event fields, reconnection, and how a client catches up after an interruption.
 
-    **Event types include:**
-    - `new_entry` -- New chat lottery entry submitted
-    - `chat_message` -- Chat message broadcast
-    - Round state transitions, winner announcements, etc.
-  </Accordion>
+### Token-burn event records
 
-  <Accordion title="GET /events/burn/active" icon="fire">
-    **Get active burn event**
+The documented event model also includes descriptions and rankings associated with token-burn events.
 
-    Returns the currently active token burn event, if any.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /events/burn/active` | The event identified as active in the event records, or an empty result. |
+| `GET /events/burn/{id}/leaderboard` | Rankings based on the event’s recorded burn amounts. |
+| `GET /events/burn/{id}/leaderboard/referrals` | The referral-associated portion of the event rankings. |
+| `GET /events/burn/{id}/leaderboard/game` | The game-associated portion of the event rankings. |
+| `GET /events/burn/{id}/leaderboard/social` | The social-associated portion of the event rankings. |
+| `GET /events/burn/{id}/rank` | An account’s position and recorded total within the event. |
+| `GET /events/burn/{id}/quests` | Quest definitions associated with the event. |
 
-    - **Auth:** None
-    - **Returns:** Active burn event object or `null`
-  </Accordion>
-
-  <Accordion title="POST /events/burn" icon="fire-flame-curved">
-    **Create a burn event**
-
-    Creates a new token burn event with specified parameters.
-
-    - **Auth:** Session cookie
-    - **Returns:** Burn event ID and configuration
-  </Accordion>
-
-  <Accordion title="POST /events/burn/{id}/activate" icon="bolt">
-    **Activate a burn event**
-
-    Transitions a burn event from pending to active.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Updated burn event state
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/leaderboard" icon="ranking-star">
-    **Get burn event leaderboard**
-
-    Returns the overall leaderboard for a burn event ranked by total burn amount.
-
-    - **Auth:** None
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Ranked array of participants
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/leaderboard/referrals" icon="user-group">
-    **Get burn referral leaderboard**
-
-    Returns the burn event leaderboard filtered to referral-sourced burns.
-
-    - **Auth:** None
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Ranked array by referral burns
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/leaderboard/game" icon="gamepad">
-    **Get burn game leaderboard**
-
-    Returns the burn event leaderboard filtered to game-sourced burns.
-
-    - **Auth:** None
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Ranked array by game burns
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/leaderboard/social" icon="share-nodes">
-    **Get burn social leaderboard**
-
-    Returns the burn event leaderboard filtered to social-sourced burns.
-
-    - **Auth:** None
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Ranked array by social burns
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/rank" icon="hashtag">
-    **Get my burn event rank**
-
-    Returns the authenticated wallet's rank within a burn event.
-
-    - **Auth:** Session cookie
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Rank position and burn total
-  </Accordion>
-
-  <Accordion title="GET /events/burn/{id}/quests" icon="scroll">
-    **Get burn event quests**
-
-    Returns quests associated with a specific burn event.
-
-    - **Auth:** None
-    - **Path params:** `id` -- burn event identifier
-    - **Returns:** Array of event-scoped quest objects
-  </Accordion>
-</AccordionGroup>
-
----
+Event creation and activation are operator responsibilities. A burn record, participation points, and a programme reward represent different actions and records; any reward programme belongs to SW4P Earn’s model and current programme status.
 
 ## Quests
 
-<AccordionGroup>
-  <Accordion title="GET /quests" icon="scroll">
-    **List all quests**
+Quest interfaces describe requirements, progress, scoring factors, and participation records.
 
-    Returns all available quests with their requirements and reward amounts.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /quests` | Quest definitions, requirements, and any proposed programme information attached to them. |
+| `GET /me/quests` | The account’s quest progress and completion state. |
+| `GET /me/quest-multiplier` | A scoring multiplier and its contributing factors, where the experience uses that design. |
+| `GET /ledger/quests` | Quest-point entries associated with the account, including quest reference, amount, and timestamp. |
 
-    - **Auth:** None
-    - **Returns:** Array of quest objects
-  </Accordion>
-
-  <Accordion title="GET /me/quests" icon="clipboard-check">
-    **Get my quest progress**
-
-    Returns quest completion status for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Array of quests with per-wallet progress and completion state
-  </Accordion>
-
-  <Accordion title="GET /me/quest-multiplier" icon="xmark">
-    **Get quest multiplier**
-
-    Returns the current quest point multiplier for the authenticated wallet based on completed quests and streaks.
-
-    - **Auth:** Session cookie
-    - **Returns:** Multiplier value and contributing factors
-  </Accordion>
-
-  <Accordion title="GET /ledger/quests" icon="book">
-    **Get quest ledger**
-
-    Returns the full quest point ledger showing all quest point transactions for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Array of ledger entries with quest ID, points, and timestamp
-  </Accordion>
-</AccordionGroup>
-
----
+Each experience defines what its points and multipliers mean. Financial reward, claim, and payout functions belong to SW4P Earn, whose reward and claim programmes are not currently open.
 
 ## Social Integration
 
-<AccordionGroup>
-  <Accordion title="POST /integrations/twitter/events" icon="x-twitter">
-    **Twitter bot event webhook**
+The social design covers incoming service events and material prepared for sharing.
 
-    Receives webhook events from the Twitter/X bot integration. Used for tracking social engagement quests (retweets, follows, mentions).
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /integrations/twitter/events` | A service-to-service receiver for X/Twitter integration events used in social activity records. |
+| `GET /social/round/{id}` | A round summary formatted for social sharing. |
+| `GET /social/latest` | The latest round summary selected for sharing. |
+| `GET /social/round/{id}/post` | Prepared post text and associated media references for a round. |
 
-    - **Auth:** Webhook signature verification
-    - **Returns:** `200 OK` acknowledgment
-  </Accordion>
-
-  <Accordion title="GET /social/round/{id}" icon="share-nodes">
-    **Get social round data**
-
-    Returns social-optimized data for a lottery round, formatted for sharing on social media.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Round summary with shareable metadata
-  </Accordion>
-
-  <Accordion title="GET /social/latest" icon="clock">
-    **Get latest social data**
-
-    Returns the most recent round data formatted for social sharing.
-
-    - **Auth:** None
-    - **Returns:** Latest round social summary
-  </Accordion>
-
-  <Accordion title="GET /social/round/{id}/post" icon="message">
-    **Get social post content**
-
-    Returns pre-formatted post content for a round result, ready for social media publishing.
-
-    - **Auth:** None
-    - **Path params:** `id` -- round identifier
-    - **Returns:** Formatted post text and media references
-  </Accordion>
-</AccordionGroup>
-
----
+The provider integration defines how incoming events are authenticated and associated with the relevant account or activity. Preparing a post and publishing it are separate actions with their own authority.
 
 ## Clips
 
-<AccordionGroup>
-  <Accordion title="POST /clip/upload" icon="video">
-    **Upload a clip**
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /clip/upload` | A proposed upload operation for a gameplay or stream clip, with a clip identifier and upload outcome. |
+| `GET /clips` | Clip records and metadata. The documented design includes filtering by game or wallet. |
 
-    Uploads a gameplay or stream clip. Triggers `clip_upload` quest completion if applicable.
-
-    - **Auth:** Session cookie
-    - **Returns:** Clip ID and upload confirmation
-  </Accordion>
-
-  <Accordion title="GET /clips" icon="film">
-    **List clips**
-
-    Returns uploaded clips, optionally filtered by game or wallet.
-
-    - **Auth:** None
-    - **Returns:** Array of clip objects with metadata
-  </Accordion>
-</AccordionGroup>
-
----
+An upload record describes the media operation. If an experience uses uploads as a quest requirement, its quest rules determine how that activity is checked and recorded.
 
 ## Eligibility & Configuration
 
-<AccordionGroup>
-  <Accordion title="GET /eligibility" icon="door-open">
-    **Check token-gate eligibility**
+Eligibility is specific to a product, feature, or participant role. Getting started with RNDRNTWRK requires an internet-enabled device; a particular experience may define further access conditions.
 
-    Checks whether the authenticated wallet meets the token-holding requirements for platform access.
+| Documented symbol | Intended role and data |
+|---|---|
+| `GET /eligibility` | An eligibility result for the applicable access rules, with relevant holding information where those rules use a token. |
+| `GET /config/normalization` | The experience’s score-normalisation parameters and caps. |
+| `GET /config/games` | Game identifiers, names, and category mappings. |
+| `GET /api/price/sol` | The documented SOL/USD price-cache model, including a `price` value. |
 
-    - **Auth:** Session cookie
-    - **Returns:** Boolean eligibility status and token balance
-  </Accordion>
+The integration needs to explain which rules and data source apply. Price information also needs an understood source and freshness; the price-cache symbol does not define a settlement quote.
 
-  <Accordion title="GET /config/normalization" icon="sliders">
-    **Get normalization config**
-
-    Returns the current point normalization rules and score caps, exposed for frontend transparency.
-
-    - **Auth:** None
-    - **Returns:** Normalization parameters and cap values
-  </Accordion>
-
-  <Accordion title="GET /config/games" icon="list">
-    **Get games registry**
-
-    Returns the registry of all games and their category mappings.
-
-    - **Auth:** None
-    - **Returns:** Array of game objects with IDs, names, and categories
-  </Accordion>
-
-  <Accordion title="GET /api/price/sol" icon="coins">
-    **Get SOL/USD price**
-
-    Returns a cached SOL/USD price. Provided as a convenience endpoint to avoid frontend CORS and rate-limit issues with external price APIs.
-
-    - **Auth:** None
-    - **Returns:** `{ "price": <float> }` -- SOL price in USD
-  </Accordion>
-
-  <Accordion title="GET /healthz" icon="heart-pulse">
-    **Health check**
-
-    Returns server health status. Used by load balancers and monitoring.
-
-    - **Auth:** None
-    - **Returns:** `200 OK`
-  </Accordion>
-</AccordionGroup>
-
----
+Service-health checks are covered by the operator responsibilities under [Admin](#admin).
 
 ## Wallet & Webhooks
 
-<AccordionGroup>
-  <Accordion title="POST /api/wallet/resolve" icon="magnifying-glass-dollar">
-    **Resolve a wallet address**
+| Documented symbol | Intended role and data |
+|---|---|
+| `POST /api/wallet/resolve` | The wallet-resolution design associates a supported identifier, such as a name-service entry or linked social handle, with an address. |
+| `POST /webhooks/payment-status` | A service-to-service payment-status receiver that associates an incoming update with the original payment record. |
 
-    Resolves a wallet identifier (e.g. SNS domain, Twitter handle) to a Solana wallet address. Used internally by the bot to map user-friendly identifiers.
+An identifier resolution needs the selected integration’s identity and address rules. Payment updates need the authorised sender and the payment context required to interpret the result.
 
-    - **Auth:** None
-    - **Returns:** Resolved Solana wallet address
-  </Accordion>
-
-  <Accordion title="POST /webhooks/payment-status" icon="bell">
-    **Payment status webhook**
-
-    Receives payment status updates from the Hyperlink orchestrator. Updates internal payment records.
-
-    - **Auth:** Webhook signature
-    - **Returns:** `200 OK` acknowledgment
-  </Accordion>
-</AccordionGroup>
-
----
+[Hyperlink](/protocol/hyperlink) describes the payment-request interaction. [SW4P](/sw4p) coordinates settlement and its confirmed outcome. An application uses those payment records to determine whether its payment requirement has been met.
 
 ## Admin
 
-All admin endpoints require the `requireAdminToken` middleware. These are not intended for public consumption.
+Operational controls belong in a service’s operator reference, with explicit authority for the affected system and action.
 
-<AccordionGroup>
-  <Accordion title="POST /admin/theme" icon="palette">
-    **Update arcade theme**
+The documented responsibilities include:
 
-    Sets the arcade visual theme and aesthetic parameters.
+| Area | Operator responsibility |
+|---|---|
+| Arcade presentation | Configure themes and one-time presentation events |
+| Cabinet control | Assign or release game-session control within the creator’s or operator’s permitted scope |
+| Round administration | Configure and start chat rounds; manage authorised finalisation |
+| Scheduling | Start, stop, and inspect a round scheduler |
+| Quest administration | Create, inspect, change, remove, or correct quest records under an assigned administrative role |
+| SW4P Earn operations | Prepare or import programme distributions and record settlement outcomes under the programme’s rules |
+| Beta records | Inspect environment-specific points and define any authorised migration or conversion handling |
+| Service diagnostics | Interpret health signals, record errors, and inspect the state needed to resolve an issue |
 
-    - **Auth:** Admin token
-    - **Returns:** Updated theme configuration
-  </Accordion>
-
-  <Accordion title="POST /admin/event" icon="bolt">
-    **Trigger arcade event**
-
-    Triggers a one-time arcade event (animation, announcement, etc.).
-
-    - **Auth:** Admin token
-    - **Returns:** Event acknowledgment
-  </Accordion>
-
-  <Accordion title="POST /admin/cabinet/possess" icon="ghost">
-    **Possess a cabinet**
-
-    Sets a cabinet to "possessed" state, assigning an AI character or entity to control it.
-
-    - **Auth:** Admin token
-    - **Returns:** Updated cabinet state
-  </Accordion>
-
-  <Accordion title="POST /admin/cabinet/release" icon="unlock">
-    **Release a cabinet**
-
-    Releases a cabinet from possessed state, returning it to normal operation.
-
-    - **Auth:** Admin token
-    - **Returns:** Updated cabinet state
-  </Accordion>
-
-  <Accordion title="POST /rewards/trigger-epoch" icon="clock-rotate-left">
-    **Trigger a rewards epoch**
-
-    Manually triggers the daily rewards epoch generation. Normally run by the scheduler.
-
-    - **Auth:** Admin token
-    - **Returns:** Epoch creation confirmation
-  </Accordion>
-
-  <Accordion title="POST /auto/start" icon="play">
-    **Start auto-scheduler**
-
-    Starts the automatic round scheduling system.
-
-    - **Auth:** Admin token
-    - **Returns:** Scheduler status
-  </Accordion>
-
-  <Accordion title="POST /auto/stop" icon="stop">
-    **Stop auto-scheduler**
-
-    Stops the automatic round scheduling system.
-
-    - **Auth:** Admin token
-    - **Returns:** Scheduler status
-  </Accordion>
-
-  <Accordion title="GET /auto/status" icon="signal">
-    **Get auto-scheduler status**
-
-    Returns the current state of the automatic round scheduler.
-
-    - **Auth:** Admin token
-    - **Returns:** Scheduler running state and next scheduled time
-  </Accordion>
-
-  <Accordion title="POST /quests (admin)" icon="plus">
-    **Create a quest**
-
-    Creates a new quest definition with requirements and reward configuration.
-
-    - **Auth:** Admin token
-    - **Returns:** Created quest object
-  </Accordion>
-
-  <Accordion title="GET /quests/{id} (admin)" icon="eye">
-    **Get quest by ID**
-
-    Returns full quest details including internal configuration.
-
-    - **Auth:** Admin token
-    - **Path params:** `id` -- quest identifier
-    - **Returns:** Quest object with admin-level detail
-  </Accordion>
-
-  <Accordion title="PATCH /quests/{id}" icon="pen">
-    **Update a quest**
-
-    Partially updates a quest definition.
-
-    - **Auth:** Admin token
-    - **Path params:** `id` -- quest identifier
-    - **Returns:** Updated quest object
-  </Accordion>
-
-  <Accordion title="DELETE /quests/{id}" icon="trash">
-    **Delete a quest**
-
-    Removes a quest definition.
-
-    - **Auth:** Admin token
-    - **Path params:** `id` -- quest identifier
-    - **Returns:** `204 No Content`
-  </Accordion>
-
-  <Accordion title="POST /admin/quests/{id}/complete" icon="check-double">
-    **Manually complete a quest for a user**
-
-    Admin override to mark a quest as completed for a specific wallet.
-
-    - **Auth:** Admin token
-    - **Path params:** `id` -- quest identifier
-    - **Returns:** Completion confirmation
-  </Accordion>
-
-  <Accordion title="POST /api/rewards/settled-offchain" icon="file-invoice-dollar">
-    **Mark epochs settled off-chain**
-
-    Marks specified epochs as having been settled off-chain (e.g. direct transfer). Idempotent.
-
-    - **Auth:** Admin token
-    - **Returns:** Updated epoch settlement status
-  </Accordion>
-
-  <Accordion title="POST /api/rewards/epoch/import" icon="file-import">
-    **Import reward epoch distribution**
-
-    Imports a pre-computed distribution blob from an external job into the rewards system.
-
-    - **Auth:** Admin token / internal
-    - **Returns:** Import confirmation with epoch number
-  </Accordion>
-
-  <Accordion title="POST /api/beta/convert" icon="rotate">
-    **Convert beta points**
-
-    Converts beta (devnet) points to mainnet points for a wallet.
-
-    - **Auth:** Admin token
-    - **Returns:** Conversion result
-  </Accordion>
-
-  <Accordion title="GET /debug/points" icon="bug">
-    **Debug points visibility**
-
-    Diagnostic endpoint showing both beta and regular point balances for the authenticated wallet.
-
-    - **Auth:** Session cookie
-    - **Returns:** Dual-mode points breakdown
-  </Accordion>
-</AccordionGroup>
-
----
+These are operational design subjects. The operator documentation defines the controls, credentials, and procedures appropriate to the service.
 
 ## Error Responses
 
-All endpoints return errors in a consistent JSON format:
+The documented error model includes a human-readable `error` message. An integration defines the full error envelope and any additional fields a client should retain.
 
-```json
-{
-  "error": "human-readable error message"
-}
-```
-
-| Status Code | Meaning |
+| Status | Meaning in the documented design |
 |---|---|
-| `400` | Bad request -- missing or invalid parameters |
-| `401` | Unauthorized -- missing or invalid session |
-| `403` | Forbidden -- insufficient permissions (e.g. admin-only) |
-| `404` | Not found -- resource does not exist |
-| `409` | Conflict -- duplicate action (e.g. already claimed, already bound) |
-| `500` | Internal server error |
+| `400` | Missing or invalid request information |
+| `401` | Authentication is missing or invalid |
+| `403` | The caller lacks the required permission |
+| `404` | The requested resource was not found |
+| `409` | The request conflicts with an existing state, such as an existing binding or recorded operation |
+| `500` | The service encountered an internal failure |
 
----
+A client should distinguish an input problem, an authority problem, and an interrupted operation. Retaining the relevant request and operation references helps the user follow the appropriate next step.
 
 ## Rate Limiting
 
-The API does not currently enforce per-IP rate limits at the application layer, but is fronted by infrastructure-level protections. Excessive request volume may result in temporary throttling. Be respectful with polling intervals -- prefer the SSE stream at `GET /events` for real-time updates.
+Use the chosen service’s documented limits for polling, event connections, and writes. Request scheduling should account for the service’s response and any retry instructions it supplies.
+
+Where an event stream is supported, it can deliver changes without repeatedly requesting the same state. Reconnection and missed updates still need defined handling.
+
+For a write or payment request, establish the existing operation’s state before choosing a retry or continuation. [@sw4p/kit](/products/kit) describes that relationship for settlement integrations.
+
+Related: [For Developers](/for-developers) · [SW4P](/sw4p) · [SW4P Earn](/products/earn)

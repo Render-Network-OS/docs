@@ -1,61 +1,63 @@
 ---
 title: "Monetization Contract"
 icon: "file-contract"
-description: "The rules that govern how value enters and moves through the system"
+description: "The planned agreements and records behind commercial programmes."
 ---
 
-<Info>
-**Status:** Partially implemented. AGG payment routing and Hyperlink smart payment links are live. The full on-chain Monetization Contract (automated split execution, buyback executor, Treasury PDA) is planned.
-</Info>
+The Monetization Contract is the planned contract and record design for programmes configured through the [Monetization Module](/products/monetization-module). It connects a programme’s agreed terms with records of funding, costs, recipients, allocations, and payments. The allocation, reserve, and reconciliation design described here belongs to SW4P Earn; SW4P provides the settlement role.
 
-## Purpose
+## Programme Terms
 
-The Monetization Contract defines how value enters and moves through the RNDRNTWRK. It trustlessly ingests campaign budgets and platform fees, then algorithmically distributes proceeds. The contract is part of the **555x402 protocol suite**, which includes:
+A programme’s agreement sets out the work being funded and how its commercial terms apply. It would cover:
 
-- **AGG (Payment Aggregator)**: Facilitator router (Rust, Kafka) with multi-facilitator scoring, HTTP 402 middleware, and sub-2-second Solana settlement. Live on-chain at program `2XfsNMcrJCbkaEwYfg6zpNXKipmSDY3tvMUK1KVs7bfV`.
-- **Hyperlink (Smart Payment Links)**: Gasless, multi-chain USDC payment links at [555hyper.link](https://555hyper.link). Supports Solana, Base, and Polygon via the sw4p engine. Vanity URLs (`/@alice`), QR codes, webhook system, and claimable payouts.
-- **SCEP (State Channel Escrow Protocol)**: On-chain Anchor program for off-chain accumulation with on-chain settlement.
+- The advertiser, creators, and other contributors.
+- The deliverables, placements, and programme dates.
+- The budget, pricing basis, assets used for payment, and direct costs.
+- The agreed recipients, platform share, and payment conditions.
+- Reporting responsibilities and how delivery is measured.
+- How changes, cancellations, refunds, and unused funds are handled.
 
-## Accounts & Entities
+These terms provide the basis for calculating amounts and connecting financial records to the work.
 
-- Inflow Vault: receives SOL/USDC and other supported tokens via AGG payment router
-- ARP PDA: Audience Reward Pool escrow and reward schedules
-- Buyback Executor: programmatic DEX execution with guardrails (automated pipeline being built; manual burns operational)
-- Treasury PDA: holds funds prior to creator/stakeholder distribution
-- Receipt & Events: program logs for attribution and analytics
-- Hyperlink claimables: pending USDC payouts claimable via payment link
+## Funding and Payment Records
 
-## Flow
+The planned records keep programme funding, service fees, settlement revenue, and token-related revenue distinct. Each funding or payment entry would identify its programme, source, asset, amount, recipient where relevant, and recorded outcome.
+
+Escrow and reserve records would state what is held, why it is held, and the programme conditions for releasing or reallocating it.
+
+Funding, allocation, and payment events would provide references for attribution and reporting. Reconciliation would account for amounts paid, returned, reserved, or still outstanding.
+
+## Proposed Flow
 
 <Steps>
-  <Step title="Ingest">
-    Campaigns and fees are deposited into the Inflow Vault with metadata for attribution and targeting.
+  <Step title="Record funding">
+    Associate the funding source, asset, and amount with the programme and its agreed terms.
   </Step>
-  <Step title="Split (ARP / Buybacks / Treasury)">
-    The contract applies the canonical split and updates balances for the ARP PDA, Buyback Executor, and Treasury.
+  <Step title="Prepare allocations">
+    Account for the programme’s costs and obligations, then calculate amounts for its agreed recipients, platform share, and any reserves.
   </Step>
-  <Step title="Execute Buybacks">
-    ≥20% is routed to automated buybacks for the creator economy. Creators can configure a higher percentage within governance bounds.
+  <Step title="Request payment">
+    Use the agreed settlement route and record the request, its confirmation, or any outstanding recovery action.
   </Step>
-  <Step title="Distribute Treasury">
-    Funds are shared between Creator and Stakeholders per the active split. Stake-weighted votes can adjust the split within a bounded range (e.g., 20/80 to 80/20). Reserves (5% token, 5% SOL/USDC) are set aside.
+  <Step title="Reconcile the programme">
+    Match allocations with payments and account for reserved, returned, or outstanding amounts.
   </Step>
 </Steps>
 
-## Events & Telemetry
+## Settlement and Reward Programmes
 
-- InflowReceived(amount, campaignId, asset)
-- SplitApplied(arp, buybacks, treasury)
-- BuybackExecuted(token, amountIn, amountOut, venue)
-- ProfitDistributed(creator, stakeholders, ratios)
+SW4P is the programmable settlement engine for RNDRNTWRK and other applications. Its role covers payment routes, fees, execution, confirmation, recovery, and accounting for the result.
 
-## Safety & Controls
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation. A proposed reward programme would define its own funding source, eligible activity, recipients, and distribution terms.
 
-- Circuit breakers and rate limits for volatile conditions
-- Allow-lists for DEX venues and oracles
-- Time-boxed windows for large batch operations
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
+
+## Changes and Payment Controls
+
+The planned controls cover who can approve changes, spending and rate limits, permitted settlement routes and venues, processing windows, and a way to pause payments when a problem needs attention.
+
+Changes to programme terms would retain a record of what changed, who approved it, and when it takes effect. Payment requests and outcomes would remain available for review and recovery.
 
 <Note>
-  See also: [Fee Distribution](/tokenomics/fee-distribution)
+See also: [Monetization Module](/products/monetization-module) · [Economic Model](/economics) · [Fee Distribution](/tokenomics/fee-distribution)
 </Note>
-

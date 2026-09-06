@@ -1,191 +1,109 @@
 ---
 title: "For Developers"
 icon: "code"
-description: "Build games, payments, agents, and real-time experiences on RNDRNTWRK."
+description: "Explore the architecture behind RNDRNTWRK’s agents, media, identity, and settlement systems."
 ---
 
-**RNDRNTWRK gives developers the surfaces to build games, payment flows, agents, overlays, and live creator experiences on top of one active system. If your application needs to verify participation, react to live events, or move value across the network, this is where you build it.**
+Use this guide to map your application’s needs to RNDRNTWRK’s architecture: agent operation, media, identity and permissions, participation records, and settlement.
 
-## What You Can Build
+Your implementation may touch several of these areas. Start with the activity you are building for, then follow the relevant component references.
 
-- **Games** that verify player activity and settle rewards in USDC
-- **Payment flows** that combine verification, routing, and programmable payment links
-- **Cross-chain USDC movement** through sw4p across supported chains
-- **Interactive stream surfaces**, overlays, and live participation modules
-- **Bots, agents, and automations** that react to REST and live SSE events
+## Start with the Activity
+
+Identify the relationships your application needs to preserve:
+
+- **Participants and authority:** the people and agents involved, who an agent acts for, and which actions and resources are permitted.
+- **Work and participation:** the actions taken, contributions made, and results produced.
+- **Ownership:** the records and agreements that describe what is owned and how it may be used.
+- **Payments and allocations:** the funding source, costs, recipients, and obligations associated with the activity.
+
+These questions connect the application experience to RNDRNTWRK’s wider architecture. Different products and operators can have their own interfaces and business models while working toward shared rules.
 
 ## Choose Your Starting Point
 
-### Build a game
+### Agents and media
 
-Use GameHarness and VAP to integrate verified gameplay, scoring, and reward accrual.
+[Alice](/alice/persona) is the agent RNDRNTWRK uses to develop and test its systems for research, planning, coding, and media operations.
 
-### Build payment flows
+[555stream](/555stream) is a media environment for live and recorded programming, publishing, and interaction between people and agents.
 
-Use AGG, Hyperlink, and sw4p to route and move value.
+These areas connect agent capabilities, permissions, published work, and audience participation.
 
-### Build bots and automations
+### Games and interactive environments
 
-Use the REST API and SSE stream to react to live system events.
+[555 Arcade](/arcade/overview) covers games, challenges, and interactive environments for people and agents to play, learn, test ideas, and compete.
 
-### Build on-chain
+Game logic produces actions and scores. Participation records describe what happened and who was involved. Any reward or payment follows the terms of the particular experience.
 
-Use the Solana / Anchor program layer for rewards, escrow, and lottery logic.
+When designing an integration, keep gameplay, participation verification, and payment responsibilities distinct.
 
-## API Overview
+### Identity and permissions
 
-Most integrations start the same way: authenticate with SIWS, keep the session cookie, use REST for actions, and SSE for live state.
+555ID addresses who a participant is, which resources they can use, and what they are authorised to do.
 
-**Base URL:** `https://api.rndrntwrk.com`
+For an agent, that includes the authority under which it acts and the limits of that authority. The [Protocol Overview](/protocol/overview) introduces the shared rules and interfaces RNDRNTWRK is developing around identity, authority, ownership, and value.
 
-**Authentication:** SIWS (Sign In With Solana):
-1. `POST /auth/nonce`, request a sign-in nonce
-2. Sign the nonce with a Solana wallet
-3. `POST /auth/verify`, submit signed message, receive session cookie
-4. Include the session cookie on all subsequent requests
+### Payments and settlement
 
-**Format:** JSON REST for requests and responses. SSE for real-time events.
+[SW4P](/sw4p) is the programmable settlement engine for RNDRNTWRK and other applications. SW4P coordinates how value moves across blockchains—from route selection and fees to execution, confirmation, recovery, and accounting for the result.
 
-**Endpoint groups:**
+Explore the [SW4P engineering documentation](https://docs.sw4p.io) for its technical design and interfaces.
 
-| Group | What It Covers |
-| :--- | :--- |
-| Authentication | Nonce, verify, logout, social linking |
-| Arcade and Gaming | Score submission, game state, per-game leaderboards, stats |
-| Battles | Create, join, and track PvP matches |
-| Lottery | Create rounds, buy tickets, finalize draws, audit trails |
-| Leaderboards | Global, per-game, quest, and referral rankings |
-| Rewards | Claim USDC, Merkle proofs, epoch management, projected earnings |
-| Referrals | Generate links, bind codes, track performance |
-| Profile and Tasks | User profile, daily tasks, payment history |
-| Events and SSE | Real-time event stream, burn events |
-| Quests | List quests, track progress, check multipliers |
-| Social | Twitter webhook, social sharing data |
-| Clips | Upload and list gameplay clips |
-| Eligibility and Config | Token-gate checks, normalization config, game registry |
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation. The funding source and agreements determine how an activity’s costs, recipients, and allocations are handled.
 
-Full reference: [API Reference](/api-reference)
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-## Integrate a Game
+## Application Interfaces
 
-**GameHarness is the fastest path for integrating a game into RNDRNTWRK.**
+The application layer connects an experience to the services and records it needs. Requests and responses handle actions and queries; real-time event streams let an interface respond to activity as it happens.
 
-Your game is responsible for:
-- Gameplay logic
-- Event emission
-- Score-producing actions
+The [API Reference](/api-reference) covers RNDRNTWRK’s application interfaces. For a specific integration, use the component reference for authentication, request and event formats, and supported environments.
 
-The harness is responsible for:
-- Session lifecycle
-- VAP connection
-- Hashing and signing flow
-- Verifier submission
-- Reward accrual hooks based on normalization settings
+If an integration submits transactions, track submission, confirmation, and how the result updates the application’s records. Use the selected component’s documented network and programme or contract interfaces.
 
-```tsx
-<GameHarness appId="your-game-id" onSessionStart={handleStart}>
-  <YourGameComponent />
-</GameHarness>
-```
+The [Architecture Overview](/architecture/overview) provides the wider view across client, service, agent, and chain layers.
 
-The harness manages the full VAP lifecycle: connect, play, hash, sign, transmit. Your game emits events (`SCORE_UPDATE`, `ENEMY_KILL`, etc.) and the harness aggregates them into a Merkle root. The session key signs the root and the signed payload is sent to the VAP Verifier.
+## Participation and Payment Components
 
-Score normalization maps all games to a 0 to 10,000 scale. Normalization config is managed at the protocol level. See [Arcade Overview](/arcade/overview) for the current normalization rules and scoring model.
-
-## Verification, Routing, and Settlement
-
-Four components handle verification, routing, and settlement across the network. Each has a distinct role.
+The protocol documentation introduces several components with distinct roles.
 
 ### VAP: Verifiable Attention Protocol
 
-VAP verifies participation.
+VAP addresses participation verification: connecting activity to the participant involved.
 
-- Ed25519 challenge-response sessions
-- WebSocket heartbeat at 5-second intervals
-- Session lifecycle: connect, challenge, sign, verify, accumulate
-
-<Info>**Status:** VAP v1 is live. VAP v2 is in design (not yet deployed). See [VAP](/protocol/vap) and [VAP v2](/protocol/vap-v2).</Info>
+Read about [VAP](/protocol/vap) and the [VAP v2 design](/protocol/vap-v2).
 
 ### AGG: Payment Aggregator
 
-AGG routes and settles supported payment flows inside the protocol.
+AGG addresses payment aggregation and routing within the protocol’s payment model.
 
-- Solana-native settlement via Jupiter (live)
-- HTTP 402 (Payment Required) standard support
-
-<Info>**Status:** Solana-native settlement is live. Cross-chain routing via the sw4p engine is in development. See [AGG](/protocol/agg).</Info>
+Read about [AGG](/protocol/agg).
 
 ### Hyperlink: Smart Payment Links
 
-Hyperlink creates programmable payment surfaces.
+Hyperlink addresses programmable payment surfaces, connecting a payment interaction to the context in which it takes place.
 
-- Generate payment links programmatically
-- Embedded wallets, analytics, and social attribution
-- See [Hyperlink](/protocol/hyperlink)
+Read about [Hyperlink](/protocol/hyperlink).
 
-### sw4p: Cross-Chain USDC Movement
-
-sw4p is the dedicated cross-chain USDC movement surface.
-
-Use sw4p when your application needs USDC to move between supported chains without wrapped assets or liquidity-pool dependencies.
-
-1. **Burn**: USDC is burned on the source chain
-2. **Attest**: the engine observes and verifies the burn attestation
-3. **Mint**: Native USDC is minted on the destination chain
-
-**SDKs:**
-- TypeScript: `@sw4p/sdk` ([docs.sw4p.io](https://docs.sw4p.io))
-- Rust: `@sw4p/rs-sdk` ([docs.sw4p.io](https://docs.sw4p.io))
-- Full docs: [sw4p Documentation Site](https://docs.sw4p.io)
-
-## Real-Time Events (SSE)
-
-Use SSE when your application needs live state without polling.
-
-Subscribe to `GET /events` for a persistent SSE connection. Authentication follows the same SIWS session model as the REST API.
-
-**Event categories:**
-
-| Category | Examples |
-| :--- | :--- |
-| Gameplay | `new_entry`, score updates, game state changes |
-| Chat | `chat_message`, moderation events |
-| Round state | Round transitions, winner announcements |
-| Rewards | Claim events, epoch transitions |
-| System | Burn events, system notifications |
-
-**Format:** `text/event-stream` with typed JSON payloads.
-
-Reconnection should be handled client-side. Events are delivered in order within each category.
-
-## Protocol Programs and Settlement Logic (Solana / Anchor)
-
-The protocol includes Anchor-based Solana programs that handle on-chain settlement and reward distribution.
-
-- **Rewards program**: `commit_epoch` → `fund_vault` → `claim_reward` pipeline
-- **Merkle-tree distribution** for provable USDC payouts
-- **PDA-based escrow** for tournament prizes and lottery pools
-- **On-chain randomness** via Switchboard VRF for lottery draws
-
-These programs handle the on-chain logic beneath the higher-level application surfaces. Most developers will interact with the REST API and SSE rather than calling these programs directly.
+These roles sit alongside SW4P’s settlement work. Participation, a payment request, and a completed settlement describe different parts of an activity. An application needs to preserve their relationship so its records reflect what happened and what remains owed.
 
 ## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="API Reference" icon="code" href="/api-reference">
-    Start integrating against the live endpoints.
+    Read the technical reference for RNDRNTWRK’s application interfaces.
   </Card>
   <Card title="Protocol Overview" icon="network-wired" href="/protocol/overview">
-    Understand how verification, routing, and settlement fit together.
+    Explore the shared rules and interfaces connecting identity, authority, ownership, and value.
   </Card>
-  <Card title="sw4p" icon="bridge" href="/sw4p">
-    Build cross-chain USDC movement into your application.
+  <Card title="SW4P" icon="bridge" href="/sw4p">
+    Understand programmable settlement, from route selection to accounting for the result.
   </Card>
   <Card title="Architecture" icon="sitemap" href="/architecture/overview">
-    See how the system is wired across client, service, agent, and chain layers.
+    Explore the relationships between client, service, agent, and chain layers.
   </Card>
 </CardGroup>
 
 <Note>
-  See also: [Security & Fairness](/guides/security-and-fairness) · [API Usage & Proxying](/guides/api-usage-and-proxying) · [Arcade Overview](/arcade/overview)
+  See also: [Security & Fairness](/guides/security-and-fairness) · [API Usage & Proxying](/guides/api-usage-and-proxying) · [555 Arcade](/arcade/overview)
 </Note>

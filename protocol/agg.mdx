@@ -1,79 +1,79 @@
 ---
 title: "AGG"
 icon: "money-bill-transfer"
-description: "The routing layer for value movement"
+description: "Payment aggregation, route selection, and facilitator coordination."
 ---
 
-# The Routing Layer
+The AGG design connects a payer’s available funds with the asset and destination requested by a merchant or application. It covers payment requirements, route selection, and coordination with a payment facilitator where one is used.
 
-<Info>
-**Status:** Partially implemented. Solana settlement via Jupiter is live. Cross-chain settlement (the sw4p engine) and gasless transactions (Kora) are planned.
-</Info>
+[SW4P](/sw4p) is the programmable settlement engine for RNDRNTWRK and other applications. It coordinates route selection, fees, execution, confirmation, recovery, and accounting for the result.
 
-**AGG (Aggregator)** is the routing layer for value movement across the RNDRNTWRK. It abstracts away the complexity of blockchain payments, allowing users to pay with any token on any chain.
+## Payment Requirements
 
-## Routing Architecture
+A payment-gated resource can use an HTTP 402 Payment Required response to tell a client that a payment is needed. The payment request describes the purpose, amount, asset, recipient, and intended destination.
 
-AGG functions like a DEX aggregator (Jupiter) but for **payments**, not just swaps. It solves the "n-to-1" problem: Users have `n` tokens on `m` chains, but the Merchant wants `1` specific token on `1` chain.
+The client needs enough information to present the request and follow its outcome. The exact message format and supported payment methods belong to the selected application and integration.
 
-### 1. The 402 Handshake
-The protocol begins when a client hits a gated resource.
+## Routes and Facilitators
 
-**Server Response (402 Payment Required)**
-```http
-HTTP/1.1 402 Payment Required
-WWW-Authenticate: 555x402 realm="sector-13",
-  amount="5.00",
-  token="USDC",
-  chain="solana",
-  recipient="HuW...9zP"
-```
+A route describes how the payer’s funds can satisfy the request. It may involve a direct transfer, an asset conversion, movement between networks, or a combination of steps.
 
-### 2. Pathfinding
-The AGG Client (SDK) calculates the optimal route based on the user's wallet state.
+Route selection considers:
 
-**Factors:**
-- **Gas Cost**: Solana (less than $0.001) vs Base vs Polygon.
-- **Swap Slippage**: If paying with SOL to settle in USDC (routed via Jupiter).
-- **Bridge Time**: If paying from Base to settle on Solana (via the sw4p engine).
+- The source asset and the asset the recipient is to receive.
+- The source and destination networks.
+- Available liquidity or transfer mechanisms.
+- Network, conversion, execution, and service costs.
+- The expected amount received and any allowed change in the conversion price.
+- Timing, confirmation requirements, and recovery if a step is interrupted.
 
-**Example Route:**
-`User (Base/ETH) -> Uniswap (USDC) -> the sw4p engine Bridge -> Solana (USDC) -> Merchant`
+A payment facilitator is a service that helps handle payment verification or settlement. The routing model needs to account for the facilitator’s supported requests, fees, response handling, and settlement records.
 
-### 3. Solana Settlement (v0 + LUTs)
-On Solana, AGG uses **Versioned Transactions (v0)** and **Address Lookup Tables (LUTs)** to pack complex logic into a single atomic transaction with sub-2-second finality.
+Use the chosen application’s route and quote information to understand the operation being offered.
 
-**Transaction Structure:**
-1. **Swap Instruction**: Jupiter CPI to convert User Token -> USDC.
-2. **Fee Instruction**: Transfer platform fee to Treasury.
-3. **Payment Instruction**: Transfer remaining amount to Merchant.
-4. **Memo Instruction**: Attach `orderId` for reconciliation.
+## Authorisation and Settlement
 
-```rust
-pub fn settle_payment(ctx: Context<Settle>, amount: u64) -> Result<()> {
-    token::transfer(ctx.accounts.user, ctx.accounts.merchant, amount)?;
-    emit!(PaymentSettled { id: ctx.accounts.order.id });
-}
-```
+The person or agent initiating a payment must have authority to use the funds. The application’s rules define the requested operation, spending limits, and required approvals.
 
-## Fee Structure
+The settlement design connects four responsibilities:
 
-AGG enforces a transparent fee model:
+1. Review the payment request, route, recipient, and costs.
+2. Authorise the operation under the applicable limits.
+3. Execute the route and follow its confirmation.
+4. Record the result against the original payment request.
 
-| Fee Type | Rate | Payer | Description |
-| :--- | :--- | :--- | :--- |
-| **Platform Fee** | 0.5–1.0% | Merchant | Deducted from the settlement amount. |
-| **Gas Fee** | Variable | User | Network costs (gasless via Kora where supported). |
+A route may include asset conversion, fee handling, a transfer to the recipient, and an attribution record such as an order reference. The selected execution method determines how those steps are carried out.
 
-## Cross-Chain Settlement
+The application uses the confirmed result to determine whether its payment requirement has been satisfied.
 
-For cross-chain payments (e.g., Base -> Solana), AGG utilizes **the sw4p engine** (Cross-Chain Transfer Protocol).
+## Fees and Payment Records
 
-1. **Burn (Source)**: User burns USDC on source chain.
-2. **Attest**: the engine observes and verifies the burn attestation.
-3. **Mint (Destination)**: USDC minted on destination chain and forwarded to Merchant.
+The quote should identify the amount the recipient is expected to receive, the costs that apply, and who pays each cost. Any platform or service fee belongs to the terms of the selected route or application.
 
-### Integrations
-- **Jupiter**: Optimal swap routing on Solana.
-- **Kora**: Gasless transaction sponsorship, users don't need SOL for gas.
-- **the sw4p engine**: Non-custodial cross-chain USDC transfers.
+Gas arrangements also belong to the route. Where a sponsorship arrangement is offered, the payment information needs to identify which costs it covers and who funds them.
+
+Payment records connect the request, authorisation, incurred costs, recipient, and confirmed outcome. Keeping those references together helps an application account for the payment and answer questions about its status.
+
+## Routes Across Networks
+
+A route between networks has steps on both the source and destination. A native burn-and-mint route, for example, burns the source asset, obtains the required attestation, and mints on the destination. Other routes use different mechanisms.
+
+The route record needs to distinguish what has completed on the source from what has completed on the destination. The selected application’s route information identifies the transfer method, dependencies, and way to follow progress.
+
+## Errors and Recovery
+
+An unavailable route, declined authorisation, and partially executed transfer require different next steps.
+
+The client should retain the payment reference and the recorded state of the operation. Recovery uses that state to determine what completed, what remains outstanding, and whether the next action continues the existing operation.
+
+The application also needs a way to explain an interruption to the payer and connect the request with the relevant support or recovery process.
+
+## Integration References
+
+[Hyperlink](/protocol/hyperlink) describes how a payment request can be presented through a link. [@sw4p/kit](/products/kit) introduces agent-facing tools and payment messages that connect to SW4P.
+
+Use the selected component’s documentation for its concrete interfaces, authentication, route information, and operating requirements.
+
+<Note>
+Related: [SW4P](/sw4p) · [Hyperlink](/protocol/hyperlink) · [@sw4p/kit](/products/kit)
+</Note>

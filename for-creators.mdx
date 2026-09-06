@@ -1,161 +1,98 @@
 ---
 title: "For Creators"
 icon: "tower-broadcast"
-description: "Run broadcasting, audience participation, and monetization in one system"
+description: "A creator’s guide to media, participation, and payments."
 ---
 
-**RNDRNTWRK helps creators run broadcasting, audience participation, and monetization in one place. Start a stream in the browser, let viewers play games, clip moments, join quests, enter predictions, and take part in recurring activities while the stream is live, then route the resulting value through one connected system instead of separate tools for streaming, engagement, and payout.**
+Your work may be a live stream, a game, or an ongoing programme. Around it are decisions about what to make, who to involve, how people participate, and how the business earns money.
 
-## What Creators Can Do Here
+This guide connects those decisions to RNDRNTWRK’s products, explaining where media, interactive experiences, agent software, and settlement fit—and what each is intended to support.
 
-### Broadcast from the browser
+## Running a Creator Experience
 
-Open 555stream in the browser and launch a live show without building a separate desktop-only workflow first.
+RNDRNTWRK’s creator model brings together four parts of running a stream, game, or ongoing programme.
 
-### Turn viewers into active participants
+### Create and share the work
 
-Viewers can do more than watch. They can play Arcade games, submit clips, join quests, enter prediction markets, and participate in recurring activities tied to the stream.
+Plan what people will experience, how it is presented, and where it is published. 555stream is the media part of this model, covering live and recorded programming, publishing, and interaction.
 
-### Monetize the activity around the stream
+### Give the audience ways to participate
 
-Ads, market fees, game fees, and other supported monetization surfaces can route through the protocol instead of being split across disconnected tools and payout systems.
+Games and challenges can make participation part of the experience. 555 Arcade is the interactive part of the model, where people and agents can play, learn, test ideas, and compete.
 
-### Keep the creator environment active when you are not actively hosting
+### Coordinate collaborators and agents
 
-Always-On Mode can keep games, clips, overlays, scheduled events, and recurring participation loops running during the periods when you are not on camera or not actively running the show.
+Define who contributes, what they are responsible for, and what they are allowed to use. RNDRNTWRK uses Alice to develop and test agent contributions to research, planning, coding, and media operations.
 
-### Add operator support with Alice
+### Organise funding and payments
 
-Alice can support scheduling, broadcast control, overlays, guest flow, and selected monetization actions when creators want more continuity or automation.
+Set out who funds the activity, which costs must be covered, and what each contributor is owed. SW4P is the settlement component for moving value across blockchains and accounting for the result.
 
-### Expand into creator-side economics where enabled
+SW4P Earn extends that model into allocations, claims, rewards, payout schedules, reserves, and reconciliation, with rules that depend on where the money comes from.
 
-Some creator-side economic features are optional or partially implemented, including gated actions, revenue-sharing mechanics, and creator-side token surfaces.
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-## The Creator Flow
+## Setting Up Your Stream
 
-### 1. Open 555stream
+Before you stream, decide where people will watch, how the stream will look, how they can participate, and how any income will be handled.
 
-Start in the browser.
+### Choose your destinations and prepare the stream
 
-555stream is the creator entry point for running the show, configuring the output, and turning the stream into a live participation environment.
+Check the 555stream guide for supported destinations and setup instructions. For destinations that use RTMP, you’ll need the connection details that send your stream to that platform, including its stream key.
 
-### 2. Add your destinations and build the show
+Prepare your scene layouts, overlays, branding, and sponsor materials. If guests are joining, check their audio and video before starting.
 
-Configure where the stream goes and how it looks.
+### Plan how people will participate
 
-That includes:
-- Adding RTMP keys for the destinations you care about
-- Choosing a scene layout
-- Configuring overlays, branding, and sponsor assets
-- Bringing in guests with browser-based audio and video controls
+Choose activities that fit your stream and audience. These might involve games, clips, quests, or recurring challenges. Check which formats are available and explain how people take part. Predictions or scheduled draws also need their own clearly stated participation rules; listing them here does not mean a programme is open.
 
-### 3. Turn on participation
+### Organise income and payments
 
-Once the stream is live, you can turn viewer activity into part of the experience.
+Decide how the experience will earn money—for example, through sponsorship, advertising, or fees where supported. Agree what sponsors receive, which costs need covering, and what collaborators or service providers will be paid.
 
-That can include:
-- 555 Arcade games
-- Clips
-- Quests
-- Prediction markets
-- Scheduled draws
-- Recurring participation loops
+The funding source and those agreements determine how money is allocated. Use the relevant product documentation for applicable fees, payment timing, and settlement instructions.
 
-This is the point where the stream becomes more than a broadcast. It becomes a live economic environment.
+### Plan between streams
 
-### 4. Turn on monetization
+Decide whether recorded programming, clips, games, or recurring events belong between your live streams. Set a schedule and identify who will manage it. Check which scheduling or automation features are supported before relying on them.
 
-When participation is active, monetization can run through the same system.
+## Alice and Creator Work
 
-That can include:
-- L-Bar ads
-- Game fees
-- Prediction market fees
-- Creator-side monetization modules where enabled
+RNDRNTWRK uses Alice to develop and test agent contributions to research, planning, coding, and media operations.
 
-The point is not just that revenue exists. The point is that the revenue enters a clear structure instead of disappearing into separate platforms and payout flows.
+This work explores how an agent can take responsibility for a defined part of a creator’s workflow. That starts with a clear assignment: what needs doing, which tools and resources the agent can use, which decisions require the creator, and how the result will be checked.
 
-### 5. Let the protocol route value
+The aim is to make agent contributions understandable and manageable alongside the work of human collaborators.
 
-Once revenue enters the system, the protocol routes it through fixed logic.
+## Optional: Creator-Specific Programmes
 
-- **10% ARP** routes to engaged viewers
-- **50% of post-ARP value** routes to the creator
-- The remaining share routes through platform allocation logic
+Beyond an individual stream, a creator may want to organise an ongoing programme for a community. That could bring together access to experiences, ways to contribute, and agreements about how the programme is funded and participants are paid.
 
-Settlement happens on a recurring schedule, with product-specific accounting documented in the relevant pages.
+Creator-token features are planned. A programme would explain the token’s purpose, how it is used, and what participation involves.
 
-### 6. Keep the environment running beyond the main live segment
+[SW4P Earn](/products/earn) covers the model for allocations, rewards, claims, and payouts. Its documentation explains that model and the current programme status.
 
-The creator does not have to be actively hosting every minute for the channel to keep generating participation.
+## Getting Started
 
-Always-On Mode can keep the environment active through:
-- Evergreen games
-- Resurfaced clips
-- Scheduled participation loops
-- Recurring events
-- Auto Pilot programming logic
-
-That means the channel can remain active between the creator's main live segments instead of going completely dormant.
-
-## Alice: The Operator Layer
-
-**Alice is the operator layer for creators who want support or automation inside the system.**
-
-Alice can help with:
-- Starting and stopping broadcasts on schedule
-- Controlling parts of the stream flow
-- Triggering monetization actions at the right moments
-- Managing overlays
-- Supporting longer-running or always-on channel behavior
-
-Alice is not required to use the creator flow. She exists as an additional operating layer when creators want more leverage or more continuity.
-
-## Optional: Expand into a Creator Economy
-
-<Info>**Status: Partially implemented**</Info>
-
-Where enabled, creator-side economic features can include:
-- Creator-side token mechanics
-- Gated chat, overlays, and actions
-- Revenue-sharing structures
-- Buyback logic
-- Governance controls
-
-These features extend the creator surface. They are not required to use the core broadcast, participation, and monetization flow.
-
-## Access and Setup Requirements
-
-Some creator surfaces require:
-- A supported Solana wallet
-- Wallet-based sign-in
-- Minimum access requirements or whitelist approval, depending on the surface
-
-Current access requirements include:
-- **Phantom** (recommended), Solflare, or Trust Wallet
-- **SIWS** authentication
-- **55,555 $555** minimum for certain creator surfaces, or whitelist access via [Discord](https://discord.gg/35UNPtu8M5)
-
-See [Getting Started](/introduction) for the current setup path and access details.
+All you need to get started is an internet-enabled device.
 
 ## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="555stream" icon="video" href="/555stream">
-    Configure distribution, scenes, guests, and broadcast control.
+    Explore programming, publishing, and interaction around your stream.
   </Card>
-  <Card title="Monetization Module" icon="coins" href="/products/monetization-module">
-    See how revenue enters the system and how value is routed.
+  <Card title="Economic Model" icon="coins" href="/economics">
+    Understand how programme funding, costs, and payments fit together.
   </Card>
   <Card title="CTRL Panel" icon="sliders" href="/products/ctrl-control-panel">
-    Configure overlays, modules, schedules, and operator settings.
+    Read about stream controls, overlays, modules, and schedules.
   </Card>
   <Card title="Alice" icon="robot" href="/alice/persona">
-    See how the AI operator layer works.
+    Explore the agent workflows RNDRNTWRK develops and tests.
   </Card>
 </CardGroup>
 
 <Note>
-  See also: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution](/tokenomics/fee-distribution) · [Subscriptions & Staking](/products/subscriptions-staking)
+  See also: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution](/tokenomics/fee-distribution) · [SW4P Earn](/products/earn)
 </Note>

@@ -1,197 +1,118 @@
 ---
 title: "Arcade Overview"
 icon: "gamepad"
-description: "Where players, creators, and AI agents turn play into verified participation."
+description: "Games, challenges, and interactive environments for people and agents to play, learn, test ideas, and compete."
 ---
 
-<Info>**Status: Live**: 555 Arcade hosts **20 browser games** (8 production + 12 beta) with a unified cross-game leaderboard, score normalization, and difficulty multipliers.</Info>
+555 Arcade brings together games, challenges, simulations, and interactive environments for people and agents to play, learn, test ideas, and compete.
 
-# 555 Arcade
+<Info>
+This guide describes Arcade’s game and interaction model. Follow each experience’s own rules for participation, scoring, and supported features.
+</Info>
 
-**555 Arcade is where the audience stops just watching and starts playing.** It gives players a shared game surface, gives creators a living participation layer around their worlds, and gives AI agents a public arena to compete, learn, and improve.
+## Play and Test Ideas
 
-Arcade is not an isolated game portal. It is the participation layer of RNDRNTWRK. Gameplay, clips, quests, predictions, and recurring loops create activity the protocol can verify, rank, reward, and route through the broader economic system.
+A game provides a setting to practise a skill, try a strategy, and see the result. A challenge can also help someone learn a product, test an integration, complete a task, or create media.
 
-## Why Arcade Matters
+Repeated activity gives participants a way to develop their approach and build a record of their work. For developers, it provides a setting to evaluate how an agent responds to a task and what needs further testing.
 
-Arcade exists because passive audiences are not enough.
+### People and Agents
 
-For creators, the Arcade keeps their world active. Players have something to do during and between live segments. That activity generates monetizable inventory and gives the creator environment depth beyond a one-way broadcast.
+The Arcade model includes people and agents competing, cooperating, and taking different roles in the same environment. Agents may act as opponents, teammates, coaches, hosts, moderators, or part of the experience itself.
 
-For players, the Arcade turns watching into doing. Play is verified, ranked, and rewarded through the same economic system as the rest of RNDRNTWRK.
+Each experience defines the roles it supports and the rules everyone follows. The [Games Library](/arcade/games) also describes the recorded design for agent intervention in game state.
 
-For the system, the Arcade is where participation becomes measurable economic input at scale.
+## Games and Community Activities
 
-## Humans and AI Agents in the Same Arena
+### Games
 
-555 Arcade is one of the clearest places in RNDRNTWRK where humans and AI agents participate inside the same competitive environment.
-
-Players can:
-- Compete against other players
-- Compete against Alice and other agent-driven participants
-- Watch agents compete against each other
-
-This is not cosmetic. Agents in Arcade can improve over time through repeated participation, strategy, and exposure to live competitive environments. That makes the Arcade a public training and proving ground, not just a game catalog.
-
-This is one of the strongest demonstrations that RNDRNTWRK is built for a world where humans and AI agents operate on the same economic rails.
-
-## What Players Can Do
-
-### Play games
-
-The Arcade currently includes 20 free browser games across multiple play styles: arcade, puzzle, racing, RPG, and casino-style surfaces. See the [Games Library](/arcade/games) for the full catalog.
-
-- **8 production titles** with full scoring and competitive ranking
-- **12 beta titles** with adjusted score weighting
-- **555 Lottery** with hourly Switchboard VRF draws
-
-Games are free to play. No token holdings are required to start.
-
-### Compete on one shared surface
-
-Arcade does not treat each game as a closed scoreboard. It maps supported games onto one competitive surface.
-
-Normalization makes cross-game ranking possible, while beta weighting protects the integrity of the live competitive environment as new games are tuned. All games map to a 0 to 10,000 normalized scale.
-
-Leaderboards run across:
-- Day, Week, Month, Year, All-Time
-- Per-game and cross-game normalized rankings
-- PvP battle records
-
-Every eligible score can be traced back to signed participation through VAP.
-
-### Earn through participation
-
-Gameplay, quests, referrals, predictions, clips, and other supported actions can all contribute to rewards.
-
-Current rules:
-- **10,000 points = 1 USDC**
-- **+100 daily bonus per game, per wallet, per CST day**
-- **Token-gated multipliers where supported**
-
-| Tier | $555 Balance | Multiplier |
-|---|---:|---:|
-| Curious | 0 | 1x |
-| Creator | 55,555 | 5x |
-| Owner | 555,555 | 55x |
-| Institution | 5,555,555 | 555x |
-
-Points are non-transferable. Credits track internal balances before payout. Settlement runs weekly on Mondays at 05:55 CST via Merkle distribution. Self-withdrawal is available where supported.
-
-See [Tokenomics](/tokenomics/overview) for the full reward and settlement model.
-
-## Participation Loops
-
-Arcade is not just games. It includes several recurring participation surfaces that keep activity flowing.
-
-### Prediction Markets
-
-Players and viewers can take positions around creator or game outcomes using bonding-curve markets with AMM pricing. Markets can be created by the streamer or any participant.
+The collection spans action games, platformers, puzzles, racing, and other play styles. The [Games Library](/arcade/games) introduces the documented titles and their mechanics.
 
 ### Quests and Challenges
 
-Daily and weekly tasks create repeatable reasons to return. Quests can be tied to gameplay, social activity, referrals, clips, and creator-defined goals.
+A quest gives participants a task and a way to recognise completion. Challenges can involve gameplay, clips, referrals, community activity, or a creator-defined goal. Repeat missions can give a community something to work on across several sessions.
 
 ### Clips
 
-Players capture highlights and turn moments into reusable participation artifacts. Clips surface in overlays, earn points, and keep past content visible in the creator environment.
+Clips capture useful or memorable moments and make them available for further viewing, discussion, and publishing. They can form part of a challenge or a creator’s programme, with the activity’s rules defining how contributions are used.
 
-### 555 Lottery
+### Predictions and Draws
 
-Provably fair hourly draws powered by Switchboard VRF. Both stream-level draws (per-creator) and global draws are supported. Payouts via PDA escrow and Merkle claims.
+The collection includes prediction-market and lottery designs. The prediction design uses bonding-curve markets and AMM pricing around creator or game outcomes. The lottery design includes stream-level and global draws.
 
-## How Creators Run Arcade
+A proposed experience would define its participation rules, timing, funding, and outcome-resolution process.
 
-Creators configure the Arcade through the CTRL Panel.
+## Scores, Points, and Rewards
 
-Creators can:
-- Enable or disable participation modules (games, predictions, quests, clips, lottery)
-- Configure schedules, prize tiers, and eligibility
-- Expose the overlay URL for their stream
-- Use Auto Pilot for recommended programming and automation
-- Decide how their creator world behaves during and between live segments
+Game scores measure performance within a game. Normalized scores provide a way to compare results across games, while competition rules determine which results count and how they are ranked.
 
-This is not a settings page. It is how creators shape the participation environment around their stream.
+Points can record progress or participation. Any reward programme would define its funding source, eligibility, allocation rules, and claim or payment process.
 
-## Keeping Creator Worlds Active
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
 
-Creator worlds do not have to go dormant between main live segments.
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-Always-On Mode keeps the environment active through:
-- Evergreen games and scheduled raids
-- Resurfaced clips from past streams and social channels
-- Hourly lottery windows
-- Recurring participation loops
-- Auto Pilot programming logic
+Programme funding, service fees, settlement revenue, and token-related revenue remain distinct. Each programme defines its costs, agreed recipients, and platform share. See [Fee Distribution](/tokenomics/fee-distribution) for the allocation model.
 
-This means the audience has reasons to return and participate even when the creator is not actively on camera.
+## Planning a Creator Programme
 
-## Why Players Can Trust the System
+The CTRL Panel design brings together participation modules, schedules, eligibility settings, and stream overlays.
 
-### Verified participation
-VAP verifies eligible sessions with Ed25519 cryptographic heartbeats at 5-second intervals.
+A creator’s programme can combine games, challenges, clips, or other activities during a stream and between live sessions. Useful planning choices include:
 
-### Provable randomness
-Lottery draws use Switchboard VRF with on-chain proofs. Chat-based draws use HKDF randomness.
+- Which activities fit the community and the programme’s purpose.
+- When each activity begins and ends.
+- How participants join and how results are measured.
+- Which creative assets and overlays the stream needs.
+- How evergreen games, scheduled group activities, or clips from earlier streams fit the schedule.
+- How any proposed prizes would be funded and distributed.
 
-### Protected payouts
-Escrow PDAs and Merkle distribution handle payout logic. The on-chain rewards program uses an Anchor-based `commit_epoch` / `fund_vault` / `claim_reward` pipeline.
-
-### Transparent resolution
-Commit-reveal and timestamped event logs handle game resolution where applicable.
-
-See [Security & Fairness](/guides/security-and-fairness) for the full verification and integrity model.
-
-## How Arcade Rewards Route Through the System
-
-Value generated through Arcade routes through the same protocol cascade used elsewhere in RNDRNTWRK. That includes audience rewards, creator-side value routing, and platform allocation.
-
-See [Fee Distribution](/tokenomics/fee-distribution) for the current allocation model.
+See [CTRL Panel](/products/ctrl-control-panel) for the control-panel model.
 
 ## Access
 
-### Player access
-- Free to play
-- Wallet required (Phantom, Solflare, Backpack, or other major Solana wallets)
-- SIWS authentication
-- No token holdings required to start
+All you need to get started is an internet-enabled device.
 
-### Creator and operator access
-- **55,555 $555** minimum for certain creator surfaces, or whitelist access via [Discord](https://discord.gg/35UNPtu8M5)
+Explore the games and experiences, then follow the instructions for the one you choose. Each experience explains its controls, scoring, and any rules for a particular competition or programme.
+
+## Participation Records and Fairness
+
+The integration design connects game events and score submissions with signed session records through VAP. Its verification approach includes cryptographic heartbeats, timestamped event logs, and commit-reveal resolution for applicable game types.
+
+The randomness design references Switchboard VRF for lottery draws and HKDF for chat-based draws. The reward-distribution design includes escrow and Merkle claims.
+
+These mechanisms have different roles: recording participation, resolving outcomes, and accounting for funds. [Security & Fairness](/guides/security-and-fairness) explains those parts of the design.
 
 ## For Developers
 
-### How Arcade Is Integrated
+### Game and Session Responsibilities
 
-Arcade is a VAP Client. Every game is wrapped in a Harness that manages the session lifecycle.
+The source integration design separates game logic from a session harness.
 
-**Your game provides:**
-- Gameplay logic
-- Event emission (`SCORE_UPDATE`, `ENEMY_KILL`, etc.)
-- Score-producing actions
+**The game provides:**
 
-**The Harness provides:**
-- VAP connection and session lifecycle
-- Hashing and signing flow
-- Verifier submission
-- Reward accrual hooks
+- Gameplay logic.
+- Events such as score updates or enemy defeats.
+- The actions used to calculate a result.
 
-```tsx
-<GameHarness appId="sector-13" onSessionStart={handleStart}>
-  <PhaserGame />
-</GameHarness>
-```
+**The harness handles:**
+
+- VAP connection and session lifecycle.
+- Hashing and signing.
+- Verifier submission.
+- Hooks for programme-defined reward accounting.
+
+Identity and session handling belong to the integration design. Its documented wallet-based authentication path uses Sign-In with Solana (SIWS).
 
 ### Plugin Integration
 
-If you are integrating 555 Arcade into an agent or operator workflow:
+For agent and operator integrations, use the references at the level you need:
 
-1. **This page** for product context
-2. **[Developer Resources](/community/developer-resources)** for ecosystem-level integration context
-3. **[Plugin README](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/README.md)** for package-level setup
-4. **[Plugin Repo](https://github.com/rndrntwrk/555-arcade-plugin)** for source, issues, and action-by-action reference docs
+1. [Developer Resources](/community/developer-resources) for ecosystem context.
+2. [Plugin README](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/README.md) for package setup.
+3. [Plugin Repository](https://github.com/rndrntwrk/555-arcade-plugin) for source, issues, and action references.
 
-### Repo reference docs
+The repository documentation covers:
 
 - [Install and Auth](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/INSTALL_AND_AUTH.md)
 - [Get Started](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/GET_STARTED.md)
@@ -201,23 +122,23 @@ If you are integrating 555 Arcade into an agent or operator workflow:
 - [Edge Cases and Recovery](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/EDGE_CASES_AND_RECOVERY.md)
 - [Coverage and Gaps](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/docs/COVERAGE_AND_GAPS.md)
 
-## Cross-Links
+## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="Games Library" icon="dice" href="/arcade/games">
-    Browse the current catalog, game status, and play styles.
+    Read about the documented games, their mechanics, and interaction designs.
   </Card>
   <Card title="CTRL Panel" icon="sliders" href="/products/ctrl-control-panel">
-    Configure participation modules, schedules, and overlays.
+    Explore the model for participation modules, schedules, and overlays.
   </Card>
   <Card title="Security & Fairness" icon="shield" href="/guides/security-and-fairness">
-    VAP verification, VRF randomness, and payout integrity.
+    Read about participation records, outcome resolution, and score handling.
   </Card>
-  <Card title="Monetization Module" icon="coins" href="/products/monetization-module">
-    See how Arcade activity connects to the broader monetization surface.
+  <Card title="SW4P Earn" icon="coins" href="/products/earn">
+    Explore allocation, reward, claim, and payout design, including current programme status.
   </Card>
 </CardGroup>
 
 <Note>
-  See also: [Fee Distribution](/tokenomics/fee-distribution) · [555stream](/555stream) · [Alice](/alice/persona)
+See also: [555stream](/555stream) · [Alice](/alice/persona)
 </Note>

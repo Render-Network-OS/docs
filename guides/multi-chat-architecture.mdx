@@ -1,52 +1,67 @@
 ---
 title: "Multi-Chat / Multi-Stream Architecture"
 icon: "comments"
-description: "How RNDRNTWRK coordinates audience and broadcast state across destinations"
+description: "A planned design for stream-specific chat, configuration, and activity records"
 ---
 
-<Info>**Status: Planned**: Multi-chat unification is in design. Current implementation uses per-platform chat.</Info>
+<Info>Multi-chat unification is planned and remains in design.</Info>
 
 ## Overview
 
-RNDRNTWRK coordinates up to 10 concurrent chat streams with per-stream configuration, token verification, and stream-specific analytics.
+The multi-chat design brings separate chats into a coordinated view while keeping their stream context intact. Each stream has its own configuration, lifecycle, entries, and activity statistics.
+
+This lets an operator follow several conversations without mixing their rules or records. A stream’s access policy determines any account or token requirements for a particular activity; chat participation and message moderation retain their own context.
 
 ## Core Components
 
-- **MultiChatManager:** Orchestrates concurrent chat streams
-- **MultiStreamTracker:** Tracks lifecycle and health per stream
-- **Per-Stream Config:** token address, token mint, min tokens
-- **Verification:** per-stream token verification on events
-- **Tagging:** entries tagged with `stream_id`
+The documented component names describe these responsibilities:
+
+- **MultiChatManager:** coordinates chat connections and per-stream configuration.
+- **MultiStreamTracker:** tracks each stream’s lifecycle and health.
+- **Per-stream configuration:** describes the stream’s state and any activity-specific access conditions.
+- **Policy checks:** evaluate the conditions selected for that stream and retain the meaning of the result.
+- **Stream tagging:** associates each entry with its originating stream through `stream_id`.
+
+The manager coordinates the streams; the tracker describes how each is running. Stream-level permissions govern who can configure a stream, control its connection, or inspect its records.
 
 ## Data Model
 
-- **Stream Configs:** `id`, `token_address`, `token_mint`, `min_tokens`, `status`
-- **Entries:** `id`, `stream_id`, `wallet`, `message`, `verified`, `ts`
-- **Stats:** per-stream counters and rates
+These field names are part of the documented design, not a deployment-specific schema. An integration defines their types, required fields, and permitted use.
 
-## API & CRUD
+| Record | Documented fields | Purpose |
+|---|---|---|
+| Stream configuration | `id`, `token_address`, `token_mint`, `min_tokens`, `status` | Identify the stream and its state. Token fields describe a token-based access policy where that stream uses one. |
+| Entry | `id`, `stream_id`, `wallet`, `message`, `verified`, `ts` | Associate a message, its participant context, timing, and any policy-check result with the correct stream. |
+| Statistics | Per-stream counters and rates | Summarise activity within the selected stream and reporting period. |
 
-- Create/Update/Delete stream configs
-- Start/Stop streams; list stats
-- Query entries by `stream_id` and timeframe
+The token reference fields need an explicit meaning in the chosen integration. A wallet reference is relevant where an activity uses a wallet-based policy; it is not a requirement for every chat participant.
+
+Define `verified` in terms of the check performed. Keep an unmet condition distinct from a check that was not required or could not be completed. The result describes that policy check, not the quality of a participant or the truth of a message.
+
+Preserve the association between an entry and its stream when filtering, displaying, or summarising records.
+
+## Configuration and Lifecycle Operations
+
+The design includes operations to:
+
+- Create, update, and delete stream configurations.
+- Start and stop a stream connection.
+- Read stream status and activity statistics.
+- Query entries by `stream_id` and timeframe.
+
+Configuration changes need the relevant operator permission. Starting or stopping a connection changes its lifecycle; deleting a configuration needs a defined policy for the records associated with it.
+
+An integration also needs to explain how reconnects and interrupted connections affect status, retained entries, and activity statistics. This section describes the intended operations without prescribing endpoint paths.
 
 ## Frontend Display
 
-- Per-stream panes with status and latest entries
-- Filters for verified vs unverified participants
+Use per-stream panes to show connection status and the latest entries. Keep the source stream visible when presenting messages in a combined view.
+
+Filters can help an operator examine the outcome of a particular access-policy check. Label the check and its result clearly, including cases where it was not required or could not be completed.
+
+Apply the viewer’s permissions to both the visible panes and the records returned for filtering. Moderation actions remain scoped to the relevant stream and its rules.
 
 ## Cross-Links
 
-- Moderation: [Chat Moderation Bot](/guides/chat-moderation-bot)
-- Programs: [Monetization Contract](/products/monetization-contract)
-
-
-
-
-
-
-
-
-
-
-
+- [Chat Moderation Bot](/guides/chat-moderation-bot) — Rule configuration, permissions, and operator review.
+- [Monetization Contract](/products/monetization-contract) — The documented programme-contract model.

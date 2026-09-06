@@ -1,100 +1,97 @@
 ---
 title: "Security & Fairness"
 icon: "shield-check"
-description: "How RNDRNTWRK protects participants, verifies engagement, and makes payouts legible"
+description: "Participation records, fair resolution, fund handling, and security review"
 ---
 
 ## Overview
 
-RNDRNTWRK uses cryptographic proofs and on-chain transparency to protect participants across games, payouts, and campaign execution.
+A useful participation record explains what happened, which rules applied, and how a result can be checked or questioned.
 
-## Implementation Status
+This guide covers the security and fairness design for games, interactive experiences, and economic programmes. For a particular experience, read its rules for participation, verification, fund handling, and support.
 
-Not all security measures are live today. The following breakdown clarifies what is currently active and what is planned.
+People and agents are legitimate participants in RNDRNTWRK. Each experience defines the actions and forms of automation permitted for their roles.
 
-### Live
+## Verification Design
 
-| Measure | Description |
+Different checks answer different questions:
+
+| Design topic | What it helps examine |
 |---|---|
-| **Switchboard VRF lottery** | Verifiable Random Function for all lottery and draw-based events |
-| **PDA escrow** | Program Derived Address accounts hold funds during game resolution |
-| **Merkle distributions** | Efficient weekly reward claims with on-chain proof verification |
-| **Ed25519 VAP signatures** | Verified Action Proofs sign each game action to prevent tampering |
-| **Anti-spam rate limiting** | Request throttling and reputation scoring to prevent abuse |
+| **Signed participation updates** | Which signing key submitted an update and whether its recorded content has changed |
+| **Session and sequence checks** | Whether updates belong to the same session, arrive in the expected order, or repeat an earlier submission |
+| **Activity and state records** | How reported actions, timing, and scores relate to the experience’s rules |
+| **Randomness records** | How a draw’s random input was requested or committed, produced, and used |
+| **Allocation proofs** | How a recipient and amount relate to a programme’s published distribution record |
 
-### Planned
+[VAP](/protocol/vap) describes a session-record design using Ed25519 signatures, activity summaries, and continuity checks. Its verification results support review of a session; the experience’s rules determine how those records affect scores or other decisions.
 
-| Measure | Target |
-|---|---|
-| **Full on-chain game state verification** | Move complete game state proofs on-chain for trustless verification |
-| **cNFT audit trails** | Compressed NFTs as immutable records of game outcomes and payouts |
-| **Decentralized dispute resolution** | Community-driven arbitration for contested results |
-
-<Info>
-  Planned features are part of the progressive decentralization roadmap. Timelines will be announced as development milestones are reached.
-</Info>
+The security design also considers fuller onchain game-state verification, compressed-NFT records of outcomes, and community review of disputed results. Each would need to define the information recorded, the checks applied, and how a participant can contest an outcome.
 
 ## Randomness & Game Resolution
 
-- Switchboard VRF for lottery and draw-based events
-- Commit-reveal where appropriate (pre-committed hashes, later reveals)
-- Timestamped event logs and deterministic resolution rules
+A draw needs an entry record, a closing point, a randomness method, and a rule that turns the result into a selection.
 
-### Verifying VRF Lottery Fairness
+The documented approaches include a Verifiable Random Function (VRF) and commit-reveal, where a value is committed before it is revealed. Timestamped records and defined resolution rules help connect the entries, random input, and published outcome.
 
-Users can independently verify that lottery outcomes were generated fairly using on-chain VRF proofs:
+### Checking a draw’s record
 
-<Steps>
-  <Step title="Locate the Transaction">
-    Find the lottery settlement transaction on a Solana block explorer (e.g., Solscan, Solana Explorer) using the transaction signature published after the draw.
-  </Step>
-  <Step title="Inspect the VRF Account">
-    The transaction references a Switchboard VRF account. Open this account to view the randomness request and the resulting proof.
-  </Step>
-  <Step title="Verify the Proof">
-    Confirm that the VRF proof is valid, the on-chain program verifies the proof at execution time. The randomness value, combined with the deterministic resolution rules, should reproduce the published outcome.
-  </Step>
-</Steps>
+Where an experience offers independent verification:
+
+1. Read the entry, closing, and selection rules for the round.
+2. Find its entry record and the randomness request, proof, or commitment-and-reveal references it supplies.
+3. Follow the experience’s verification instructions to check the random input and apply the selection rule to the recorded entries.
+4. Compare the result with the published outcome, and note any missing records or unresolved checks.
+
+A randomness proof addresses one part of a draw. The entry list and selection rules also matter when reviewing the result.
 
 ## Payouts & Escrow
 
-- PDA escrow accounts hold funds during resolution
-- Merkle root distributions enable efficient claims and verification
-- Public receipts with winner lists and amounts
+An escrow design holds designated funds until specified conditions are met. Its terms need to identify who controls the funds, who may authorise release, and what happens if resolution is delayed, interrupted, or disputed.
+
+The documented design includes program-controlled accounts and Merkle-root distribution records. A Merkle proof relates a recipient’s allocation to a distribution record; allocation, claim submission, and confirmed payment remain separate steps.
+
+Useful programme records connect the round or activity, funding source, recipients, amounts, reserved funds, and payment references. They also explain what remains outstanding or should be returned.
+
+SW4P coordinates settlement: route selection, fees, execution, confirmation, recovery, and accounting for the result.
+
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
+
+[SW4P Earn](/products/earn) describes the programme model and the terms a future programme would provide.
 
 ## Safeguards & Controls
 
-- Anti-manipulation: bet caps, rate limits, reputation scoring
-- Circuit breakers for abnormal conditions and upgrades
-- Multi-signature controls for sensitive operations
+Controls need to fit the experience and the authority of the people and agents taking part.
+
+| Control design | What the experience needs to explain |
+|---|---|
+| **Entry or action limits** | Which actions are limited, how limits are measured, and how they apply to each participant role |
+| **Rate limits and reputation signals** | How unusual or repeated activity is handled and when a result needs review |
+| **Pause and recovery controls** | Who can pause an affected operation and how unfinished activity is handled |
+| **Sensitive changes and upgrades** | Which changes require additional authorisation, including multiple approvals where that design is used |
+
+A participant should be able to distinguish a valid agent action from activity outside the experience’s rules. A review process also needs a way to examine an incorrectly rejected or interrupted session.
 
 ## Audits & Monitoring
 
-- Independent security reviews (see [sw4p's 5 audit results](https://sw4p.com) for completed assessments)
-- Continuous monitoring and anomaly detection
-- Public reporting and transparency dashboards
+For a security review, look for the component and version examined, the review’s scope and date, its findings, and how those findings were addressed. These details show which part of a system the review covers.
 
-<Warning>
-  Security audits reduce risk but do not eliminate it. Smart contracts may contain undiscovered vulnerabilities. Users should only participate with funds they can afford to lose.
-</Warning>
+Monitoring design concerns failed checks, unusual activity, interrupted operations, and the records needed to investigate them. A reporting surface should identify the period covered and the state of any unresolved issue.
+
+A review is useful evidence about its stated scope. It does not establish that every integration or later change has the same security properties.
 
 ## Incident Response
 
-- Triage, disclosure, remediation timelines
-- Community updates and postmortems
+If an activity produces an unexpected result, retain the session or operation reference, time, reported status, and any relevant receipt. Use the affected product’s published support or reporting path, keeping credentials and signing secrets out of public reports.
 
-## Cross-Links
+An incident-response process needs to cover assessment of the issue, decisions about affected activity, participant updates, remediation, and a record of the resolution. That record should explain any remaining effect on sessions, allocations, or payments.
 
-- Raffles: [555 Arcade](/arcade/overview)
-- Programs: [Monetization Contract](/products/monetization-contract)
-- Tokenomics: [Fee Distribution](/tokenomics/fee-distribution)
+## Go Deeper
 
-
-
-
-
-
-
-
-
-
+- [VAP](/protocol/vap) — Participation records and verification design.
+- [555 Arcade](/arcade/overview) — Games and interactive experiences.
+- [Monetization Contract](/products/monetization-contract) — Planned commercial records and responsibilities.
+- [Fee Distribution](/tokenomics/fee-distribution) — Source-specific allocation policies.
+- [SW4P Earn](/products/earn) — Programme records and current status.

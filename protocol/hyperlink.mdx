@@ -1,101 +1,89 @@
 ---
 title: "Hyperlink"
 icon: "link"
-description: "Smart payment links for programmable participation"
+description: "Payment links that connect a request, its authorisation, and the application’s response."
 ---
 
-<Info>**Status: Partially Implemented**: Core link resolution is live at [555hyper.link](https://555hyper.link). Embedded wallets and full analytics dashboard are in development.</Info>
+Hyperlink is RNDRNTWRK’s payment-link design. A link brings a payment or participation request into a webpage, message, or QR code and connects it with the application responsible for the result.
 
-# Smart Payment Links
+The model covers purchases, access requests, and interactive activities. Each experience defines what the request involves and which payment or participation steps it requires.
 
-**Hyperlink** is the programmable participation interface for the RNDRNTWRK. Every link is a smart payment surface that resolves to an on-chain action, working anywhere on the web.
+## What a Link Describes
 
-**Live at**: [555hyper.link](https://555hyper.link)
+The link design has three parts:
 
-## URL Anatomy
+- A hosting gateway that resolves the link.
+- An identifier that selects the configured request.
+- An optional referral reference that records how the request reached the participant.
 
-A Hyperlink is a deterministic URL that resolves to a specific payment or engagement request.
+The request should explain its purpose, the recipient, any amount and asset required, and the expected result. A link preview can introduce that information before the participant opens the full request.
 
-`https://555hyper.link/p/{code}?ref={referrerId}`
+The link format and resolution interface belong to the selected integration.
 
-- **Domain**: The hosting gateway (can be self-hosted).
-- **Code**: A base58-encoded unique identifier for the Link Config.
-- **Ref**: (Optional) The wallet address or handle of the affiliate/referrer.
+## Resolution and Authorisation
 
-## Resolution Flow
+For a request that requires payment, the proposed flow is:
 
-When a user clicks a Hyperlink:
+1. Open the link and load the configured request.
+2. Review the purpose, recipient, amount, route, and costs.
+3. Authorise the operation through the supported wallet or payment client.
+4. Follow the settlement result.
+5. Let the application apply its access, delivery, or interaction rules to that result.
 
 ```mermaid
-sequenceDiagram
-    participant User
-    participant Browser
-    participant Gateway
-    participant Wallet
-
-    User->>Browser: Clicks Link
-    Browser->>Gateway: GET /p/{code}
-    Gateway->>Browser: Returns Metadata (OG Tags + Deep Link)
-
-    Browser->>Wallet: Detects Provider
-    Wallet->>Gateway: GET /resolve?wallet={address}
-    Gateway->>Wallet: Returns Transaction Payload (Base64)
-
-    Wallet->>User: Prompts "Sign Transaction"
-    User->>Wallet: Signs
-    Wallet->>Blockchain: Submits TX
+flowchart TD
+    A["Open the link and load the request"] --> B["Review the purpose, recipient, amount, route and costs"]
+    B --> C["Authorise through the supported wallet or payment client"]
+    C --> D["Follow the settlement result"]
+    D --> E["The application applies its access, delivery or interaction rules"]
 ```
 
-## Features
+Proposed flow for a request that requires payment. The request, authorisation, payment record, and application response remain connected.
 
-### Embedded Wallets
-Hyperlinks support embedded wallets for users without a browser wallet extension. Frictionless onboarding, no Phantom or MetaMask required.
+For an agent, the request must fit its assigned authority and spending limits. The integration retains the relationship between the request, its authorisation, the payment record, and the application’s response.
 
-### Analytics
-Built-in link analytics: click tracking, conversion rates, referral attribution, and geographic distribution.
+## Wallets and Routing
 
-### Multi-Chain
-Links resolve across Solana, Base, and Polygon via [AGG](/protocol/agg) routing. Users pay with whatever they have; the protocol handles the rest.
+The design considers both external and embedded wallets. An embedded wallet would form part of the application’s own interface. The wallet and connection options offered by a particular application determine how its participants authorise payments.
 
-## Social Attribution (The Viral Layer)
+[AGG](/protocol/agg) describes payment aggregation, route selection, and facilitator coordination. [SW4P](/sw4p) provides the programmable settlement engine, coordinating routes, fees, execution, confirmation, recovery, and accounting for the result.
 
-Hyperlink turns social media into a direct revenue channel, bridging engagement (Likes/RTs) and conversion (on-chain action).
+A payment request needs to use the assets, networks, and execution methods supported by its selected route.
 
-### The "Ref" Loop
-1. **Creator** posts a link on Twitter: `Play Sector 13 with me! 555hyper.link/p/s13?ref=ninja`
-2. **Follower** clicks the link. The `ref=ninja` param is stored in browser local storage.
-3. **Action**: The follower plays the game, makes a purchase, or engages.
-4. **Settlement**: The smart contract automatically routes a % of the transaction to the referrer.
+## Attribution and Reporting
 
-**This works across platforms.** A link shared on Discord, Twitch, or X all resolves to the same on-chain attribution.
+A referral reference associates a request with the person, community, or placement that shared it. The attribution design connects that reference with the request and its recorded outcome.
 
-## Streamer Tools: Pay-to-Spawn
+A programme can use this information to compare link visits, completed requests, and conversions. Define each measure, its data source, the reporting period, and any limits. The same request may be shared across social platforms while retaining its attribution reference.
 
-Hyperlink enables **Interactive Monetization** for live streamers. Viewers can pay to influence the game state in real-time.
+A proposed referral-payment programme would define its funding source, eligible activity, recipients, and distribution terms. [SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
 
-### How it Works
-1. **The Trigger**: Streamer displays a QR code or Link: `555hyper.link/p/spawn_boss`
-2. **The Payment**: Viewer pays via the link.
-3. **The Event**:
-    - Payment is verified by [AGG](/protocol/agg).
-    - [VAP](/protocol/vap) sends a `SPAWN_ENEMY` event to the Streamer's game client.
-    - A "Boss" spawns instantly on the stream.
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-This creates a feedback loop where the audience pays to create content for the streamer, increasing engagement and revenue simultaneously.
+## Interactive Requests
 
-## Use Cases
+A game interaction can be designed around a link—for example, letting a viewer request an additional enemy or challenge during a stream.
 
-### 1. Pay-Per-View (PPV)
-- **Link**: `.../p/stream_123`
-- **Action**: Pay USDC.
-- **Result**: Receive a signed JWT to access the HLS stream.
+The experience would explain the requested effect, any price, the session it belongs to, and when the action is permitted. The participant would review and authorise the payment where one is required.
 
-### 2. Engagement (Quest)
-- **Link**: `.../p/quest_boss_fight`
-- **Action**: Play Sector 13 and score above threshold.
-- **Result**: VAP verifies the score and awards points.
+In this design, the payment record is associated with the requested game action. The game checks the current session and the creator’s permitted controls before applying an authorised change and recording the result.
 
-### 3. Commerce
-- **Link**: `.../p/buy_skin_01`
-- **Action**: Pay $555 or USDC.
-- **Result**: Receive the digital asset.
+If the requested action cannot be delivered, the application needs to report what happened and follow the experience’s stated recovery terms.
+
+## Example Uses
+
+| Use | Request | Application responsibility |
+|---|---|---|
+| Pay-per-view | Request access to a particular stream or programme. | Apply the access terms after the required payment is confirmed. |
+| Quest or challenge | Open an activity and follow its participation rules. | Record the relevant actions and results under the experience’s rules. |
+| Commerce | Purchase a specified digital item or service. | Connect the payment record with the agreed delivery and its outcome. |
+
+## Following an Interrupted Request
+
+Link resolution, authorisation, settlement, and delivery are separate stages. The application needs to show which stage a request reached and preserve its payment and request references.
+
+A retry or recovery should use the existing state to determine the next action. An integration also needs to report errors from the link resolver, payment client, settlement route, or application so the participant can follow the appropriate recovery path.
+
+<Note>
+Related: [AGG](/protocol/agg) · [SW4P](/sw4p) · [@sw4p/kit](/products/kit)
+</Note>

@@ -1,225 +1,125 @@
 ---
 title: "Fee Distribution"
 icon: "arrow-right-arrow-left"
-description: "The routing logic behind every dollar that enters the system"
+description: "Planned source-specific allocations for fees, programmes, and platform revenue."
 ---
 
-## The Two-Level Revenue Cascade
+Fee Distribution explains the planned allocation policies in the RNDRNTWRK Public Corpus. Each policy starts with a defined source of value and identifies the obligations, recipients, and platform share associated with it.
 
-The same revenue pattern applies at **two levels** across RNDRNTWRK. At both levels, revenue is processed through the same deterministic cascade, no exceptions, no discretionary overrides:
+The percentages below describe planning models from Public Corpus v1.1, dated 28 August 2026. A particular application’s offered fees and programme terms determine the payment or programme being offered.
 
-<CardGroup cols={3}>
-  <Card title="10% ARP (Audience Reward Pool)" icon="gift">
-    Off the top, goes directly to verified audience members via VAP attention proofs.
+## Start With the Source
+
+Programme funding, service fees, settlement revenue, and token-related revenue have separate purposes and records.
+
+The [Economic Model](/economics) groups commercial revenue into programme and implementation work, settlement and usage, and recurring services. The source-specific allocation follows the agreements and costs associated with that activity.
+
+Money supplied to fund work is tracked separately from revenue earned for delivering it. Amounts owed to creators, audiences, collaborators, and providers remain identified with those recipients.
+
+## The Source Waterfall
+
+A waterfall is the order in which amounts are accounted for. The corpus defines the following sequence:
+
+| Result | Calculation |
+|---|---|
+| **Distributable source value** | Source gross value minus senior, statutory, refund, and contractual obligations |
+| **Recognised platform revenue** | Distributable source value multiplied by the source-specific platform share |
+| **Deployable platform surplus** | Recognised platform revenue minus direct execution cost and realised loss provision |
+
+Start with gross value from the identified revenue source. The first step accounts for amounts that must be covered before the source’s platform share is recognised.
+
+Direct execution costs and realised loss provisions are then accounted for when calculating deployable surplus. Recognised platform revenue and deployable surplus are separate amounts in the model.
+
+The planned buyback percentage uses eligible recognised platform revenue as its basis.
+
+## Planned Source Allocations
+
+### SW4P protocol-fee allocation
+
+The corpus’s SW4P planning model uses a **50-basis-point protocol fee**, equivalent to **0.50%**. This is a planning rate.
+
+The following percentages apply to the **protocol-fee amount**:
+
+| Planned category | Share of the protocol fee |
+|---|---:|
+| Audience Reward Pool (ARP) | 10% |
+| Liquidity-provider and staker economics | 45% |
+| Platform share | 45% |
+
+The platform portion has its own planning allocation:
+
+| Planned use | Share of the SW4P platform portion |
+|---|---:|
+| Treasury | 70% |
+| $555 buybacks | 20% |
+| Acquisition | 5% |
+| Stable reserve | 5% |
+
+The second table applies to the platform portion identified in the first table. Its buyback line follows the eligible-revenue policy below.
+
+### Media and product programmes
+
+The corpus’s planned media and product split applies to **distributable programme value**, after the source’s senior obligations:
+
+| Planned category | Share of distributable programme value |
+|---|---:|
+| Audience liability | 10% |
+| Creator liability | 45% |
+| Platform revenue | 45% |
+
+Audience and creator liabilities are amounts assigned to those participants under the programme’s terms. The platform portion follows its source-specific treasury policy, including the 20% buyback allocation on eligible recognised platform revenue.
+
+The remaining platform allocation varies by source and economic lifecycle.
+
+### Creator and market-derived fees
+
+Token-related sources, including creator and market-derived fees, keep their own source-labelled records and waterfall.
+
+The corpus recognises these fees only once they have been generated, claimed, and settled. It describes their entry into the allocation model after generation, claim, settlement, and reconciliation.
+
+## Eligible Revenue and the Buyback Policy
+
+The planned treasury policy assigns **20% of eligible recognised platform revenue** to $555 buybacks after the source’s statutory, contractual, payment, refund, and other senior obligations have been met.
+
+The buyback and treasury-allocation basis excludes:
+
+- Gross transaction volume.
+- User principal.
+- Creator and audience liabilities.
+- Restricted liquidity and route inventory.
+- Borrowed or third-party capital.
+
+Funds committed to liquidity, settlement inventory, or a reserve remain separately recorded for that purpose. Capital committed to an activity is distinct from money spent on operating it.
+
+The corpus describes the allocation as a treasury policy, without a token-holder entitlement or a guarantee of market purchases, volume, liquidity, price, yield, or returns. It describes intended use of eligible funds, rather than current buyback execution.
+
+[Locking & Buybacks](/tokenomics/locking-and-buybacks) explains the differences between locking, vesting, buying tokens, and burning them.
+
+## Settlement and Programme Records
+
+SW4P is the programmable settlement engine for RNDRNTWRK and other applications. It coordinates route selection, fees, execution, confirmation, recovery, and accounting for the result.
+
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+The audience, liquidity-provider, and staker allocations described above belong to that programme model. A programme’s terms would define eligible activity, funding, recipients, allocation calculations, claim timing, and treatment of reserved or outstanding amounts.
+
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
+
+An experience may also use points or credits. Its terms explain what they record and any conversion, expiry, transfer, or claim conditions.
+
+## Go Deeper
+
+<CardGroup cols={2}>
+  <Card title="Economic Model" icon="chart-line" href="/economics">
+    Follow funding, costs, payments, and reinvestment.
   </Card>
-  <Card title="20%+ Buybacks" icon="trending-up">
-    Automated buybacks reinforce token economies; configurable above the 20% minimum.
+  <Card title="SW4P Earn" icon="coins" href="/products/earn">
+    Read about allocations, claims, rewards, payout schedules, reserves, and reconciliation.
   </Card>
-  <Card title="70% Treasury" icon="coins">
-    Operations, development, and growth, governed via stake-weighted voting.
+  <Card title="Locking & Buybacks" icon="fire" href="/tokenomics/locking-and-buybacks">
+    Understand locking, vesting, buybacks, and burns.
   </Card>
-</CardGroup>
-
-### Level 1: Platform Level ($555 as the "Creator")
-
-<Info>
-  At the platform level, $555 acts as the "creator" in the cascade. All gross revenue first has **10% ARP** taken off the top for audience rewards. The remaining 90% splits **50/50 between the $555 ecosystem (creator) and the platform**. The platform's 50% is then allocated: **70%** Treasury, **20%** buyback-and-burn, **5%** $555 reserve, **5%** SOL/USDC reserve.
-</Info>
-
-### Level 2: Creator Economy Level (Individual Creator Tokens)
-
-<Info>
-  At the creator economy level, individual creator tokens follow the same cascade. **10% ARP** off the top for audience rewards, then a configurable creator/platform split on the remaining 90%. Treasury, buybacks, and reserves follow the same pattern within each creator's economy. The tiered creator shares below apply at this level.
-</Info>
-
-## Revenue Streams
-
-<AccordionGroup>
-  <Accordion title="555 Engine" icon="gamepad">
-    House edge and fees from prediction markets, mini-games, lotteries, and emote battles.
-  </Accordion>
-  <Accordion title="Ads & Sponsorship" icon="megaphone">
-    On-chain campaigns with verifiable engagement; funds pushed through the Monetization Contract.
-  </Accordion>
-  <Accordion title="Creator Token Economy" icon="coins">
-    Trading fees and buybacks that reinforce per-creator token value.
-  </Accordion>
-  <Accordion title="Marketplace & Subscriptions" icon="shopping-bag">
-    Digital asset sales and premium modules for creators and communities.
-  </Accordion>
-</AccordionGroup>
-
-## Distribution Mechanics
-
-### Automated Processing
-
-<Info>
-  **Frequency:** Real-time · **Control:** Smart contracts · **Transparency:** On-chain proofs · **Safety:** Circuit breakers
-</Info>
-
-### Creator & Streamer Rewards
-
-<AccordionGroup>
-  <Accordion title="Direct Payout System" icon="zap">
-    **Instant Reward Distribution:**
-
-    **Payout Mechanics:**
-    - **Processing Time:** &lt; 5 seconds after transaction
-    - **Fee Structure:** 0% platform fee on payouts
-    - **Supported Currencies:** SOL, USDC, $555
-    - **Minimum Payout:** Asset-specific threshold (anti-dust protection)
-
-    **Payout Methods:**
-    - **Wallet Direct:** Instant transfer to connected wallet
-    - **Exchange Integration:** Direct to exchange accounts
-    - **Bank Transfer:** Fiat conversion available
-    - **Gift Cards:** Digital reward options
-
-  </Accordion>
-
-  <Accordion title="Performance Bonuses" icon="trophy">
-    **Achievement-Based Rewards:**
-
-    **Bonus Categories:**
-    - **Engagement Bonus:** 10% extra for high viewer interaction
-    - **Loyalty Bonus:** 5% extra for returning viewers
-    - **Quality Bonus:** 15% for high-quality content
-    - **Growth Bonus:** 20% for channel growth milestones
-
-    **Calculation Formula:**
-    ```
-    Total Reward = Base Fee × Creator Share × Performance Multiplier
-    Performance Multiplier = 1.0 + (Engagement × 0.1) + (Quality × 0.15) + (Growth × 0.2)
-    ```
-
-  </Accordion>
-
-  <Accordion title="Tiered Reward System (Creator Economy Level)" icon="layers">
-    **Creator Progression Tiers** (these tiers apply at Level 2, the creator economy level):
-
-    **Tier Structure:**
-    - **Bronze:** 0-100 monthly earnings (standard 70%)
-    - **Silver:** 100-500 monthly earnings (75% share)
-    - **Gold:** 500-2000 monthly earnings (80% share)
-    - **Platinum:** 2000+ monthly earnings (85% share)
-
-    **Tier Benefits:**
-    - **Priority Support:** Faster response times
-    - **Advanced Analytics:** Detailed performance insights
-    - **Custom Branding:** White-label options
-    - **Revenue Optimization:** AI-powered suggestions
-
-  </Accordion>
-</AccordionGroup>
-
-## Buybacks
-
-<CardGroup cols={3}>
-  <Card title="Allocation" icon="percentage">
-    ≥20% of every revenue unit funds automated buybacks for creator economies.
-  </Card>
-  <Card title="Execution" icon="trending-up">
-    Smart order routing across venues with slippage safeguards and programmatic schedules.
-  </Card>
-  <Card title="Reporting" icon="bar-chart-2">
-    Public dashboards show inflows, executed buybacks, prices, and balances.
-  </Card>
-</CardGroup>
-
-## Transparency & Accountability
-
-### Real-time Reporting
-
-<AccordionGroup>
-  <Accordion title="On-chain Transparency" icon="eye">
-    **Public Transaction Tracking:**
-
-    **Transparency Features:**
-    - **Explorer Integration:** All transactions on Solana Explorer
-    - **Real-time Dashboard:** Live fee distribution metrics
-    - **Treasury Reports:** Weekly financial summaries
-    - **Audit Trail:** Complete transaction history
-
-    **Public Metrics:**
-    - Daily fee collection amounts
-    - Creator payout statistics
-    - Buyback execution details
-    - Burn event schedules
-
-  </Accordion>
-
-  <Accordion title="Community Governance" icon="users">
-    **Democratic Fee Management:**
-
-    **Governance Features:**
-    - **Fee Adjustment Proposals:** Community voting on fee changes
-    - **Treasury Allocation:** Voting on fund distribution
-    - **Reward Structure Updates:** Creator share modifications
-    - **New Revenue Streams:** Approval of additional fee sources
-
-    **Voting Mechanics:**
-    - **Proposal Creation:** Any stakeholder can propose changes
-    - **Quorum Requirements:** 10% of circulating supply
-    - **Voting Period:** 7 days for fee-related proposals
-    - **Execution Delay:** 24 hours after approval
-
-  </Accordion>
-
-  <Accordion title="Independent Audits" icon="shield-check">
-    **Third-party Verification:**
-
-    **Audit Coverage:**
-    - **Monthly Treasury Audits:** Independent accounting firm
-    - **Smart Contract Audits:** Regular security assessments
-    - **Fee Distribution Verification:** Automated monitoring
-    - **Community Oversight:** Public audit committees
-
-    **Audit Reports:**
-    - Public quarterly audit summaries
-    - Detailed transaction analysis
-    - Compliance verification reports
-    - Recommendations for improvements
-
-  </Accordion>
-</AccordionGroup>
-
-## Future Fee Enhancements
-
-### Planned Improvements
-
-<Info>
-  **Dynamic Fee Adjustment:** AI-powered fee optimization
-  <br />
-  **Multi-token Support:** Additional reward currencies
-  <br />
-  **Cross-chain Fees:** Multi-blockchain fee distribution
-  <br />
-  **Advanced Analytics:** Creator performance insights
-</Info>
-
-### Advanced Features Roadmap
-
-<CardGroup cols={3}>
-  <Card title="AI Fee Optimization" icon="brain">
-    **Smart Fee Management:**
-    - Market condition analysis
-    - Automated fee adjustments
-    - Creator performance optimization
-    - Competitive analysis integration
-  </Card>
-
-<Card title="Multi-token Rewards" icon="coins">
-    **Expanded Reward Options:**
-    - SOL rewards for network fees
-    - USDC stablecoin payouts
-    - NFT achievement rewards
-    - Custom token integrations
-  </Card>
-
-  <Card title="Cross-chain Distribution" icon="link">
-    **Multi-blockchain Support (via the sw4p engine):**
-    - Solana (primary)
-    - Base cross-chain transfers
-    - Polygon network support
+  <Card title="Airdrops & Rewards" icon="parachute-box" href="/tokenomics/airdrops">
+    Read about proposed distributions and programme terms.
   </Card>
 </CardGroup>

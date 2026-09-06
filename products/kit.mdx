@@ -1,101 +1,70 @@
 ---
 title: "@sw4p/kit"
 icon: "robot"
-description: "Agent-native settlement surface over sw4p, MCP server, AP2 Cart Mandates, x402 V2, A2A, and ERC-7683 intents in one package."
+description: "Agent integrations for SW4P's programmable settlement model."
 ---
 
-<Info>**Status:** Pre-publish. Source available at [github.com/Render-Network-OS/sw4p-kit](https://github.com/Render-Network-OS/sw4p-kit). Public npm publish ships with the mainnet return.</Info>
+`@sw4p/kit` is the agent integration project for [SW4P](/sw4p). It connects agent-facing tools and payment messages to the settlement engine.
 
-# @sw4p/kit
+The kit is a client layer. An agent describes the operation through an integration; SW4P handles the route and settlement lifecycle behind it. The application's authority, funding, and execution rules determine what the agent may request.
 
-**`@sw4p/kit` is the agent-native surface for sw4p.** It lets any MCP-aware agent, Claude Code, Cursor, Continue, Goose, Codex, Cline, ElizaOS, Hermes, Open Claw, settle cross-chain through the [sw4p](/sw4p) settlement engine over every open agent payment standard.
+## Choose an Integration
 
-The kit is a thin client. Chain interaction, custody, rail selection, gas abstraction, and the settlement lifecycle live in the sw4p backend. The kit gives agents a small, opinionated tool surface and the wrappers for the open agent-payment standards.
+The project is organised around several kinds of interaction:
 
-## Why a separate kit
-
-The sw4p backend already speaks HTTP via `@sw4p/sdk`. The kit exists for one reason: **agents don't read HTTP APIs, they read MCP tool surfaces.** Wrapping the SDK in MCP lets any agent settle cross-chain with a two-tool surface (`sw4p.balance` and `sw4p.send`) rather than hand-rolling 30+ method calls.
-
-Beyond MCP, the kit adapts every other open agent-payment standard to the same backend:
-- **MCP 2025-11-25**: tools + async Tasks primitive for long-running settlement
-- **AP2 Cart Mandates**: HMAC-signed cart authorization with canonical JSON
-- **x402 V2**: framework-agnostic 402 middleware + client (Web Request/Response, works in any runtime)
-- **A2A (Agent-to-Agent)**: Zod-validated payment messages + handler factory
-- **ERC-7683 intent builder**: produces the on-chain intent struct for solver-based execution
-
-## Surface area
-
-| Module | What it does | Talks to |
-|---|---|---|
-| `mcp` | MCP server (stdio + Streamable HTTP), tool registry, async Tasks | sw4p HTTP API |
-| `core` | `SettlementClient`, `KitError` taxonomy, in-process `TaskStore`, gasless abstraction | sw4p HTTP API |
-| `ap2` | Cart Mandates, HMAC signer, canonical JSON, budget guard | Pure crypto + data |
-| `x402` | Middleware + client + discovery | Pure HTTP semantics |
-| `a2a` | PayRequest / PaySettled / PayFailed schemas + handler factory | sw4p HTTP API |
-| `intents` | ERC-7683 intent struct builder | Pure data builder |
-
-## Tool surface (MCP)
-
-The kit exposes a deliberately small set of MCP tools so agents see a clean surface:
-
-- `sw4p.balance`, USDC balance across configured chains
-- `sw4p.send`, submit a settlement (cross-chain or same-chain). One call: submit → settle.
-- `sw4p.estimate`, pre-flight fee + route quote
-- `sw4p.status`, poll a settlement by intent ID
-- `sw4p.portfolio`, cross-chain portfolio aggregation
-- `sw4p.rebalance_plan` / `sw4p.rebalance_execute`, agent-driven rebalance
-- `sw4p.task`, MCP 2025-11-25 async task primitive
-- `sw4p.ap2.cart_propose` / `sw4p.ap2.cart_execute`, AP2 Cart Mandate flow (when an AP2 signing key is configured)
-
-## Quickstart (source install, pre-publish)
-
-```bash
-git clone https://github.com/Render-Network-OS/sw4p-kit
-cd sw4p-kit && npm install && npm run build
-```
-
-Add to any MCP-aware client (Claude Code, Cursor, Continue, Zed, ElizaOS, Hermes, Open Claw):
-
-```json
-{
-  "mcpServers": {
-    "sw4p": {
-      "command": "node",
-      "args": ["<abs-path>/sw4p-kit/dist/mcp/bin.js"],
-      "env": { "SW4P_API_KEY": "..." }
-    }
-  }
-}
-```
-
-Once `@sw4p/kit` publishes to npm, this collapses to:
-
-```bash
-npm install @sw4p/kit
-# then args: ["sw4p-mcp"] via npx
-```
-
-## Standards covered
-
-| Standard | Where in the kit |
+| Module | Purpose |
 |---|---|
-| MCP 2025-11-25 (tools + Tasks) | `src/mcp/*` |
-| AP2 Cart Mandates (Google) | `src/ap2/*` |
-| x402 V2 (Coinbase) | `src/x402/*` |
-| A2A (Agent-to-Agent) | `src/a2a/*` |
-| ERC-7683 intents | `src/intents/*` |
+| `core` | Shared settlement-client, task-state, and error-handling abstractions. |
+| `mcp` | Tools exposed through the Model Context Protocol, or MCP, for compatible agent clients. |
+| `ap2` | Authorisation messages for intended purchases and carts. |
+| `x402` | Payment-related HTTP requests, responses, and client handling. |
+| `a2a` | Payment-request, completion, and failure messages between agents or services. |
+| `intents` | Settlement-intent construction for the ERC-7683 model. |
 
-## Distribution roadmap
+These are different ways to express and follow an economic action. The appropriate integration depends on the client, the payment workflow, and the settlement service it connects to.
 
-- **Now:** source install from GitHub.
-- **Next:** `npx @sw4p/kit init` for one-command setup across every major MCP-aware agent. Auto-detects Claude Code / Cursor / Continue / Goose / Codex / Cline / Aider / ElizaOS / Hermes / Open Claw configs and writes the right config file.
-- **Next:** hosted MCP gateway at `mcp.sw4p.io` for remote agents (claude.ai web, Cursor cloud, etc.), no local install required.
-- **Then:** public npm publish, MCP Registry submission, Smithery listing.
-- **Then:** `@sw4p/eliza-plugin` for first-class ElizaOS integration.
+## Tools and Responsibilities
 
-## Reference
+The repository describes tool families for:
 
-- **Source:** [github.com/Render-Network-OS/sw4p-kit](https://github.com/Render-Network-OS/sw4p-kit)
-- **License:** MIT
-- **Backend:** [sw4p](/sw4p), the settlement engine the kit wraps
-- **SDK:** [`@sw4p/sdk`](/sw4p#sdk), the lower-level HTTP client the kit is built on
+- **Balances and planning:** balance information, portfolio information, and proposed changes.
+- **Quotes:** estimated route and fee information before execution.
+- **Settlement requests:** submission of a transfer or settlement instruction.
+- **Progress:** status and task records for following the operation.
+- **Authorised purchases:** cart proposals and execution under the associated authority.
+
+Planning and quoting do not move funds. A request to execute must be handled under the authority and limits configured for that operation. The application should use the settlement result to determine whether the intended payment completed.
+
+## Local and Remote Connections
+
+The project describes both a local process connection and an HTTP transport. In a local setup, the agent client communicates with a kit process. In an HTTP setup, requests go to a service running the kit.
+
+The choice also affects state management. Use the selected version's transport documentation for supported task behaviour, authentication, and connection settings.
+
+## Working from Source
+
+Start with the [kit repository](https://github.com/Render-Network-OS/sw4p-kit) and select the source version you intend to use. Its [README](https://github.com/Render-Network-OS/sw4p-kit/blob/main/README.md) describes setup, configuration, and examples; [package metadata](https://github.com/Render-Network-OS/sw4p-kit/blob/main/package.json) defines the build scripts and exported modules.
+
+Before connecting an agent:
+
+1. Choose the local or HTTP transport and the intended environment.
+2. Configure the required service credentials and participant addresses through the supported configuration path.
+3. Define what the agent may inspect, propose, and execute, including any spending limits and approvals.
+4. Follow the selected version's setup and checks before relying on the connection.
+
+Keep credentials outside published configuration examples. Source setup and package distribution are distinct from the availability of the settlement service and its routes.
+
+## Following an Operation
+
+A client needs to retain the relationship between the original instruction, its authorisation, the settlement identifier, and the result.
+
+If execution is interrupted, the integration should use the operation's recorded state to determine what happened. Repeating a request without understanding that state can differ from continuing the original operation.
+
+The [SW4P overview](/sw4p) explains the lifecycle from instruction and quote through confirmation, recovery, and reconciliation.
+
+## Project References
+
+- [Source and issue tracking](https://github.com/Render-Network-OS/sw4p-kit).
+- [Setup and interface reference](https://github.com/Render-Network-OS/sw4p-kit/blob/main/README.md).
+- [SW4P technical documentation](https://docs.sw4p.io).
+- [SW4P Earn](/products/earn) for the allocation, claim, and payout model and current programme status.

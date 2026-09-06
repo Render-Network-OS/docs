@@ -1,90 +1,88 @@
 ---
 title: "Animated Assets"
 icon: "wand-magic-sparkles"
-description: "Programmable visual surfaces for live economic media"
+description: "Motion assets for stream layouts, alerts, games, and sponsor material"
 ---
 
-<Info>**Status: Planned**: No dedicated animated asset marketplace exists yet. **Available now:** 555stream includes built-in overlay and scene controls (lower-thirds, tickers, backgrounds) managed through the [CTRL Panel](/products/ctrl-control-panel). Current ecosystem focus is on [555 Arcade](/arcade/overview), [555stream](/555stream), and the [Monetization Module](/products/monetization-module).</Info>
+<Info>**Planned library.** Animated Assets describes a reusable collection of motion elements for RNDRNTWRK media experiences.</Info>
 
-## Professional Animation Library
+## What the Library Is For
 
-A library of programmable animated assets designed for live economic media on RNDRNTWRK. Transitions, interactive elements that react to on-chain events, and broadcast-grade motion -- all integrated into the network's visual surfaces.
+Motion can introduce a segment, highlight an event, explain a game result, or give a stream a recognisable visual style.
 
-## What You Can Build
+The library concept brings together reusable assets and the settings that shape them: colours, fonts, timing, placement, sound, and the events that trigger them.
 
-- Overlays: lower‑thirds, sidebars, banners, carousels, full‑screen takeovers
-- Reactions: emotes, spark trails, confetti, screen shake, chat highlights
-- Game FX: countdowns, reveal animations, win/loss flourishes, scoreboards
-- Billboard Animations: branded intros/outros for sponsors and segments
-- Clips & Reveal Frames: animated frames and stingers for highlight clips
+## Asset Types
 
-## Sources & Creation
+- **Overlays:** lower-thirds, sidebars, banners, carousels, and full-screen placements.
+- **Reactions:** emotes, particle trails, confetti, chat highlights, and other short effects.
+- **Game elements:** countdowns, result reveals, scoreboards, and win or loss animations.
+- **Sponsor material:** branded introductions, endings, and transitions for a segment.
+- **Clip frames:** animated borders and short transitions for recorded highlights.
 
-- Curated Packs: pre‑built sets from creators and community artists
-- Stream Pack Generator: generate custom packs that match your brand style
-- Auto Pilot: one‑click recommendations and generation based on your theme
-- Token‑Gated Packs: unlock premium packs by holding/staking $555 or a Creator Token
+Choose effects that support the information on screen and leave the stream readable.
 
-## Integration & Triggers (CTRL Panel)
+## Packs and Creation
 
-Tie animations to events across the OS:
+The planned library includes curated packs from creators and artists, along with tools for adapting or generating a pack around a theme.
 
-- Alerts: follows, subs, tips, milestones
-- Games: prediction resolutions, raid/quest completions, mini‑game wins
-- Billboard: ad start/stop, sponsored segments, product placements
-- Chat & Commands: reactions on keywords, mod triggers, timed effects
+A pack would group assets with shared colours, fonts, sound, and timing. Its description would explain the included files, adjustable settings, supported formats, and usage terms.
 
-## Performance & Delivery
+Theme-based recommendations and generation are part of the proposed creation model.
 
-- Formats: WebGL/Canvas, Lottie JSON, sprite sheets, video fallback
-- Adaptive quality and size budgets; preloading and caching for smooth playback
-- Safe defaults for 1920×1080 with responsive presets for mobile and vertical
+## Events and Triggers
 
-## Licensing & Marketplace
+An animation can be planned around a particular moment:
 
-- Creator and artist revenue share on pack sales
-- Simple licenses for stream usage; attribution optional where allowed
-- Versioned updates with change logs and rollback support
+- A follow, subscription, tip, or community milestone.
+- A game result, quest completion, or score change.
+- The start or end of a sponsor segment.
+- A chat keyword, moderator action, or scheduled announcement.
 
-## Creator Workflow
+For each effect, identify the event it responds to, who may trigger it, how long it runs, and whether it can interrupt or overlap another effect. Check which events and controls the connected experience supports.
 
-1) Open CTRL Panel → Animated Assets
-2) Browse packs or generate with Stream Pack Generator
-3) Preview, adjust theme variables (colors, fonts, timing), and assign triggers
-4) Publish and verify in your overlay (Browser Source 1920×1080)
-5) Optionally schedule via Auto Pilot
+## Formats and Playback
 
-## Animation Categories
+The delivery design considers browser-rendered motion using WebGL or Canvas, Lottie animation files, sprite sheets, and video alternatives.
 
-### Stream Alerts & Notifications
+Choose a format supported by the intended overlay or player. Check file size, dimensions, transparency, fonts, and sound, then test the asset alongside the rest of the stream.
+
+Prepare landscape, portrait, or mobile layouts for the audience's viewing format. A 1920×1080 composition is one landscape option; size and placement should follow the actual output.
+
+Preloading, caching, and simpler fallback assets are ways to plan for consistent playback. Test motion and readability on the intended devices before using the asset in a programme.
+
+## Licensing and Updates
+
+Read the asset's usage terms for stream use, commercial work, modifications, redistribution, and attribution. Keep the source and version of each asset with the programme's production material.
+
+A future pack listing would identify its creator, licence, price where applicable, and update history. Any artist payment or revenue-sharing arrangement would be defined by that offering.
+
+When replacing an asset, retain the previous version so the production can return to it if needed.
+
+## Preparing an Asset
+
+1. Choose the asset and the moment it should support.
+2. Confirm its usage terms and compatibility with the intended output.
+3. Adjust colours, fonts, timing, sound, and placement.
+4. Preview the full scene and test any connected event or operator control.
+5. Apply it to the programme's layout or schedule, then check the actual output.
+
+Use the tools offered by the chosen stream setup. [CTRL Panel](/products/ctrl-control-panel) explains the control-panel design, while [555stream](/555stream) covers stream preparation.
+
+## Alert Examples
 
 <AccordionGroup>
-  <Accordion title="Follower Celebrations" icon="user-plus">
-    Engage new followers with stunning animations:
-
-    **Animation Styles:**
-    - Confetti bursts and particle effects
-    - Personalized welcome messages
-    - Social media integration popups
-    - Progressive follower milestone celebrations
-    - Custom sound effects and music cues
-
+  <Accordion title="Follower and Community Milestones" icon="user-plus">
+    A brief welcome, confetti effect, milestone counter, or sound cue can mark a community event. Decide what name or message appears and how the effect fits around the ongoing stream.
   </Accordion>
-
-  <Accordion title="Donation Effects" icon="dollar-sign">
-    Make donations memorable with dynamic celebrations:
-
-    **Effect Types:**
-    - Currency rain animations ($555, SOL, USD)
-    - Explosion effects for large donations
-    - Personalized thank-you messages
-    - Donor name highlights and badges
-    - Progressive donation goal animations
-
+  <Accordion title="Supporter Acknowledgements" icon="heart">
+    A thank-you message, name highlight, badge, or progress animation can acknowledge support. Where an effect refers to a payment, connect it to the recorded result and use the correct amount and currency.
   </Accordion>
 </AccordionGroup>
 
-## Cross‑Links
+## Go Deeper
 
-- Dashboard: [CTRL Panel](/products/ctrl-control-panel)
-- Ads: [Monetization Module](/products/monetization-module)
+- Controls: [CTRL Panel](/products/ctrl-control-panel)
+- Media: [555stream](/555stream)
+- Sponsor material: [Monetization Module](/products/monetization-module)
+- Timing: [Countdown & Announcements](/features/countdown-announcements)
