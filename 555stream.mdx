@@ -1,174 +1,130 @@
 ---
 title: "555stream"
 icon: "video"
-description: "Run creator and agent media across the open internet from one browser-native control surface."
+description: "Live and recorded programming, publishing, and interaction between people and agents."
 ---
 
-<Info>**Status: Live**: 555stream is operational at [stream.rndrntwrk.com](https://stream.rndrntwrk.com).</Info>
+555stream is a media environment for live and recorded programming, publishing, and interaction between people and agents.
 
-# 555stream
+A stream might follow a build, explain a product, present research, or bring a community into an ongoing programme. The work includes what happens on screen and what surrounds it: preparation, participation, recording, publication, and follow-up.
 
-**555stream is how RNDRNTWRK keeps creator and agent media live across the open internet.** It gives creators and operators one browser-native surface for output, layout, overlays, guesting, and continuity, while cloud encoding handles the heavy lifting.
+## The Media Workflow
 
-555stream sends output to any RTMP-compatible destination. Current first-party destinations include Twitch, YouTube, Kick, X, TikTok, Zora, and pump.fun, but the system is built for any RTMP-compatible destination.
-
-## Key Capabilities
+The 555stream development model connects several parts of media production:
 
 <CardGroup cols={3}>
-  <Card title="Everywhere All at Once" icon="tower-broadcast">
-    Custom RTMP output to any destination. First-party support for major platforms with no architectural limit on where the stream goes.
+  <Card title="Browser-Based Control" icon="tower-broadcast">
+    Manage sessions, scenes, rooms, and the presentation of a programme.
   </Card>
-  <Card title="Cloud Encoding" icon="cloud">
-    Video encoding offloaded to edge network. No GPU load, consistent quality regardless of local hardware.
+  <Card title="Media Processing" icon="cloud">
+    Connect capture, composition, encoding, and queued production work.
   </Card>
-  <Card title="Wallet and Permission Controls" icon="wallet">
-    Configure stream ownership and controller permissions from your wallet. Wire in on-chain triggers and gated actions where supported.
+  <Card title="Identity and Permissions" icon="wallet">
+    Define the people and agents involved and which controls each may use.
   </Card>
-  <Card title="Always-On Programming" icon="play">
-    Keep the creator environment active between live segments with scheduled clips, games, quests, lottery windows, and recurring participation loops.
+  <Card title="Programming and Publishing" icon="play">
+    Connect live sessions with recordings, clips, transcripts, archives, and later publication.
   </Card>
-  <Card title="Alice (AI Operator)" icon="robot">
-    Alice extends the operating window of 555stream. She can keep the system live, scheduled, and monetized even when the creator is not manually driving every moment.
+  <Card title="Agent Contributions" icon="robot">
+    Develop and test agent roles in planning, production, and media operations through Alice.
   </Card>
-  <Card title="Recovery and Failover" icon="clock">
-    Automatic reconnection and state recovery for transient network events. Region selection with hot fallback. Published bitrate and resolution limits per region.
+  <Card title="Session Continuity" icon="clock">
+    Keep session state, activity records, and recovery part of the production design.
   </Card>
 </CardGroup>
 
-## Setup: Browser Studio
+## Preparing a Stream
 
-Use the browser-based studio at [stream.rndrntwrk.com](https://stream.rndrntwrk.com) with wallet auth. No desktop encoder needed.
+All you need to get started is an internet-enabled device. The [555stream site](https://stream.rndrntwrk.com) is the product destination.
 
-<Steps>
-  <Step title="Open Browser Studio">
-    Go to [stream.rndrntwrk.com](https://stream.rndrntwrk.com) in your browser. No OBS, no desktop app, no download.
-  </Step>
-  <Step title="Connect Wallet and Set Permissions">
-    Connect your Solana wallet to set stream ownership and define controller permissions. If integrating pump.fun, ensure the project wallet has the required scopes.
-  </Step>
-  <Step title="Add Destinations">
-    Add RTMP keys for the destinations you care about: Twitch, YouTube, Kick, X, TikTok, Zora, pump.fun, and any other RTMP-compatible destination.
-  </Step>
-  <Step title="Build Scenes and Overlays">
-    Select a layout template: Solo, 2-grid, 4-grid, PIP (Picture-in-Picture). Configure overlays: lower thirds, tickers, alerts, branding, and sponsor assets.
-  </Step>
-  <Step title="Add Guests">
-    Invite guests to join your stream live via WebRTC. Control guest audio and video independently. Grid layouts adjust automatically.
-  </Step>
-  <Step title="Go Live and Monitor Health">
-    Start the session from the control surface. Monitor ingest health, bitrate, dropped frames, and auto-recovery status. The system automatically routes your stream to the best region based on audience distribution and live health metrics.
-  </Step>
-  <Step title="Schedule Always-On (Optional)">
-    Add an offline schedule: clips from past streams and social channels, games, quests, lottery windows, and recurring participation loops. You can also hand this off to Auto Pilot.
-  </Step>
-</Steps>
+The following preparation applies to the stream you want to run. Use the controls and connection options offered by your chosen setup.
 
-### OBS Browser Source (Fallback)
+### Destinations
 
-If you are transitioning from OBS or need a hybrid setup, add the Render overlay as a browser source while you migrate scenes.
+Decide where people will watch. For an RTMP connection, the destination supplies a server address and stream key so your output reaches the correct channel. Keep stream keys private and check the destination's own access requirements.
 
-```bash
-# OBS Browser Source (example)
-# 1) Sources → Add → Browser Source
-# 2) Name: "Render Overlay"
-# 3) URL: https://rndrntwrk.com/overlay
-# 4) Width: 1920, Height: 1080
-# 5) Enable "Shutdown source when not visible"
-```
+Multi-destination output is part of the 555stream model. The destinations, output formats, and limits offered by a particular setup determine where that session can be sent.
 
-<Tip>
-  Prefer the native 555stream path for lowest latency and simpler operations. Use the OBS Browser Source during migration only. See [OBS Migration Guide](/guides/obs-migration).
-</Tip>
+### Scenes and Overlays
 
-## L-Bar Ads
+Prepare the layout, branding, captions, tickers, alerts, and sponsor material your programme needs. Decide how solo, multi-person, or picture-in-picture scenes should look and when to switch between them.
 
-**L-Bar keeps the creator visible while the ad is on screen.**
+### Guests
 
-Instead of cutting away into a standard ad break, the stream stays live and the ad unit occupies the remaining screen space. The viewer never loses the stream.
+Plan who will join and what they will contribute. Check their audio, video, and permissions before the session. Decide who handles invitations, scene changes, and individual audio controls.
 
-This matters because:
-- The audience keeps the live context
-- The creator does not disappear
-- The ad shows up inside the moment instead of replacing it
+### Check the Output
 
-### Placement Logic
+Review the picture, sound, overlays, and destination connection before beginning. During a session, use the available health information to watch for dropped frames, connection problems, or other interruptions.
 
-Alice monitors engagement signals and triggers placements when those signals cross the required threshold. Current placement uses four live metrics: watch time, active plays, engagement score, and staking TVL, polled every 5 seconds. See [Monetization Module](/products/monetization-module) for the detailed trigger and threshold logic.
+### Between Streams
 
-### Ad Revenue Flow
+Plan any recorded programming, clips, games, or recurring activities that belong between live sessions. Assign responsibility for the schedule and check which scheduling or automation features your setup supports.
 
-Ad revenue follows the standard [economic cascade](/how-it-works):
-- **10% ARP** to audience
-- **50% of post-ARP** to creator
-- **50% of post-ARP** to platform allocation
+For desktop-encoder and hybrid workflows, see the [OBS Migration Guide](/guides/obs-migration). Use the source URL supplied by the relevant integration when adding a browser source.
 
-See [Fee Distribution](/tokenomics/fee-distribution) for the full breakdown.
+## Sponsor Segments and L-Bar Layouts
 
-## Alice as Operator
+An L-Bar places an advertising unit alongside the stream so both remain visible. Plan its dimensions, placement, duration, and behaviour on the devices your audience uses.
 
-[Alice](/alice/persona) extends the operating window of 555stream. She can help keep the system live, scheduled, and monetized even when the creator is not manually driving every moment.
+A sponsor segment needs agreed creative material, timing, and audience identification. The programme's terms establish what the sponsor receives and how the work is funded.
 
-Alice can:
-- Start and stop broadcasts on schedule
-- Trigger L-Bar ads at signal-driven moments
-- Manage guest appearances
-- Control overlays, scenes, tickers, and alerts
-- Run Always-On programming through Auto Pilot
+The media-routing design explores using programme context and audience activity to help choose placement timing. Creator permissions and the connected controls determine which changes an operator or agent may make.
 
-Alice is not required. She exists as an additional operating layer when creators want more leverage or more continuity.
+Programme funding, service fees, settlement revenue, and token-related revenue have their own costs and allocation rules. See the [Economic Model](/economics) and [Fee Distribution](/tokenomics/fee-distribution) for how those sources are handled.
 
-## Operations and Reliability
+## Alice and Media Operations
 
-If 555stream is the distribution layer, reliability is part of the product thesis.
+RNDRNTWRK uses [Alice](/alice/persona) to develop and test its systems for research, planning, coding, and media operations.
 
-- **Session Recovery**: Automatic reconnection and state recovery for transient network events.
-- **Health Metrics**: Ingest health, frame drops, CPU/network load recommendations, bitrate guidance.
-- **Failover and Regions**: Region selection with hot fallback. Published bitrate and resolution limits per region.
+A media assignment might involve preparing a production plan, organising assets, reviewing a recording, or coordinating a recurring programme. The integration design also includes session controls, scene changes, guests, schedules, and sponsor segments.
 
-## Creator Token Integration (Optional)
+Each assignment needs an objective, permitted tools, operating limits, and a way to review the result. The [Intelligence Engine](/alice/intelligence) explains how context, tools, memory, and recovery support that work.
 
-<Info>**Status: Partially Implemented**: Creator Token infrastructure is being rolled out via [Render Expand](/products/render-expand).</Info>
+## Reliability and Recovery
 
-Where enabled, creators can connect a Creator Token to add token-side economics into their stream:
+A media session needs to account for its state before, during, and after an interruption.
 
-- **Staker eligibility**: All stakers are eligible for revenue sharing based on their staked amount
-- **Staking choice**: Creators may configure staking to their own token or to $555
-- **Buybacks**: A minimum of 20% of all creator revenue is used to buy back the staked token
-- **Gated actions**: Gate chat modes, overlay triggers, and experiences behind token thresholds
+The reliability design covers connection recovery, retained session state, output health, and handling media-processing failures. Region selection and fallback are infrastructure concerns; the available options and operating limits belong to the particular service configuration.
 
-This extends the creator surface. It is not required to use the core broadcast, participation, and monetization flow.
+An operator needs to know which output stopped, what remains running, and whether the session can resume. Recording that sequence helps distinguish a recovered connection from a complete and usable recording.
+
+## Creator-Specific Programmes
+
+Creator-token features are planned. A future programme would define its purpose, access rules, funding, and any participant payments.
+
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
+
+See [Render Expand](/products/render-expand) and [Creator Tokens](/tokenomics/creator-tokens) for the creator-specific direction.
 
 ## Architecture
 
-555stream runs on a multi-layer stack:
+The media architecture separates the following responsibilities:
 
-| Layer | What It Does |
-| :--- | :--- |
-| **Browser Client** | Real-time video capture and WebRTC communication |
-| **Edge Encoding** | Cloud-based video encoding and media storage |
-| **Control Plane** | Scene management, source routing, and configuration |
-| **SFU Service** | Selective Forwarding Unit for multi-party WebRTC |
-| **Media Engine** | Video composition and transcoding pipeline |
-| **Capture Service** | Browser-based capture for recording and clips |
+| Component | Role in the design |
+|---|---|
+| **Browser client** | Capture, session interaction, and real-time communication. |
+| **Media processing** | Encoding, storage, and queued production jobs. |
+| **Control plane** | Scene and room state, source routing, configuration, and synchronisation. |
+| **Multi-party communication** | Forward audio and video between participants; an SFU is a service for selectively forwarding those streams. |
+| **Media engine** | Compose sources and transcode outputs. |
+| **Recording and publishing** | Capture sessions, prepare clips and transcripts, publish outputs, and retain archives. |
 
-## Roadmap: Decentralized Stream
+These responsibilities connect production with distribution and audience interaction.
 
-> **Note:** Decentralized streaming is a long-term vision item. The current architecture is centralized cloud infrastructure. These roadmap items have no active implementation path yet.
+## Longer-Term Distribution
 
-- Peer-assisted distribution and resilient ingest
-- Community-operated nodes with performance and reputation metrics
-- Censorship-resistant architecture governed by a future DAO
+Decentralised streaming remains a long-term direction. It explores peer-assisted distribution, resilient ingest, and community-operated infrastructure.
 
-## Integrating 555stream
+Those ideas concern how media could be distributed and operated over time. They are separate from the connection options available in a particular stream setup.
 
-If you are integrating 555stream into an agent or operator workflow:
+## Integration References
 
-1. **This page** for product context and operator framing
-2. **[Developer Resources](/community/developer-resources)** for ecosystem-level integration context
-3. **[Plugin README](https://github.com/rndrntwrk/stream-plugin/blob/main/README.md)** for package-level setup
-4. **[Plugin Repo](https://github.com/rndrntwrk/stream-plugin)** for source, issues, and action-by-action reference docs
+For agent and operator integrations, start with [Developer Resources](/community/developer-resources), then use the [stream plugin repository](https://github.com/rndrntwrk/stream-plugin) and its [README](https://github.com/rndrntwrk/stream-plugin/blob/main/README.md) for the source version you are working with.
 
-### Repo reference docs
+The repository references cover:
 
 - [Install and Auth](https://github.com/rndrntwrk/stream-plugin/blob/main/docs/INSTALL_AND_AUTH.md)
 - [Get Started](https://github.com/rndrntwrk/stream-plugin/blob/main/docs/GET_STARTED.md)
@@ -178,29 +134,25 @@ If you are integrating 555stream into an agent or operator workflow:
 - [Edge Cases and Recovery](https://github.com/rndrntwrk/stream-plugin/blob/main/docs/EDGE_CASES_AND_RECOVERY.md)
 - [Coverage and Gaps](https://github.com/rndrntwrk/stream-plugin/blob/main/docs/COVERAGE_AND_GAPS.md)
 
-## Cross-Links
+## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="CTRL Panel" icon="sliders" href="/products/ctrl-control-panel">
-    Configure overlays, modules, schedules, and operator settings.
+    Read about stream controls, overlays, modules, and schedules.
   </Card>
   <Card title="Monetization Module" icon="coins" href="/products/monetization-module">
-    See how revenue enters the system and how campaigns are managed.
+    Explore the design of sponsorship and monetisation within a media experience.
   </Card>
   <Card title="Alice" icon="robot" href="/alice/persona">
-    See how the AI operator layer works.
+    Read about RNDRNTWRK's reference agent and media work.
   </Card>
   <Card title="555 Arcade" icon="gamepad" href="/arcade/overview">
-    See how the participation layer integrates with the stream.
+    Explore games and interactive experiences around a stream.
   </Card>
   <Card title="OBS Migration" icon="rotate" href="/guides/obs-migration">
-    Transition from legacy desktop workflows.
+    Read about desktop-encoder and hybrid stream setups.
   </Card>
   <Card title="API Usage" icon="code" href="/guides/api-usage-and-proxying">
-    Integration and proxying best practices.
+    Read integration and proxying guidance.
   </Card>
 </CardGroup>
-
-<Note>
-  See also: [Creator Tokens](/tokenomics/creator-tokens) · [Fee Distribution](/tokenomics/fee-distribution)
-</Note>

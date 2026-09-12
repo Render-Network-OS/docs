@@ -1,56 +1,53 @@
 ---
 title: "Chat Moderation Bot"
 icon: "shield-halved"
-description: "Moderation as an operator surface inside the network"
+description: "Moderation rules, permissions, and operator review for stream chat"
 ---
 
 ## Overview
 
-The Chat Moderation Bot is an operator-level moderation surface for RNDRNTWRK. It maintains chat quality during high-traffic streams with anti-spam, customizable rules, and Solana/Pump.fun-aware logic.
+The documented Chat Moderation Bot design gives operators a way to apply chat rules consistently during a stream. It combines spam controls, project-specific rules, and moderator review.
+
+The rules should explain how people and authorised agents can participate, what behaviour is restricted, and how moderators handle exceptions. Each channel or stream keeps its own moderation context.
 
 ## Features
 
-- Advanced spam detection and rate limiting
-- Custom rule cases per project/stream
-- Community-driven rule proposals
-- Wallet and token-awareness for Solana/Pump.fun integrations
+The design covers four areas:
 
-## Setup
+- **Spam controls:** message-frequency limits and detection of repeated or unwanted messages.
+- **Project and stream rules:** configurable cases suited to the community and the activity.
+- **Community input:** rule proposals that operators review before adopting them.
+- **Wallet and token context:** optional Solana/Pump.fun-related checks for a project’s stated access policy.
 
-Use the provided Docker stack in the repository `discord/`.
+Keep identity, access policy, and message behaviour as separate decisions. A token condition can determine access to a particular activity; moderation rules still govern what happens in its chat.
 
-```bash
-# From repo root
-cd discord
-cp .env.example .env   # create your env file
-docker compose up -d   # or: docker-compose up -d
-```
+## Configuration and Permissions
 
-### Required Config
+For a chat integration that includes a moderation bot, begin with its supported connection and configuration instructions. The setup needs to identify which channels the bot serves, which actions it may take, and who is responsible for reviewing its decisions.
 
-- Bot token and guild permissions
-- Channel scopes and role IDs
-- Optional: RPC endpoints for Solana lookups
+### Required configuration
+
+- **Bot credentials:** store the selected integration’s token as a server-side secret.
+- **Channel scope:** identify the channels or streams the bot may read and moderate.
+- **Roles and permissions:** grant the actions needed for the configured rules and identify the operators who can change them. A Discord-based integration also needs its guild and role configuration.
+- **Rule settings:** define the matching conditions, moderation response, and any cooldown or review requirement.
+- **Optional token checks:** where the integration supports Solana lookups, configure the RPC connection and the specific access policy those lookups serve.
+
+Test the intended rules in the configured channels before applying them more widely. Review both messages that should trigger a rule and ordinary conversation that should remain unaffected.
 
 ## High-Traffic Tuning
 
-- Increase rate-limit thresholds gradually
-- Enable cooldowns for repeated offenses
-- Whitelist trusted roles and wallets
+Start with observed message patterns, incorrect flags, and moderator workload. Adjust controls to fit the stream’s activity while keeping its rules consistent.
+
+- Set message-frequency limits for the channel and activity rather than automatically relaxing them as traffic rises.
+- Use cooldowns to manage repeated offences according to the published rules.
+- Make any exception narrow: name the role, permitted action, and channel scope, and retain the other moderation checks.
+- Review flagged messages and operator overrides to identify rules that need correction.
+- Keep a moderator responsible for uncertain cases and for reviewing changes to the configuration.
+
+Wallet or role information can help apply a specific permission. Evaluate message behaviour under the same chat rules for every participant.
 
 ## Cross-Links
 
-- Raffles: [555 Arcade](/arcade/overview)
-- Architecture: [Multi-Chat Architecture](/guides/multi-chat-architecture)
-
-
-
-
-
-
-
-
-
-
-
-
+- [555 Arcade](/arcade/overview) — Games and interactive experiences for people and agents.
+- [Multi-Chat Architecture](/guides/multi-chat-architecture) — Planned stream-specific configuration and chat records.

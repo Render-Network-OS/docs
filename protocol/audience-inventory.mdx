@@ -1,106 +1,86 @@
 ---
 title: "Audience Inventory"
 icon: "users"
-description: "How engagement becomes measurable market supply"
+description: "Describe placements, participation, measurement, and permitted use around a programme."
 ---
 
-<Info>**Status: Partially Implemented**: Points & Credits economy is live. cNFT inventory minting is in development (Phase 1, P1-A on the roadmap).</Info>
+Audience Inventory describes the placements and permitted uses a creator or programme offers, together with the participation records that help explain the offer.
 
-# Audience Inventory
+It gives creators and commercial partners a way to agree what is available, how it may be used, and how results will be measured. The inventory concerns media, placements, and agreed rights. People and agents participate in the experience under their own roles and permissions.
 
-**Audience Inventory** is the economic expression of verified participation. It is what exists when engagement is no longer treated as a vague audience metric but as a supply surface the system can price, route, and monetize.
+## What an Inventory Description Covers
 
-In legacy platforms, "inventory" is ad slots sold by a centralized platform with self-reported metrics. In RNDRNTWRK, inventory is **owned by the creator** and **verified by the protocol** through VAP.
+| Information | What it explains |
+|---|---|
+| Programme and placement | The stream or experience, the format offered, and where it would appear |
+| Timing and duration | When the placement or recorded activity takes place and the period it covers |
+| Participation context | The activity, session, or results relevant to the offer |
+| Measurement | The metrics, reporting source, method, and reporting period |
+| Permitted use | The media and placement rights included in the agreement, and how supporting records may be used |
 
-## Current System: Points & Credits (Live)
+A creator’s agreement establishes which parts of the media and programme they can offer and the terms on which a partner can use them.
 
-Today, attention is verified and monetized through the **Points & Credits** system:
+## Participation Records, Points, and Credits
 
-1. **Engagement**: A user plays a game or watches a stream.
-2. **Verification**: [VAP](/protocol/vap) validates this activity via cryptographic heartbeats.
-3. **Points**: Verified engagement earns points (10,000 points = 1 USDC). Non-transferable accounting abstraction.
-4. **Credits**: Settlement-ready unit (1 credit = $0.01 USD). Append-only ledger with 1.25x burn bonus for $555 burns.
-5. **Settlement**: Weekly engine distributes USDC payouts (Mondays 05:55 CST). Users can also self-withdraw.
-6. **Daily Bonus**: +100 points per game per wallet per CST day.
+A game or stream can produce records of participation. [VAP](/protocol/vap) describes the design for connecting that activity to a session and checking the resulting records.
 
-For advertisers, the current system uses **L-Bar ads**: non-interruptive squeeze-back overlays triggered by Alice when engagement signals cross the placement threshold.
+An experience can use points to record progress or participation and credits to record a balance. Its terms explain what those measures represent and how they may be used.
 
-## Planned: cNFT Inventory (In Development)
+A commercial programme would specify which records support its reporting and how the reported results relate to the agreed placement or work.
 
-<Warning>
-The cNFT inventory system described below is the target architecture. It is in development (Phase 1, P1-A on the roadmap) and not yet live.
-</Warning>
+## Proposed cNFT Record Design
 
-The next evolution mints verified attention as **cNFTs** (Compressed NFTs) on Solana:
+One proposed representation for inventory records is a **compressed NFT**, or **cNFT**, on Solana using **Metaplex Bubblegum**.
 
-1. **Engagement**: User plays a game or watches a stream.
-2. **Verification**: VAP validates via cryptographic heartbeats.
-3. **Minting**: Validated attention minted as a cNFT on Solana via Metaplex Bubblegum.
-4. **Utilization**:
-    - **Advertisers** buy inventory programmatically to show targeted ads.
-    - **Creators** earn yield from their verified audience.
-    - **Users** earn rewards (via ARP) for generating high-quality inventory.
+In this design, a record could connect a placement or participation summary to its metadata and supporting material. The agreement defines the permitted use of the media and records associated with it.
 
-### Technical Standard: cNFTs
+### Merkle Tree Design
 
-We utilize **Compressed NFTs (cNFTs)** on Solana via the **Metaplex Bubblegum** program. This allows minting millions of inventory items for fractions of a penny, making high-volume attention tracking economically viable.
+The proposed architecture uses a concurrent Merkle tree to group records and support checks that a record belongs to the tree.
 
-### Merkle Tree Structure
+Tree depth and canopy size are implementation choices that affect capacity and proof handling. They would need to be chosen for the intended record volume and integration.
 
-Inventory is stored in a concurrent Merkle Tree on-chain.
-- **Max Depth**: 24 (16M items).
-- **Canopy Depth**: 14 (Fast verification).
+### Metadata
 
-### Metadata Schema
+The metadata design describes the following information:
 
-Every unit of Audience Inventory adheres to a strict JSON schema for interoperability with advertisers:
+| Information | Purpose |
+|---|---|
+| Name, symbol, and description | Identify the record and explain what it represents |
+| Image or media reference | Point to material associated with the record |
+| Game, programme, creator, and platform | Describe the context in which the activity occurred |
+| Duration and activity results | Record the period covered and relevant results, such as a score |
+| Audience measurements | Describe reported audience figures with their source and measurement context |
+| Verification reference | Identify the checks or verifier associated with the participation record |
+| Review context | Explain the purpose and basis of any assessment attached to the record |
+| Supporting files | Link to the relevant activity or replay material where its use is permitted |
 
-```json
-{
-  "name": "Sector 13 - Session #8821",
-  "symbol": "555-INV",
-  "description": "Verified gameplay session of Sector 13.",
-  "image": "https://arweave.net/...",
-  "attributes": [
-    { "trait_type": "Game", "value": "Sector 13" },
-    { "trait_type": "Duration", "value": "600" },
-    { "trait_type": "Score", "value": "15420" },
-    { "trait_type": "User Reputation", "value": "85" },
-    { "trait_type": "Bot Probability", "value": "0.01" },
-    { "trait_type": "Verified By", "value": "VAP Node 01" },
-    { "trait_type": "Streamer", "value": "@Ninja" },
-    { "trait_type": "Platform", "value": "Twitch" },
-    { "trait_type": "Viewer Count", "value": "15400" }
-  ],
-  "properties": {
-    "files": [
-      { "uri": "https://arweave.net/replay_data", "type": "application/json" }
-    ]
-  }
-}
-```
+People and agents can contribute under the experience’s rules. Metadata should describe their permitted role and the activity being assessed.
 
-### Bespoke Targeting (Vision)
+## Planning Placements and Matching
 
-Advertisers will be able to use rich metadata to buy **Verified Airtime** that matches their exact niche:
+A creator would describe the formats, timing, and context available to a commercial partner. A partner would set out the audience, subject, and placement requirements that matter to the brief.
 
-1. **The Stream**: Creator streams content, generating verified inventory (cNFTs).
-2. **The Plug**: Advertisers set criteria (e.g., "Sector 13, >1000 viewers").
-3. **The Yield**: When criteria match, the protocol automatically routes the ad to the stream.
-4. **The Payout**: Creator earns yield (USDC/$555) for verified airtime.
+Matching those descriptions could identify a suitable opportunity. The agreement and media workflow would determine how the placement is prepared, approved, and presented.
 
-### Market Dynamics (Planned)
-- **Floor Price**: Determined by the Cost of Attention (e.g., $0.01 per minute).
-- **Rarity**: High-reputation users or high-score sessions command a premium.
-- **Liquidity**: Inventory can be bundled and sold in bulk (e.g., "1000 hours of FPS gameplay").
+An L-Bar is one possible layout, placing an advertising unit alongside the stream. Its size, timing, and behaviour need to fit the programme and the devices used to watch it.
 
-## The Flywheel
+## Measurement and Commercial Terms
 
-The Audience Inventory model creates a self-reinforcing economic flywheel:
+The programme’s terms would define the pricing basis, the period covered, the work or placement supplied, and how results are reported.
 
-1. **Content** attracts users.
-2. **Verified Engagement** creates high-value Audience Inventory.
-3. **Advertisers** purchase inventory, injecting liquidity.
-4. **Revenue** is distributed: 10% ARP to audience, then 50/50 creator/platform.
-5. **Burns** from platform's 20% buyback allocation create structural deflation.
-6. **Rewards** incentivize more content and engagement.
+Related placements or activity periods could be described together where the creator’s agreement allows it. Each description still needs to make its contents and measurement basis clear.
+
+Reported scores, audience figures, or other assessments need their own definitions and context so a partner can understand what they measure.
+
+## Funding, Settlement, and Allocation
+
+Programme funding, service fees, settlement revenue, and token-related revenue remain distinct. The programme’s agreements identify its costs, recipients, and allocations.
+
+SW4P provides the settlement role. [SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
+
+[$555](/tokenomics/555-token) is RNDRNTWRK’s coordination asset.
+
+Related: [For Advertisers](/for-advertisers) · [VAP](/protocol/vap) · [How RNDRNTWRK Works](/how-it-works)

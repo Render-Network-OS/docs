@@ -1,92 +1,91 @@
 ---
 title: "Revenue Tracking"
 icon: "chart-bar"
-description: "How to observe value flow through the network"
+description: "The planned dashboard for source-labelled revenue, balances, and programme records"
 ---
 
 <Info>
-**Status:** Planned. The revenue dashboard described below is a product roadmap target. Current reward tracking is available through the Arcade leaderboard and the rewards claim interface at [rndrntwrk.com](https://rndrntwrk.com).
+**Status: Planned.** This page describes the proposed revenue dashboard and its reporting model.
 </Info>
 
-## Real-Time Revenue Dashboard
+## Revenue Dashboard
 
-Observe value flow through RNDRNTWRK -- streaming earnings, staking positions, and performance metrics in one surface.
+The planned dashboard brings revenue, programme activity, and payment records into one view while keeping their sources and purposes visible.
+
+A view would identify whose records it represents, the reporting period, the assets or units used, and when its information was last updated. A creator’s receipts, an audience allocation, and RNDRNTWRK’s platform revenue would remain separately labelled.
 
 ## Dashboard Overview
 
-### Key Metrics Display
+| Planned view | Useful information |
+|---|---|
+| **Revenue by source** | Revenue from the identified programme, service, settlement activity, or token-related source, with its period and status |
+| **Balances and commitments** | Asset balances, amounts owed, funds committed to a purpose, and reserves |
+| **Programme activity** | Streams, games, and other activities associated with the reporting period, including their recorded outcomes |
+| **Community contributions** | Contributions and support associated with an activity, shown according to its measurement and visibility rules |
 
-<CardGroup cols={4}>
-  <Card title="Total Earnings" icon="dollar-sign">
-    Combined revenue across all sources
-  </Card>
+The underlying records would let a reader follow a summary back to its source, activity, recipient, and payment or programme reference.
 
-  <Card title="Staking & Balances" icon="coins">
-    Current balances (SOL/USDC/$555) and creator staking positions
-  </Card>
+## Keep Sources and Balances Distinct
 
-  <Card title="Active Games" icon="gamepad">
-    Live prediction markets and mini-games
-  </Card>
+Programme funding, service fees, settlement revenue, and token-related revenue need separate labels. Funds received to pay for work are tracked separately from revenue earned by delivering it.
 
-  <Card title="Top Supporters" icon="users">
-    Most valuable community members
-  </Card>
-</CardGroup>
+A useful financial view distinguishes:
 
-### Real-Time Updates
+| Record | What it represents |
+|---|---|
+| **Gross source value** | The starting amount associated with the identified source |
+| **Obligations and participant amounts** | Refunds, contractual payments, and amounts assigned or owed to creators, audiences, collaborators, or providers |
+| **Recognised platform revenue** | The platform share of distributable source value after the source’s senior obligations |
+| **Deployable platform surplus** | Recognised platform revenue after direct execution costs and realised loss provisions |
+| **Balances, committed funds, and reserves** | Funds held or set aside for an identified purpose, rather than another revenue total |
+| **Payment state** | What is pending, confirmed, returned, or still outstanding |
 
-<AccordionGroup>
-  <Accordion title="Live Earnings Feed" icon="activity">
-    Monitor revenue as it happens:
+A balance can include funds owed to others. Funds committed to liquidity, settlement inventory, or a reserve also retain that purpose. These amounts need separate treatment from money spent on operating an activity.
 
-    **Real-Time Data:**
-    - Instant tip notifications
-    - Game payout confirmations
-    - Subscription renewals
-    - Asset sale completions
-    - Staking reward distributions
+Token-related fees follow their own source record and are recognised only when generated, claimed, and settled. Transaction volume and user principal are different from the fees earned by a service.
 
-  </Accordion>
+The [Economic Model](/economics) explains these distinctions. [Fee Distribution](/tokenomics/fee-distribution) sets out the planned source waterfalls and allocation bases.
 
-  <Accordion title="Performance Alerts" icon="bell">
-    Get notified of important events:
+## Updates and Alerts
 
-    **Alert Types:**
-    - Revenue milestones reached
-    - Unusual activity detected
-    - System performance issues
-    - High-value supporter activity
-    - Market opportunity alerts
+The update design connects an event with its recorded status and reporting time. Examples include a tip, a subscription payment, an asset sale, or a programme payment where the relevant experience supports that activity.
 
-  </Accordion>
+Each update would identify the source and amount, the activity or recipient involved, and whether the record is newly reported, awaiting confirmation, completed, or corrected. The time of the activity, payment confirmation, and dashboard update may be different.
 
-  <Accordion title="Automated Reports" icon="file-text">
-    Receive scheduled performance summaries:
+Useful alert topics include:
 
-    **Report Frequency:**
-    - Daily earnings summary
-    - Weekly performance analysis
-    - Monthly financial statements
-    - Quarterly growth reports
-    - Annual tax documentation
+- A chosen revenue or activity milestone.
+- An unusual change that needs review.
+- An interrupted payment or service operation.
+- A significant contribution under the programme’s reporting rules.
+- A delayed update or unresolved difference between records.
 
-  </Accordion>
-</AccordionGroup>
+An alert would point to the relevant record and its status so the reader can decide what to review next.
 
-## Temporary read-only forensic endpoints
+## Reports and Reconciliation
 
-These links are temporary, read-only evidence sources used for the $555 capital-ledger reconciliation. They do not sign or submit transactions.
+The reporting design includes daily summaries, weekly performance reviews, and longer-period comparisons. The reporting period is separate from a programme’s payout schedule.
 
-- [Current PumpSwap pair JSON](https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
-- [Current PumpSwap pair through text reader](https://r.jina.ai/https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG)
-- [Pump creator claim account](https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
-- [Pump creator claim through text reader](https://r.jina.ai/https://pumpdev.io/api/claim-account?publicKey=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&mint=CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2)
-- [Creator wallet public transactions](https://public-api.solscan.io/account/transactions?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
-- [Creator wallet transactions through text reader](https://r.jina.ai/https://public-api.solscan.io/account/transactions?address=HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq&limit=100)
-- [Streamflow contract 6jEB](https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
-- [Streamflow contract 6jEB through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb)
-- [Streamflow contract HHX](https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
-- [Streamflow contract HHX through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN)
-- [Streamflow contract BSkf](https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
-- [Streamflow contract BSkf through text reader](https://r.jina.ai/https://app.streamflow.finance/contract/solana/mainnet/BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ)
+A report would carry its sources, included activities, asset units, opening and closing balances, income and cost records, participant obligations, payments, reserves, and unresolved differences. If values are translated into another unit, it would identify the conversion source and time used.
+
+Reconciliation connects those records: what was funded, earned, allocated, paid, returned, or left outstanding. Corrections need to remain associated with the records they change.
+
+These summaries provide records for review. Formal financial statements and tax documentation need the appropriate accounting process and the underlying records.
+
+## Programme Allocations and Claims
+
+The planned programme view would distinguish an estimated amount, an allocation, a submitted claim, and a confirmed payout. Points and credits would retain the meaning given by the experience’s terms.
+
+SW4P coordinates settlement: route selection, fees, execution, confirmation, recovery, and accounting for the result.
+
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
+
+Any future staking, reward, or claim programme would have its own eligible activity, funding, recipients, allocation rules, timing, and treatment of reserved or outstanding amounts. Fee-derived allocations and separately funded incentives would remain separately labelled in [SW4P Earn](/products/earn).
+
+## Go Deeper
+
+- [Economic Model](/economics) — Funding, revenue, costs, and payments.
+- [Fee Distribution](/tokenomics/fee-distribution) — Planned source-specific allocation policies.
+- [SW4P Earn](/products/earn) — Programme records and current status.

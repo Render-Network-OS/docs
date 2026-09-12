@@ -1,45 +1,67 @@
 ---
 title: "Game Mechanics & Possession"
 icon: "ghost"
-description: "How agents and systems intervene in live game state"
+description: "The design for authorised changes to game-session state."
 ---
 
-<Info>**Status: Partially Implemented**: Sector 13 possession is live. Additional game integrations (e.g., Ninja) are planned.</Info>
+Possession is the design for a person, agent, or system to request a controlled change to a game session.
 
-# Entity-Agnostic Game Intervention
+The acting participant, its authority, the target session, and the permitted action all matter. The same action can require different permissions depending on who requests it and which game or session is involved.
 
-Possession is how any authorized entity, agent, system, or human operator, intervenes in live game state across the RNDRNTWRK. The protocol does not distinguish who possesses a cabinet, only what action is taken and what proof is generated. This document details the mechanics and capabilities available per game.
+This page describes the game-specific control mappings and proposed interaction flow.
+
+## Playing and Possessing
+
+Ordinary gameplay uses a game’s player controls. Possession uses a separate interface to change state such as lives, difficulty, or an on-screen message.
+
+That distinction affects how an experience is run. A mode that allows an operator to change game state needs to explain which interventions are permitted and how they relate to scoring or competition.
 
 ## Sector 13 (`sector-13`)
-A sci-fi space shooter/puzzle game.
 
-### Possession Capabilities
-Alice can modify the following state variables via `alice-sdk.js`:
+A space game with multiple sectors, enemies, and power-ups.
 
-| Capability | Value Type | Description |
+### Control mapping
+
+The documented Sector 13 design names `alice-sdk.js` as the game-control integration.
+
+| Capability | Value type | Intended effect |
 | :--- | :--- | :--- |
-| `set_lives` | `number` | Set the player's remaining lives. (e.g., 99 for God Mode, 1 for Hardcore) |
-| `give_weapon` | `string` | Grant a specific powerup. Options: `wingshot`, `trishot`, `doublerate`, `bomb`, `wingbomb`, `shield`. |
-| `set_difficulty` | `number` | Adjust `rofAdjust` (Rate of Fire adjustment). Higher values might make enemies faster or player slower (needs verification). |
-| `show_message` | `string` | Display a full-screen communication message to the player. Pauses the game. |
+| `set_lives` | `number` | Set the player’s remaining lives. The design includes examples such as 99 lives for a generous mode or 1 life for a restricted mode. |
+| `give_weapon` | `string` | Grant a power-up: `wingshot`, `trishot`, `doublerate`, `bomb`, `wingbomb`, or `shield`. |
+| `set_difficulty` | `number` | Adjust `rofAdjust`, the rate-of-fire adjustment. The direction and scale of its effect depend on the game’s implementation. |
+| `show_message` | `string` | Display a full-screen message and pause the game. |
 
-### Internal State (`state.ts`)
-- `lives`: Player lives (default 3).
-- `score`: Current score.
-- `powerups`: Object tracking active weapons.
-- `rofAdjust`: Affects fire rate.
-- `fear`: Fear level (affects visuals/audio).
+### State model
+
+The documented `state.ts` model includes:
+
+- `lives`: remaining lives, with a documented default of 3.
+- `score`: the current score.
+- `powerups`: the active weapons and power-ups.
+- `rofAdjust`: the rate-of-fire adjustment.
+- `fear`: a level used to affect visuals and audio.
+
+These mappings describe the game-control design. They do not establish that a public possession interface is available.
 
 ## Ninja vs EVILCORP (`ninja`)
-A stealth platformer.
 
-### Possession Capabilities (Planned)
-- `set_difficulty`: Change between `NORMAL`, `EASY`, `SUPER EASY`, `NIGHTMARE`.
-- `set_level`: Warp player to a specific level.
-- `show_message`: Display text on the canvas.
+Ninja vs EVILCORP is a stealth platformer.
 
-## General Possession Protocol
-1.  **Identify Target**: Use `GET /arcade/cabinets` to find active games.
-2.  **Select Action**: Choose a capability from the table above.
-3.  **Execute**: Call `POSSESS_CABINET` with `game_id` and `metadata` (e.g., `{ "capability": "set_lives", "value": 5 }`).
-4.  **Observe**: Use `LOG_MEMORY` to record the outcome.
+### Planned controls
+
+- `set_difficulty`: select `NORMAL`, `EASY`, `SUPER EASY`, or `NIGHTMARE`.
+- `set_level`: move the player to a particular level.
+- `show_message`: display text on the canvas.
+
+These are planned integration capabilities.
+
+## Possession Flow
+
+The proposed flow has four steps:
+
+1. **Identify the target:** find the intended game and session.
+2. **Select a permitted action:** choose a control supported by that game and allowed for the acting participant.
+3. **Request the change:** associate the target, capability, and requested value with the participant’s authority.
+4. **Observe and record:** inspect the result and retain a record of what changed.
+
+A game identifier and a requested capability alone do not establish authority to change that session.

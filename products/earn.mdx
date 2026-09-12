@@ -1,101 +1,40 @@
 ---
-title: "sw4p Earn"
+title: "SW4P Earn"
 icon: "coins"
-description: "The yield surface of RNDRNTWRK. Turns settled cross-chain volume into real-fee yield through liquidity provision and locked $555."
+description: "Source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation"
 ---
 
-<Info>**Status:** Stage 1 testnet rehearsal (7-day canary on Base Sepolia + Solana devnet). Mainnet canary returns with the sw4p engine mainnet restoration.</Info>
+# SW4P Earn
 
-# sw4p Earn
+**SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.**
 
-**sw4p Earn is the yield surface of RNDRNTWRK.** It turns settled cross-chain volume into stake-bearing yield: real-fee rewards for liquidity providers, boosted rewards for locked $555. No artificial APY; every reward traceable to routed flow.
+SW4P Earn keeps programme rules clear: where value came from, how it is allocated, who can claim it, what is reserved, what has been paid, and what remains to reconcile.
 
-sw4p Earn matters because settlement fees should accrue to the participants who make settlement work, not extract upward. The cascade lands LP rewards on the LPs whose pools routed the volume, plus utility yield to $555 holders who locked their position.
+## What it covers
 
-## Key Facts
-
-| | |
+| Capability | Purpose |
 |---|---|
-| **Category** | Yield surface on top of the sw4p settlement engine |
-| **Yield source** | Real fees from routed cross-chain volume (no inflation, no rebase) |
-| **Capital sources** | Liquidity provision into supported pools; locked $555 boosts |
-| **Reward model** | Real-fee yield + utility yield for locked $555 |
-| **Lock mechanic** | Time-locked $555 for higher reward share + governance weight |
-| **Fee split** | 10% ARP / 45% LP-stakers / 45% platform on sw4p routing fees, with the platform half following the 20/5/5/70 sub-allocation |
-| **Settlement assumption** | All yield-bearing flow settles through [sw4p](/sw4p) |
-| **Custody** | Non-custodial. Users sign from their own wallet. |
+| **Source tracking** | Keeps fees, funded incentives, reserves, and other programme funds distinct. |
+| **Allocation** | Applies the programme's stated rules to eligible activity and recipients. |
+| **Claims** | Shows who can claim, under which programme, and when. |
+| **Payout schedules** | Connects a claim to its timing and payout state. |
+| **Reserves** | Separates reserved value from value available for allocation or payout. |
+| **Reconciliation** | Records what was allocated, paid, returned, or remains outstanding. |
 
-## How It Works
+## Current status
 
-sw4p Earn is downstream of the sw4p settlement engine.
+**SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
 
-1. A cross-chain settlement routes through sw4p
-2. The 50 bps routing fee is split per the canonical cascade
-3. The LP half lands on the liquidity providers whose pools routed the volume
-4. Locked $555 receives the matched utility yield from the platform half
-5. Rewards are claimable per epoch with full traceability back to the routed flow
+## When a Programme Is Available
 
-The economic invariant: **every reward is matched to a real settlement that happened.** No protocol-level emissions; the system rewards work, not presence.
+Before participating, users will see the eligible activity, funding source, allocation rules, recipients, claim timing, supported network and addresses, effective date, and support path.
 
-## Modules
+Fee-derived allocations and separately funded incentives remain separate. No APY, yield, return, automatic reward, buyback, or claim is guaranteed.
 
-| Module | What it does |
-|---|---|
-| **Global $555 Lock** | Time-locked $555 position; receives utility yield + governance weight |
-| **LP Vault** | Liquidity provision into supported pools; receives real-fee LP rewards |
-| **Matched 555 Vault** | Matched-pair vault for $555 + USDC liquidity, optimised for settlement-routed pairs |
-| **POL Vault** | Protocol-owned liquidity backstop for the routing path |
-| **MM Reserve** | Reserve buffer for cross-corridor rebalance |
-
-## Stage Taxonomy
-
-sw4p Earn ships through four stages with hard prerequisites at each boundary.
-
-| Stage | Scope | Gate |
-|---|---|---|
-| **Stage 0** | Internal hardening | All audit findings closed on main; operator preflight done |
-| **Stage 1** | Testnet rehearsal | 7-day Base Sepolia + Solana devnet canary green |
-| **Stage 2** | Mainnet canary (low-value) | sw4p engine mainnet has returned; authority monitor live |
-| **Stage 3** | Open registration / public launch | External smart-contract audit clean; public dashboard live |
-
-## Reward Anatomy
-
-Yield comes from two sources, paid per epoch with full traceability:
-
-- **Real-fee yield**: a share of every routing fee on volume that routed through the LP's pool. Distributed pro-rata by liquidity contribution.
-- **Boosted yield**: utility yield to locked $555, paid from the platform half of the cascade. Boost scales with lock duration.
-
-No emissions, no minting, no APY guarantees. Every reward is downstream of a real settlement.
-
-## Integration Inside RNDRNTWRK
-
-sw4p Earn sits between [sw4p](/sw4p) and Operations in the layer order. Settlement fees flow upward from sw4p; locked $555 flows downward from the coordination layer.
-
-- **sw4p**: source of every routing fee that becomes reward
-- **$555**: locked positions earn the boost
-- **Alice**: dashboard surfaces reward epochs and lock decisions
-
-## Security
-
-sw4p Earn is hardened as an economic primitive, not as a frontend.
-
-The stack includes anti-wash enforcement on routed volume (separate proof system from VAP, which proves engagement; both are required for trustworthy participation-rewards economics), decimal coherence verification across every surface where $555 appears, an authority monitor watching mint authority and Safe ownership for silent on-chain drift, and full observability across reward distribution and lock-state changes.
-
-User flows are non-custodial. Users sign every lock, claim, and unwind from their own wallet. Protocol-side execution uses sw4p infrastructure and is not exposed to integrators.
-
-## Go Deeper
+## Related pages
 
 <CardGroup cols={2}>
-  <Card title="sw4p" icon="bridge" href="/sw4p">
-    The settlement engine that produces the routing fees Earn distributes.
-  </Card>
-  <Card title="Fee Distribution" icon="chart-pie" href="/tokenomics/fee-distribution">
-    The full cascade definition: how routed value becomes reward.
-  </Card>
   <Card title="$555 Token" icon="coins" href="/tokenomics/555-token">
-    The coordination asset that unlocks boosted yield through locking.
-  </Card>
-  <Card title="Roadmap" icon="route" href="/protocol/roadmap">
-    Where Earn sits in the broader protocol trajectory.
+    See the coordination asset's role.
   </Card>
 </CardGroup>

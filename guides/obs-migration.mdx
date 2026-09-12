@@ -1,61 +1,57 @@
 ---
-title: "OBS Replacement Migration"
+title: "Moving Between OBS and 555stream"
 icon: "right-left"
-description: "Moving from legacy desktop workflows into browser-native operations"
+description: "Plan desktop, browser, and combined streaming workflows"
 ---
 
-<Info>
-  [555stream](/555stream) is the recommended path for new creators. This migration guide is for existing OBS users transitioning to the browser-native studio.
-</Info>
+Moving a stream setup means deciding where production, controls, overlays, and output will run. Use this guide to compare your existing OBS workflow with the 555stream options available to you.
 
-## When to Migrate
+## Decide What Needs to Change
 
-- Need lower latency and simpler operations
-- Desire web-native control without desktop encoders
-- Want integrated token-gated and on-chain features
+List the sources, scenes, audio routing, guests, recordings, overlays, plugins, and destinations your stream depends on.
 
-## Parity & Differences
+Identify the part you want to change and the reason: a different control workflow, a shared production task, or an integration with an interactive experience. Retain the working setup while evaluating the alternative.
 
-| Capability   | OBS             | 555stream                |
-| ------------ | --------------- | ---------------------------- |
-| Scenes       | Yes             | Themes/Overlays (web)        |
-| Plugins      | Desktop plugins | Web modules & SDK            |
-| Latency      | Varies          | Low-latency regional servers |
-| Token Gating | External        | Native ($555)                |
+## Compare the Responsibilities
 
-## Migration Steps
+| Part of the workflow | What to check before changing it |
+| --- | --- |
+| Scenes and sources | Layouts, capture devices, media files, transitions, and source dimensions |
+| Audio and guests | Routing, monitoring, guest connections, and synchronisation |
+| Plugins and modules | Which functions are needed and whether the chosen setup supports an equivalent |
+| Overlays | How the overlay is provided, configured, and updated |
+| Output | Supported destination, ingest method, resolution, frame rate, and bitrate |
+| Operator access | Who can control the stream and how permissions are granted |
+| Recording and recovery | How work is retained and how the existing setup can be restored |
 
-1. Create matching theme/overlays in CTRL
-2. Set region for low-latency server
-3. Connect wallet and assign moderator roles
-4. Publish overlays and verify render
-5. Switch ingest to 555stream (native) or keep OBS Browser Source temporarily
+Compare the features offered by each setup, including its supported plugins, access controls, and observed performance.
 
-## Browser Source Fallback (Temporary)
+## Move One Part at a Time
 
-```bash
-# OBS Browser Source
-# URL: https://rndrntwrk.com/overlay
-# Size: 1920x1080; Shutdown when not visible
-```
+1. Save the existing scenes, settings, and a list of the required assets.
+2. Prepare the corresponding layout and controls in the setup you are evaluating.
+3. Confirm the input, output, and access requirements from that setup’s documentation.
+4. Run a private test or local recording, checking the complete visual and audio result.
+5. Compare the result with the original and record any missing features.
+6. Change the public workflow only when the intended setup is ready, keeping a way back to the previous configuration.
 
-## Performance Tips
+OBS’s [Quick Start Guide](https://obsproject.com/kb/quick-start-guide) covers its configuration wizard, sources, audio, and a test before streaming.
 
-- Prefer native 555stream for lower latency
-- Match bitrate/resolution to regional limits
-- Monitor ingest health and frame drops
+## Keep a Combined Setup Where Useful
 
-## Cross-Links
+An OBS Browser Source can include a web-based overlay in an OBS scene. Use an overlay URL supplied for that purpose by the product you are integrating; a studio control page and an overlay output are different things.
 
-- Product: [555stream](/555stream)
-- CTRL: [CTRL Panel Guide](/guides/ctrl-panel)
+[OBS Integration](/guides/obs-integration) explains this connection. You can retain OBS for production while evaluating a compatible overlay.
 
+## Check Performance
 
+Compare the observed output, connection stability, audio timing, and dropped frames during a representative test. Use the destination’s supported settings rather than assuming one resolution or bitrate fits every stream.
 
+Check one destination first, then the intended combined setup. Capacity depends on where the encoding and distribution work is performed.
 
+## Related Pages
 
-
-
-
-
-
+- [555stream](/555stream)
+- [CTRL Panel Guide](/guides/ctrl-panel)
+- [OBS Integration](/guides/obs-integration)
+- [Troubleshooting](/guides/troubleshooting)

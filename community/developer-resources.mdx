@@ -1,79 +1,56 @@
 ---
 title: "Developer Resources"
 icon: "laptop-code"
-description: "The fastest path into the live stack"
+description: "Product documentation, source references, and practical integration starting points"
 ---
 
 ## RNDRNTWRK Developer Hub
 
-APIs, SDKs, integration guides, and plugin references for developers building on RNDRNTWRK.
+Start with the activity you want to support, then choose the relevant product and integration. [For Developers](/for-developers) maps application needs to agents, media, identity and permissions, participation records, and settlement.
 
-<Info>
-  **Base URL:** `https://api.rndrntwrk.com` · **Authentication:** Solana wallet signature (SIWS)
-  <br />
-  **SDK:** JavaScript (via standard fetch/axios) · **Rate Limits:** None enforced at the application layer
-  <br />
-  **Reference:** [API Reference](/api-reference)
-</Info>
+The [API Reference](/api-reference) describes documented interface families. For a specific integration, use its product and version documentation for supported operations, authentication, request and response formats, and operating limits.
 
-## First-Party Plugin References
+## First-Party References
 
-The ecosystem docs are the canonical public entry for first-party products. Package repos keep deeper reference material for maintainers and integrators.
+The product pages explain each component’s role. The linked repositories and READMEs provide deeper reference material for maintainers and integrators.
 
-### 555 Stream
+### 555stream
 
-- Product page: [555stream](/555stream)
-- Repo: [rndrntwrk/stream-plugin](https://github.com/rndrntwrk/stream-plugin)
-- Package README: [Open README](https://github.com/rndrntwrk/stream-plugin/blob/main/README.md)
+[555stream](/555stream) covers live and recorded programming, publishing, and interaction between people and agents.
+
+- [Source repository](https://github.com/rndrntwrk/stream-plugin)
+- [Repository README](https://github.com/rndrntwrk/stream-plugin/blob/main/README.md)
 
 ### 555 Arcade
 
-- Product page: [Arcade Overview](/arcade/overview)
-- Repo: [rndrntwrk/555-arcade-plugin](https://github.com/rndrntwrk/555-arcade-plugin)
-- Package README: [Open README](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/README.md)
+[Arcade Overview](/arcade/overview) introduces games, challenges, and interactive environments for people and agents to play, learn, test ideas, and compete.
+
+- [Source repository](https://github.com/rndrntwrk/555-arcade-plugin)
+- [Repository README](https://github.com/rndrntwrk/555-arcade-plugin/blob/main/README.md)
+
+### SW4P agent integrations
+
+[@sw4p/kit](/products/kit) is the agent integration project for SW4P. It connects agent-facing tools and payment messages to SW4P’s settlement work.
+
+The kit guide introduces its integration types, local and HTTP connections, source references, and the relationship between an instruction, its authority, and its result.
+
+Keep the source or package version and the connected service’s requirements clear. Repository documentation describes the integration project; the selected service determines which operations and environments it supports.
 
 ## Getting Started
 
-### Development Environment Setup
+You can begin by exploring these references from an internet-enabled device. Setting up an integration follows the requirements of the product and source version you choose.
 
 <Steps>
-  <Step title="Authenticate with Your Wallet">
-    RNDRNTWRK uses **SIWS (Sign In With Solana)** for authentication. Connect your Solana wallet to get started:
-
-    ```javascript
-    import { useWallet } from '@solana/wallet-adapter-react';
-
-    // 1. Connect wallet via the Solana wallet adapter
-    const { publicKey, signMessage } = useWallet();
-
-    // 2. Request a challenge nonce from the API
-    const { nonce } = await fetch('https://api.rndrntwrk.com/auth/challenge', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wallet: publicKey.toBase58() })
-    }).then(r => r.json());
-
-    // 3. Sign the nonce with your wallet
-    const signature = await signMessage(new TextEncoder().encode(nonce));
-    ```
-
-    <Info>There are no email-based accounts or API keys. All authentication is wallet-based via SIWS.</Info>
-
+  <Step title="Choose the activity and component">
+    Identify the people or agents involved, the work they need to perform, and the records the application should retain. Use the product page to select the relevant integration.
   </Step>
-
-  <Step title="Make Authenticated Requests">
-    Include the wallet signature in subsequent API calls. See the [API Reference](/api-reference) for the full list of authenticated endpoints.
-
-    ```javascript
-    // Authenticated request example
-    const response = await fetch('https://api.rndrntwrk.com/v1/sessions', {
-      headers: {
-        'X-Wallet': publicKey.toBase58(),
-        'X-Signature': base58Encode(signature),
-        'X-Nonce': nonce
-      }
-    });
-    ```
-
+  <Step title="Select the source and interface">
+    Choose the source version you intend to use. Read its setup, configuration, and interface documentation together with the connected service’s requirements, including authentication, supported operations, errors, and limits.
+  </Step>
+  <Step title="Define access and permissions">
+    Establish which account or service is acting and which resources and actions it may use. For an agent, include the authority delegated for its task and any execution limits. Follow the selected integration’s session and credential handling; keep service secrets out of client code and shared examples.
+  </Step>
+  <Step title="Follow the result">
+    Begin with the selected integration’s documented checks and examples. Keep the original request, relevant session or operation reference, and outcome connected. Distinguish a submitted request from a confirmed state change, and use the recorded result to handle errors or interruptions.
   </Step>
 </Steps>

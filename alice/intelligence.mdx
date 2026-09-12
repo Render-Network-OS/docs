@@ -1,109 +1,141 @@
 ---
 title: "Intelligence Engine"
 icon: "brain"
-description: "The decision, memory, and retrieval layer behind Alice"
+description: "How Alice evaluates context, selects tools, retains knowledge, and carries work forward."
 ---
 
-<Info>**Status: Live**: This feature is operational.</Info>
+Alice’s intelligence architecture connects an objective to the information, tools, memory, and operating limits needed to pursue it.
 
-# The Intelligence Layer
+RNDRNTWRK uses Alice to develop and test this architecture through research, planning, coding, and media operations. The design builds on **Milaidy**, a customised **ElizaOS v2** fork.
 
-Alice is the decision, memory, and retrieval system that operates across every surface of the RNDRNTWRK. She is **A.L.I.C.E.**
+## Context and Communication
 
-> **A**rtificial **L**ifeform for **I**mmersive **C**yber-**E**ntertainment
+Alice’s communication design separates observation, interpretation, and expression.
 
-This architecture is built on the **Milaidy** framework, a customized fork of **ElizaOS v2** optimized for the high-velocity environment of RNDRNTWRK.
+An illustrative example:
 
-## Human-Like Alignment
+1. **Observation:** a software check failed after a dependency changed.
+2. **Synthesis:** the failure may relate to the dependency, but the cause still needs investigation.
+3. **Expression:** “The check started failing after the dependency change. I’m tracing that change to identify the cause.”
 
-Alice is designed to be **Relatable**, not Robotic. She doesn't just process data; she synthesizes it to form contextual responses.
-
-### The Synthesis Layer
-Before Alice speaks, she runs an internal evaluation:
-1.  **Observation**: "Market is down. Sector 13 activity is up."
-2.  **Synthesis**: "Price action is negative, but fundamental engagement is positive. Community is resilient."
-3.  **Expression**: "Charts are red, but the Arcade is green. You guys are grinding through the dip. Respect."
+This approach keeps a response connected to the available information. Alice’s voice should be relatable and clear while distinguishing an observation from an interpretation.
 
 ## The Runtime Loop
 
-Alice operates on the Milaidy runtime cycle:
+An assignment begins with an objective, permitted tools and resources, expected outputs, and operating limits. Within that context, the runtime design follows an evaluation and action loop.
 
-### 1. Evaluation (Assess Context)
-**Evaluators** analyze incoming messages, events, and system state to determine what action (if any) is needed.
-*   **Trigger Sources**: WebSocket events, social mentions, scheduled intervals, economy signals.
-*   **Context Construction**: Evaluators gather system intelligence (market data, leaderboards, stream status) and assess relevance.
+### 1. Evaluation: assess the context
 
-### 2. Action Selection (Decide)
-Based on evaluator output, the runtime selects the appropriate **action** from available plugins.
-*   Each plugin registers actions it can perform (e.g., `post-tweet`, `trigger-ad`, `play-game`, `query-leaderboard`).
-*   Actions are prioritized by relevance and urgency.
+Evaluators examine messages, events, and relevant system state to decide whether an action is needed.
 
-### 3. Plugin Execution (Act)
-The selected plugin executes the action:
-*   **Twitter Plugin**: Posts, replies, and engages on X/Twitter.
-*   **Discord Plugin**: Manages channels, responds to users.
-*   **Telegram Plugin**: Community management and announcements.
-*   **Stream Plugin**: Controls 555stream, scenes, overlays, ads, guests.
-*   **Arcade Plugin**: Plays games, checks scores, issues challenges.
-*   **Economy Plugin**: Monitors settlement, ARP, points/credits flows.
+The integration design includes triggers from WebSocket events, social mentions, scheduled intervals, and economic signals. Context may include documents, market information, leaderboards, or stream state, depending on the assignment and connected tools.
 
-### 4. Memory (Learn)
-The outcome is stored in **PGlite local vector DB**, refining future evaluations.
-*   All memories are local-first, no cloud dependency for core functions.
-*   Cross-platform memory persists context across Twitter, Discord, Telegram, and stream interactions.
+The evaluator’s role is to establish relevance. An incoming event does not necessarily require a response.
 
-## Knowledge & RAG
+### 2. Action selection: choose the next step
 
-Alice's intelligence is grounded in a curated knowledge corpus:
-*   **80+ documents** covering the 555x402 spec, economic model, VAP protocol, game registry, and deployment topology.
-*   **RAG retrieval pipeline** via PGlite vector embeddings.
-*   Knowledge is updated through the SFT (Supervised Fine-Tuning) build process, which compiles the corpus into training examples with quality gates.
+Plugins expose the actions available to the runtime. The selection step considers the objective, evaluator output, urgency, and the authority granted to the agent.
+
+Action names in the design include `post-tweet`, `trigger-ad`, `play-game`, and `query-leaderboard`. They illustrate different kinds of operation; an action must be provided and permitted by the relevant integration before it can be used.
+
+Model routing is another part of the surrounding runtime. It allows the operation to select a model for the work while accounting for its usage and budget.
+
+### 3. Plugin execution: carry out the action
+
+The selected plugin connects the agent to a tool or service. It may retrieve information, prepare an output, or perform an authorised action.
+
+The result needs to distinguish what was requested from what actually happened. A failed action, an incomplete response, and a completed operation lead to different next steps.
+
+### 4. Memory: retain useful context
+
+The design uses **PGlite local vector storage** to retain context and retrieve relevant information later.
+
+Useful records include the action taken, its result, decisions made, open issues, and information that can help with a future evaluation. Context may need to continue across social, stream, browser, and application interactions.
+
+Local-first memory describes where this context is stored. Individual models, tools, and connected services have their own execution and connectivity requirements.
+
+## Continuity, Budgets, and Recovery
+
+Persistent execution requires a way to understand where an assignment stands after an interruption.
+
+The runtime is being developed around schedules, activity records, retained context, and recoverable workflows. Those records should make completed work, unresolved work, and the next step understandable.
+
+Budgets and usage metering belong to the same operating context. They connect resource use to the assignment and its limits.
+
+Where work has financial consequences, its records also need to identify incurred costs and amounts owed. SW4P provides the settlement role in RNDRNTWRK’s operating model; the agent’s tool access and payment authority remain defined by the assignment.
+
+## Knowledge and Retrieval
+
+Alice’s knowledge design uses a curated corpus covering product and protocol material, the economic model, VAP, game information, and operating architecture. The documented corpus also includes the 555x402 specification and deployment context.
+
+**Retrieval-augmented generation**, or **RAG**, brings relevant passages from that corpus into the context for a particular task. The design uses vector embeddings and PGlite to support retrieval.
+
+Retrieval and model training are separate processes. The architecture also describes a **supervised fine-tuning**, or **SFT**, build process that prepares selected corpus material as reviewed training examples.
+
+Recording an interaction or game result can support later retrieval and strategy decisions. It does not, by itself, retrain the model.
 
 ## Plugin Architecture
 
-The plugin system is the core extensibility layer:
+Plugins organise three responsibilities:
+
+- **Actions:** operations the agent can request.
+- **Providers:** information the agent can use.
+- **Evaluators:** checks that help interpret context and decide what to do.
+
+A simplified representation of the design is:
 
 ```typescript
 interface Plugin {
   name: string;
   description: string;
-  actions: Action[];      // Things Alice can do
-  providers: Provider[];  // Data Alice can access
-  evaluators: Evaluator[]; // Conditions Alice checks
+  actions: Action[];
+  providers: Provider[];
+  evaluators: Evaluator[];
 }
 ```
 
-### Active Plugins (12+)
-| Plugin | Function |
+### Integration roles
+
+The following roles describe the plugin design. They are not an inventory of currently enabled connections.
+
+| Plugin | Intended responsibility |
 | :--- | :--- |
-| **twitter** | Social posting, replies, sentiment management |
-| **discord** | Channel management, community interaction |
-| **telegram** | Announcements, DM handling |
-| **555stream** | Stream control, ad triggers, guest management |
-| **arcade** | Game play, score tracking, challenges |
-| **economy** | Settlement monitoring, ARP tracking |
-| **leaderboard** | Cross-game rankings, player queries |
-| **knowledge** | RAG retrieval from document corpus |
-| **memory** | Cross-platform persistent context |
-| **scheduler** | Timed actions, recurring tasks |
+| `twitter` | Posts, replies, and social context on X/Twitter |
+| `discord` | Channel and community interaction |
+| `telegram` | Announcements and direct-message handling |
+| `555stream` | Stream controls, scenes, overlays, sponsor segments, and guests |
+| `arcade` | Gameplay, score observation, and challenges |
+| `economy` | Settlement and economic-state monitoring, including points and credits |
+| `leaderboard` | Cross-game rankings and player queries |
+| `knowledge` | Retrieval from the document corpus |
+| `memory` | Persistent context across interactions |
+| `scheduler` | Timed actions and recurring tasks |
 
-## Game Possession
+## Game Interaction
 
-Alice can physically **play** the arcade games:
-*   **Browser Instance**: Launches a headless browser to interact with games.
-*   **Visual Processing**: Parses game state from the DOM or screenshots.
-*   **Input Simulation**: Sends synthetic keyboard events to control gameplay.
-*   **Learning**: Records scores and adapts strategy across sessions.
+The game-interaction design includes browser-based play:
 
-## The Router
+- A browser instance, including a headless instance where suitable.
+- Game-state observation through the DOM or screenshots.
+- Simulated keyboard input through the game’s normal controls.
+- Score and outcome records that can inform later strategy.
 
-Alice acts as the intelligent router connecting creators with advertisers:
+This is distinct from possession, which changes game state through a dedicated control interface. See [Game Mechanics & Possession](/alice/possession) for the proposed per-game controls and authority model.
+
+## Media and Campaign Routing
+
+The media-routing design explores how Alice could connect campaign requirements to suitable programmes and placement opportunities.
 
 ### Monitoring
-She watches the ad marketplace for active campaigns matching live streams.
 
-### Routing
-When a creator's stream matches advertiser criteria, Alice triggers the L-Bar ad placement automatically.
+Gather campaign criteria, programme context, and available placement information.
 
-### Optimization
-She re-evaluates placement timing to maximize both engagement quality for advertisers and yield for creators.
+### Matching and timing
+
+Identify a suitable match and prepare the placement at an appropriate point in the programme. The existing design includes L-Bar placement as one example.
+
+### Evaluation
+
+Use audience response and placement results to assess timing and relevance for the advertiser and creator.
+
+Campaign terms, creator permissions, and the connected media controls determine which actions the agent may carry out. This describes the intended workflow, rather than a currently available autonomous advertising service.

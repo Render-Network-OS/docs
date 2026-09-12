@@ -1,194 +1,117 @@
 ---
 title: "VAP, Verifiable Attention Protocol"
 icon: "eye"
-description: "The proof layer that makes creator participation credible enough to rank, reward, and buy against."
+description: "The design for connecting participation records to sessions, activity, and verification."
 ---
 
-<Info>**Status: Live (v1)**: VAP v1 is operational. VAP v2 is validated (234 tests passing) but not yet deployed.</Info>
+VAP addresses participation verification: connecting activity in a game, stream, or interactive experience to the session and participant involved.
 
-**VAP exists because creator engagement needs to be trusted by more than the platform reporting it. If advertisers, creators, and the network are going to route value against participation, that participation has to be verifiable.**
+The design gives creators, advertisers, and application developers a way to examine the records behind a reported result. It covers session continuity, signed updates, activity summaries, and the checks applied to them.
 
-**VAP is the proof layer for participation. It helps Render Network Protocol distinguish real sessions from reported sessions, so engagement can be used with more confidence in campaign buying, creator economics, ranking, rewards, and settlement.**
+## What Participation Records Support
 
-## Why VAP Matters
+### Programme measurement
 
-Advertisers buy against engagement. Creators build around engagement. The network routes value around engagement.
+A programme needs to explain which activity was measured, over what period, and using which source. Session records can provide supporting detail for reported participation and campaign results.
 
-VAP exists so that engagement does not have to be taken on faith.
+### Creator and participant records
 
-### Advertiser trust
-Brands need confidence that the participation around a creator is not falsified. VAP gives the network a stronger signal for advertiser-facing inventory.
+Records connect an experience’s results to the people and agents involved. They can help explain a score, a contribution, or an interruption that affected a session.
 
-### Creator credibility
-Creators should not have their economics determined by opaque or inflated metrics. VAP ties creator economics to verifiable sessions rather than platform-reported estimates.
+### Rankings and programme rules
 
-### Rewards and ranking
-The network needs a fair basis for points, leaderboards, and payouts. VAP provides the verification layer underneath ranking and reward logic.
+Each experience defines which actions and results count. Participation verification supplies information for applying those rules; the rules determine how records are used in rankings or other programme decisions.
 
-### Settlement
-Verified participation feeds into value routing. The economic cascade depends on having a credible input signal.
+## Session Mechanics
 
-## Protocol Mechanics (v1: Live)
+The v1 design uses a bidirectional connection between a client and a verifier. The client reports activity; the verifier checks the submitted records.
 
-VAP v1 operates over a secure WebSocket connection. It is a bidirectional, cryptographic handshake between the Client and the Server (Verifier).
+### 1. Establish the session
 
-### 1. The Handshake
-When a session begins, the client authenticates and establishes a secure channel.
+The session setup associates the participant with the application and the authority under which they act. It establishes a session reference and the information needed to check later updates.
 
-**Client → Server (INIT)**
-```json
-{
-  "type": "INIT",
-  "payload": {
-    "appId": "sector-13",
-    "wallet": "HuW...9zP",
-    "timestamp": 1717171717
-  },
-  "signature": "Ed25519_Signature_of_Payload"
-}
-```
+The design includes authentication, signed session information, and a fresh challenge or sequence reference.
 
-**Server → Client (ACK)**
-```json
-{
-  "type": "ACK",
-  "sessionId": "sess_88239123",
-  "nonce": 0,
-  "difficulty": 1
-}
-```
+### 2. Record activity updates
 
-### 2. The Heartbeat (Pulse)
-Every N seconds (dynamic based on trust score), the client sends a Pulse proving liveness and state continuity.
+Updates describe activity during the session. The documented design includes input and game-state summaries, scores, timing, and sequence information.
 
-**Client → Server (PULSE)**
-```json
-{
-  "type": "PULSE",
-  "sessionId": "sess_88239123",
-  "nonce": 1,
-  "delta": {
-    "inputHash": "sha256_of_mouse_movements",
-    "gameStateHash": "sha256_of_memory_snapshot",
-    "score": 150
-  },
-  "signature": "Ed25519_Signature_of_Delta"
-}
-```
+A signature connects an update to the signing key. The v1 cryptographic design uses Ed25519 signatures and hashed summaries of activity and state.
 
-### 3. State Channels and Settlement
-To scale to high concurrency, VAP uses state channels. Not every pulse is written to Solana.
+### 3. Check continuity and retain the record
 
-1. **Off-chain aggregation**: The VAP Verifier maintains a session ledger in an in-memory store. It verifies signatures and the hash chain (nonce N must follow N-1).
-2. **Dispute window**: The session is kept optimistic. If the server detects anomalies, it can flag the session immediately.
-3. **On-chain settlement**: When the session ends, the Verifier submits a settlement transaction to Solana. Only the result is written on-chain.
+The verifier checks signatures and update order, looks for repeated submissions, and records issues that need review.
 
-## Integrity and Anti-Abuse
+The state-channel design keeps detailed session updates off-chain and allows a later commitment to summarise the result. This separates the ongoing session record from the final summary.
 
-VAP is designed to make falsified participation harder to use as economic input. That matters because advertiser spend, creator revenue, and protocol rewards all depend on participation being credible enough to route value against.
+### 4. Close the session
 
-### Layer 1: Cryptographic Integrity
-- **Signature verification**: Every packet must be signed by the participant's wallet.
-- **Replay protection**: Nonces ensure packets cannot be replayed.
+Closing a session brings its activity, verification results, and unresolved issues into a final record. An application needs to explain how incomplete, interrupted, or disputed sessions affect its reported results.
 
-### Layer 2: Behavioral Heuristics
-The VAP Verifier analyzes the inputHash and gameStateHash.
-- **Entropy analysis**: Human input has high entropy. Automated input patterns can be distinguished by their uniformity.
-- **Timing analysis**: Reaction times below physiological thresholds are flagged.
-- **Reputation**: Long-term wallet history affects trust score. Higher trust can mean longer pulse intervals.
+## Integrity Checks
 
-### Layer 3: Active Challenges
-At random intervals, the server sends a CHALLENGE packet.
-- In-game overlays that must be responded to
-- Input sequences within time constraints
+### Signatures and sequence information
 
-Failure to respond results in session termination and reputation adjustment.
+Signatures, nonces, and update order help check the origin and continuity of submitted records. The application’s rules define which activity is valid within that session.
 
-## Integration
+### Activity and state context
 
-Developers can integrate VAP into any HTML5 game using the VAP SDK.
+Timing, input patterns, and game-state changes can help identify records that need closer review. Those signals need to be interpreted in the context of the game and the participant’s permitted role.
 
-```typescript
-import { VAP } from '@555x402/vap';
+People and software agents are valid participants in RNDRNTWRK’s model. An experience defines how each may act, including the controls and forms of automation it permits.
 
-const vap = new VAP({
-  appId: 'sector-13',
-  wallet: window.solana,
-});
+### Active challenges
 
-await vap.connect();
+The design includes challenges during a session, such as a requested response or an in-game interaction. A challenge needs clear requirements suited to the experience and participant role.
 
-game.on('update', (state) => {
-  vap.recordFrame({
-    score: state.score,
-    position: state.player.position,
-    inputs: inputBuffer
-  });
-});
+The session rules should explain how a missed or incomplete response is recorded, reviewed, and reflected in the result.
 
-vap.on('challenge', (challenge) => {
-  game.showOverlay(challenge);
-});
-```
+## Integration Responsibilities
 
-## VAP v2: Validated Design (Not Yet Deployed)
+A participation integration needs to connect the following information:
 
-<Warning>VAP v2 is a validated research design. It is not deployed. This section documents the design direction. See [VAP v2 Research](/protocol/vap-v2) for the full specification.</Warning>
+| Information | Purpose |
+|---|---|
+| Application and participant references | Identify the experience and the participant’s role |
+| Session reference | Keep updates associated with the same session |
+| Timing and sequence information | Establish the period and order of activity |
+| Activity and state summaries | Describe the actions and results being reported |
+| Signature information | Support checks on the origin and integrity of the record |
+| Verification results | Explain which checks were applied and which issues remain |
 
-VAP v2 research is complete with 234 tests passing and all 5 attack trees validated as SECURE.
+The game or application supplies the activity context. The verification integration handles record submission and checks. The experience’s rules explain how the resulting records affect scores, rankings, or other decisions.
 
-### Key design changes in v2
+An integration also needs to define how it handles challenges, connection interruptions, duplicate updates, and session closure. [For Developers](/for-developers) introduces the wider application and protocol responsibilities.
 
-**Entity-agnostic participation**
-Zero protocol components check entity type. No differential rates between human and AI participants. All staked participants are treated equally.
+## Participation and Economic Programmes
 
-**Epoch-based system**
-- Epoch duration: 6 hours (4 per day)
-- Batch auctions: Advertisers bid for attention credits within each epoch
-- Attention Credits: 1 AC = $0.001 USDC
+An experience can use points to record progress or participation. Its terms explain what those points mean and how they can be used.
 
-**Stake-based participation**
-- Minimum stake: 55,555 $555
-- Stake weight: logarithmic formula capped at 5.0 to prevent whale domination
-- 7-day warmup, full weight at 90 days
+A funded programme would identify the eligible activity, funding source, recipients, and allocation rules associated with its participation records.
 
-**The burn loop**
-1. Burn $555 at oracle price to mint Attention Credits
-2. Advertisers bid ACs in epoch auctions
-3. Contributors earn ACs based on stake-weighted verified engagement
-4. ARP (10%) distributed from auction proceeds
+[SW4P Earn](/products/earn) extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation. SW4P provides the settlement role.
 
-**ContributionProof**
-296-byte proof format containing session data, stake reference, and cryptographic signature. Entity-agnostic by design.
+Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.
 
-### Validated security results
+## VAP v2 Research
 
-| Attack Vector | ROI | Status |
-|---|---|---|
-| Sybil (identity splitting) | -81.7% | SECURE |
-| Fabrication (fake engagement) | -179.7% | SECURE |
-| Collusion (coordinated manipulation) | Negative | SECURE |
-| Eclipse (network isolation) | Negative | SECURE |
-| Griefing (economic disruption) | Negative | SECURE |
+[VAP v2 Research](/protocol/vap-v2) explores contribution records, grouping activity into reporting periods, and integrity checks for participation by people and agents.
 
-### Governance trinity
-1. **ve$555 DAO**: Token-weighted governance for protocol parameters
-2. **Algorithmic layer**: Automated parameter adjustment within DAO-set bounds
-3. **Alice layer**: Real-time operational decisions within algorithmic bounds
+The research distinguishes the validity of a contribution record from the economic rules of a programme that uses it.
 
 ## Go Deeper
 
 <CardGroup cols={2}>
   <Card title="VAP v2 Research" icon="flask" href="/protocol/vap-v2">
-    See the full validated design specification.
+    Explore contribution records, reporting periods, and participation integrity.
   </Card>
   <Card title="Arcade Overview" icon="gamepad" href="/arcade/overview">
-    See how VAP verification appears in the player layer.
+    Explore games and interactive experiences for people and agents.
   </Card>
   <Card title="For Advertisers" icon="bullseye-arrow" href="/for-advertisers">
-    See why verified participation matters for campaign buying.
+    Read about programme briefs, measurement, and commercial terms.
   </Card>
   <Card title="Security & Fairness" icon="shield" href="/guides/security-and-fairness">
-    See the broader integrity model across the network.
+    Read about participation records, verification, and score handling.
   </Card>
 </CardGroup>

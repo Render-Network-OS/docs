@@ -1,153 +1,105 @@
 ---
 title: "System Map"
 icon: "diagram-project"
-description: "How RNDRNTWRK fits together across client, service, agent, and chain layers"
+description: "Client, media, service, agent, and onchain responsibilities within RNDRNTWRK"
 ---
 
-<Info>**Status: Live**: This feature is operational.</Info>
+This map follows the implementation responsibilities behind RNDRNTWRK’s products. Read the [System Overview](/architecture/overview) for the five capability jobs they support.
 
-# Architecture Overview
+The map describes how the parts relate. Component documentation explains the individual systems and workflows.
 
-RNDRNTWRK is a multi-layer system spanning client applications, edge services, backend infrastructure, AI agents, and on-chain programs.
-
-## System Diagram
+## Responsibility Map
 
 ```mermaid
-graph TD
-    subgraph Client ["Client Layer"]
-        Arcade["555 Arcade"]
-        Stream["555stream Studio"]
-        SW4P_UI["sw4p Bridge"]
-        Wallet["Wallet Adapter"]
-    end
+flowchart TD
+    C["Client applications<br/>555stream · Arcade · controls"]
+    M["Edge and media delivery<br/>Production · storage · playback"]
+    S["Services<br/>Authorisation · state · records · coordination"]
+    A["Agent runtimes<br/>Alice · tools · memory"]
+    O["Onchain components<br/>Assets · transactions · confirmations"]
 
-    subgraph Edge ["Edge Layer"]
-        Encoding["Encoding Workers"]
-        Storage["Media Storage"]
-        Cache["Edge Cache"]
-        Sessions["Session Manager"]
-        CDN["CDN / WAF"]
-    end
-
-    subgraph Backend ["Service Layer"]
-        API["API Service"]
-        VAP_Svc["VAP Verifier"]
-        AGG_Svc["AGG Router"]
-        CtrlPlane["Control Plane"]
-        SFU["SFU Service"]
-        MediaEngine["Media Engine"]
-        Capture["Capture Service"]
-        TTS["Text-to-Speech"]
-        Avatar["Avatar Pipeline"]
-        DB[("Database")]
-        StateStore[("State Store")]
-    end
-
-    subgraph Agent ["Alice"]
-        AliceBot["Agent Core"]
-        Plugins["Plugins"]
-        VectorDB["Vector Memory"]
-        Knowledge["Knowledge Corpus"]
-    end
-
-    subgraph Blockchain ["Solana"]
-        Token["$555 SPL Token"]
-        SW4P_Bridge["sw4p (the sw4p engine)"]
-        Jupiter["Jupiter Aggregator"]
-        Kora["Kora (Gasless)"]
-    end
-
-    %% Client connections
-    Arcade -->|HTTPS| CDN
-    Stream -->|HTTPS/WSS| Encoding
-    SW4P_UI -->|HTTPS| API
-
-    %% Edge connections
-    CDN -->|Route| API
-    Encoding -->|Persist| Storage
-    Encoding -->|Cache| Cache
-    Encoding -->|State| Sessions
-
-    %% Backend connections
-    API -->|Query| DB
-    API -->|State| StateStore
-    VAP_Svc -->|State| StateStore
-    VAP_Svc -->|Persist| DB
-    CtrlPlane -->|Manage| SFU
-    CtrlPlane -->|Manage| MediaEngine
-
-    %% Agent connections
-    AliceBot -->|Read| DB
-    AliceBot -->|Read| StateStore
-    AliceBot -->|Post| API
-    AliceBot -->|Stream| CtrlPlane
-
-    %% Blockchain connections
-    API -->|Settle| Token
-    API -->|Bridge| SW4P_Bridge
-    AGG_Svc -->|Swap| Jupiter
-    AGG_Svc -->|Gasless| Kora
+    C <-->|Media| M
+    C <-->|Requests and results| S
+    S <-->|Media workflows| M
+    A <-->|Permitted actions and results| S
+    S <-->|Settlement through SW4P| O
 ```
 
-## Layer Overview
+An overview of responsibilities within the architecture RNDRNTWRK is developing. Identity, permissions, budgets, and ownership connect these parts. Individual integrations determine the components and connections used.
 
-### Client Layer
-User-facing applications that connect to the protocol:
-*   **555 Arcade**: Browser-based game platform with wallet authentication (SIWS). Games run in sandboxed iframes with the VAP SDK for verified engagement.
-*   **555stream Studio**: Browser-based streaming studio with everywhere all at once, scene composition, and guest management via WebRTC.
-*   **sw4p Bridge**: Cross-chain bridge interface for USDC transfers across Solana, Base, and Polygon.
+| Responsibility | What it handles | Where it connects |
+| --- | --- | --- |
+| **Client applications** | User interactions, stream controls, game presentation, and payment instructions. | Services that manage the relevant activity, identity, state, or settlement operation. |
+| **Edge and media delivery** | Encoding, media storage, caching, session handling, content delivery, and request filtering. | Media production, stream outputs, recordings, and playback. |
+| **Services** | Application requests, authorisation, state, participation records, event delivery, and workflow coordination. | Clients, media systems, agent tools, data stores, and settlement components. |
+| **Agent runtimes** | Models, tools, context, memory, task execution, and recovery within granted authority. | Defined product and service actions; records of the work and resources used. |
+| **Onchain components** | Asset and transaction records, signatures, and supported settlement operations. | Payment instructions, confirmations, and accounting for the result. |
 
-### Edge Layer
-Globally distributed infrastructure handling encoding, caching, and real-time sessions:
-*   **Encoding Workers**: Video encoding and distribution at the edge, offloading compute from creator devices.
-*   **Media Storage**: Persistent storage for stream recordings, clips, and media assets.
-*   **Edge Cache**: Low-latency caching for frequently accessed data.
-*   **Session Manager**: Stateful session handling for real-time interactions.
-*   **CDN / WAF**: Content delivery and web application firewall.
+Identity, permissions, budgets, and ownership connect these responsibilities. They determine which actor can use a resource or perform an action and how that action is recorded.
 
-### Service Layer
-Backend services handling API routing, verification, media composition, and settlement:
-*   **API Service**: Central API handling authentication, game state, leaderboards, rewards, referrals, and settlement.
-*   **VAP Verifier**: Validates cryptographic heartbeats from client sessions, maintains engagement proofs.
-*   **AGG Router**: Payment aggregation with optimal swap routing and gasless transaction sponsorship.
-*   **Control Plane**: Manages scene composition, source routing, and guest connections for 555stream.
-*   **SFU Service**: Selective Forwarding Unit for multi-party WebRTC.
-*   **Media Engine**: Video composition and transcoding pipeline.
-*   **Capture Service**: Browser-based capture for recording and clip generation.
-*   **Text-to-Speech + Avatar**: Alice's voice and visual presence pipeline.
+## Components Within the Map
 
-### Agent Layer (Alice)
-Autonomous AI operator with persistent memory and multi-platform capabilities:
-*   **Agent Core**: Autonomous decision engine with 12+ custom plugins.
-*   **Vector Memory**: Local-first RAG retrieval for contextual intelligence.
-*   **Knowledge Corpus**: 80+ documents covering the full protocol specification.
-*   See [Alice: The Operator](/alice/persona) for details.
+### Clients and media
 
-### Blockchain Layer (Solana)
-On-chain programs and integrations:
-*   **$555 SPL Token**: Protocol token for staking, burns, and participation.
-*   **sw4p (the sw4p engine)**: native USDC settlement across 7 chains + USDT corridor.
-*   **Jupiter Aggregator**: Optimal swap routing across Solana DEXs.
-*   **Kora**: Gasless transaction sponsorship for frictionless user experience.
+555stream concerns production, publishing, and interaction. CTRL Panel concerns stream controls, layouts, overlays, and scheduling. Arcade concerns games and interactive environments.
 
-## Data Flow: Play Session
+The media design includes encoding, storage, caching, scene and session state, guest connections, recording, and clips. A selective forwarding unit (SFU) handles forwarding media between participants in a multi-party WebRTC arrangement; composition and transcoding are separate media-engine responsibilities.
 
-Trace a user action through the system:
+Capture components support recording and clip generation. Text-to-speech and avatar components concern the agent’s voice and visual presentation.
 
-1.  **Client**: User plays a game in the Arcade.
-2.  **Game Engine**: Emits events (`SCORE_UPDATE`, `ENEMY_KILL`, etc.).
-3.  **VAP SDK**: Hashes events into the current InputBlock and signs with session key.
-4.  **WebSocket**: Sends `PULSE` packet to VAP Verifier.
-5.  **Verifier**: Validates signature, checks nonce sequence, updates session state.
-6.  **Persistence**: State periodically flushed to the database.
-7.  **Points**: Session score converted to points based on game normalization rules.
-8.  **Settlement**: Weekly engine converts credits to USDC payouts.
+### Services and participation records
 
-## Data Flow: Live Stream
+Application services handle requests, authentication, state changes, and event delivery. Databases and state stores serve different persistence and coordination needs within those workflows.
 
-1.  **555stream**: Creator starts broadcast from browser.
-2.  **Edge Encoding**: Handles video encoding and distribution.
-3.  **Distribution**: Custom RTMP output to any destination, everywhere all at once.
-4.  **Alice**: Monitors engagement signals, triggers L-Bar ads at optimal moments.
-5.  **Control Plane**: Manages scene composition, guest WebRTC, overlays.
-6.  **Settlement**: Ad revenue flows through 10% ARP → 50/50 split cascade.
+VAP describes participation records and session-integrity checks. AGG describes payment-routing coordination; Hyperlink describes payment requests with the context needed to resolve and follow them.
+
+### Agents and authority
+
+Alice is the reference agent used to develop and test research, planning, coding, and media operations. Its runtime work covers tools, models, memory, knowledge retrieval, budgets, and recovery.
+
+555ID and the surrounding permission and policy work connect actors to their roles and resources. An agent’s permitted observations and actions depend on the authority granted for its task.
+
+### Settlement and economic programmes
+
+SW4P coordinates the settlement lifecycle, including route selection, fees, authorisation, execution, confirmation, recovery, and accounting.
+
+An integration can involve asset exchange, execution-cost handling, or other route-specific services. Supported networks, assets, providers, and costs belong to the particular integration’s documentation.
+
+$555 is the coordination asset of RNDRNTWRK. Token holdings, points, and settlement assets have different roles.
+
+SW4P Earn extends SW4P’s economic model into source-aware allocation, claims, rewards, payout schedules, reserves, and reconciliation.
+
+**Current status: SW4P Earn is not yet publicly available. No staking, liquidity, reward, or claim programme is currently open.**
+
+## Illustrative Data Flow: A Play Session
+
+1. A player or agent takes part in a game under its session and access rules.
+2. Game logic produces actions, score changes, or other relevant events.
+3. The session-record design associates those events with the participant and the permitted context.
+4. Service logic checks the record and updates session state.
+5. The interface receives the resulting state or ranking, and records are retained as needed.
+6. The experience’s rules explain any points or credits and how they are used.
+
+A future economic programme would connect its funding and terms to allocations and claims through SW4P Earn. A recorded score is not a payment instruction.
+
+The [VAP reference](/protocol/vap) explains the documented session-record design. [Games Library](/arcade/games) describes game-specific mechanics.
+
+## Illustrative Data Flow: A Stream
+
+1. A creator prepares the stream’s sources, destinations, layouts, and guests.
+2. Media components handle the production and delivery work required by that configuration.
+3. Controls and session state coordinate scenes, overlays, and guest interactions.
+4. Permitted operator or agent tasks support defined parts of the workflow.
+5. Participation and programme records describe the activity and any commercial deliverables.
+6. Payment records connect the programme’s funding, costs, recipients, and settlement results.
+
+Each programme’s agreements determine allocations. [Fee Distribution](/tokenomics/fee-distribution) explains the separate planning policies and their bases.
+
+## Go Deeper
+
+- [System Overview](/architecture/overview) — Understand the five capability jobs.
+- [API Reference](/api-reference) — Read the documented interface families.
+- [555stream](/555stream) — Explore the media workflow.
+- [Alice](/alice/persona) — Read about the reference agent.
+- [SW4P](/sw4p) — Follow a settlement operation.
+- [SW4P Earn](/products/earn) — Read the allocation model and current status.
