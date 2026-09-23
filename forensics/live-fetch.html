@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>$555 read-only onchain forensic fetch</title>
+<style>
+  body{font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;margin:20px;color:#111;background:#fff}
+  h1,h2{font-family:system-ui,sans-serif} table{border-collapse:collapse;width:100%;margin:12px 0 28px}
+  th,td{border:1px solid #bbb;padding:6px;vertical-align:top;word-break:break-all} th{background:#eee;text-align:left}
+  pre{white-space:pre-wrap;word-break:break-all;border:1px solid #bbb;padding:10px;background:#f7f7f7}
+  .ok{color:#075}.err{color:#b00}.small{font-size:11px;color:#555}
+</style>
+</head>
+<body>
+<h1>$555 read-only onchain forensic fetch</h1>
+<div id="status">Loading...</div>
+<div id="out"></div>
+<script>
+const MINT='CQwwRomsuWsUCPYomZmRnwMns4ZCTASc31ExMvSysAF2';
+const CREATOR='HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq';
+const POOL='FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG';
+const TREASURY='555Tm1cfV52SrBQmnxXiHMUMrpci8miW3CkLP1Qbmtd7';
+const FEE_PAYER='3tYcXT1hsJCEdLHHLzop1zRbXb9U9fp8jQEq6NfJNe2E';
+const STREAM_SENDER='BdEJFpK56hjdzopkmQeHiH3SwHCXrHtUMNH4jFkDTdA5';
+const STREAMS=['6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb','HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN','BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ'];
+const RPCS=['https://api.mainnet-beta.solana.com','https://solana-rpc.publicnode.com'];
+const params=new URLSearchParams(location.search);
+const mode=params.get('mode')||'summary';
+const out=document.querySelector('#out');
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function section(title, value){const h=document.createElement('h2');h.textContent=title;out.appendChild(h);const p=document.createElement('pre');p.textContent=typeof value==='string'?value:JSON.stringify(value,null,2);out.appendChild(p)}
+function table(title, rows){const h=document.createElement('h2');h.textContent=title;out.appendChild(h);if(!rows.length){out.insertAdjacentHTML('beforeend','<p>none</p>');return}const keys=[...new Set(rows.flatMap(Object.keys))];out.insertAdjacentHTML('beforeend','<table><thead><tr>'+keys.map(k=>'<th>'+esc(k)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+keys.map(k=>'<td>'+esc(typeof r[k]==='object'?JSON.stringify(r[k]):r[k])+'</td>').join('')+'</tr>').join('')+'</tbody></table>')}
+async function getJson(url, options={}){const r=await fetch(url,options);const text=await r.text();let data;try{data=JSON.parse(text)}catch{data=text}if(!r.ok)throw new Error(r.status+' '+r.statusText+' '+String(text).slice(0,500));return data}
+let rpcId=1;
+async function rpc(method, args=[]){let last;for(const url of RPCS){try{return await getJson(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:rpcId++,method,params:args})})}catch(e){last=e}}throw last}
+async function walletSummary(address){const [balance,tokens,sigs]=await Promise.all([
+  rpc('getBalance',[address,{commitment:'confirmed'}]),
+  rpc('getTokenAccountsByOwner',[address,{mint:MINT},{encoding:'jsonParsed',commitment:'confirmed'}]),
+  rpc('getSignaturesForAddress',[address,{limit:1000,commitment:'confirmed'}])
+]);
+return {address,sol_lamports:balance?.result?.value??null,sol:(balance?.result?.value??0)/1e9,token_accounts:(tokens?.result?.value||[]).map(x=>({pubkey:x.pubkey,amount:x.account?.data?.parsed?.info?.tokenAmount?.amount,uiAmountString:x.account?.data?.parsed?.info?.tokenAmount?.uiAmountString})),signature_count_first_page:(sigs?.result||[]).length,newest_signature:sigs?.result?.[0]?.signature||null,oldest_signature:sigs?.result?.at(-1)?.signature||null};
+}
+async function summary(){
+ const results={generated_at:new Date().toISOString(),mode};
+ const tasks={
+  pump_claim:()=>getJson(`https://pumpdev.io/api/claim-account?mint=${MINT}&publicKey=${CREATOR}`),
+  dexscreener:()=>getJson(`https://api.dexscreener.com/latest/dex/pairs/solana/${POOL}`),
+  geckoterminal:()=>getJson(`https://api.geckoterminal.com/api/v2/networks/solana/pools/${POOL}`),
+  mint_supply:()=>rpc('getTokenSupply',[MINT,{commitment:'confirmed'}]),
+  mint_account:()=>rpc('getAccountInfo',[MINT,{encoding:'jsonParsed',commitment:'confirmed'}]),
+  creator:()=>walletSummary(CREATOR),treasury:()=>walletSummary(TREASURY),fee_payer:()=>walletSummary(FEE_PAYER),stream_sender:()=>walletSummary(STREAM_SENDER),
+  streams:()=>Promise.all(STREAMS.map(async address=>({address,account:(await rpc('getAccountInfo',[address,{encoding:'base64',commitment:'confirmed'}]))?.result?.value||null,signatures:(await rpc('getSignaturesForAddress',[address,{limit:1000,commitment:'confirmed'}]))?.result||[]})))
+ };
+ for(const [key,fn] of Object.entries(tasks)){try{results[key]=await fn()}catch(e){results[key]={error:String(e)}}}
+ section('summary-json',results);
+ table('wallet summary',[results.creator,results.treasury,results.fee_payer,results.stream_sender].filter(Boolean));
+ table('stream accounts',(results.streams||[]).map(s=>({address:s.address,owner:s.account?.owner,lamports:s.account?.lamports,data_length:s.account?.data?.[0]?.length,signature_count:s.signatures?.length,newest:s.signatures?.[0]?.signature,oldest:s.signatures?.at(-1)?.signature})));
+}
+async function signatures(){const address=params.get('address')||CREATOR;const before=params.get('before');const limit=Math.min(1000,Number(params.get('limit')||1000));const cfg={limit,commitment:'confirmed'};if(before)cfg.before=before;const data=await rpc('getSignaturesForAddress',[address,cfg]);table('signatures '+address,(data.result||[]).map((x,i)=>({i,signature:x.signature,slot:x.slot,blockTime:x.blockTime,err:x.err?JSON.stringify(x.err):'',memo:x.memo||''})));section('raw',data)}
+async function transaction(){const signature=params.get('signature');if(!signature)throw new Error('signature required');const data=await rpc('getTransaction',[signature,{encoding:'jsonParsed',maxSupportedTransactionVersion:0,commitment:'confirmed'}]);section('transaction '+signature,data)}
+async function account(){const address=params.get('address');if(!address)throw new Error('address required');const data=await rpc('getAccountInfo',[address,{encoding:params.get('encoding')||'jsonParsed',commitment:'confirmed'}]);section('account '+address,data)}
+(async()=>{try{if(mode==='summary')await summary();else if(mode==='signatures')await signatures();else if(mode==='transaction')await transaction();else if(mode==='account')await account();else throw new Error('unsupported mode');document.querySelector('#status').innerHTML='<b class="ok">complete</b> '+new Date().toISOString()}catch(e){document.querySelector('#status').innerHTML='<b class="err">error</b> '+esc(e.stack||e);section('error',String(e.stack||e))}})();
+</script>
+</body>
+</html>

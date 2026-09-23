@@ -1,0 +1,79 @@
+name: Temporary $555 read-only chain pull
+
+on:
+  push:
+    branches:
+      - forensics/555-onchain-ledger
+    paths:
+      - .github/workflows/forensics-chain-pull.yml
+      - forensics/scripts/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pull-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout forensic branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install read-only protocol SDKs
+        run: |
+          npm install --no-save --package-lock=false \
+            @pump-fun/pump-sdk \
+            @pump-fun/pump-swap-sdk \
+            @solana/web3.js@^1.98.0 \
+            @solana/spl-token \
+            @streamflow/stream \
+            bn.js
+
+      - name: Pull Pump vault and Streamflow contract state
+        id: protocols
+        continue-on-error: true
+        env:
+          FORENSICS_OUT_DIR: forensics/output
+        run: node forensics/scripts/pull_protocols.mjs
+
+      - name: Pull Solana signatures, transactions, balances, and token movements
+        id: chain
+        continue-on-error: true
+        env:
+          FORENSICS_OUT_DIR: forensics/output
+        run: python forensics/scripts/pull_chain.py
+
+      - name: Record collector statuses
+        if: always()
+        run: |
+          mkdir -p forensics/output
+          cat > forensics/output/workflow_status.json <<JSON
+          {
+            "protocol_collector": "${{ steps.protocols.outcome }}",
+            "chain_collector": "${{ steps.chain.outcome }}",
+            "commit": "${{ github.sha }}",
+            "run_id": "${{ github.run_id }}",
+            "run_attempt": "${{ github.run_attempt }}"
+          }
+          JSON
+          find forensics/output -maxdepth 2 -type f -printf '%p %s bytes\n' | sort | tee forensics/output/file_manifest.txt
+
+      - name: Upload forensic evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rndrntwrk-555-chain-pull-${{ github.run_id }}
+          path: forensics/output
+          if-no-files-found: error
+          retention-days: 7

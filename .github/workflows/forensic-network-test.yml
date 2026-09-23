@@ -1,0 +1,32 @@
+name: Temporary forensic network test
+
+on:
+  push:
+    branches:
+      - forensics/555-onchain-ledger
+    paths:
+      - ".github/workflows/forensic-network-test.yml"
+      - "forensics/network-test-trigger.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test public Solana and market endpoints
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          endpoints = [
+            'https://api.mainnet-beta.solana.com',
+            'https://api.dexscreener.com/latest/dex/pairs/solana/FKBEZmogcdNGm1rtqCJpkLY9gW77antPkBXhSFftGHTG',
+          ]
+          req = urllib.request.Request(endpoints[0], data=json.dumps({'jsonrpc':'2.0','id':1,'method':'getBalance','params':['HW8jtVSXXyvt8AbbJ2knx2jjNeSSrLbpA1QkzLGZ5iWq']}).encode(), headers={'Content-Type':'application/json'})
+          print(urllib.request.urlopen(req, timeout=20).read().decode())
+          print(urllib.request.urlopen(endpoints[1], timeout=20).read().decode()[:500])
+          PY

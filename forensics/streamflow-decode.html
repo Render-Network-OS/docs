@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>$555 Streamflow forensic decoder</title>
+  <style>
+    body{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:0;padding:24px;background:#071019;color:#e5edf5;font-size:14px;line-height:1.45}
+    h1{font:700 20px/1.2 system-ui,sans-serif;margin:0 0 16px;color:#7dd3fc}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:16px;border:1px solid #264056;background:#0b1722}
+    .error{color:#fca5a5}
+  </style>
+</head>
+<body>
+<h1>$555 Streamflow read-only forensic decode</h1>
+<pre id="out">Loading Streamflow SDK and reading mainnet contracts...</pre>
+<script type="module">
+const IDS = [
+  '6jEBKmB1mUD7tpgVn35ZqxTmSvhDSqpWBVzPzUiyqttb',
+  'HHXgYtezE32aATgWQFn3knAsy2xhQsjfepps3MLe3MXN',
+  'BSkf98N8ppTciokTv56AFA8f6HU4Kux7Ee9DV63mUinQ'
+];
+const out = document.getElementById('out');
+function normalize(value, seen = new WeakSet()) {
+  if (value == null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (typeof value === 'bigint') return value.toString();
+  if (typeof value === 'function') return undefined;
+  if (typeof value?.toBase58 === 'function') return value.toBase58();
+  if (typeof value?.toArrayLike === 'function' && typeof value?.toString === 'function') return value.toString(10);
+  if (typeof value?.toJSON === 'function') {
+    try { return normalize(value.toJSON(), seen); } catch {}
+  }
+  if (Array.isArray(value)) return value.map(v => normalize(v, seen));
+  if (typeof value === 'object') {
+    if (seen.has(value)) return '[Circular]';
+    seen.add(value);
+    const result = {};
+    for (const [key, child] of Object.entries(value)) {
+      const normalized = normalize(child, seen);
+      if (normalized !== undefined) result[key] = normalized;
+    }
+    return result;
+  }
+  return String(value);
+}
+try {
+  const mod = await import('https://esm.sh/@streamflow/stream@13.3.1?bundle');
+  const client = new mod.StreamflowSolana.SolanaStreamClient('https://api.mainnet-beta.solana.com');
+  const records = [];
+  for (const id of IDS) {
+    try {
+      const stream = await client.getOne({ id });
+      records.push({ id, ok: true, stream: normalize(stream) });
+    } catch (error) {
+      records.push({ id, ok: false, error: String(error?.stack || error) });
+    }
+  }
+  out.textContent = JSON.stringify({ fetchedAt: new Date().toISOString(), records }, null, 2);
+} catch (error) {
+  out.className = 'error';
+  out.textContent = JSON.stringify({ fatal: String(error?.stack || error) }, null, 2);
+}
+</script>
+</body>
+</html>
